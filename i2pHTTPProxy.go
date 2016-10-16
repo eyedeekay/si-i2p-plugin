@@ -46,7 +46,7 @@ func Newi2pHTTPProxy(lconn *net.TCPConn, laddr *net.TCPAddr) *i2pHTTPProxy{
         var temp i2pHTTPProxy
         temp.lconn              = lconn
         temp.localAddr          = laddr
-        temp.remoteAddr         = *Newi2pHTTPTunnel()
+        temp.remoteAddr         = *Newi2pHTTPTunnel(sam3.NewSAM(), laddr)
         temp.erred              = false
         temp.errsig             = make(chan bool)
         return &temp
