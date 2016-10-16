@@ -11,7 +11,7 @@ type i2pHTTPTunnel struct {
         keypair, _      sam3.I2PKeys
 }
 
-func Newi2pHTTPTunnel(samb *sam3.SAM, laddr *net.TCPAddr) * i2pHTTPTunnel {
+func Newi2pHTTPTunnel(samb,_ *sam3.SAM, laddr *net.TCPAddr) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
         temp.sam        = *samb
         temp.localAddr  = laddr

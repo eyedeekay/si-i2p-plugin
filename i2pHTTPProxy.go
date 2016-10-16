@@ -1,7 +1,7 @@
 package main
 
 import (
-//	"github.com/cmotc/sam3"
+	"github.com/cmotc/sam3"
         "io"
 //      "flag"
 //	"fmt"
@@ -42,11 +42,11 @@ func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
         defer i2proxy.rconn.Close()
 }
 
-func Newi2pHTTPProxy(lconn *net.TCPConn, laddr *net.TCPAddr) *i2pHTTPProxy{
+func Newi2pHTTPProxy(lconn *net.TCPConn, laddr *net.TCPAddr, samAddrString string) *i2pHTTPProxy{
         var temp i2pHTTPProxy
         temp.lconn              = lconn
         temp.localAddr          = laddr
-        temp.remoteAddr         = *Newi2pHTTPTunnel(sam3.NewSAM(), laddr)
+        temp.remoteAddr,_       = *Newi2pHTTPTunnel(sam3.NewSAM(samAddrString), laddr)
         temp.erred              = false
         temp.errsig             = make(chan bool)
         return &temp
