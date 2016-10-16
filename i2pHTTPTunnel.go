@@ -14,7 +14,7 @@ type i2pHTTPTunnel struct {
         stream, _       *sam3.StreamSession
         listener, _     *sam3.StreamListener   
         conn, _         net.Conn     
-        buf             *bytes.Buffer
+        buf             bytes.Buffer
 }
 
 func Newi2pHTTPTunnel(samAddrString string, laddr *net.TCPAddr) * i2pHTTPTunnel {
@@ -26,7 +26,7 @@ func Newi2pHTTPTunnel(samAddrString string, laddr *net.TCPAddr) * i2pHTTPTunnel 
         temp.listener, _        = temp.stream.Listen()
         temp.conn, _            = temp.listener.Accept()
         b                       := make([]byte, 4096)
-        buf                     = bytes.NewBuffer(b)
+        buf                     := bytes.NewBuffer(b)
         return &temp
 }
 

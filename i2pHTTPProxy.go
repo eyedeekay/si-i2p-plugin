@@ -3,7 +3,9 @@ package main
 
 import (
 //	"github.com/cmotc/sam3"
+        "bufio"
         "io"
+//        "io/ioutil"
 //      "flag"
 //	"fmt"
         "log"
@@ -35,7 +37,7 @@ func (i2proxy *i2pHTTPProxy) err(s string, err error) {
 		return
 	}
 	if err != io.EOF {
-//		i2proxy.Log.Warn(s, err)
+		i2proxy.Log.Panicf(s, err)
 	}
 	i2proxy.errsig <- true
 	i2proxy.erred = true
@@ -66,7 +68,8 @@ func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
 	}
 
 	//display both ends
-//	i2proxy.Log.Info("Opened %s >>> %s", i2proxy.localAddr.String(), i2proxy.remoteAddr.String())
+	i2proxy.Log.Printf("Opened %s >>> %s", i2proxy.localAddr.String(),
+                i2proxy.remoteAddr[0].String())
 
 	//bidirectional copy
 	go i2proxy.pipe(i2proxy.lconn, i2proxy.rconn)
@@ -74,13 +77,14 @@ func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
 
 	//wait for close...
 	<-i2proxy.errsig
-//	i2proxy.Log.Info("Closed (%d bytes sent, %d bytes recieved)", i2proxy.sentBytes, i2proxy.recievedBytes)
+	i2proxy.Log.Printf("Closed (%d bytes sent, %d bytes recieved)",
+                i2proxy.sentBytes, i2proxy.recievedBytes)
 }
 
 func (i2proxy *i2pHTTPProxy) pipe(src, dst io.ReadWriter) {
 	islocal := src == i2proxy.lconn
 
-/*	var dataDirection string
+	var dataDirection string
 	if islocal {
 		dataDirection = ">>> %d bytes sent%s"
 	} else {
@@ -93,7 +97,7 @@ func (i2proxy *i2pHTTPProxy) pipe(src, dst io.ReadWriter) {
 	} else {
 		byteFormat = "%s"
 	}
-*/
+
 	//directional copy (64k buffer)
 	buff := make([]byte, 0xffff)
 	for {
@@ -115,8 +119,8 @@ func (i2proxy *i2pHTTPProxy) pipe(src, dst io.ReadWriter) {
 		}
 
 		//show output
-//		i2proxy.Log.Debug(dataDirection, n, "")
-//		i2proxy.Log.Trace(byteFormat, b)
+		i2proxy.Log.Printf(dataDirection, n, "")
+		i2proxy.Log.Panicf(byteFormat, b)
 
 		//write out result
 		n, err = dst.Write(b)
@@ -132,16 +136,26 @@ func (i2proxy *i2pHTTPProxy) pipe(src, dst io.ReadWriter) {
 	}
 }
 
-func Newi2pHTTPProxy(proxAddrString string, samAddrString string) *i2pHTTPProxy{
+func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter *bufio.Writer) *i2pHTTPProxy{
         var temp i2pHTTPProxy
         temp.String             = proxAddrString
-        temp.localAddr,_        = net.ResolveTCPAddr("tcp", proxAddrString)
-        temp.listener,_         = net.ListenTCP("tcp", temp.localAddr)
-        temp.lconn,_            = temp.listener.AcceptTCP()
+        var berr error
+        temp.localAddr, berr   = net.ResolveTCPAddr("tcp", proxAddrString)
+        if berr != nil {
+                temp.err("Failed to resolve address for local proxy'%s'\n", berr)
+        }
+        temp.listener, berr    = net.ListenTCP("tcp", temp.localAddr)
+        if berr != nil {
+                temp.err("Failed to set up TCP listener '%s'\n", berr)
+        }
+        temp.lconn, berr      = temp.listener.AcceptTCP()
+        if berr != nil {
+                temp.err("Failed to set up connection '%s'\n", berr)
+        }
         temp.remoteAddr         = append(temp.remoteAddr, *Newi2pHTTPTunnel(samAddrString, temp.localAddr))
         temp.erred              = false
         temp.errsig             = make(chan bool)
-//	temp.Log                = log.NullLogger{}
-
+	temp.Log                = *log.New(logAddrWriter,
+                "Stream Isolating Parent Proxy Reported an Error", 0)
         return &temp
 }
