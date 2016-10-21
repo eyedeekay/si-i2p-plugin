@@ -40,7 +40,9 @@ func main(){
         }
         defer logPathPath.Close()
         logPathWriter           := bufio.NewWriter(logPathPath)
-        siProxy                 := Newi2pHTTPProxy(proxAddrString,
-                samAddrString, logPathWriter)
-        siProxy.Starti2pHTTPProxy()
+        for {
+                siProxy                 := Newi2pHTTPProxy(proxAddrString,
+                        samAddrString, logPathWriter)
+                go siProxy.Starti2pHTTPProxy()
+        }
 }

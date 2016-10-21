@@ -8,32 +8,49 @@ import (
 )
 
 type i2pHTTPTunnel struct {
-        sam, _          *sam3.SAM
-        remoteAddr      string
         keypair, _      sam3.I2PKeys
         stream, _       *sam3.StreamSession
-        listener, _     *sam3.StreamListener   
-        conn, _         net.Conn     
+        remoteI2PAddr,_ sam3.I2PAddr
+        iconn, _        *sam3.SAMConn
+        initialized     bool
+        lconn, _        net.Conn
+        listener, _     *sam3.StreamListener
         buf             bytes.Buffer
 }
 
-func Newi2pHTTPTunnel(samAddrString string, laddr *net.TCPAddr) * i2pHTTPTunnel {
+func Newi2pHTTPTunnel(insam *sam3.SAM, laddr *net.TCPAddr, raddr sam3.I2PKeys ) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
-        temp.sam, _             = sam3.NewSAM(samAddrString)
-        temp.remoteAddr         = samAddrString
-        temp.keypair, _         = temp.sam.NewKeys()
-        temp.stream, _          = temp.sam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Medium)
-        temp.listener, _        = temp.stream.Listen()
-        temp.conn, _            = temp.listener.Accept()
-        b                       := make([]byte, 4096)
-        buf                     := bytes.NewBuffer(b)
+        temp.keypair, _         = insam.NewKeys()
+        temp.stream, _          = insam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
+        temp.remoteI2PAddr, _   = insam.Lookup(raddr.String())
+        temp.iconn, _           = temp.stream.DialI2P(temp.remoteI2PAddr)
+//        temp.listener, _        = temp.stream.Listen()
+//        temp.lconn, _            = temp.listener.Accept()
+//        b                       := make([]byte, 4096)
+//        buf                     := bytes.NewBuffer(b)
+        go temp.Write([]byte("Hello i2p!"))
+        return &temp
+}
+
+func Newi2pHTTPTunnelFromString(insam *sam3.SAM, laddr *net.TCPAddr, raddr string ) * i2pHTTPTunnel {
+        var temp i2pHTTPTunnel
+        temp.keypair, _         = insam.NewKeys()
+        temp.stream, _          = insam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
+        temp.remoteI2PAddr, _   = insam.Lookup(raddr)
+        temp.iconn, _           = temp.stream.DialI2P(temp.remoteI2PAddr)
+//        temp.listener, _        = temp.stream.Listen()
+//        temp.lconn, _            = temp.listener.Accept()
+//        b                       := make([]byte, 4096)
+//        buf                     := bytes.NewBuffer(b)
+        go temp.Write([]byte("Hello i2p!"))
         return &temp
 }
 
 func (i2ptun *i2pHTTPTunnel) String() string{
-        return i2ptun.remoteAddr
+        return i2ptun.keypair.String()
 }
 
-//func (i2ptun *i2pHTTPTunnel) i2pTunnel(){
-        
-//}
+func (i2ptun *i2pHTTPTunnel) Write(stream []byte) (int, error){
+//        buf     := bytes.NewBuffer(stream)
+        return i2ptun.iconn.Write(stream)
+}
