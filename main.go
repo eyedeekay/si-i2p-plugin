@@ -6,11 +6,13 @@ import (
 //        "io/ioutil"
         "bufio"
         "flag"
-//	"fmt"
+	"fmt"
 //        "net"
         "os"
         "os/user"
 )
+
+var p = fmt.Println
 
 func check(e error) {
     if e != nil {
@@ -22,18 +24,22 @@ func main(){
 	samAddrPtr              := flag.String("bridge", "127.0.0.1:7656",
                 "host:port of the SAM bridge")
         samAddrString           := *samAddrPtr
+        p("Sam Bridge addr:port = ", samAddrString)
 	proxAddrPtr             := flag.String("proxy", "127.0.0.1:4443",
                 "host:port of the HTTP proxy")
         proxAddrString          := *proxAddrPtr
+        p("Proxy addr:port = ", proxAddrString)
         usr, err                := user.Current()
         if err != nil {
                 check(err)
         }
+        p(usr)
         logPath                 := usr.HomeDir
         logPath         += "/.i2pstreams.log"
         logPathPtr              := flag.String("log", logPath,
                 "path to save log files")
         logPathString           := *logPathPtr
+        p("Log Path", logPathString)
         logPathPath, err        := os.Create(logPathString)
         if err != nil {
                 check(err)

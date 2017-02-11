@@ -64,6 +64,7 @@ func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
                 i2proxy.err("Initial Connection to the i2p tunnel failed %s", err)
                 return
         }
+        p("Finally connected to i2p for this web site:")
         defer i2proxy.rconn.Close()
 	//nagles?
 	if i2proxy.Nagles {
@@ -134,35 +135,48 @@ func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter 
         if berr != nil {
                 temp.err("Failed to resolve address for local proxy'%s'\n", berr)
         }
+        p("Started an http proxy.")
+
         temp.listener, berr     = net.ListenTCP("tcp", temp.localAddr)
         if berr != nil {
                 temp.err("Failed to set up TCP listener '%s'\n", berr)
         }
+        p("Started a tcp listener.")
+
         temp.lconn, berr        = temp.listener.AcceptTCP()
         if berr != nil {
                 temp.err("Failed to set up i2p tunnel connection '%s'\n", berr)
         }
+        p("Started an i2p tunnel.")
+
         temp.sam, berr          = sam3.NewSAM(samAddrString)
         if berr != nil {
                 temp.err("Failed to set up i2p SAM Bridge connection '%s'\n", berr)
         }
+        p("Connected to the SAN bridge")
+
 	temp.test_keys, berr    = temp.sam.NewKeys()
         if berr != nil {
                 temp.err("Failed to set up new Destination Key for Test Tunnel '%s'\n", berr)
         }
+        p("Generated startup destination for test tunnel: ", temp.test_keys)
+
+        tstream, berr           := temp.sam.NewStreamSession("Stream Isolation Test Proxy", temp.test_keys, sam3.Options_Fat)
         temp.remoteAddr         = append(temp.remoteAddr, *Newi2pHTTPTunnel(temp.sam, temp.localAddr, temp.test_keys))
-        tstream, berr           := temp.sam.NewStreamSession("testTun", temp.test_keys, sam3.Options_Fat)
         if berr != nil {
                 temp.err("Failed to set up i2p stream session with test destination '%s'\n", berr)
         }
+        p("Set up i2p stream session with test destination: ", tstream)
        	tlistener, berr         := tstream.Listen()
         if berr != nil {
                 temp.err("Failed to set up local listener for i2p stream session with test destination. '%s'\n", berr)
         }
+        p("Set up i2p listener for test destination", tlistener)
 	tconn, berr             := tlistener.Accept()
         if berr != nil {
                 temp.err("Failed to set up i2p->proxy connection '%s'\n", berr)
         }
+        p("Set up an i2p listener: ", tconn)
 	tbuf                    := make([]byte, 4096)
 	tn, berr                := tconn.Read(tbuf)
         if berr != nil {
