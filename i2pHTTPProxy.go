@@ -6,7 +6,6 @@ import (
         "bufio"
         "io"
 //        "io/ioutil"
-	"fmt"
         "log"
         "net"
 )
@@ -24,8 +23,6 @@ type i2pHTTPProxy struct {
         erred           bool
         errsig          chan bool
 
-	// Settings
-	Nagles    bool
 	Log       log.Logger
 	OutputHex bool
 }
@@ -45,35 +42,63 @@ type setNoDelayer interface {
 	SetNoDelay(bool) error
 }
 
-func (i2proxy *i2pHTTPProxy) RequestTunnel(remoteAddr[] i2pHTTPTunnel, sam *sam3.SAM, localAddr *net.TCPAddr, i2paddr string) (*sam3.StreamSession){
-        if i2paddr != ""{
-                var test_keys, test_err    = sam.NewKeys()
-                if test_err != nil {
-                        p("Failed to set up new Destination Key for Test Tunnel '%s'\n", test_err)
-                }
-                p("Generated startup destination for test tunnel: ", test_keys)
-                tstream, test_err           := sam.NewStreamSession("Stream Isolation Test Proxy", test_keys, sam3.Options_Fat)
-                i2proxy.remoteAddr = append(remoteAddr, *Newi2pHTTPTunnel(sam, localAddr, test_keys))
-                if test_err != nil {
-                        p("Failed to set up i2p stream session with test destination '%s'\n", test_err)
-                }
-                p("Set up i2p stream session with test destination: ", tstream)
-                return tstream
-        }else{
-                var test_keys, test_err    = sam.NewKeys()
-                if test_err != nil {
-                        p("Failed to set up new Destination Key for Test Tunnel '%s'\n", test_err)
-                }
-                p("Generated startup destination for test tunnel: ", test_keys)
-                tstream, test_err           := sam.NewStreamSession("Stream Isolation Test Proxy", test_keys, sam3.Options_Fat)
-                i2proxy.remoteAddr = append(remoteAddr, *Newi2pHTTPTunnel(sam, localAddr, test_keys))
-                if test_err != nil {
-                        p("Failed to set up i2p stream session with test destination '%s'\n", test_err)
-                }
-                p("Set up i2p stream session with test destination: ", tstream)
-                return tstream
+func (i2proxy *i2pHTTPProxy) RequestRemoteStream(i2paddr string) (*sam3.StreamSession) {
+        var x int
+        for index, remote := range i2proxy.remoteAddr {
+                if i2paddr == remote.stringAddr { x = index; }
         }
-        //Newi2pHTTPTunnel()
+        return i2proxy.remoteAddr[x].stream
+}
+
+func (i2proxy *i2pHTTPProxy) RequestRemoteListener(i2paddr string) (*sam3.StreamListener) {
+        var x int
+        for index, remote := range i2proxy.remoteAddr {
+                if i2paddr == remote.stringAddr { x = index; }
+        }
+        return i2proxy.remoteAddr[x].listener
+}
+
+func (i2proxy *i2pHTTPProxy) RequestRemoteRead(i2paddr string, buf []byte) (int, error) {
+        var x int
+        for index, remote := range i2proxy.remoteAddr {
+                if i2paddr == remote.stringAddr { x = index; }
+        }
+        return i2proxy.remoteAddr[x].Read(buf)
+}
+
+func (i2proxy *i2pHTTPProxy) TestRemoteRead(buf []byte) (int, error) {
+        return i2proxy.remoteAddr[0].Read(buf)
+}
+
+func (i2proxy *i2pHTTPProxy) RequestTunnel(i2paddr string) (*sam3.StreamListener){
+        if i2paddr != ""{
+                p(i2paddr)
+                var test_keys, test_err    = i2proxy.sam.NewKeys()
+                i2proxy.remoteAddr = append(i2proxy.remoteAddr, *Newi2pHTTPTunnel(i2proxy.sam, i2proxy.localAddr, test_keys))
+                tstream, test_err           := i2proxy.sam.NewStreamSession("Stream Isolation Test Proxy", test_keys, sam3.Options_Fat)
+                if test_err != nil {
+                        p("Failed to set up i2p stream session with test destination '%s'\n", test_err)
+                }
+                p("Set up i2p stream session with remote destination: ", tstream)
+                return i2proxy.RequestRemoteListener(i2paddr)
+        }else{
+                p("No i2paddr, assuming a test tunnel")
+                var test_keys, test_err    = i2proxy.sam.NewKeys()
+                if test_err != nil {
+                        p("Failed to set up new Destination Key for Test Tunnel '%s'\n", test_err)
+                }
+                p("Generated startup destination for test tunnel: ", test_keys)
+                //tstream, test_err           := i2proxy.sam.NewStreamSession("Stream Isolation Test Proxy", test_keys, sam3.Options_Fat)
+                i2proxy.remoteAddr = append(i2proxy.remoteAddr, *Newi2pHTTPTunnel(i2proxy.sam, i2proxy.localAddr, test_keys))
+                if test_err != nil {
+                        p("Failed to set up i2p stream session with test destination '%s'\n", test_err)
+                }
+                p("Set up i2p stream session with test destination: ", i2proxy.RequestRemoteStream(i2paddr))
+                if test_err != nil {
+                        i2proxy.err("Failed to set up i2p tunnel connection '%s'\n", test_err)
+                } else { p("Started an i2p tunnel.") }
+                return i2proxy.RequestRemoteListener(i2paddr)
+        }
 }
 
 func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
@@ -88,15 +113,6 @@ func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
         }
         p("Finally connected to i2p for this web site:")
         defer i2proxy.rconn.Close()
-	//nagles?
-	if i2proxy.Nagles {
-		if conn, ok := i2proxy.lconn.(setNoDelayer); ok {
-			conn.SetNoDelay(true)
-		}
-		if conn, ok := i2proxy.rconn.(setNoDelayer); ok {
-			conn.SetNoDelay(true)
-		}
-	}
 	//display both ends
 	i2proxy.Log.Printf("Opened %s >>> %s", i2proxy.localAddr.String(),
                 i2proxy.remoteAddr[0].String())
@@ -149,67 +165,41 @@ func (i2proxy *i2pHTTPProxy) pipe(src, dst io.ReadWriter) {
 	}
 }
 
-func (i2proxy *i2pHTTPProxy) SetupHTTPProxy(proxAddrString string) {
+func (i2proxy *i2pHTTPProxy) SetupHTTPProxy(proxAddrString string) (io.ReadWriteCloser) {
         i2proxy.String             = proxAddrString
         var temp_err error
         i2proxy.localAddr, temp_err    = net.ResolveTCPAddr("tcp", proxAddrString)
         if temp_err != nil {
-                p("Failed to resolve address for local proxy'%s'\n", temp_err)
-        }
-        p("Started an http proxy.")
+                i2proxy.err("Failed to resolve address for local proxy'%s'\n", temp_err)
+        } else { p("Started an http proxy.") }
         i2proxy.listener, temp_err     = net.ListenTCP("tcp", i2proxy.localAddr)
         if temp_err != nil {
-                p("Failed to set up TCP listener '%s'\n", temp_err)
-        }
-        p("Started a tcp listener.")
-        i2proxy.lconn, temp_err        = i2proxy.listener.AcceptTCP()
+                i2proxy.err("Failed to set up TCP listener '%s'\n", temp_err)
+        } else { p("Started a tcp listener.") }
+        //i2proxy.lconn, temp_err        = i2proxy.listener.AcceptTCP()
+        return i2proxy.lconn
 }
 
-func (i2proxy *i2pHTTPProxy) SetupSAMBridge() {
+func (i2proxy *i2pHTTPProxy) SetupSAMBridge(samAddrString string) (*sam3.SAM) {
+        var temp_err error
+        i2proxy.sam, temp_err          = sam3.NewSAM(samAddrString)
+        if temp_err != nil {
+                i2proxy.err("Failed to set up i2p SAM Bridge connection '%s'\n", temp_err)
+        }else{ p("Connected to the SAM bridge") }
+        return i2proxy.sam
 }
 
 func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter *bufio.Writer) *i2pHTTPProxy{
         var temp i2pHTTPProxy
-        temp.String             = proxAddrString
-        var berr error
-        temp.localAddr, berr    = net.ResolveTCPAddr("tcp", proxAddrString)
-        if berr != nil {
-                temp.err("Failed to resolve address for local proxy'%s'\n", berr)
-        }
-        p("Started an http proxy.")
-        temp.listener, berr     = net.ListenTCP("tcp", temp.localAddr)
-        if berr != nil {
-                temp.err("Failed to set up TCP listener '%s'\n", berr)
-        }
-        p("Started a tcp listener.")
-        temp.lconn, berr        = temp.listener.AcceptTCP()
-        if berr != nil {
-                temp.err("Failed to set up i2p tunnel connection '%s'\n", berr)
-        }
-        p("Started an i2p tunnel.")
-        temp.sam, berr          = sam3.NewSAM(samAddrString)
-        if berr != nil {
-                temp.err("Failed to set up i2p SAM Bridge connection '%s'\n", berr)
-        }
-        p("Connected to the SAN bridge")
-        var tstream = temp.RequestTunnel(temp.remoteAddr, temp.sam, temp.localAddr, "")
-
-       	tlistener, berr         := tstream.Listen()
-        if berr != nil {
-                temp.err("Failed to set up local listener for i2p stream session with test destination. '%s'\n", berr)
-        }
-        p("Set up i2p listener for test destination", tlistener)
-	tconn, berr             := tlistener.Accept()
-        if berr != nil {
-                temp.err("Failed to set up i2p->proxy connection '%s'\n", berr)
-        }
-        p("Set up an i2p listener: ", tconn)
+        temp.SetupHTTPProxy(proxAddrString)
+        temp.SetupSAMBridge(samAddrString)
+        temp.RequestTunnel("")
 	tbuf                    := make([]byte, 4096)
-	tn, berr                := tconn.Read(tbuf)
-        if berr != nil {
-                temp.err("Failed to read from pipe '%s'\n", berr)
-        }
-        fmt.Println("Server received: " + string(tbuf[:tn]))
+	tn, test_err := temp.TestRemoteRead(tbuf)
+        if test_err != nil {
+                temp.err("Failed to read from pipe '%s'\n", test_err)
+        } else{ p("Server received: " + string(tbuf[:tn])) }
+
         temp.erred              = false
         temp.errsig             = make(chan bool)
 	temp.Log                = *log.New(logAddrWriter,

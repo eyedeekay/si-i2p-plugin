@@ -16,6 +16,7 @@ type i2pHTTPTunnel struct {
         lconn, _        net.Conn
         listener, _     *sam3.StreamListener
         buf             bytes.Buffer
+        stringAddr      string
 }
 
 func Newi2pHTTPTunnel(insam *sam3.SAM, laddr *net.TCPAddr, raddr sam3.I2PKeys ) * i2pHTTPTunnel {
@@ -40,6 +41,7 @@ func Newi2pHTTPTunnel(insam *sam3.SAM, laddr *net.TCPAddr, raddr sam3.I2PKeys ) 
 
 func Newi2pHTTPTunnelFromString(insam *sam3.SAM, laddr *net.TCPAddr, raddr string ) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
+        temp.stringAddr           = raddr
         temp.keypair, _         = insam.NewKeys()
         p("Per-Site Keypair: ", temp.keypair)
         temp.stream, _          = insam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
@@ -66,3 +68,9 @@ func (i2ptun *i2pHTTPTunnel) Write(stream []byte) (int, error){
 //        buf     := bytes.NewBuffer(stream)
         return i2ptun.iconn.Write(stream)
 }
+
+func (i2ptun *i2pHTTPTunnel) Read(stream []byte) (int, error){
+//        buf     := bytes.NewBuffer(stream)
+        return i2ptun.iconn.Read(stream)
+}
+

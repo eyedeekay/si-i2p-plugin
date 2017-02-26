@@ -8,7 +8,51 @@ that you visit. This way, your base32 destination couldn't be used to track you
 with a network of colluding sites. I doubt it's a substantial problem right now
 but it might be someday.
 
+How it will work:
+=================
 
+First it sets up an HTTP proxy on your local machine.
+
+        [ HTTP Proxy ]
+
+This HTTP Proxy is used to organize Tunnels, which are paths between i2p
+destinations.
+
+        [ HTTP Proxy ]
+                      [List Of Tunnels]
+
+This HTTP Proxy intercepts your requests and checks to see if you have already
+connected to an eepSite.
+
+        Request->[ HTTP Proxy ]
+                         |                        [List Of Tunnels]
+                         +->New eepSite
+                         |
+                         +->Visited eepSite
+
+If you haven't connected to the eepSite before, it creates a new tunnel specific
+to that eepSite by contacting the SAM bridge. Once that is done, the request is
+sent using the new tunnel.
+
+        Request->[ HTTP Proxy ]
+                         |
+                         +->New eepSite+
+                         |             |
+                         |             +[List Of Tunnels + new Tunnel]
+                         |                                   |
+                         |                                   +->[List Of Tunnels]:Request
+                         +->Visited eepSite
+
+If you've already connected to the eepSite, it makes the request using the
+destination already associated with the eepSite.
+
+        Request->[ HTTP Proxy ]
+                         |
+                         +->New eepSite
+                         |
+                         +->Visited eepSite
+                                    |
+                                    +->[List Of Tunnels]:Request
 
 Right now it's a work in progress, but it should only take a couple days to do.
 
