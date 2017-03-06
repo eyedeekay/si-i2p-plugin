@@ -25,22 +25,6 @@ type i2pHTTPProxy struct {
 	OutputHex bool
 }
 
-func (i2proxy *i2pHTTPProxy) err(s string, err error) {
-	if i2proxy.erred {
-		return
-	}
-	if err != io.EOF {
-		i2proxy.Log.Panicf(s, err)
-	}
-        if err != nil {
-                p("" + s, err)
-        }else{
-                p(s)
-        }
-	i2proxy.errsig <- true
-	i2proxy.erred = true
-}
-
 type setNoDelayer interface {
 	SetNoDelay(bool) error
 }
@@ -105,26 +89,24 @@ func (i2proxy *i2pHTTPProxy) RequestSomeTunnel(i2paddr string) (*sam3.StreamList
 func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
         var temp_err error
         i2proxy.lconn, temp_err        = i2proxy.listener.AcceptTCP()
-        if temp_err != nil {
-                i2proxy.err("Failed not accepting local connections '%s'\n", temp_err)
-        } else{ p("Accepting local connections on: localhost:4443\n") }
+        err("Failed not accepting local connections '%s'\n",
+                "Accepting local connections on: localhost:4443\n",
+                 temp_err)
         defer i2proxy.lconn.Close();
-        var err error
+        //var err error
 //        i2proxy.RequestTunnel()
 //        i2proxy.remoteAddr[0].TCPAddr()
 //        i2proxy.rconn, err = net.DialTCP("tcp", nil, )
-        if err != nil {
-                i2proxy.err("Initial Connection to the i2p tunnel failed %s", err)
-                return
-        }
-        p("Finally connected to i2p for this web site:")
+        err("Initial Connection to the i2p tunnel failed %s",
+                "Finally connected to i2p for this web site:",
+                temp_err)
         defer i2proxy.rconn.Close()
 	//display both ends
 	i2proxy.Log.Printf("Opened %s >>> %s", i2proxy.localAddr.String(),
                 i2proxy.remoteAddr[0].String())
 	//bidirectional copy
-	go i2proxy.pipe(i2proxy.lconn, i2proxy.rconn)
-	go i2proxy.pipe(i2proxy.rconn, i2proxy.lconn)
+//	go i2proxy.pipe(i2proxy.lconn, i2proxy.rconn)
+//	go i2proxy.pipe(i2proxy.rconn, i2proxy.lconn)
 	//wait for close...
 	<-i2proxy.errsig
 	i2proxy.Log.Printf("Closed (%d bytes sent, %d bytes recieved)",
@@ -135,30 +117,27 @@ func (i2proxy *i2pHTTPProxy) SetupHTTPProxy(proxAddrString string) (io.ReadWrite
         i2proxy.String             = proxAddrString
         var temp_err error
         i2proxy.localAddr, temp_err    = net.ResolveTCPAddr("tcp", proxAddrString)
-        if temp_err != nil {
-                i2proxy.err("Failed to resolve address for local proxy'%s'\n", temp_err)
-        } else { p("Started an http proxy.") }
+        err("Failed to resolve address for local proxy'%s'\n",
+                "Started an http proxy.\n",
+                temp_err)
         i2proxy.listener, temp_err     = net.ListenTCP("tcp", i2proxy.localAddr)
-        if temp_err != nil {
-                i2proxy.err("Failed to set up TCP listener '%s'\n", temp_err)
-        } else { p("Started a tcp listener.") }
+        err("Failed to set up TCP listener '%s'\n",
+                "Started a tcp listener.\n",
+                temp_err)
         return i2proxy.lconn
 }
 
 func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter *bufio.Writer) *i2pHTTPProxy{
         var temp i2pHTTPProxy
         temp.SetupHTTPProxy(proxAddrString)
-        //temp.SetupSAMBridge(samAddrString)
         SamAddr = samAddrString
         temp.RequestHalfOpenTunnel()
 	tbuf                    := make([]byte, 4096)
-	tn, test_err := temp.TestRemoteRead(tbuf)
-        if test_err != nil {
-                temp.err("Failed to read from pipe '%s'\n", test_err)
-        } else{ p("Server received: " + string(tbuf[:tn])) }
+	_, test_err := temp.TestRemoteRead(tbuf)
+        err("Failed to read from pipe '%s'\n", "Server received message from pipe", test_err)
         temp.erred              = false
         temp.errsig             = make(chan bool)
-	temp.Log                = *log.New(logAddrWriter,
+	Log                = *log.New(logAddrWriter,
                 "Stream Isolating Parent Proxy Reported an Error", 0)
         return &temp
 }

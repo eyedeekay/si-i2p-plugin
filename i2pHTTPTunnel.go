@@ -28,31 +28,31 @@ type i2pHTTPTunnel struct {
 
 }
 
-func err(s string, err error) {
-	if erred {
-		return
-	}
-	if err != io.EOF {
-		Log.Panicf(s, err)
-	}
-        if err != nil {
-                p("" + s, err)
+func err(fail string, succeed string, the_err error) {
+        if(the_err != nil){
+                p("" + fail, err)
+                if erred {
+                        return
+                }
+                if the_err != io.EOF {
+                        Log.Panicf(fail, err)
+                }
+                errsig <- true
+                erred = true
         }else{
-                p(s)
+                p(succeed)
         }
-	errsig <- true
-	erred = true
 }
 
 func SetupSAMBridge(samAddrString string) (*sam3.SAM, string) {
         var temp_err error
         if( SamAddr == "" ) {
                 sam, temp_err          = sam3.NewSAM(samAddrString)
-                if( temp_err != nil ) {
-                        err("Failed to set up i2p SAM Bridge connection '%s'\n", temp_err)
-                }else{
-                        p("Connected to the SAM bridge")
-                }
+                err("Failed to set up i2p SAM Bridge connection '%s'\n",
+                        "Connected to the SAM bridge",
+                        temp_err)
+        }else{
+                p("SamAddr: %s is already set\n", SamAddr)
         }
         return sam, SamAddr
 }
