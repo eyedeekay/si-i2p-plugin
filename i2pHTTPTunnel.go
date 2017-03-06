@@ -2,10 +2,17 @@ package main
 
 import (
 	"github.com/cmotc/sam3"
-//        "io"
+        "io"
+        "log"
         "net"
         "bytes"
 )
+
+var sam         *sam3.SAM
+var SamAddr     string
+var Log         log.Logger
+var erred           bool
+var errsig          chan bool
 
 type i2pHTTPTunnel struct {
         keypair, _      sam3.I2PKeys
@@ -17,17 +24,50 @@ type i2pHTTPTunnel struct {
         listener, _     *sam3.StreamListener
         buf             bytes.Buffer
         stringAddr      string
+
+
 }
 
-func Newi2pHTTPTunnel(insam *sam3.SAM, laddr *net.TCPAddr, raddr sam3.I2PKeys ) * i2pHTTPTunnel {
+func err(s string, err error) {
+	if erred {
+		return
+	}
+	if err != io.EOF {
+		Log.Panicf(s, err)
+	}
+        if err != nil {
+                p("" + s, err)
+        }else{
+                p(s)
+        }
+	errsig <- true
+	erred = true
+}
+
+func SetupSAMBridge(samAddrString string) (*sam3.SAM, string) {
+        var temp_err error
+        if( SamAddr == "" ) {
+                sam, temp_err          = sam3.NewSAM(samAddrString)
+                if( temp_err != nil ) {
+                        err("Failed to set up i2p SAM Bridge connection '%s'\n", temp_err)
+                }else{
+                        p("Connected to the SAM bridge")
+                }
+        }
+        return sam, SamAddr
+}
+
+func Newi2pHTTPTunnel(laddr *net.TCPAddr, samAddrString string) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
-        temp.keypair, _         = insam.NewKeys()
+        temp.keypair, _         = sam.NewKeys()
         p("Per-Site Keypair: ", temp.keypair)
-        temp.stream, _          = insam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
+        temp.stream, _          = sam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
         p("Started Stream Session")
-        temp.remoteI2PAddr, _   = insam.Lookup(raddr.String())
-        p("Connecting to this site: ", raddr.String())
-        temp.iconn, _           = temp.stream.DialI2P(temp.remoteI2PAddr)
+        temp.stringAddr         = ""
+        //p("Connecting to this address: ", temp.stringAddr)
+        //temp.remoteI2PAddr, _   = sam.Lookup(raddr.String())
+        //p("Connecting to this site: ", raddr.String())
+        //temp.iconn, _           = temp.stream.DialI2P(temp.remoteI2PAddr)
         p("Dialing this connection.")
         temp.listener, _        = temp.stream.Listen()
         p("Setting up the per-site listener", temp.listener)
@@ -39,14 +79,17 @@ func Newi2pHTTPTunnel(insam *sam3.SAM, laddr *net.TCPAddr, raddr sam3.I2PKeys ) 
         return &temp
 }
 
-func Newi2pHTTPTunnelFromString(insam *sam3.SAM, laddr *net.TCPAddr, raddr string ) * i2pHTTPTunnel {
+func Newi2pHTTPTunnelFromString( laddr *net.TCPAddr, samAddrString string, raddr string ) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
+        sam, SamAddr = SetupSAMBridge(samAddrString);
         temp.stringAddr           = raddr
-        temp.keypair, _         = insam.NewKeys()
+        temp.keypair, _         = sam.NewKeys()
         p("Per-Site Keypair: ", temp.keypair)
-        temp.stream, _          = insam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
+        temp.stream, _          = sam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
         p("Started Stream Session")
-        temp.remoteI2PAddr, _   = insam.Lookup(raddr)
+        temp.stringAddr         = raddr
+        p("Connecting to this address: ", temp.stringAddr)
+        temp.remoteI2PAddr, _   = sam.Lookup(raddr)
         p("Connecting to this site: ", raddr)
         temp.iconn, _           = temp.stream.DialI2P(temp.remoteI2PAddr)
         p("Dialing this connection: ", temp.iconn)
