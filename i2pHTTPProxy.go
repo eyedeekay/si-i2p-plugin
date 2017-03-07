@@ -118,7 +118,7 @@ func (i2proxy *i2pHTTPProxy) RequestPipe(src io.ReadWriter, i2paddr string) {
                         }
                 }
                 if(!f){
-                        i2proxy.RequestSomeTunnel(i2paddr)
+                        i2proxy.RequestDestination(i2paddr)
                         i2proxy.RequestPipe(i2proxy.localConnection, i2paddr)
                 }
         }else{
@@ -170,8 +170,8 @@ func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter 
         var temp i2pHTTPProxy
         temp.SetupHTTPProxy(proxAddrString)
         SamAddr = samAddrString
-        //temp.RequestHalfOpenTunnel()
-        temp.RequestDestination("zzz.i2p")
+        temp.RequestHalfOpenTunnel()
+        //temp.RequestDestination("zzz.i2p")
 	tbuf                    := make([]byte, 4096)
 	_, tempErr := temp.TestRemoteRead(tbuf)
         err("Failed to read from pipe '%s'\n", "Server received message from pipe", tempErr)
