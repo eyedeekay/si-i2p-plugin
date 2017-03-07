@@ -15,3 +15,6 @@ uninstall:
 tryout:
 	make
 	./si-i2p-plugin
+
+lint:
+	golint

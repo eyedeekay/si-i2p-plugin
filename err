@@ -1,0 +1,4 @@
+golint
+i2pHTTPProxy.go:152:96: exported func Newi2pHTTPProxy returns unexported type *main.i2pHTTPProxy, which can be annoying to use
+i2pHTTPTunnel.go:93:65: exported func Newi2pHTTPTunnel returns unexported type *main.i2pHTTPTunnel, which can be annoying to use
+i2pHTTPTunnel.go:113:99: exported func Newi2pHTTPTunnelFromString returns unexported type *main.i2pHTTPTunnel, which can be annoying to use

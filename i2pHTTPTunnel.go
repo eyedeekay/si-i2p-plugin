@@ -8,33 +8,38 @@ import (
         "bytes"
 )
 
+/*sam is the working SAM bridge*/
 var sam         *sam3.SAM
+
+/*SamAddr is the string used to find the SAM bridge initially*/
 var SamAddr     string
+/*Log does logging*/
 var Log         log.Logger
-var erred           bool
-var errsig          chan bool
+/*erred ...*/
+var erred       bool
+/*errsig ...*/
+var errsig      chan bool
 
 type i2pHTTPTunnel struct {
-        keypair, _      sam3.I2PKeys
-        stream, _       *sam3.StreamSession
-        remoteI2PAddr,_ sam3.I2PAddr
-        iconn, _        *sam3.SAMConn
-        initialized     bool
-        lconn, _        net.Conn
-        listener, _     *sam3.StreamListener
-        buf             bytes.Buffer
-        stringAddr      string
+        keypair, _              sam3.I2PKeys
+        streamSession, _        *sam3.StreamSession
 
+        stringAddr              string
+        remoteI2PAddr,_         sam3.I2PAddr
+        remoteConnection        *sam3.SAMConn
+        initialized             bool
 
+        buf                     bytes.Buffer
+        dst                     io.ReadWriter
 }
 
-func err(fail string, succeed string, the_err error) {
-        if(the_err != nil){
+func err(fail string, succeed string, tempErr error) {
+        if(tempErr != nil){
                 p("" + fail, err)
                 if erred {
                         return
                 }
-                if the_err != io.EOF {
+                if tempErr != io.EOF {
                         Log.Panicf(fail, err)
                 }
                 errsig <- true
@@ -44,62 +49,117 @@ func err(fail string, succeed string, the_err error) {
         }
 }
 
+func (i2ptun *i2pHTTPTunnel) NewKeyPair() sam3.I2PKeys{
+        var tempErr error
+        i2ptun.keypair, tempErr         = sam.NewKeys()
+        err("Generated per-site Keypair:", "Failed to generate Per-Site Keypair", tempErr)
+        return i2ptun.keypair
+}
+
+func (i2ptun *i2pHTTPTunnel) NewStreamSession(lookupI2PAddr string) (*sam3.StreamSession, string){
+        i2ptun.streamSession, _          = sam.NewStreamSession("clientTun",
+                i2ptun.keypair,
+                sam3.Options_Fat)
+        p("Started Stream Session")
+        i2ptun.stringAddr           = lookupI2PAddr
+        return i2ptun.streamSession, i2ptun.stringAddr
+}
+
+func (i2ptun *i2pHTTPTunnel) LookupDestination() *sam3.SAMConn {
+        p("Connecting to this address: %s\n", i2ptun.stringAddr)
+        i2ptun.streamSession, i2ptun.stringAddr = i2ptun.NewStreamSession(i2ptun.stringAddr)
+        i2ptun.remoteI2PAddr, _  = sam.Lookup(i2ptun.stringAddr)
+        p("Dialing this connection.")
+        i2ptun.remoteConnection, _           = i2ptun.streamSession.DialI2P(i2ptun.remoteI2PAddr)
+        return i2ptun.remoteConnection
+}
+
+func (i2ptun *i2pHTTPTunnel) pipe(i2proxy i2pHTTPProxy) {
+	islocal := i2proxy.localConnection == i2proxy.localConnection
+	var dataDirection string
+	if islocal {
+		dataDirection = ">>> %d bytes sent%s"
+	} else {
+		dataDirection = "<<< %d bytes recieved%s"
+	}
+	var byteFormat string
+	if i2proxy.OutputHex {
+		byteFormat = "%x"
+	} else {
+		byteFormat = "%s"
+	}
+	//directional copy (64k buffer)
+	buff := make([]byte, 0xffff)
+	for {
+		n, pipeErr := i2proxy.localConnection.Read(buff)
+                err("Read Succeeded", "Read failed '%s'\n", pipeErr)
+		b := buff[:n]
+		//show output
+		i2proxy.Log.Printf(dataDirection, n, "")
+		i2proxy.Log.Panicf(byteFormat, b)
+		//write out result
+		n, pipeErr = i2ptun.dst.Write(b)
+                err("Write Succeeded", "Write failed '%s'\n", pipeErr)
+		if islocal {
+			i2proxy.sentBytes += uint64(n)
+		} else {
+			i2proxy.recievedBytes += uint64(n)
+		}
+	}
+}
+
+
+/*SetupSAMBridge assures that variables related to the SAM bridge are set*/
 func SetupSAMBridge(samAddrString string) (*sam3.SAM, string) {
-        var temp_err error
+        var tempErr error
         if( SamAddr == "" ) {
-                sam, temp_err          = sam3.NewSAM(samAddrString)
+                SamAddr = samAddrString
+                sam, tempErr          = sam3.NewSAM(samAddrString)
                 err("Failed to set up i2p SAM Bridge connection '%s'\n",
                         "Connected to the SAM bridge",
-                        temp_err)
+                        tempErr)
+                defer sam.Close()
         }else{
-                p("SamAddr: %s is already set\n", SamAddr)
+                if(sam == nil){
+                        SamAddr = samAddrString
+                        sam, tempErr          = sam3.NewSAM(samAddrString)
+                        err("Failed to set up i2p SAM Bridge connection '%s'\n",
+                                "Connected to the SAM bridge",
+                                tempErr)
+                }else{
+                        p("SamAddr: is already set:", SamAddr)
+                }
         }
         return sam, SamAddr
 }
 
+/*Newi2pHTTPTunnel Create a new half-open i2p tunnel to a non-specific destination*/
 func Newi2pHTTPTunnel(laddr *net.TCPAddr, samAddrString string) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
-        temp.keypair, _         = sam.NewKeys()
-        p("Per-Site Keypair: ", temp.keypair)
-        temp.stream, _          = sam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
-        p("Started Stream Session")
-        temp.stringAddr         = ""
-        //p("Connecting to this address: ", temp.stringAddr)
-        //temp.remoteI2PAddr, _   = sam.Lookup(raddr.String())
-        //p("Connecting to this site: ", raddr.String())
-        //temp.iconn, _           = temp.stream.DialI2P(temp.remoteI2PAddr)
-        p("Dialing this connection.")
-        temp.listener, _        = temp.stream.Listen()
-        p("Setting up the per-site listener", temp.listener)
-        temp.lconn, _            = temp.listener.Accept()
-        p("Setting up the connection", temp.lconn)
+        temp.stringAddr = ""
+        sam, SamAddr = SetupSAMBridge(samAddrString)
+        temp.keypair = temp.NewKeyPair()
+        temp.remoteConnection = temp.LookupDestination()
+        defer temp.remoteConnection.Close()
+        p("Setting up the connection", temp.remoteConnection)
 //        b                       := make([]byte, 4096)
 //        buf                     := bytes.NewBuffer(b)
-        go temp.Write([]byte("Hello i2p!"))
+        //go temp.Write([]byte("Hello i2p!"))
         return &temp
 }
 
-func Newi2pHTTPTunnelFromString( laddr *net.TCPAddr, samAddrString string, raddr string ) * i2pHTTPTunnel {
+/*Newi2pHTTPTunnelFromString Create a new destination for a specific site*/
+func Newi2pHTTPTunnelFromString( laddr *net.TCPAddr, samAddrString string, lookupI2PAddr string ) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
+        temp.stringAddr = lookupI2PAddr
         sam, SamAddr = SetupSAMBridge(samAddrString);
-        temp.stringAddr           = raddr
-        temp.keypair, _         = sam.NewKeys()
-        p("Per-Site Keypair: ", temp.keypair)
-        temp.stream, _          = sam.NewStreamSession("clientTun", temp.keypair, sam3.Options_Fat)
-        p("Started Stream Session")
-        temp.stringAddr         = raddr
-        p("Connecting to this address: ", temp.stringAddr)
-        temp.remoteI2PAddr, _   = sam.Lookup(raddr)
-        p("Connecting to this site: ", raddr)
-        temp.iconn, _           = temp.stream.DialI2P(temp.remoteI2PAddr)
-        p("Dialing this connection: ", temp.iconn)
-        temp.listener, _        = temp.stream.Listen()
-        p("Setting up the per-site listener", temp.listener)
-        temp.lconn, _            = temp.listener.Accept()
-        p("Setting up the connection", temp.lconn)
+        temp.keypair = temp.NewKeyPair()
+        temp.remoteConnection = temp.LookupDestination()
+        defer temp.remoteConnection.Close()
+        p("Setting up the connection", temp.remoteConnection)
 //        b                       := make([]byte, 4096)
 //        buf                     := bytes.NewBuffer(b)
-        go temp.Write([]byte("Hello i2p!"))
+        //go temp.Write([]byte("Hello i2p!"))
         return &temp
 }
 
@@ -108,12 +168,10 @@ func (i2ptun *i2pHTTPTunnel) String() string{
 }
 
 func (i2ptun *i2pHTTPTunnel) Write(stream []byte) (int, error){
-//        buf     := bytes.NewBuffer(stream)
-        return i2ptun.iconn.Write(stream)
+        return i2ptun.remoteConnection.Write(stream)
 }
 
 func (i2ptun *i2pHTTPTunnel) Read(stream []byte) (int, error){
-//        buf     := bytes.NewBuffer(stream)
-        return i2ptun.iconn.Read(stream)
+        return i2ptun.remoteConnection.Read(stream)
 }
 
