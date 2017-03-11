@@ -57,7 +57,6 @@ func (i2proxy *i2pHTTPProxy) RequestTunnel(i2paddr string) (i2pHTTPTunnel){
 
 func (i2proxy *i2pHTTPProxy) RequestHalfOpenTunnel() (i2pHTTPTunnel){
         if(&i2proxy.remoteAddr != nil){
-                p(len(i2proxy.remoteAddr))
                 if(len(i2proxy.remoteAddr) > 0){
                         if(i2proxy.remoteAddr[len(i2proxy.remoteAddr)].stringAddr != ""){
                                 i2proxy.remoteAddr = append(i2proxy.remoteAddr,
@@ -158,7 +157,7 @@ func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter 
         var temp i2pHTTPProxy
         sam, SamAddr = SetupSAMBridge(samAddrString)
         temp.localListener = temp.SetupHTTPListener(proxAddrString)
-        temp.RequestPipe(temp.localConnection, "zzz.i2p");
+        temp.RequestPipe(temp.localConnection, "");
         temp.erred              = false
         temp.errsig             = make(chan bool)
 	Log                = *log.New(logAddrWriter,
