@@ -8,11 +8,6 @@ import (
         "bytes"
 )
 
-/*sam is the working SAM bridge*/
-var sam         *sam3.SAM
-
-/*SamAddr is the string used to find the SAM bridge initially*/
-var SamAddr     string
 /*Log does logging*/
 var Log         log.Logger
 /*erred ...*/
@@ -35,7 +30,7 @@ type i2pHTTPTunnel struct {
 
 func err(fail string, succeed string, tempErr error) {
         if(tempErr != nil){
-                p("" + fail, err)
+                p("ERROR OCCURRED: " + fail + ". ", err)
                 if erred {
                         return
                 }
@@ -52,7 +47,10 @@ func err(fail string, succeed string, tempErr error) {
 func (i2ptun *i2pHTTPTunnel) NewKeyPair() sam3.I2PKeys{
         var tempErr error
         i2ptun.keypair, tempErr         = sam.NewKeys()
-        err("Generated per-site Keypair:", "Failed to generate Per-Site Keypair", tempErr)
+        p("keypair:", i2ptun.keypair)
+        err("Failed to generate Per-Site Keypair",
+                "Generated per-site Keypair:",
+                tempErr)
         return i2ptun.keypair
 }
 
@@ -108,42 +106,16 @@ func (i2ptun *i2pHTTPTunnel) pipe(i2proxy i2pHTTPProxy) {
 	}
 }
 
-
-/*SetupSAMBridge assures that variables related to the SAM bridge are set*/
-func SetupSAMBridge(samAddrString string) (*sam3.SAM, string) {
-        var tempErr error
-        if( SamAddr == "" ) {
-                SamAddr = samAddrString
-                sam, tempErr          = sam3.NewSAM(samAddrString)
-                err("Failed to set up i2p SAM Bridge connection '%s'\n",
-                        "Connected to the SAM bridge",
-                        tempErr)
-                defer sam.Close()
-        }else{
-                if(sam == nil){
-                        SamAddr = samAddrString
-                        sam, tempErr          = sam3.NewSAM(samAddrString)
-                        err("Failed to set up i2p SAM Bridge connection '%s'\n",
-                                "Connected to the SAM bridge",
-                                tempErr)
-                }else{
-                        p("SamAddr: is already set:", SamAddr)
-                }
-        }
-        return sam, SamAddr
-}
-
 /*Newi2pHTTPTunnel Create a new half-open i2p tunnel to a non-specific destination*/
 func Newi2pHTTPTunnel(laddr *net.TCPAddr, samAddrString string) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
         temp.stringAddr = ""
-        sam, SamAddr = SetupSAMBridge(samAddrString)
         temp.keypair = temp.NewKeyPair()
-        temp.remoteConnection = temp.LookupDestination()
-        defer temp.remoteConnection.Close()
-        p("Setting up the connection", temp.remoteConnection)
-//        b                       := make([]byte, 4096)
-//        buf                     := bytes.NewBuffer(b)
+        //temp.remoteConnection = temp.LookupDestination()
+        //defer temp.remoteConnection.Close()
+        //p("Setting up the connection", temp.remoteConnection)
+        //b                       := make([]byte, 4096)
+        //buf                     := bytes.NewBuffer(b)
         //go temp.Write([]byte("Hello i2p!"))
         return &temp
 }
@@ -152,13 +124,12 @@ func Newi2pHTTPTunnel(laddr *net.TCPAddr, samAddrString string) * i2pHTTPTunnel 
 func Newi2pHTTPTunnelFromString( laddr *net.TCPAddr, samAddrString string, lookupI2PAddr string ) * i2pHTTPTunnel {
         var temp i2pHTTPTunnel
         temp.stringAddr = lookupI2PAddr
-        sam, SamAddr = SetupSAMBridge(samAddrString);
         temp.keypair = temp.NewKeyPair()
         temp.remoteConnection = temp.LookupDestination()
-        defer temp.remoteConnection.Close()
+        //defer temp.remoteConnection.Close()
         p("Setting up the connection", temp.remoteConnection)
-//        b                       := make([]byte, 4096)
-//        buf                     := bytes.NewBuffer(b)
+        //b                       := make([]byte, 4096)
+        //buf                     := bytes.NewBuffer(b)
         //go temp.Write([]byte("Hello i2p!"))
         return &temp
 }
@@ -168,10 +139,12 @@ func (i2ptun *i2pHTTPTunnel) String() string{
 }
 
 func (i2ptun *i2pHTTPTunnel) Write(stream []byte) (int, error){
+        p(stream)
         return i2ptun.remoteConnection.Write(stream)
 }
 
 func (i2ptun *i2pHTTPTunnel) Read(stream []byte) (int, error){
+        p(stream)
         return i2ptun.remoteConnection.Read(stream)
 }
 

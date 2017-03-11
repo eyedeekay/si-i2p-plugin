@@ -1,4 +1,47 @@
-golint
-i2pHTTPProxy.go:152:96: exported func Newi2pHTTPProxy returns unexported type *main.i2pHTTPProxy, which can be annoying to use
-i2pHTTPTunnel.go:93:65: exported func Newi2pHTTPTunnel returns unexported type *main.i2pHTTPTunnel, which can be annoying to use
-i2pHTTPTunnel.go:113:99: exported func Newi2pHTTPTunnelFromString returns unexported type *main.i2pHTTPTunnel, which can be annoying to use
+==4361== Memcheck, a memory error detector
+==4361== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==4361== Using Valgrind-3.12.0 and LibVEX; rerun with -h for copyright info
+==4361== Command: ./si-i2p-plugin
+==4361== 
+==4361== Warning: ignored attempt to set SIGRT32 handler in sigaction();
+==4361==          the SIGRT32 signal is used internally by Valgrind
+==4361== Warning: client switching stacks?  SP change: 0xfff0001f0 --> 0xc4200267b8
+==4361==          to suppress, use: --max-stackframe=773647918536 or greater
+==4361== Warning: client switching stacks?  SP change: 0xc420026760 --> 0xfff000258
+==4361==          to suppress, use: --max-stackframe=773647918344 or greater
+==4361== Warning: client switching stacks?  SP change: 0xfff000258 --> 0xc420026760
+==4361==          to suppress, use: --max-stackframe=773647918344 or greater
+==4361==          further instances of this message will not be shown.
+==4361== Thread 3:
+==4361== Conditional jump or move depends on uninitialised value(s)
+==4361==    at 0x442DE5: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x44C0EB: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x443C50: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x44410F: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x458BEE: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0xC42001F4FF: ???
+==4361==  Uninitialised value was created by a stack allocation
+==4361==    at 0x4C6E4A: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361== 
+==4361== Conditional jump or move depends on uninitialised value(s)
+==4361==    at 0x442DEE: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x44C0EB: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x443C50: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x44410F: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x458BEE: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0xC42001F4FF: ???
+==4361==  Uninitialised value was created by a stack allocation
+==4361==    at 0x4C6E4A: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361== 
+==4361== 
+==4361== Process terminating with default action of signal 2 (SIGINT)
+==4361==    at 0x45CA53: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x411A11: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x43292C: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x435997: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0x458A9A: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)
+==4361==    by 0xC42110C81F: ???
+==4361==    by 0xC42001DFFF: ???
+==4361== 
+==4361== Process terminating with default action of signal 2 (SIGINT)
+==4361==    at 0x45C674: ??? (in /home/idk/Projects/si-i2p-plugin/si-i2p-plugin)

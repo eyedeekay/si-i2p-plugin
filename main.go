@@ -21,11 +21,14 @@ func main(){
                 "host:port of the SAM bridge")
                 samAddrString           := *samAddrPtr
                 p("Sam Bridge addr:port = ", samAddrString)
-        proxAddrPtr             := flag.String("proxy", "127.0.0.1:4443",
+        proxAddrStraightPtr             := flag.String("proxy-addr", "127.0.0.1",
                 "host:port of the HTTP proxy")
-                proxAddrString          := *proxAddrPtr
-                p("Proxy addr:port = ", proxAddrString)
-
+                proxAddrStraightString          := *proxAddrStraightPtr
+        proxPortStraightPtr             := flag.String("proxy-port", "4443",
+                "host:port of the HTTP proxy")
+                proxPortStraightString          := *proxPortStraightPtr
+        proxAddrString := proxAddrStraightString + ":" + proxPortStraightString
+        p("Proxy addr:port = ", proxAddrString)
         usr, err      := user.Current()
         if err != nil { check(err) }else{ p(usr) }
         logPath                 := usr.HomeDir
@@ -37,9 +40,9 @@ func main(){
         logPathPath, err        := os.Create(logPathString)
         if err != nil { check(err) } else { defer logPathPath.Close() }
         logPathWriter           := bufio.NewWriter(logPathPath)
+        siProxy                 := Newi2pHTTPProxy(proxAddrString,
+        samAddrString, logPathWriter)
         for {
-                siProxy                 := Newi2pHTTPProxy(proxAddrString,
-                        samAddrString, logPathWriter)
                 go siProxy.Starti2pHTTPProxy()
         }
 }

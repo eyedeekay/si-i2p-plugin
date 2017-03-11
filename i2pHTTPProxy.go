@@ -9,7 +9,7 @@ import (
 )
 
 type i2pHTTPProxy struct {
-        listener        *net.TCPListener
+        localListener        *net.TCPListener
 
         sentBytes       uint64
         recievedBytes   uint64
@@ -25,60 +25,57 @@ type i2pHTTPProxy struct {
 	OutputHex       bool
 }
 
-func (i2proxy *i2pHTTPProxy) RequestRemoteStream(i2paddr string) (*sam3.StreamSession) {
-        var x int
-        for index, remote := range i2proxy.remoteAddr {
-                if i2paddr == remote.stringAddr { x = index; }
+/*sam is the working SAM bridge*/
+var sam         *sam3.SAM
+
+/*SamAddr is the string used to find the SAM bridge initially*/
+var SamAddr     string
+
+func (i2proxy *i2pHTTPProxy) RequestRemoteConnection(i2paddr string) (int){
+        var x = -1
+        if(len(i2proxy.remoteAddr) > 0){
+                for index, remote := range i2proxy.remoteAddr {
+                        if i2paddr == remote.stringAddr { x = index; }
+                }
         }
-        return i2proxy.remoteAddr[x].streamSession
+        return x
 }
 
-func (i2proxy *i2pHTTPProxy) RequestLastRemoteStream() (*sam3.StreamSession) {
-        return i2proxy.remoteAddr[len(i2proxy.remoteAddr)].streamSession
-}
-
-func (i2proxy *i2pHTTPProxy) RequestRemoteConnection(i2paddr string) (*sam3.SAMConn) {
-        var x int
-        for index, remote := range i2proxy.remoteAddr {
-                if i2paddr == remote.stringAddr { x = index; }
+func (i2proxy *i2pHTTPProxy) RequestTunnel(i2paddr string) (i2pHTTPTunnel){
+        searched := i2proxy.RequestRemoteConnection(i2paddr);
+        if(searched < 0){
+                i2proxy.remoteAddr = append(i2proxy.remoteAddr,
+                        *Newi2pHTTPTunnelFromString(i2proxy.localAddr,
+                        SamAddr,
+                        i2paddr))
+                searched = i2proxy.RequestRemoteConnection(i2paddr);
         }
-        return i2proxy.remoteAddr[x].remoteConnection
-}
-
-func (i2proxy *i2pHTTPProxy) RequestLastRemoteConnection() (*sam3.SAMConn) {
-        return i2proxy.remoteAddr[len(i2proxy.remoteAddr)].remoteConnection
-}
-
-func (i2proxy *i2pHTTPProxy) RequestRemoteRead(i2paddr string, buf []byte) (int, error) {
-        var x int
-        for index, remote := range i2proxy.remoteAddr {
-                if i2paddr == remote.stringAddr { x = index; }
-        }
-        return i2proxy.remoteAddr[x].Read(buf)
-}
-
-func (i2proxy *i2pHTTPProxy) TestRemoteRead(buf []byte) (int, error) {
-        return i2proxy.remoteAddr[0].Read(buf)
-}
-
-func (i2proxy *i2pHTTPProxy) RequestTunnel(i2paddr string) (*sam3.SAMConn){
-        i2proxy.remoteAddr = append(i2proxy.remoteAddr,
-                *Newi2pHTTPTunnelFromString(i2proxy.localAddr,
-                SamAddr,
-                i2paddr))
         p("Set up i2p stream session with remote destination: ", i2paddr)
-        return i2proxy.RequestRemoteConnection(i2paddr)
+        r := i2proxy.remoteAddr[searched]
+        return r
 }
 
-func (i2proxy *i2pHTTPProxy) RequestHalfOpenTunnel() (*sam3.SAMConn){
-        i2proxy.remoteAddr = append(i2proxy.remoteAddr,
-                *Newi2pHTTPTunnel(i2proxy.localAddr,
-                SamAddr))
-        return i2proxy.RequestLastRemoteConnection()
+func (i2proxy *i2pHTTPProxy) RequestHalfOpenTunnel() (i2pHTTPTunnel){
+        if(&i2proxy.remoteAddr != nil){
+                p(len(i2proxy.remoteAddr))
+                if(len(i2proxy.remoteAddr) > 0){
+                        if(i2proxy.remoteAddr[len(i2proxy.remoteAddr)].stringAddr != ""){
+                                i2proxy.remoteAddr = append(i2proxy.remoteAddr,
+                                        *Newi2pHTTPTunnel(i2proxy.localAddr,
+                                        SamAddr))
+                        }
+                }else{
+                        i2proxy.remoteAddr = append(i2proxy.remoteAddr,
+                                        *Newi2pHTTPTunnel(i2proxy.localAddr,
+                                        SamAddr))
+                }
+        }
+        r := i2proxy.remoteAddr[i2proxy.RequestRemoteConnection("")]
+        return r
 }
 
-func (i2proxy *i2pHTTPProxy) RequestSomeTunnel(i2paddr string) (*sam3.SAMConn){
-        var r *sam3.SAMConn
+func (i2proxy *i2pHTTPProxy) RequestSomeTunnel(i2paddr string) (i2pHTTPTunnel){
+        var r i2pHTTPTunnel
         if( i2paddr == "" ){
                 p("No i2paddr, assuming a half-open tunnel")
                 r = i2proxy.RequestHalfOpenTunnel()
@@ -89,13 +86,14 @@ func (i2proxy *i2pHTTPProxy) RequestSomeTunnel(i2paddr string) (*sam3.SAMConn){
         return r
 }
 
-func (i2proxy *i2pHTTPProxy) RequestDestination(i2paddr string) (*sam3.SAMConn){
-        var r *sam3.SAMConn
+func (i2proxy *i2pHTTPProxy) RequestDestination(i2paddr string) (i2pHTTPTunnel){
+        var r i2pHTTPTunnel
         var f = false
+        //RequestRemoteConnection(i2paddr)
         if (i2paddr != ""){
                 for _, remote := range i2proxy.remoteAddr {
                         if i2paddr == remote.stringAddr {
-                                r = i2proxy.RequestRemoteConnection(i2paddr)
+                                r = i2proxy.RequestSomeTunnel(i2paddr)
                                 f = true
                         }
                 }
@@ -103,78 +101,90 @@ func (i2proxy *i2pHTTPProxy) RequestDestination(i2paddr string) (*sam3.SAMConn){
                         r = i2proxy.RequestSomeTunnel(i2paddr)
                 }
         }else{
-                r = i2proxy.RequestHalfOpenTunnel()
+                r = i2proxy.RequestSomeTunnel("")
         }
         return r
 }
 
 func (i2proxy *i2pHTTPProxy) RequestPipe(src io.ReadWriter, i2paddr string) {
-        var f = false
-        if (i2paddr != ""){
-                for _, remote := range i2proxy.remoteAddr {
-                        if i2paddr == remote.stringAddr {
-                                remote.pipe(*i2proxy)
-                                f = true
-                        }
-                }
-                if(!f){
-                        i2proxy.RequestDestination(i2paddr)
-                        i2proxy.RequestPipe(i2proxy.localConnection, i2paddr)
-                }
-        }else{
-                i2proxy.RequestHalfOpenTunnel()
-        }
+        remote := i2proxy.RequestDestination(i2paddr)
+        remote.pipe(*i2proxy)
 }
 
 func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
         var tempErr error
-        i2proxy.localConnection, tempErr        = i2proxy.listener.AcceptTCP()
-        err("Failed not accepting local connections '%s'\n",
-                "Accepting local connections on: localhost:4443\n",
-                 tempErr)
-        defer i2proxy.localConnection.Close();
+        //defer i2proxy.localConnection.Close();
         //i2proxy.RequestTunnel()
-        //i2proxy.localConnection, tempErr = net.DialTCP("tcp", nil, )
-        err("Initial Connection to the i2p tunnel failed %s",
-                "Finally connected to i2p for this web site:",
+        //defer i2proxy.localConnection.Close()
+	//display both ends
+	//i2proxy.Log.Printf("Opened %s >>> %s", i2proxy.localAddr.String(),
+          //      i2proxy.remoteAddr[0].String())
+	//bidirectional copy
+        i2proxy.localConnection, tempErr        = i2proxy.localListener.AcceptTCP()
+        err("Failed not accepting local connections\n",
+                "Accepting local connections on:",
                 tempErr)
         defer i2proxy.localConnection.Close()
-	//display both ends
-	i2proxy.Log.Printf("Opened %s >>> %s", i2proxy.localAddr.String(),
-                i2proxy.remoteAddr[0].String())
-	//bidirectional copy
-        go i2proxy.RequestPipe(i2proxy.localConnection, "")
-        go i2proxy.RequestPipe(i2proxy.localConnection, "")
+        //i2proxy.localConnection, _        = i2proxy.localListener.AcceptTCP()
+        //go i2proxy.RequestPipe(i2proxy.localConnection, "")
+        i2proxy.RequestPipe(i2proxy.localConnection, "")
+        //go i2proxy.RequestPipe(i2proxy.localConnection, "i2p-projekt.i2p")
 	//wait for close...
 	<-i2proxy.errsig
 	i2proxy.Log.Printf("Closed (%d bytes sent, %d bytes recieved)",
                 i2proxy.sentBytes, i2proxy.recievedBytes)
 }
 
-func (i2proxy *i2pHTTPProxy) SetupHTTPProxy(proxAddrString string) (io.ReadWriteCloser) {
+func (i2proxy *i2pHTTPProxy) SetupHTTPListener(proxAddrString string) (*net.TCPListener) {
         i2proxy.String             = proxAddrString
         var tempErr error
-        i2proxy.localAddr, tempErr    = net.ResolveTCPAddr("tcp", proxAddrString)
-        err("Failed to resolve address for local proxy'%s'\n",
-                "Started an http proxy.\n",
+        tempErr = nil
+        i2proxy.localAddr, tempErr    = net.ResolveTCPAddr("tcp", i2proxy.String)
+        err("Failed to resolve address for local proxy\n",
+                "Resolved address for local proxy: " + i2proxy.String,
                 tempErr)
-        i2proxy.listener, tempErr     = net.ListenTCP("tcp", i2proxy.localAddr)
-        err("Failed to set up TCP listener '%s'\n",
-                "Started a tcp listener.\n",
+        tempErr = nil
+        //i2proxy.localListener, tempErr     = net.ListenTCP("tcp", i2proxy.localAddr)
+        i2proxy.localListener, _     = net.ListenTCP("tcp", i2proxy.localAddr)
+        err("Failed to set up TCP listener.\n",
+                "Started a tcp listener: " + i2proxy.String,
                 tempErr)
-        return i2proxy.localConnection
+        tempErr = nil
+        return i2proxy.localListener
+}
+
+/*SetupSAMBridge assures that variables related to the SAM bridge are set*/
+func SetupSAMBridge(samAddrString string) (*sam3.SAM, string) {
+        var tempErr error
+        if( SamAddr == "" ) {
+                SamAddr = samAddrString
+                sam, tempErr          = sam3.NewSAM(samAddrString)
+                err("Failed to set up i2p SAM Bridge connection\n",
+                        "Connected to the SAM bridge: " + SamAddr,
+                        tempErr)
+                //defer sam.Close()
+        }else{
+                if(sam == nil){
+                        p("SamAddr: is already set: ", SamAddr)
+                        SamAddr = samAddrString
+                        sam, tempErr          = sam3.NewSAM(samAddrString)
+                        err("Failed to set up i2p SAM Bridge connection\n",
+                                "Connected to the SAM bridge: " + SamAddr,
+                                tempErr)
+                        //defer sam.Close()
+                }else{
+                        p("SamAddr: is already set: ", SamAddr)
+                        p("SAM Bridge is already connected.\n")
+                }
+        }
+        return sam, SamAddr
 }
 
 /*Newi2pHTTPProxy Create a new local HTTP proxy to request sites and destinations from*/
 func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter *bufio.Writer) *i2pHTTPProxy{
         var temp i2pHTTPProxy
-        temp.SetupHTTPProxy(proxAddrString)
-        SamAddr = samAddrString
-        temp.RequestHalfOpenTunnel()
-        //temp.RequestDestination("zzz.i2p")
-	tbuf                    := make([]byte, 4096)
-	_, tempErr := temp.TestRemoteRead(tbuf)
-        err("Failed to read from pipe '%s'\n", "Server received message from pipe", tempErr)
+        sam, SamAddr = SetupSAMBridge(samAddrString)
+        temp.localListener = temp.SetupHTTPListener(proxAddrString)
         temp.erred              = false
         temp.errsig             = make(chan bool)
 	Log                = *log.New(logAddrWriter,

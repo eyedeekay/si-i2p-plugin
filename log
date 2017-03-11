@@ -1,0 +1,7 @@
+Sam Bridge addr:port =  127.0.0.1:7656
+Proxy addr:port =  127.0.0.1:4443
+&{1000 1000 idk idk /home/idk}
+Log Path /home/idk/.i2pstreams.log
+Connected to the SAM bridge: 127.0.0.1:7656
+Resolved address for local proxy: 127.0.0.1:4443
+Started a tcp listener: 127.0.0.1:4443
