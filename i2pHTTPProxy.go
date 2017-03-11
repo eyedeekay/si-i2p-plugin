@@ -74,34 +74,13 @@ func (i2proxy *i2pHTTPProxy) RequestHalfOpenTunnel() (i2pHTTPTunnel){
         return r
 }
 
-func (i2proxy *i2pHTTPProxy) RequestSomeTunnel(i2paddr string) (i2pHTTPTunnel){
-        var r i2pHTTPTunnel
-        if( i2paddr == "" ){
-                p("No i2paddr, assuming a half-open tunnel")
-                r = i2proxy.RequestHalfOpenTunnel()
-        }else{
-                p("Connecting to i2paddr: ", i2paddr)
-                r = i2proxy.RequestTunnel(i2paddr)
-        }
-        return r
-}
-
 func (i2proxy *i2pHTTPProxy) RequestDestination(i2paddr string) (i2pHTTPTunnel){
         var r i2pHTTPTunnel
-        var f = false
         //RequestRemoteConnection(i2paddr)
         if (i2paddr != ""){
-                for _, remote := range i2proxy.remoteAddr {
-                        if i2paddr == remote.stringAddr {
-                                r = i2proxy.RequestSomeTunnel(i2paddr)
-                                f = true
-                        }
-                }
-                if(!f){
-                        r = i2proxy.RequestSomeTunnel(i2paddr)
-                }
+                r = i2proxy.RequestTunnel(i2paddr)
         }else{
-                r = i2proxy.RequestSomeTunnel("")
+                r = i2proxy.RequestHalfOpenTunnel()
         }
         return r
 }
@@ -113,12 +92,6 @@ func (i2proxy *i2pHTTPProxy) RequestPipe(src io.ReadWriter, i2paddr string) {
 
 func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
         var tempErr error
-        //defer i2proxy.localConnection.Close();
-        //i2proxy.RequestTunnel()
-        //defer i2proxy.localConnection.Close()
-	//display both ends
-	//i2proxy.Log.Printf("Opened %s >>> %s", i2proxy.localAddr.String(),
-          //      i2proxy.remoteAddr[0].String())
 	//bidirectional copy
         i2proxy.localConnection, tempErr        = i2proxy.localListener.AcceptTCP()
         err("Failed not accepting local connections\n",
@@ -185,6 +158,7 @@ func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter 
         var temp i2pHTTPProxy
         sam, SamAddr = SetupSAMBridge(samAddrString)
         temp.localListener = temp.SetupHTTPListener(proxAddrString)
+        temp.RequestPipe(temp.localConnection, "zzz.i2p");
         temp.erred              = false
         temp.errsig             = make(chan bool)
 	Log                = *log.New(logAddrWriter,
