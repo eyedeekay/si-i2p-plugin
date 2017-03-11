@@ -80,12 +80,6 @@ func (i2ptun *i2pHTTPTunnel) pipe(i2proxy i2pHTTPProxy) {
 	} else {
 		dataDirection = "<<< %d bytes recieved%s"
 	}
-	var byteFormat string
-	if i2proxy.OutputHex {
-		byteFormat = "%x"
-	} else {
-		byteFormat = "%s"
-	}
 	//directional copy (64k buffer)
 	buff := make([]byte, 0xffff)
 	for {
@@ -94,7 +88,33 @@ func (i2ptun *i2pHTTPTunnel) pipe(i2proxy i2pHTTPProxy) {
 		b := buff[:n]
 		//show output
 		i2proxy.Log.Printf(dataDirection, n, "")
-		i2proxy.Log.Panicf(byteFormat, b)
+		//write out result
+		n, pipeErr = i2ptun.dst.Write(b)
+                err("Write Succeeded", "Write failed '%s'\n", pipeErr)
+		if islocal {
+			i2proxy.sentBytes += uint64(n)
+		} else {
+			i2proxy.recievedBytes += uint64(n)
+		}
+	}
+}
+
+func (i2ptun *i2pHTTPTunnel) rpipe(i2proxy i2pHTTPProxy) {
+	islocal := i2proxy.localConnection == i2proxy.localConnection
+	var dataDirection string
+	if islocal {
+		dataDirection = ">>> %d bytes sent%s"
+	} else {
+		dataDirection = "<<< %d bytes recieved%s"
+	}
+	//directional copy (64k buffer)
+	buff := make([]byte, 0xffff)
+	for {
+		n, pipeErr := i2ptun.remoteConnection.Read(buff)
+                err("Read Succeeded", "Read failed '%s'\n", pipeErr)
+		b := buff[:n]
+		//show output
+		i2proxy.Log.Printf(dataDirection, n, "")
 		//write out result
 		n, pipeErr = i2ptun.dst.Write(b)
                 err("Write Succeeded", "Write failed '%s'\n", pipeErr)
@@ -135,7 +155,7 @@ func Newi2pHTTPTunnelFromString( laddr *net.TCPAddr, samAddrString string, looku
 }
 
 func (i2ptun *i2pHTTPTunnel) String() string{
-        return i2ptun.keypair.String()
+        return i2ptun.remoteI2PAddr.String()
 }
 
 func (i2ptun *i2pHTTPTunnel) Write(stream []byte) (int, error){

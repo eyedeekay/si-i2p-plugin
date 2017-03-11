@@ -22,7 +22,6 @@ type i2pHTTPProxy struct {
         erred           bool
         errsig          chan bool
 	Log             log.Logger
-	OutputHex       bool
 }
 
 /*sam is the working SAM bridge*/
@@ -84,23 +83,30 @@ func (i2proxy *i2pHTTPProxy) RequestDestination(i2paddr string) (i2pHTTPTunnel){
         return r
 }
 
-func (i2proxy *i2pHTTPProxy) RequestPipe(src io.ReadWriter, i2paddr string) {
+func (i2proxy *i2pHTTPProxy) RequestPipe(i2paddr string) {
         remote := i2proxy.RequestDestination(i2paddr)
+        p("Opened %s >>> %s", i2proxy.localAddr.String(), remote.String())
         remote.pipe(*i2proxy)
+}
+
+func (i2proxy *i2pHTTPProxy) ReadPipe(i2paddr string) {
+        remote := i2proxy.RequestTunnel(i2paddr)
+        p("Opened %s >>> %s", i2proxy.localAddr.String(), remote.String())
+        remote.rpipe(*i2proxy)
 }
 
 func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
         var tempErr error
 	//bidirectional copy
+        //p("attempting accept")
         i2proxy.localConnection, tempErr        = i2proxy.localListener.AcceptTCP()
         err("Failed not accepting local connections\n",
                 "Accepting local connections on:",
                 tempErr)
         defer i2proxy.localConnection.Close()
         //i2proxy.localConnection, _        = i2proxy.localListener.AcceptTCP()
-        //go i2proxy.RequestPipe(i2proxy.localConnection, "")
-        i2proxy.RequestPipe(i2proxy.localConnection, "")
-        //go i2proxy.RequestPipe(i2proxy.localConnection, "i2p-projekt.i2p")
+        i2proxy.ReadPipe("i2p-projekt.i2p")
+        i2proxy.RequestPipe("i2p-projekt.i2p")
 	//wait for close...
 	<-i2proxy.errsig
 	i2proxy.Log.Printf("Closed (%d bytes sent, %d bytes recieved)",
@@ -134,7 +140,6 @@ func SetupSAMBridge(samAddrString string) (*sam3.SAM, string) {
                 err("Failed to set up i2p SAM Bridge connection\n",
                         "Connected to the SAM bridge: " + SamAddr,
                         tempErr)
-                //defer sam.Close()
         }else{
                 if(sam == nil){
                         p("SamAddr: is already set: ", SamAddr)
@@ -143,7 +148,6 @@ func SetupSAMBridge(samAddrString string) (*sam3.SAM, string) {
                         err("Failed to set up i2p SAM Bridge connection\n",
                                 "Connected to the SAM bridge: " + SamAddr,
                                 tempErr)
-                        //defer sam.Close()
                 }else{
                         p("SamAddr: is already set: ", SamAddr)
                         p("SAM Bridge is already connected.\n")
@@ -157,7 +161,7 @@ func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter 
         var temp i2pHTTPProxy
         sam, SamAddr = SetupSAMBridge(samAddrString)
         temp.localListener = temp.SetupHTTPListener(proxAddrString)
-        temp.RequestPipe(temp.localConnection, "");
+        temp.RequestDestination("i2p-projekt.i2p");
         temp.erred              = false
         temp.errsig             = make(chan bool)
 	Log                = *log.New(logAddrWriter,
