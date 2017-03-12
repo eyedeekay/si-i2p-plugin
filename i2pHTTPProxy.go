@@ -96,15 +96,15 @@ func (i2proxy *i2pHTTPProxy) ReadPipe(i2paddr string) {
 }
 
 func (i2proxy *i2pHTTPProxy) Starti2pHTTPProxy(){
+        defer i2proxy.localConnection.Close()
         var tempErr error
 	//bidirectional copy
         //p("attempting accept")
-        i2proxy.localConnection, tempErr        = i2proxy.localListener.AcceptTCP()
+
         err("Failed not accepting local connections\n",
                 "Accepting local connections on:",
                 tempErr)
-        defer i2proxy.localConnection.Close()
-        //i2proxy.localConnection, _        = i2proxy.localListener.AcceptTCP()
+        //defer i2proxy.localConnection.Close()
         i2proxy.ReadPipe("i2p-projekt.i2p")
         i2proxy.RequestPipe("i2p-projekt.i2p")
 	//wait for close...
@@ -128,6 +128,7 @@ func (i2proxy *i2pHTTPProxy) SetupHTTPListener(proxAddrString string) (*net.TCPL
                 "Started a tcp listener: " + i2proxy.String,
                 tempErr)
         tempErr = nil
+        i2proxy.localConnection, tempErr        = i2proxy.localListener.AcceptTCP()
         return i2proxy.localListener
 }
 
@@ -162,6 +163,7 @@ func Newi2pHTTPProxy(proxAddrString string, samAddrString string, logAddrWriter 
         sam, SamAddr = SetupSAMBridge(samAddrString)
         temp.localListener = temp.SetupHTTPListener(proxAddrString)
         temp.RequestDestination("i2p-projekt.i2p");
+        //temp.RequestDestination("i2p-projekt.i2p");
         temp.erred              = false
         temp.errsig             = make(chan bool)
 	Log                = *log.New(logAddrWriter,

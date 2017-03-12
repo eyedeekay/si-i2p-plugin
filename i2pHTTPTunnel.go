@@ -74,6 +74,7 @@ func (i2ptun *i2pHTTPTunnel) LookupDestination() *sam3.SAMConn {
 
 func (i2ptun *i2pHTTPTunnel) pipe(i2proxy i2pHTTPProxy) {
 	islocal := i2proxy.localConnection == i2proxy.localConnection
+        defer i2ptun.remoteConnection.Close()
 	var dataDirection string
 	if islocal {
 		dataDirection = ">>> %d bytes sent%s"
@@ -91,22 +92,14 @@ func (i2ptun *i2pHTTPTunnel) pipe(i2proxy i2pHTTPProxy) {
 		//write out result
 		n, pipeErr = i2ptun.dst.Write(b)
                 err("Write Succeeded", "Write failed '%s'\n", pipeErr)
-		if islocal {
-			i2proxy.sentBytes += uint64(n)
-		} else {
-			i2proxy.recievedBytes += uint64(n)
-		}
+                i2proxy.sentBytes += uint64(n)
 	}
 }
 
 func (i2ptun *i2pHTTPTunnel) rpipe(i2proxy i2pHTTPProxy) {
 	islocal := i2proxy.localConnection == i2proxy.localConnection
-	var dataDirection string
-	if islocal {
-		dataDirection = ">>> %d bytes sent%s"
-	} else {
-		dataDirection = "<<< %d bytes recieved%s"
-	}
+        defer i2ptun.remoteConnection.Close()
+	var dataDirection = "<<< %d bytes recieved%s"
 	//directional copy (64k buffer)
 	buff := make([]byte, 0xffff)
 	for {
@@ -118,11 +111,7 @@ func (i2ptun *i2pHTTPTunnel) rpipe(i2proxy i2pHTTPProxy) {
 		//write out result
 		n, pipeErr = i2ptun.dst.Write(b)
                 err("Write Succeeded", "Write failed '%s'\n", pipeErr)
-		if islocal {
-			i2proxy.sentBytes += uint64(n)
-		} else {
-			i2proxy.recievedBytes += uint64(n)
-		}
+                i2proxy.recievedBytes += uint64(n)
 	}
 }
 

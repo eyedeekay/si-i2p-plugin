@@ -26,6 +26,9 @@ lint:
 testreq:
 	wget -qO - -e use_proxy=yes -e http_proxy=127.0.0.1:4444 http://i2p-projekt.i2p
 
+lreq:
+	wget -qO - -e use_proxy=yes -e http_proxy=127.0.0.1:9999 http://i2p-projekt.i2p
+
 request:
 	wget -qO - -e use_proxy=yes -e http_proxy=127.0.0.1:4443 http://i2p-projekt.i2p
 
@@ -35,3 +38,6 @@ req:
 
 cmds:
 	cat Makefile
+
+signreadme:
+	gpg --clear-sign -u C0CEEE297B5FE45FF610AAC6F05F85FA446C042B README.md
