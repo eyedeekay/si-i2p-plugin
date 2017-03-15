@@ -102,8 +102,6 @@ communications.
 So what does this do about it?
 ------------------------------
 
-Nothing, yet. Shouldn't be much longer, finally have a few days off.
-
 This is a special i2p HTTP proxy that talks to the SAM(Simple Anonymous
 Messaging) bridge, an i2p API for developing application-layer software. After
 initializing it's connection with the SAM bridge, it it creates a tunnel session
