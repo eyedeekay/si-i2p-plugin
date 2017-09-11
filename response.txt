@@ -1,0 +1,13 @@
+Sam Address: 127.0.0.1
+Sam Port: 7656
+Proxy Address: 127.0.0.1
+Proxy Port: 4443
+Working Directory: /home/idk/local-manifest/crypto-manifest/si-i2p-plugin
+Debug mode: true
+Creating a new SAMv3 Client.
+2017/09/11 05:03:49 > "HELLO VERSION MIN=3.0 MAX=3.0\n"
+2017/09/11 05:03:49 < "HELLO REPLY RESULT=OK VERSION=3.0\n"
+Established SAM connection
+Setting up micro-proxy for: http://i2p-projekt.i2p
+Preparing to create Pipe: i2p-projekt.i2p/send
+checking for problems...
