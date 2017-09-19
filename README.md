@@ -1,4 +1,4 @@
-Stream-Isolating i2p HTTP Proxy(SAM Application)
+Destination-Isolating i2p HTTP Proxy(SAM Application)
 ------------------------------------------------
 
 This is an i2p SAM application which presents an HTTP proxy(on port 4443 by

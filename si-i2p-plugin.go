@@ -23,6 +23,8 @@ func main(){
         Defwd, _ := os.Getwd()
         workDirectory   := *flag.String("directory", Defwd,
                 ":port of the HTTP proxy")
+        address   := *flag.String("url", "i2p-projekt.i2p",
+                "i2p URL you want to retrieve")
 
 
         fmt.Println( "Sam Address:", samAddrString )
@@ -31,6 +33,7 @@ func main(){
         fmt.Println( "Proxy Port:", proxPortString )
         fmt.Println( "Working Directory:", workDirectory )
         fmt.Println( "Debug mode:", debugConnection)
+        fmt.Println( "Initial URL:", address)
 
         goSam.ConnDebug = debugConnection
         var test samHttp
@@ -45,15 +48,19 @@ func main(){
                 }
         }()
 
-        test.createClient(samAddrString, samPortString, "i2p-projekt.i2p")
-        fmt.Println("Created client, starting loop...")
+        //samStack := createSamList(samAddrString, samPortString)
 
-        for {
+        test.createClient(samAddrString, samPortString, address)
+        defer test.cleanupClient()
+
+        fmt.Println("Created client, starting loop...")
+        exit := false
+        for exit != true{
                 test.readRequest()
-                exit := test.readDelete()
+                test.writeName()
+                exit = test.readDelete()
                 if exit {
-                        break
+                        fmt.Println("Not exiting")
                 }
         }
-        test.cleanupClient()
 }
