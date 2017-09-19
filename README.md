@@ -1,5 +1,5 @@
 Destination-Isolating i2p HTTP Proxy(SAM Application)
-------------------------------------------------
+=====================================================
 
 This is an i2p SAM application which presents an HTTP proxy(on port 4443 by
 default) that acts as an intermediate between your browser and the i2p network.
@@ -9,60 +9,65 @@ with a network of colluding sites. I doubt it's a substantial problem right now
 but it might be someday. Facebook has an onion site, and i2p should have
 destination isolation before there is a facebook.i2p.
 
-How it will work:
-=================
+What works so far:
+------------------
 
-First it sets up an HTTP proxy on your local machine.
+Right now it's a got a backend which uses named pipes to allow a user to send
+and recieve requests and get information about eepSites on the i2p network. It
+can't be hooked up to a web browser yet, but it does do what it's supposed to.
+If you run the application ./si-i2p-plugin from this repository it will create
+a folder with the name i2p-projekt.i2p. Inside that folder will be 4 files
+corresponding to the named pipes:
 
-        [ HTTP Proxy ]
+        destination_url.i2p/
+                            send
+                                 <- echo "desired-url" > destination_url.i2p/send
+                            recv
+                                 <- cat destination_url.i2p/recv
+                            name
+                                 <- cat destination_url.i2p/name
+                            del
+                                 <- echo "y" > destination_url.i2p/del
 
-This HTTP Proxy is used to organize Tunnels, which are paths between i2p
-destinations.
+In order to use them to interact with eepSites, pipe the destination URL into
+destination\_url.i2p/send, and pipe out the result from
+destination\_url.i2p/recv. To retrieve the full cryptographic identifier of the
+eepSite, pipe out the destination from destination\_url.i2p/name and to close
+the pipe, pipe anything at all into destination\_url.i2p/del. This is still a
+little bit buggy.
 
-        [ HTTP Proxy ]
-                      [List Of Tunnels]
+What I'm doing right now:
+-------------------------
 
-This HTTP Proxy intercepts your requests and checks to see if you have already
-connected to an eepSite.
+Right now I'm implementing a named-pipe based system for generating new
+destination proxies by making requests to a parent pipe and recieving them from
+an aggregating pipe.
 
-        Request->[ HTTP Proxy ]
-                         |                        [List Of Tunnels]
-                         +->New eepSite
-                         |
-                         +->Visited eepSite
+What the final version should do:
+---------------------------------
 
-If you haven't connected to the eepSite before, it creates a new tunnel specific
-to that eepSite by contacting the SAM bridge. Once that is done, the request is
-sent using the new tunnel.
+The final version should use the parent pipe and the aggregating pipe to send
+and recieve requests as an http proxy in the familiar way.
 
-        Request->[ HTTP Proxy ]
-                         |
-                         +->New eepSite+
-                         |             |
-                         |             +[List Of Tunnels + new Tunnel]
-                         |                                   |
-                         |                                   +->[List Of Tunnels]:Request
-                         +->Visited eepSite
+Silly Questions I'm asking myself about how I want it to work:
+--------------------------------------------------------------
 
-If you've already connected to the eepSite, it makes the request using the
-destination already associated with the eepSite.
+Should it be possible to disable the http proxy and interact with it only using
+named pipes? For right now, I'm leaning toward yes as this could be useful for
+ssh clients and similar applications.
 
-        Request->[ HTTP Proxy ]
-                         |
-                         +->New eepSite
-                         |
-                         +->Visited eepSite
-                                    |
-                                    +->[List Of Tunnels]:Request
+Should it do filtering? I really don't think so but if there's a simple way to
+strip outgoing information then maybe. I dislike complexity. It's why this has
+taken so long.
 
-Right now it's a work in progress, but it should only take a couple days to do.
+Wierdish applications consequent to the design:
+-----------------------------------------------
 
-Still non-functional, but usage is starting to be defined. So far:
-
-        -bridge="host:port of the SAM bridge(requires both)(defaults to localhost:7656)"
-        -proxy="host:port of HTTP proxy(requires both)(defaults to localhost:4443)"
-        -log="path to log file(defaults to $HOME/.i2pstreams.log)"
-        -incognito="disables logging, clears destinations"
+Tox-i2p Bridging: p2p networking and Unix enthusiasts will probably recognize
+that the ideas in this come from the Suckless Tox client, [Pranomostro's ratox](https://github.com/pranomostro/ratox).
+And it's easy to throw strings back and forth between named pipes. Perhaps with
+some tooling this could be used to build a bridge between the Tox and i2p
+networks without needing to modify the client.
 
 About the obscure and hypothetical attack this will likely be inadequate to fully prevent
 =========================================================================================
