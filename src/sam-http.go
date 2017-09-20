@@ -10,6 +10,7 @@ import (
         "os"
         "path/filepath"
         "strings"
+        "strconv"
         "syscall"
 	"github.com/eyedeekay/gosam"
 )
@@ -114,11 +115,11 @@ func (samConn *samHttp) createClient(samAddr string, samPort string, request str
 		Dial: samConn.sam.Dial,
 	}
         samConn.http = &http.Client{Transport: samConn.transport}
+        samConn.host = ""
         if samConn.host == "" {
                 samConn.host = samConn.hostSet(request)
                 samConn.initPipes()
         }
-        //samConn.sendRequest(request)
         samConn.writeName(request)
 }
 
@@ -136,18 +137,27 @@ func (samConn *samHttp) hostGet() string{
 }
 
 func (samConn *samHttp) hostCheck(request string) bool{
-        if samConn.host == samConn.hostSet(request) {
+        host := strings.SplitAfterN(request, ".i2p", 1 )[0]
+        if strings.Contains(host, "http://") {
+                host = strings.Replace(host, "http://", "", -1)
+        }
+        if samConn.host == host {
                 return true
         }else{
                 return false
         }
 }
 
-func (samConn *samHttp) sendRequest(request string) int{
-        if samConn.host != samConn.hostSet(request){
-                return 1
+func (samConn *samHttp) getRequest(request string) string{
+        host := request
+        if ! strings.Contains(request, "http://") {
+                host = strings.Replace(request, "http://", "", -1)
         }
-        resp, err := samConn.http.Get(samConn.hostGet())
+        return host
+}
+
+func (samConn *samHttp) sendRequest(request string) int{
+        resp, err := samConn.http.Get(samConn.getRequest(request))
         samConn.checkErr(err)
         defer resp.Body.Close()
         io.Copy(samConn.recvPipe, resp.Body)
@@ -157,17 +167,13 @@ func (samConn *samHttp) sendRequest(request string) int{
 func (samConn *samHttp) readRequest(){
         line, _, err := samConn.sendBuff.ReadLine()
         samConn.checkErr(err)
-        n := bytes.IndexByte(line, 0)
-        //buf := new(bytes.Buffer)
-        //buf.ReadFrom(&samConn.sendBuff)
-        //s := samConn.sendBuff.String()
-        //s := buf.String()
-        //s := string( line[:n] )
-        fmt.Println("Reading n bytes from send pipe: %s", string(n))
+        n := len(line)
+        fmt.Println("Reading n bytes from send pipe:", strconv.Itoa(n))
         if n == 0 {
                 fmt.Println("Maintaining Connection:", samConn.hostGet())
         }else if n < 0 {
-                fmt.Println("something wierd happened", line)
+                fmt.Println("Something wierd happened with :", line)
+                fmt.Println("end determined at index :", strconv.Itoa(n))
         }else{
                 s := string( line[:n] )
                 fmt.Println("Sending request:", s)
@@ -178,20 +184,31 @@ func (samConn *samHttp) readRequest(){
 func (samConn *samHttp) readDelete() bool {
         line, _, err := samConn.delBuff.ReadLine()
         samConn.checkErr(err)
-        n := bytes.IndexByte(line, 0)
-        fmt.Println("Checking for exit event: %b", n )
-        if n != 0 {
-                fmt.Println("Deleting connection: %s", samConn.host )
-                defer samConn.cleanupClient()
+        n := len(line)
+        fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
+        if n == 0 {
+                fmt.Println("Maintaining Connection:", samConn.hostGet())
+                return false
+        }else if n < 0 {
+                fmt.Println("Something wierd happened with :", line)
+                fmt.Println("end determined at index :", strconv.Itoa(n))
                 return false
         }else{
-                return true
+                s := string( line[:n] )
+                if s == "y" {
+                        fmt.Println("Deleting connection: %s", samConn.host )
+                        defer samConn.cleanupClient()
+                        return true
+                }else{
+                        return false
+                }
         }
 }
 
 
 func (samConn *samHttp) writeName(request string){
         if samConn.host == "" {
+                fmt.Println("Setting hostname:" )
                 samConn.host = samConn.hostSet(request)
                 samConn.initPipes()
         }
@@ -244,5 +261,4 @@ func newSamHttp(samAddrString string, samPortString string, request string) (sam
         samConn.createClient(samAddrString, samPortString, request)
         return samConn
 }
-
 

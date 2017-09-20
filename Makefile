@@ -1,6 +1,6 @@
 
 all:
-		go build -o ../bin/si-i2p-plugin ./src
+		go build -o bin/si-i2p-plugin ./src
 
 install:
 	mkdir -p /var/log/si-i2p-plugin/ /var/si-i2p-plugin/ /etc/si-i2p-plugin/
@@ -12,13 +12,16 @@ install:
 
 try:
 	bash -c "./bin/si-i2p-plugin 1>log 2>err" & sleep 1 && true
-	cat i2p-projekt.i2p/name
+	cat i2p-projekt.i2p/recv | tee test.html
 
 test:
-	echo http://i2p-projekt.i2p/en/docs./api/samv3 > i2p-projekt.i2p/send
+	echo http://i2p-projekt.i2p > i2p-projekt.i2p/send
+
+testother:
+	echo http://i2p-projekt.i2p/en/download > i2p-projekt.i2p/send
 
 clean:
-	rm -rf i2p-projekt.i2p err log
+	rm -rf i2p-projekt.i2p err log bin/si-i2p-plugin *.html
 
 cat:
 	cat i2p-projekt.i2p/recv
@@ -29,8 +32,17 @@ name:
 exit:
 	echo y > i2p-projekt.i2p/del
 
+noexit:
+	echo n > i2p-projekt.i2p/del
+
 html:
-	cat i2p-projekt.i2p/recv > test.html; true
+	cat i2p-projekt.i2p/recv | tee test.html; true
+
+htmlother:
+	cat i2p-projekt.i2p/recv | tee test2.html; true
+
+diff:
+	diff test.html test2.html
 
 html-test:
 	sr W ./test.html
