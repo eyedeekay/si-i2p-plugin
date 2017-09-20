@@ -84,7 +84,7 @@ func (samConn *samHttp) initPipes(){
                 samConn.checkErr(samConn.err)
                 fmt.Println("checking for problems...")
                 samConn.namePipe, samConn.err = os.OpenFile(samConn.namePath , os.O_RDWR|os.O_CREATE, 0755)
-                fmt.Println("Created a named Pipe for the jump domain:", samConn.namePath)
+                fmt.Println("Created a named Pipe for the full name:", samConn.namePath)
         }
 
         samConn.delPath = filepath.Join(connectionDirectory, samConn.host, "del")
@@ -118,8 +118,8 @@ func (samConn *samHttp) createClient(samAddr string, samPort string, request str
                 samConn.host = samConn.hostSet(request)
                 samConn.initPipes()
         }
-        samConn.sendRequest(request)
-        samConn.writeName()
+        //samConn.sendRequest(request)
+        samConn.writeName(request)
 }
 
 func (samConn *samHttp) hostSet(request string) string{
@@ -144,10 +144,7 @@ func (samConn *samHttp) hostCheck(request string) bool{
 }
 
 func (samConn *samHttp) sendRequest(request string) int{
-        if samConn.host == "" {
-                samConn.host = samConn.hostSet(request)
-                samConn.initPipes()
-        }else if samConn.host != samConn.hostSet(request){
+        if samConn.host != samConn.hostSet(request){
                 return 1
         }
         resp, err := samConn.http.Get(samConn.hostGet())
@@ -161,17 +158,18 @@ func (samConn *samHttp) readRequest(){
         line, _, err := samConn.sendBuff.ReadLine()
         samConn.checkErr(err)
         n := bytes.IndexByte(line, 0)
-        buf := new(bytes.Buffer)
-        buf.ReadFrom(&samConn.sendBuff)
+        //buf := new(bytes.Buffer)
+        //buf.ReadFrom(&samConn.sendBuff)
         //s := samConn.sendBuff.String()
-        s := buf.String()
-        fmt.Println("Reading n bytes from send pipe: %b", s)
+        //s := buf.String()
+        //s := string( line[:n] )
+        fmt.Println("Reading n bytes from send pipe: %s", string(n))
         if n == 0 {
-                //s := string( line[:n] )
                 fmt.Println("Maintaining Connection:", samConn.hostGet())
         }else if n < 0 {
                 fmt.Println("something wierd happened", line)
         }else{
+                s := string( line[:n] )
                 fmt.Println("Sending request:", s)
                 samConn.sendRequest(s)
         }
@@ -182,9 +180,8 @@ func (samConn *samHttp) readDelete() bool {
         samConn.checkErr(err)
         n := bytes.IndexByte(line, 0)
         fmt.Println("Checking for exit event: %b", n )
-        if n > 0 {
-                s := string( line[:n] )
-                fmt.Println("Deleting connection:", s)
+        if n != 0 {
+                fmt.Println("Deleting connection: %s", samConn.host )
                 defer samConn.cleanupClient()
                 return false
         }else{
@@ -193,7 +190,11 @@ func (samConn *samHttp) readDelete() bool {
 }
 
 
-func (samConn *samHttp) writeName(){
+func (samConn *samHttp) writeName(request string){
+        if samConn.host == "" {
+                samConn.host = samConn.hostSet(request)
+                samConn.initPipes()
+        }
         fmt.Println("Attempting to write-out connection name:")
         if samConn.checkName() {
                 samConn.name, samConn.err = samConn.sam.Lookup(samConn.host)

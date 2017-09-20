@@ -1,7 +1,6 @@
 
-build:
-	cd src && \
-		go build -o ../bin/si-i2p-plugin
+all:
+		go build -o ../bin/si-i2p-plugin ./src
 
 install:
 	mkdir -p /var/log/si-i2p-plugin/ /var/si-i2p-plugin/ /etc/si-i2p-plugin/
@@ -12,8 +11,7 @@ install:
 	install si-i2p-plugin/settings.cfg /etc/si-i2p-plugin/settings.cfg
 
 try:
-	make build
-	bash -c ".bin/si-i2p-plugin 1>log 2>err" & sleep 1 && true
+	bash -c "./bin/si-i2p-plugin 1>log 2>err" & sleep 1 && true
 	cat i2p-projekt.i2p/name
 
 test:
@@ -24,6 +22,9 @@ clean:
 
 cat:
 	cat i2p-projekt.i2p/recv
+
+name:
+	cat i2p-projekt.i2p/name
 
 exit:
 	echo y > i2p-projekt.i2p/del
@@ -36,3 +37,4 @@ html-test:
 
 user:
 	sudo adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
+

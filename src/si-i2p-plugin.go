@@ -22,7 +22,7 @@ func main(){
                 "Print connection debug info" )
         Defwd, _ := os.Getwd()
         workDirectory   := *flag.String("directory", Defwd,
-                ":port of the HTTP proxy")
+                "The working directory you want to use, defaults to current directory")
         address   := *flag.String("url", "i2p-projekt.i2p",
                 "i2p URL you want to retrieve")
 
@@ -56,8 +56,11 @@ func main(){
         fmt.Println("Created client, starting loop...")
         exit := false
         for exit != true{
+                fmt.Println("checking for requests to send...")
                 test.readRequest()
-                test.writeName()
-                test.readDelete()
+                //fmt.Println("checking for service address")
+                //test.writeName()
+                fmt.Println("checking contents of delete pipe")
+                exit = test.readDelete()
         }
 }
