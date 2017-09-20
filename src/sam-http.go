@@ -12,6 +12,8 @@ import (
         "strings"
         "strconv"
         "syscall"
+        "net/url"
+
 	"github.com/eyedeekay/gosam"
 )
 
@@ -125,7 +127,8 @@ func (samConn *samHttp) createClient(samAddr string, samPort string, request str
 
 func (samConn *samHttp) hostSet(request string) string{
         host := strings.SplitAfterN(request, ".i2p", 1 )[0]
-        if strings.Contains(host, "http://") {
+        _, err := url.ParseRequestURI(host)
+        if err != nil {
                 host = strings.Replace(host, "http://", "", -1)
         }
         fmt.Println("Setting up micro-proxy for:", "http://" + host)
@@ -138,7 +141,8 @@ func (samConn *samHttp) hostGet() string{
 
 func (samConn *samHttp) hostCheck(request string) bool{
         host := strings.SplitAfterN(request, ".i2p", 1 )[0]
-        if strings.Contains(host, "http://") {
+        _, err := url.ParseRequestURI(host)
+        if err != nil {
                 host = strings.Replace(host, "http://", "", -1)
         }
         if samConn.host == host {
@@ -150,7 +154,8 @@ func (samConn *samHttp) hostCheck(request string) bool{
 
 func (samConn *samHttp) getRequest(request string) string{
         host := request
-        if ! strings.Contains(request, "http://") {
+        _, err := url.ParseRequestURI(host)
+        if err != nil {
                 host = strings.Replace(request, "http://", "", -1)
         }
         return host
