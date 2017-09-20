@@ -1,6 +1,6 @@
 
 all:
-		go build -o bin/si-i2p-plugin ./src
+	go build -o bin/si-i2p-plugin ./src
 
 install:
 	mkdir -p /var/log/si-i2p-plugin/ /var/si-i2p-plugin/ /etc/si-i2p-plugin/
@@ -8,6 +8,7 @@ install:
 	install bin/si-i2p-plugin /usr/local/bin/
 	install bin/si-i2p-plugin.sh /usr/local/bin/
 	install init.d/si-i2p-plugin /etc/init.d/si-i2p-plugin
+	install systemd/sii2pplugin.service /etc/systemd/system
 	install si-i2p-plugin/settings.cfg /etc/si-i2p-plugin/settings.cfg
 
 try:

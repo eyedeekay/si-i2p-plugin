@@ -1,0 +1,13 @@
+[Unit]
+Description=Destination-Isolating Proxy
+After=network.target
+
+[Service]
+Type=simple
+User=sii2pplugin
+WorkingDirectory=/var/si-i2p-plugin
+ExecStart=/usr/local/bin/si-i2p-plugin.sh
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
