@@ -25,6 +25,10 @@ type samList struct{
 
         recvPath string
         recvPipe *os.File
+
+        delPath string
+        delPipe *os.File
+        delBuff bufio.Reader
 }
 
 func (samStack * samList) initPipes(){
@@ -62,6 +66,21 @@ func (samStack * samList) initPipes(){
                 fmt.Println("Created a named Pipe for recieving responses:", samStack.recvPath)
         }
         samStack.up = true;
+
+        samStack.delPath = filepath.Join(connectionDirectory, "parent", "del")
+        pathDelExists, delErr := exists(samStack.delPath)
+        samStack.checkErr(delErr)
+        if ! pathDelExists{
+                samStack.err = syscall.Mkfifo(samStack.delPath, 0755)
+                fmt.Println("Preparing to create Pipe:", samStack.delPath)
+                samStack.checkErr(samStack.err)
+                fmt.Println("checking for problems...")
+                samStack.delPipe, samStack.err = os.OpenFile(samStack.delPath , os.O_RDWR|os.O_CREATE, 0755)
+                fmt.Println("Opening the Named Pipe as a File...")
+                samStack.delBuff = *bufio.NewReader(samStack.delPipe)
+                fmt.Println("Opening the Named Pipe as a Buffer...")
+                fmt.Println("Created a named Pipe for closing the connection:", samStack.delPath)
+        }
 }
 
 func (samStack *samList) createClient(request string){
@@ -130,6 +149,30 @@ func (samStack *samList) writeResponse(request string){
                 resp, err := samStack.httpResponse(request)
                 samStack.checkErr(err)
                 io.Copy(samStack.recvPipe, resp)
+        }
+}
+
+func (samStack *samList) readDelete() bool {
+        line, _, err := samStack.delBuff.ReadLine()
+        samStack.checkErr(err)
+        n := len(line)
+        fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
+        if n == 0 {
+                fmt.Println("Maintaining Connection.")
+                return false
+        }else if n < 0 {
+                fmt.Println("Something wierd happened with :", line)
+                fmt.Println("end determined at index :", strconv.Itoa(n))
+                return false
+        }else{
+                s := string( line[:n] )
+                if s == "y" {
+                        fmt.Println("Closing proxy.")
+                        defer samStack.cleanupClient()
+                        return true
+                }else{
+                        return false
+                }
         }
 }
 
