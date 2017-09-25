@@ -12,6 +12,7 @@ import (
 type samList struct{
         stackOfSams []samHttp
         err error
+        up bool
 
         samAddrString string
         samPortString string
@@ -58,10 +59,19 @@ func (samStack * samList) initPipes(){
                 samStack.recvPipe, samStack.err = os.OpenFile(samStack.recvPath , os.O_RDWR|os.O_CREATE, 0755)
                 fmt.Println("Created a named Pipe for recieving responses:", samStack.recvPath)
         }
+        samStack.up = true;
 }
 
-func (samStack *samList) createClient(samAddrString string, samPortString string){
+func (samStack *samList) createClient(request string){
+        samStack.stackOfSams = append(samStack.stackOfSams, newSamHttp(samStack.samAddrString, samStack.samPortString, request))
+}
 
+func (samStack *samList) createSamList(samAddrString string, samPortString string){
+        samStack.samAddrString = samAddrString
+        samStack.samPortString = samPortString
+        if ! samStack.up {
+                samStack.initPipes()
+        }
 }
 
 func (samStack *samList) clientLoop(){
@@ -76,8 +86,10 @@ func (samStack *samList) clientLoop(){
 func (samStack *samList) cleanupClient(){
         samStack.sendPipe.Close()
         samStack.recvPipe.Close()
-        //samStack.sam.Close()
-        //os.RemoveAll(filepath.Join(connectionDirectory, samStack.host))
+        for _, client := range samStack.stackOfSams {
+                client.cleanupClient()
+        }
+        os.RemoveAll(filepath.Join(connectionDirectory))
 }
 
 func (samStack *samList) checkErr(err error) {
@@ -89,7 +101,7 @@ func (samStack *samList) checkErr(err error) {
 
 func createSamList(samAddr string, samPort string) samList{
         var samStack samList
-        samStack.samAddrString = samAddr
-        samStack.samPortString = samPort
+        samStack.up = false
+        samStack.createSamList(samAddr, samPort)
         return samStack
 }

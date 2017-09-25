@@ -18,6 +18,9 @@ try:
 test:
 	echo http://i2p-projekt.i2p > i2p-projekt.i2p/send
 
+alttest:
+	./bin/si-i2p-plugin --url fireaxe.i2p
+
 testother:
 	echo http://i2p-projekt.i2p/en/download > i2p-projekt.i2p/send
 
@@ -49,5 +52,5 @@ html-test:
 	sr W ./test.html
 
 user:
-	sudo adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
+	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
 
