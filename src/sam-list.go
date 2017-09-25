@@ -4,8 +4,10 @@ import (
         "bufio"
         "path/filepath"
         "fmt"
+        "io"
         "log"
         "os"
+        "strconv"
         "syscall"
 )
 
@@ -74,12 +76,67 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
         }
 }
 
-func (samStack *samList) clientLoop(){
-        //request := "i2p-projekt.i2p"
-        if len(samStack.stackOfSams) != 0 {
+func (samStack *samList) sendClientRequest(request string){
+        found := false
+        for _, client := range samStack.stackOfSams {
+                if client.hostCheck(request){
+                        client.sendRequest(request)
+                        found = true
+                }
+        }
+        if ! found {
+                samStack.createClient(request)
+        }
+}
 
+func (samStack *samList) readRequest() string{
+        line, _, err := samStack.sendBuff.ReadLine()
+        samStack.checkErr(err)
+        n := len(line)
+        fmt.Println("Reading n bytes from Parent send pipe:", strconv.Itoa(n))
+        if n == 0 {
+                fmt.Println("Flush the pipe maybe?:")
+        }else if n < 0 {
+                fmt.Println("Something wierd happened with :", line)
+                fmt.Println("end determined at index :", strconv.Itoa(n))
         }else{
-                samStack.stackOfSams[0].createClient(samStack.samAddrString, samStack.samPortString, "")
+                s := string( line[:n] )
+                fmt.Println("Sending request:", s)
+                samStack.sendClientRequest(s)
+                return s
+        }
+        return ""
+}
+
+func (samStack *samList) httpResponse(request string) (io.Reader, error){
+        found := false
+        var response io.Reader
+        var err error
+        for _, client := range samStack.stackOfSams {
+                if client.hostCheck(request){
+                        response, err = os.OpenFile(client.recvPath, os.O_RDWR|os.O_CREATE, 0755)
+                        samStack.checkErr(err)
+                        found = true
+                }
+        }
+        if ! found {
+                fmt.Println("Child proxy not found for: ", request)
+        }
+        return response, err
+}
+
+func (samStack *samList) writeResponse(request string){
+        if request != "" {
+                resp, err := samStack.httpResponse(request)
+                samStack.checkErr(err)
+                io.Copy(samStack.recvPipe, resp)
+        }
+}
+
+func (samStack *samList) clientLoop(){
+        for true {
+                s := samStack.readRequest()
+                samStack.writeResponse(s)
         }
 }
 

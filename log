@@ -33,3 +33,6 @@ Created client, starting loop...
 checking for requests to send...
 Reading n bytes from send pipe: 22
 Sending request: http://i2p-projekt.i2p
+checking contents of delete pipe
+Reading n bytes from exit pipe: 1
+Deleting connection: %s i2p-projekt.i2p

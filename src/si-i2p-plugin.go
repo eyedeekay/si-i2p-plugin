@@ -49,6 +49,7 @@ func main(){
         }()
 
         //samStack := createSamList(samAddrString, samPortString)
+        //samStack.clientLoop()
 
         test.createClient(samAddrString, samPortString, address)
         defer test.cleanupClient()
