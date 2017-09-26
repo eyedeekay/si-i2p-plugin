@@ -84,6 +84,25 @@ checkinstall: all preinstall-pak postremove-pak description-pak
 		--backup=no \
 		--pakdir=../
 
+checkinstall-static: all preinstall-pak postremove-pak description-pak
+	make static
+	checkinstall --default \
+		--install=no \
+		--fstrans=yes \
+		--maintainer=problemsolver@openmailbox.org \
+		--pkgname="si-i2p-plugin" \
+		--pkgversion="$(VERSION)" \
+		--pkglicense=gpl \
+		--pkggroup=net \
+		--pkgsource=./src/ \
+		--deldoc=yes \
+		--deldesc=yes \
+		--delspec=yes \
+		--backup=no \
+		--exclude=bin/si-i2p-plugin \
+		--include="bin/si-i2p-plugin-static /usr/local/bin/" \
+		--pakdir=../
+
 preinstall-pak:
 	@echo "#! /bin/sh" | tee preinstall-pak
 	@echo "adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin || exit 1" | tee -a preinstall-pak
