@@ -38,7 +38,7 @@ testother:
 	echo http://i2p-projekt.i2p/en/download > parent/send
 
 clean:
-	rm -rf i2p-projekt.i2p bin/si-i2p-plugin *.html *-pak *err *log parent
+	rm -rf i2p-projekt.i2p bin/si-i2p-plugin *.html *-pak *err *log parent ../si-i2p-plugin_$(VERSION)-1_amd64.deb
 	docker rmi -f si-i2p-plugin-static si-i2p-plugin-rpm si-i2p-plugin
 
 cat:
@@ -68,9 +68,7 @@ html-test:
 user:
 	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
 
-checkinstall:
-	make preinstall-pak
-	make postremove-pak
+checkinstall: all preinstall-pak postremove-pak description-pak
 	checkinstall --default \
 		--install=no \
 		--fstrans=yes \
@@ -87,15 +85,24 @@ checkinstall:
 		--pakdir=../
 
 preinstall-pak:
-	mkdir -p preinstall-pak
-	@echo "#! /bin/sh" | tee preinstall-pak/preinstall
-	@echo "adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin" | tee -a preinstall-pak/preinstall
-	@echo "chown -R sii2pplugin:adm $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/" | tee -a preinstall-pak/preinstall
+	@echo "#! /bin/sh" | tee preinstall-pak
+	@echo "adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin || exit 1" | tee -a preinstall-pak
+	@echo "chown -R sii2pplugin:adm $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ || exit 1" | tee -a preinstall-pak
+	@echo "exit 0" | tee -a preinstall-pak
+	chmod +x preinstall-pak
 
 postremove-pak:
-	mkdir -p postremove-pak
-	@echo "#! /bin/sh" | tee postremove-pak/postremove
-	@echo "deluser sii2pplugin" | tee -a postremove-pak/postremove
+	@echo "#! /bin/sh" | tee postremove-pak
+	@echo "deluser sii2pplugin || exit 1" | tee -a postremove-pak
+	@echo "exit 0" | tee -a postremove-pak
+	chmod +x postremove-pak
+
+description-pak:
+	@echo "si-i2p-plugin" | tee description-pak
+	@echo "" | tee -a description-pak
+	@echo "Destination-isolating http proxy for i2p. Keeps multiple eepSites" | tee -a description-pak
+	@echo "from sharing a single reply destination, to limit the use of i2p" | tee -a description-pak
+	@echo "metadata for fingerprinting purposes" | tee -a description-pak
 
 static:
 	docker build --force-rm -f Dockerfile/Dockerfile.static -t si-i2p-plugin-static .
@@ -120,9 +127,7 @@ fedora:
 	#docker cp si-i2p-plugin-rpm:/home/sii2pplugin/
 	docker rm -f si-i2p-plugin-rpm
 
-checkinstall-rpm:
-	make preinstall-pak
-	make postremove-pak
+checkinstall-rpm: all preinstall-pak postremove-pak description-pak
 	checkinstall -R --default \
 		--install=no \
 		--fstrans=yes \
