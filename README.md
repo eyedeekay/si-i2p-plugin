@@ -12,12 +12,34 @@ destination isolation before there is a facebook.i2p.
 What works so far:
 ------------------
 
-Right now it's a got a backend which uses named pipes to allow a user to send
-and recieve requests and get information about eepSites on the i2p network. It
-can't be hooked up to a web browser yet, but it does do what it's supposed to.
-If you run the application ./si-i2p-plugin from this repository it will create
-a folder with the name i2p-projekt.i2p. Inside that folder will be 4 files
-corresponding to the named pipes:
+In the front, right now there are three "Parent" pipes which are used to
+delegate requests and order responses from the system which exists behind them
+and signal the interruption of the isolating proxy. It can't be hooked up to a
+web browser yet, but you might be able to work something out with like, socat or
+something. If you run the application ./si-i2p-plugin from this repository it
+will create a folder with the name "parent" containing the following named
+pipes.
+
+        parent/
+                send
+                     <- echo "desired-url" > parent/send
+                recv
+                     <- cat parent/recv
+                del
+                     <- echo "y" > parent/del
+
+At this point, no connection to either the SAM bridge or the i2p network has
+actually been made yet. The parent pipes are simply ready to make the connection
+when necessary. In order to make a request, pipe a URL into the parent/send
+pipe. To read out the most recent response, cat out the parent/recv pipe. Lastly
+to close all the pipes and clean up, echo "y" into parent/del.
+
+Behind that, there is a system which uses named pipes to allow a user to send
+and recieve requests and get information about eepSites on the i2p network. If
+you were to, for instance, make a request for i2p-projekt.i2p through
+parent/send, it would look for the SAM session associated with that site(or
+create one if it doesn't exist) in a folder called "i2p-projekt.i2p". Inside
+that folder will be 4 files corresponding to the named pipes:
 
         destination_url.i2p/
                             send
@@ -29,19 +51,20 @@ corresponding to the named pipes:
                             del
                                  <- echo "y" > destination_url.i2p/del
 
-In order to use them to interact with eepSites, pipe the destination URL into
+In order to use them to interact with eepSites, you may either make your
+requests to the parent pipes  which will delegate the responses to the child
+pipes automatically, or you may manually pipe the destination URL into
 destination\_url.i2p/send, and pipe out the result from
 destination\_url.i2p/recv. To retrieve the full cryptographic identifier of the
 eepSite, pipe out the destination from destination\_url.i2p/name and to close
-the pipe, pipe anything at all into destination\_url.i2p/del. This is still a
-little bit buggy.
+the pipe, pipe anything at all into destination\_url.i2p/del.
 
 What I'm doing right now:
 -------------------------
 
-Right now I'm implementing a named-pipe based system for generating new
-destination proxies by making requests to a parent pipe and recieving them from
-an aggregating pipe.
+I'm doing the last of the parent pipe system. Making sure it always signals the
+correct child pipe and only the correct child pipe. Whenever I get tired I
+try and figure out how to integrate it with an initsystem or a package manager.
 
 What the final version should do:
 ---------------------------------

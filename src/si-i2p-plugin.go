@@ -1,7 +1,6 @@
 package main
 
 import (
-        //"bufio"
         "flag"
 	"fmt"
         "os"
@@ -51,17 +50,13 @@ func main(){
 
         samStack := createSamList(samAddrString, samPortString)
         defer samStack.cleanupClient()
-        //test.createClient(samAddrString, samPortString, address)
-        //defer test.cleanupClient()
 
         fmt.Println("Created client, starting loop...")
         exit := false
         for exit != true{
                 fmt.Println("checking for requests to send...")
-                //test.readRequest()
                 samStack.readRequest()
                 fmt.Println("checking contents of delete pipe")
-                //exit = test.readDelete()
                 exit = samStack.readDelete()
                 time.Sleep(100 * time.Millisecond)
         }
