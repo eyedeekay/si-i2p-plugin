@@ -86,12 +86,14 @@ checkinstall: all preinstall-pak postremove-pak description-pak
 
 checkinstall-static: all preinstall-pak postremove-pak description-pak
 	make static
+	mv bin/si-i2p-plugin bin/si-i2p-plugin.bak; \
+	mv bin/si-i2p-plugin-static bin/si-i2p-plugin; \
 	checkinstall --default \
 		--install=no \
 		--fstrans=yes \
 		--maintainer=problemsolver@openmailbox.org \
 		--pkgname="si-i2p-plugin" \
-		--pkgversion="$(VERSION)" \
+		--pkgversion="$(VERSION)-static" \
 		--pkglicense=gpl \
 		--pkggroup=net \
 		--pkgsource=./src/ \
@@ -99,9 +101,9 @@ checkinstall-static: all preinstall-pak postremove-pak description-pak
 		--deldesc=yes \
 		--delspec=yes \
 		--backup=no \
-		--exclude=bin/si-i2p-plugin \
-		--include="bin/si-i2p-plugin-static /usr/local/bin/" \
 		--pakdir=../
+	mv bin/si-i2p-plugin bin/si-i2p-plugin-static; \
+	mv bin/si-i2p-plugin.bak bin/si-i2p-plugin; true
 
 preinstall-pak:
 	@echo "#! /bin/sh" | tee preinstall-pak
