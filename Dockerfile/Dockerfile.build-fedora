@@ -1,3 +1,13 @@
-FROM alpine:3.6
-RUN apk update
-RUN apk search go | grep lang
+FROM fedora
+RUN dnf update -y
+RUN dnf install -y make golang gcc rpm-build rpm git fedora-packager fedora-review @development-tools
+RUN groupadd sii2pplugin
+RUN adduser --system --home-dir /home/sii2pplugin -g sii2pplugin sii2pplugin
+COPY . /home/sii2pplugin/si-i2p-plugin
+RUN chown -R sii2pplugin:sii2pplugin /home/sii2pplugin
+WORKDIR /home/sii2pplugin/si-i2p-plugin
+#USER sii2pplugin
+RUN go get github.com/eyedeekay/gosam
+RUN make
+#CMD export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" && make checkinstall-rpm
+CMD find / -name rpm

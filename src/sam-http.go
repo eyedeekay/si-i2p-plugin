@@ -44,16 +44,17 @@ type samHttp struct{
 var connectionDirectory string
 
 func (samConn *samHttp) initPipes(){
-        pathConnectionExists, err := exists(filepath.Join(connectionDirectory, samConn.host))
-        samConn.checkErr(err)
+        pathConnectionExists, _ := exists(filepath.Join(connectionDirectory, samConn.host))
+        fmt.Println("Directory Check", filepath.Join(connectionDirectory, samConn.host))
+        //samConn.checkErr(err)
         if ! pathConnectionExists {
                 fmt.Println("Creating a connection:", samConn.host)
                 os.Mkdir(filepath.Join(connectionDirectory, samConn.host), 0755)
         }
 
         samConn.sendPath = filepath.Join(connectionDirectory, samConn.host, "send")
-        pathSendExists, sendErr := exists(samConn.sendPath)
-        samConn.checkErr(sendErr)
+        pathSendExists, _ := exists(samConn.sendPath)
+        //samConn.checkErr(sendErr)
         if ! pathSendExists {
                 samConn.err = syscall.Mkfifo(samConn.sendPath, 0755)
                 fmt.Println("Preparing to create Pipe:", samConn.sendPath)
@@ -67,8 +68,8 @@ func (samConn *samHttp) initPipes(){
         }
 
         samConn.recvPath = filepath.Join(connectionDirectory, samConn.host, "recv")
-        pathRecvExists, recvErr := exists(samConn.recvPath)
-        samConn.checkErr(recvErr)
+        pathRecvExists, _ := exists(samConn.recvPath)
+        //samConn.checkErr(recvErr)
         if ! pathRecvExists {
                 samConn.err = syscall.Mkfifo(samConn.recvPath, 0755)
                 fmt.Println("Preparing to create Pipe:", samConn.recvPath)
@@ -79,8 +80,8 @@ func (samConn *samHttp) initPipes(){
         }
 
         samConn.namePath = filepath.Join(connectionDirectory, samConn.host, "name")
-        pathNameExists, nameErr := exists(samConn.namePath)
-        samConn.checkErr(nameErr)
+        pathNameExists, _ := exists(samConn.namePath)
+        //samConn.checkErr(nameErr)
         if ! pathNameExists {
                 samConn.err = syscall.Mkfifo(samConn.namePath, 0755)
                 fmt.Println("Preparing to create Pipe:", samConn.namePath)
@@ -91,8 +92,8 @@ func (samConn *samHttp) initPipes(){
         }
 
         samConn.delPath = filepath.Join(connectionDirectory, samConn.host, "del")
-        pathDelExists, delErr := exists(samConn.delPath)
-        samConn.checkErr(delErr)
+        pathDelExists, _ := exists(samConn.delPath)
+        //samConn.checkErr(delErr)
         if ! pathDelExists{
                 samConn.err = syscall.Mkfifo(samConn.delPath, 0755)
                 fmt.Println("Preparing to create Pipe:", samConn.delPath)
@@ -108,7 +109,6 @@ func (samConn *samHttp) initPipes(){
 
 
 func (samConn *samHttp) createClient(samAddr string, samPort string, request string) {
-        fmt.Println("Creating a new SAMv3 Client.")
         samCombined := samAddr + ":" + samPort
         samConn.sam, samConn.err = goSam.NewClient(samCombined)
         samConn.checkErr(samConn.err)
@@ -117,7 +117,6 @@ func (samConn *samHttp) createClient(samAddr string, samPort string, request str
 		Dial: samConn.sam.Dial,
 	}
         samConn.http = &http.Client{Transport: samConn.transport}
-        samConn.host = ""
         if samConn.host == "" {
                 samConn.host = samConn.hostSet(request)
                 samConn.initPipes()
@@ -131,6 +130,7 @@ func (samConn *samHttp) hostSet(request string) string{
         if err != nil {
                 host = strings.Replace(host, "http://", "", -1)
         }
+        host = strings.Replace(host, "http://", "", -1)
         fmt.Println("Setting up micro-proxy for:", "http://" + host)
         return host
 }
@@ -156,8 +156,9 @@ func (samConn *samHttp) getRequest(request string) string{
         host := request
         _, err := url.ParseRequestURI(host)
         if err != nil {
-                host = strings.Replace(request, "http://", "", -1)
+                fmt.Println("URL failed validation:", request)
         }
+        host = strings.Replace(request, "http://", "", -1)
         return host
 }
 
@@ -263,6 +264,7 @@ func newSamHttp(samAddrString string, samPortString string, request string) (sam
         fmt.Println("Creating a new SAMv3 Client.")
         var samConn samHttp
         samConn.name = ""
+        samConn.host = ""
         samConn.createClient(samAddrString, samPortString, request)
         return samConn
 }

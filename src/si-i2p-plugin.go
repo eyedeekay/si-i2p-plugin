@@ -6,6 +6,7 @@ import (
 	"fmt"
         "os"
         "os/signal"
+        "time"
         "github.com/eyedeekay/gosam"
 )
 
@@ -18,7 +19,7 @@ func main(){
                 "host: of the HTTP proxy")
         proxPortString  := *flag.String("proxy-port", "4443",
                 ":port of the HTTP proxy")
-        debugConnection := *flag.Bool("conn-debug", false,
+        debugConnection := *flag.Bool("conn-debug", true,
                 "Print connection debug info" )
         Defwd, _ := os.Getwd()
         workDirectory   := *flag.String("directory", Defwd,
@@ -62,5 +63,6 @@ func main(){
                 fmt.Println("checking contents of delete pipe")
                 //exit = test.readDelete()
                 exit = samStack.readDelete()
+                time.Sleep(100 * time.Millisecond)
         }
 }

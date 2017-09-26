@@ -99,11 +99,13 @@ func (samStack *samList) sendClientRequest(request string){
         found := false
         for _, client := range samStack.stackOfSams {
                 if client.hostCheck(request){
+                        fmt.Println("Client pipework for found.", request)
                         client.sendRequest(request)
                         found = true
                 }
         }
         if ! found {
+                fmt.Println("Client pipework for not found: Creating.", request)
                 samStack.createClient(request)
         }
 }
