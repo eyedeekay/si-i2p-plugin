@@ -65,7 +65,6 @@ func (samStack * samList) initPipes(){
                 samStack.recvPipe, samStack.err = os.OpenFile(samStack.recvPath , os.O_RDWR|os.O_CREATE, 0755)
                 fmt.Println("Created a named Pipe for recieving responses:", samStack.recvPath)
         }
-        samStack.up = true;
 
         samStack.delPath = filepath.Join(connectionDirectory, "parent", "del")
         pathDelExists, delErr := exists(samStack.delPath)
@@ -81,9 +80,11 @@ func (samStack * samList) initPipes(){
                 fmt.Println("Opening the Named Pipe as a Buffer...")
                 fmt.Println("Created a named Pipe for closing the connection:", samStack.delPath)
         }
+        samStack.up = true;
 }
 
 func (samStack *samList) createClient(request string){
+        fmt.Println("Requesting a new SAM-based http client")
         samStack.stackOfSams = append(samStack.stackOfSams, newSamHttp(samStack.samAddrString, samStack.samPortString, request))
 }
 
@@ -92,20 +93,23 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
         samStack.samPortString = samPortString
         if ! samStack.up {
                 samStack.initPipes()
+                fmt.Println("Parent proxy pipes initialized. Parent proxy set to up.")
         }
 }
 
 func (samStack *samList) sendClientRequest(request string){
         found := false
-        for _, client := range samStack.stackOfSams {
+        for index, client := range samStack.stackOfSams {
+                fmt.Println("Checking client", index)
+                fmt.Println("of", len(samStack.stackOfSams))
                 if client.hostCheck(request){
-                        fmt.Println("Client pipework for found.", request)
+                        fmt.Println("Client pipework for %s found.", request)
                         client.sendRequest(request)
                         found = true
                 }
         }
         if ! found {
-                fmt.Println("Client pipework for not found: Creating.", request)
+                fmt.Println("Client pipework for %s not found: Creating.", request)
                 samStack.createClient(request)
         }
 }
@@ -203,7 +207,10 @@ func (samStack *samList) checkErr(err error) {
 
 func createSamList(samAddr string, samPort string) samList{
         var samStack samList
+        fmt.Println("Generating parent proxy structure.")
         samStack.up = false
+        fmt.Println("Parent proxy set to down.")
         samStack.createSamList(samAddr, samPort)
+        fmt.Println("SAM list created")
         return samStack
 }

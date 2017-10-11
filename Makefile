@@ -14,38 +14,37 @@ all:
 
 install:
 	mkdir -p $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
-	install bin/si-i2p-plugin $(PREFIX)$(USR)$(LOCAL)/bin/
-	install bin/si-i2p-plugin.sh $(PREFIX)$(USR)$(LOCAL)/bin/
-	install init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
-	install systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system
-	install si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
+	install -D bin/si-i2p-plugin $(PREFIX)$(USR)$(LOCAL)/bin/
+	install -D bin/si-i2p-plugin.sh $(PREFIX)$(USR)$(LOCAL)/bin/
+	install -D init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
+	install -D systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system
+	install -D si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
+
+remove:
+	rm -f $(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin \
+		$(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin.sh \
+		$(PREFIX)$(ETC)init.d/si-i2p-plugin $(PREFIX)\
+		$(ETC)systemd/system/sii2pplugin.service \
+		$(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
+	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
+
 
 debug:
 	make
 	gdb ./bin/si-i2p-plugin
 
 try:
-	bash -c "./bin/si-i2p-plugin 1>log 2>err" & sleep 1 && true
-	cat parent/recv | tee test.html
+	./bin/si-i2p-plugin 2>err | tee -a log &
 
 test:
 	echo http://i2p-projekt.i2p > parent/send
-
-alttest:
-	./bin/si-i2p-plugin --url fireaxe.i2p
-
-testother:
-	echo http://i2p-projekt.i2p/en/download > parent/send
 
 clean:
 	rm -rf i2p-projekt.i2p bin/si-i2p-plugin *.html *-pak *err *log parent ../si-i2p-plugin_$(VERSION)-1_amd64.deb
 	docker rmi -f si-i2p-plugin-static si-i2p-plugin-rpm si-i2p-plugin
 
 cat:
-	cat i2p-projekt.i2p/recv
-
-name:
-	cat i2p-projekt.i2p/name
+	cat parent/recv
 
 exit:
 	echo y > parent/del
@@ -53,22 +52,10 @@ exit:
 noexit:
 	echo n > parent/del
 
-html:
-	cat i2p-projekt.i2p/recv | tee test.html; true
-
-htmlother:
-	cat i2p-projekt.i2p/recv | tee test2.html; true
-
-diff:
-	diff test.html test2.html
-
-html-test:
-	sr W ./test.html
-
 user:
 	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
 
-checkinstall: all preinstall-pak postremove-pak description-pak
+checkinstall: all postinstall-pak postremove-pak description-pak
 	checkinstall --default \
 		--install=no \
 		--fstrans=yes \
@@ -84,7 +71,7 @@ checkinstall: all preinstall-pak postremove-pak description-pak
 		--backup=no \
 		--pakdir=../
 
-checkinstall-static: all preinstall-pak postremove-pak description-pak
+checkinstall-static: all postinstall-pak postremove-pak description-pak
 	make static
 	mv bin/si-i2p-plugin bin/si-i2p-plugin.bak; \
 	mv bin/si-i2p-plugin-static bin/si-i2p-plugin; \
@@ -105,16 +92,16 @@ checkinstall-static: all preinstall-pak postremove-pak description-pak
 	mv bin/si-i2p-plugin bin/si-i2p-plugin-static; \
 	mv bin/si-i2p-plugin.bak bin/si-i2p-plugin; true
 
-preinstall-pak:
-	@echo "#! /bin/sh" | tee preinstall-pak
-	@echo "adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin || exit 1" | tee -a preinstall-pak
-	@echo "chown -R sii2pplugin:adm $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ || exit 1" | tee -a preinstall-pak
-	@echo "exit 0" | tee -a preinstall-pak
-	chmod +x preinstall-pak
+postinstall-pak:
+	@echo "#! /bin/sh" | tee postinstall-pak
+	@echo "adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin || exit 1" | tee -a postinstall-pak
+	@echo "mkdir -p $(PREFIX)$(VAR)$(LOG)si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ || exit 1" | tee -a postinstall-pak
+	@echo "chown -R sii2pplugin:adm $(PREFIX)$(VAR)$(LOG)si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ || exit 1" | tee -a postinstall-pak
+	@echo "exit 0" | tee -a postinstall-pak
+	chmod +x postinstall-pak
 
 postremove-pak:
 	@echo "#! /bin/sh" | tee postremove-pak
-	@echo "deluser sii2pplugin || exit 1" | tee -a postremove-pak
 	@echo "exit 0" | tee -a postremove-pak
 	chmod +x postremove-pak
 
@@ -140,26 +127,3 @@ docker-run:
 	docker run -d \
 		--name si-i2p-plugin \
 		-t si-i2p-plugin
-
-fedora:
-	docker build --force-rm -f Dockerfile/Dockerfile.build-fedora -t si-i2p-plugin-rpm .
-	docker run --name si-i2p-plugin-rpm -t si-i2p-plugin-rpm
-	docker exec -t si-i2p-plugin-rpm ls /home/sii2pplugin/
-	#docker cp si-i2p-plugin-rpm:/home/sii2pplugin/
-	docker rm -f si-i2p-plugin-rpm
-
-checkinstall-rpm: all preinstall-pak postremove-pak description-pak
-	checkinstall -R --default \
-		--install=no \
-		--fstrans=yes \
-		--maintainer=problemsolver@openmailbox.org \
-		--pkgname="si-i2p-plugin" \
-		--pkgversion="$(VERSION)" \
-		--pkglicense=gpl \
-		--pkggroup=net \
-		--pkgsource=./src/ \
-		--deldoc=yes \
-		--deldesc=yes \
-		--delspec=yes \
-		--backup=no \
-		--pakdir=../

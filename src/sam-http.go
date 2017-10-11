@@ -44,23 +44,23 @@ type samHttp struct{
 var connectionDirectory string
 
 func (samConn *samHttp) initPipes(){
-        pathConnectionExists, _ := exists(filepath.Join(connectionDirectory, samConn.host))
+        pathConnectionExists, pathErr := exists(filepath.Join(connectionDirectory, samConn.host))
         fmt.Println("Directory Check", filepath.Join(connectionDirectory, samConn.host))
-        //samConn.checkErr(err)
+        samConn.checkErr(pathErr)
         if ! pathConnectionExists {
                 fmt.Println("Creating a connection:", samConn.host)
                 os.Mkdir(filepath.Join(connectionDirectory, samConn.host), 0755)
         }
 
         samConn.sendPath = filepath.Join(connectionDirectory, samConn.host, "send")
-        pathSendExists, _ := exists(samConn.sendPath)
-        //samConn.checkErr(sendErr)
+        pathSendExists, sendPathErr := exists(samConn.sendPath)
+        samConn.checkErr(sendPathErr)
         if ! pathSendExists {
-                samConn.err = syscall.Mkfifo(samConn.sendPath, 0755)
+                err := syscall.Mkfifo(samConn.sendPath, 0755)
                 fmt.Println("Preparing to create Pipe:", samConn.sendPath)
-                samConn.checkErr(samConn.err)
+                samConn.checkErr(err)
                 fmt.Println("checking for problems...")
-                samConn.sendPipe, samConn.err = os.OpenFile(samConn.sendPath , os.O_RDWR|os.O_CREATE, 0755)
+                samConn.sendPipe, err = os.OpenFile(samConn.sendPath , os.O_RDWR|os.O_CREATE, 0755)
                 fmt.Println("Opening the Named Pipe as a File...")
                 samConn.sendBuff = *bufio.NewReader(samConn.sendPipe)
                 fmt.Println("Opening the Named Pipe as a Buffer...")
@@ -68,38 +68,38 @@ func (samConn *samHttp) initPipes(){
         }
 
         samConn.recvPath = filepath.Join(connectionDirectory, samConn.host, "recv")
-        pathRecvExists, _ := exists(samConn.recvPath)
-        //samConn.checkErr(recvErr)
+        pathRecvExists, recvPathErr := exists(samConn.recvPath)
+        samConn.checkErr(recvPathErr)
         if ! pathRecvExists {
-                samConn.err = syscall.Mkfifo(samConn.recvPath, 0755)
+                err := syscall.Mkfifo(samConn.recvPath, 0755)
                 fmt.Println("Preparing to create Pipe:", samConn.recvPath)
-                samConn.checkErr(samConn.err)
+                samConn.checkErr(err)
                 fmt.Println("checking for problems...")
-                samConn.recvPipe, samConn.err = os.OpenFile(samConn.recvPath , os.O_RDWR|os.O_CREATE, 0755)
+                samConn.recvPipe, err = os.OpenFile(samConn.recvPath , os.O_RDWR|os.O_CREATE, 0755)
                 fmt.Println("Created a named Pipe for recieving responses:", samConn.recvPath)
         }
 
         samConn.namePath = filepath.Join(connectionDirectory, samConn.host, "name")
-        pathNameExists, _ := exists(samConn.namePath)
-        //samConn.checkErr(nameErr)
+        pathNameExists, namePathErr := exists(samConn.namePath)
+        samConn.checkErr(namePathErr)
         if ! pathNameExists {
-                samConn.err = syscall.Mkfifo(samConn.namePath, 0755)
+                err := syscall.Mkfifo(samConn.namePath, 0755)
                 fmt.Println("Preparing to create Pipe:", samConn.namePath)
-                samConn.checkErr(samConn.err)
+                samConn.checkErr(err)
                 fmt.Println("checking for problems...")
-                samConn.namePipe, samConn.err = os.OpenFile(samConn.namePath , os.O_RDWR|os.O_CREATE, 0755)
+                samConn.namePipe, err = os.OpenFile(samConn.namePath , os.O_RDWR|os.O_CREATE, 0755)
                 fmt.Println("Created a named Pipe for the full name:", samConn.namePath)
         }
 
         samConn.delPath = filepath.Join(connectionDirectory, samConn.host, "del")
-        pathDelExists, _ := exists(samConn.delPath)
-        //samConn.checkErr(delErr)
+        pathDelExists, delPathErr := exists(samConn.delPath)
+        samConn.checkErr(delPathErr)
         if ! pathDelExists{
-                samConn.err = syscall.Mkfifo(samConn.delPath, 0755)
+                err := syscall.Mkfifo(samConn.delPath, 0755)
                 fmt.Println("Preparing to create Pipe:", samConn.delPath)
-                samConn.checkErr(samConn.err)
+                samConn.checkErr(err)
                 fmt.Println("checking for problems...")
-                samConn.delPipe, samConn.err = os.OpenFile(samConn.delPath , os.O_RDWR|os.O_CREATE, 0755)
+                samConn.delPipe, err = os.OpenFile(samConn.delPath , os.O_RDWR|os.O_CREATE, 0755)
                 fmt.Println("Opening the Named Pipe as a File...")
                 samConn.delBuff = *bufio.NewReader(samConn.delPipe)
                 fmt.Println("Opening the Named Pipe as a Buffer...")
@@ -142,14 +142,20 @@ func (samConn *samHttp) hostGet() string{
 func (samConn *samHttp) hostCheck(request string) bool{
         host := strings.SplitAfterN(request, ".i2p", 1 )[0]
         _, err := url.ParseRequestURI(host)
-        if err != nil {
-                host = strings.Replace(host, "http://", "", -1)
-        }
-        if samConn.host == host {
-                return true
+        if err == nil {
+                comphost := strings.Replace(host, "http://", "", -1)
+                if samConn.host == comphost {
+                        return true
+                }else{
+                        fmt.Println("Request host ", host)
+                        fmt.Println("Is not equal to client host", samConn.host)
+                        return false
+                }
         }else{
+                samConn.checkErr(err)
                 return false
         }
+
 }
 
 func (samConn *samHttp) getRequest(request string) string{

@@ -1,3 +1,0 @@
-#! /bin/sh
-deluser sii2pplugin || exit 1
-exit 0
