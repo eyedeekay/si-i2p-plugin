@@ -9,6 +9,8 @@ import (
         "github.com/eyedeekay/gosam"
 )
 
+var exit bool = false
+
 func main(){
 	samAddrString   := *flag.String("bridge-addr", "127.0.0.1",
                 "host: of the SAM bridge")
@@ -36,28 +38,35 @@ func main(){
         fmt.Println( "Initial URL:", address)
 
         goSam.ConnDebug = debugConnection
-        var test samHttp
+
+        samStack := createSamList(samAddrString, samPortString)
 
         c := make(chan os.Signal, 1)
         signal.Notify(c, os.Interrupt)
         go func(){
                 for sig := range c {
                         if sig == os.Interrupt {
-                                test.cleanupClient()
+                                samStack.cleanupClient()
                         }
                 }
         }()
 
-        samStack := createSamList(samAddrString, samPortString)
+
         defer samStack.cleanupClient()
 
         fmt.Println("Created client, starting loop...")
-        exit := false
         for exit != true{
                 fmt.Println("checking for requests to send...")
                 samStack.readRequest()
+                fmt.Println("checking for recieved responses...")
+                //samStack.writeResponses()
                 fmt.Println("checking contents of delete pipe")
                 exit = samStack.readDelete()
+                go closeProxy(samStack)
                 time.Sleep(100 * time.Millisecond)
         }
+}
+
+func closeProxy(samStack samList){
+        exit = samStack.readDelete()
 }

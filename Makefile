@@ -7,7 +7,7 @@ LOG := log/
 ETC := etc/
 USR := usr/
 LOCAL := local/
-VERSION := 0.1
+VERSION := 0.11
 
 build:
 	go build -o bin/si-i2p-plugin ./src

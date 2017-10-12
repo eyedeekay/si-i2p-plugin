@@ -147,7 +147,7 @@ func (samStack *samList) httpResponse(request string) (io.Reader, error){
         var response io.Reader
         var err error
         for _, client := range samStack.stackOfSams {
-                if client.hostCheck(request){
+                if client.hostCheck(request) {
                         response, err = os.OpenFile(client.recvPath, os.O_RDWR|os.O_CREATE, 0755)
                         samStack.checkErr(err)
                         found = true
@@ -159,12 +159,10 @@ func (samStack *samList) httpResponse(request string) (io.Reader, error){
         return response, err
 }
 
-func (samStack *samList) writeResponse(request string){
-        if request != "" {
-                resp, err := samStack.httpResponse(request)
-                samStack.checkErr(err)
-                io.Copy(samStack.recvPipe, resp)
-        }
+func (samStack *samList) writeResponses(){
+        /*for _, client := range samStack.stackOfSams {
+
+        }*/
 }
 
 func (samStack *samList) readDelete() bool {
@@ -188,13 +186,6 @@ func (samStack *samList) readDelete() bool {
                 }else{
                         return false
                 }
-        }
-}
-
-func (samStack *samList) clientLoop(){
-        for true {
-                s := samStack.readRequest()
-                samStack.writeResponse(s)
         }
 }
 

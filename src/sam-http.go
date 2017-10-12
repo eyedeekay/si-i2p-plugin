@@ -184,6 +184,10 @@ func (samConn *samHttp) sendRequest(request string) int{
         return 0
 }
 
+func (samConn *samHttp) printRequest() string{
+        return "request text"
+}
+
 func (samConn *samHttp) readRequest(){
         line, _, err := samConn.sendBuff.ReadLine()
         samConn.checkErr(err)
