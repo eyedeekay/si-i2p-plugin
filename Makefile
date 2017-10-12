@@ -43,8 +43,11 @@ debug: build
 try: build
 	./bin/si-i2p-plugin 2>err | tee -a log &
 
-test:
+test-easy:
 	echo http://i2p-projekt.i2p > parent/send
+
+test-harder:
+	echo i2p-projekt.i2p > parent/send
 
 clean:
 	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log

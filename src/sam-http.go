@@ -152,8 +152,13 @@ func (samConn *samHttp) hostCheck(request string) bool{
                         return false
                 }
         }else{
-                samConn.checkErr(err)
-                return false
+                if samConn.host == host {
+                        return true
+                }else{
+                        fmt.Println("Request host ", host)
+                        fmt.Println("Is not equal to client host", samConn.host)
+                        return false
+                }
         }
 
 }
@@ -162,13 +167,17 @@ func (samConn *samHttp) getRequest(request string) string{
         host := request
         _, err := url.ParseRequestURI(host)
         if err != nil {
-                fmt.Println("URL failed validation:", request)
+                host = "http://" + request
+                fmt.Println("URL failed validation, correcting to:", host)
+        }else{
+                fmt.Println("URL passed validation:", request)
         }
         return host
 }
 
 func (samConn *samHttp) sendRequest(request string) int{
-        resp, err := samConn.http.Get(samConn.getRequest(request))
+        r := samConn.getRequest(request)
+        resp, err := samConn.http.Get(r)
         samConn.checkErr(err)
         defer resp.Body.Close()
         io.Copy(samConn.recvPipe, resp.Body)

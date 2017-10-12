@@ -100,7 +100,7 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
 func (samStack *samList) sendClientRequest(request string){
         found := false
         for index, client := range samStack.stackOfSams {
-                fmt.Println("Checking client", index)
+                fmt.Println("Checking client", index + 1)
                 fmt.Println("of", len(samStack.stackOfSams))
                 if client.hostCheck(request){
                         fmt.Println("Client pipework for %s found.", request)
@@ -112,7 +112,7 @@ func (samStack *samList) sendClientRequest(request string){
                 fmt.Println("Client pipework for %s not found: Creating.", request)
                 samStack.createClient(request)
                 for index := len(samStack.stackOfSams)-1; index >= 0 ; index-- {
-                        fmt.Println("Checking client", index)
+                        fmt.Println("Checking client", index + 1)
                         fmt.Println("of", len(samStack.stackOfSams))
                         if samStack.stackOfSams[index].hostCheck(request){
                                 fmt.Println("Client pipework for %s found.", request)

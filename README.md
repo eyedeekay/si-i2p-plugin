@@ -62,9 +62,9 @@ the pipe, pipe anything at all into destination\_url.i2p/del.
 What I'm doing right now:
 -------------------------
 
-I'm doing the last of the parent pipe system. Making sure it always signals the
-correct child pipe and only the correct child pipe. Whenever I get tired I
-try and figure out how to integrate it with an initsystem or a package manager.
+I'm doing the last of the parent pipe system. Making sure it the aggregator pipe
+does things correctly. I'm thinking I'll use this to teach myself more about
+AppArmor and SELinux profiles next.
 
 What the final version should do:
 ---------------------------------
