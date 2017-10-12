@@ -9,8 +9,16 @@ USR := usr/
 LOCAL := local/
 VERSION := 0.1
 
-all:
+build:
 	go build -o bin/si-i2p-plugin ./src
+
+all:
+	make clean; \
+	make; \
+	make static; \
+	make checkinstall; \
+	make checkinstall-static; \
+	make docker
 
 install:
 	mkdir -p $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
@@ -40,8 +48,11 @@ test:
 	echo http://i2p-projekt.i2p > parent/send
 
 clean:
-	rm -rf i2p-projekt.i2p bin/si-i2p-plugin *.html *-pak *err *log parent ../si-i2p-plugin_$(VERSION)-1_amd64.deb
-	docker rmi -f si-i2p-plugin-static si-i2p-plugin-rpm si-i2p-plugin
+	rm -rf parent i2p-projekt.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log
+
+clobber:
+	rm -rf ../si-i2p-plugin_$(VERSION)*-1_amd64.deb
+	docker rmi -f si-i2p-plugin-static si-i2p-plugin; true
 
 cat:
 	cat parent/recv
@@ -55,7 +66,7 @@ noexit:
 user:
 	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
 
-checkinstall: all postinstall-pak postremove-pak description-pak
+checkinstall: build postinstall-pak postremove-pak description-pak
 	checkinstall --default \
 		--install=no \
 		--fstrans=yes \
@@ -71,7 +82,7 @@ checkinstall: all postinstall-pak postremove-pak description-pak
 		--backup=no \
 		--pakdir=../
 
-checkinstall-static: all postinstall-pak postremove-pak description-pak
+checkinstall-static: build postinstall-pak postremove-pak description-pak
 	make static
 	mv bin/si-i2p-plugin bin/si-i2p-plugin.bak; \
 	mv bin/si-i2p-plugin-static bin/si-i2p-plugin; \

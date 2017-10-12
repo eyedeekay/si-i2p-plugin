@@ -164,7 +164,6 @@ func (samConn *samHttp) getRequest(request string) string{
         if err != nil {
                 fmt.Println("URL failed validation:", request)
         }
-        host = strings.Replace(request, "http://", "", -1)
         return host
 }
 

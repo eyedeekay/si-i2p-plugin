@@ -1,5 +1,7 @@
-FROM golang
-RUN adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
+FROM alpine:edge
+RUN apk update -U
+RUN apk add go go-tools go-doc git make
+RUN adduser -S -H -D sii2pplugin sii2pplugin
 COPY . /opt/
 RUN chown -R sii2pplugin /opt/
 WORKDIR /opt/

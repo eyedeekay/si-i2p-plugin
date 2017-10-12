@@ -1,0 +1,5 @@
+#! /bin/sh
+adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin || exit 1
+mkdir -p /var/log/si-i2p-plugin/ /var/run/si-i2p-plugin/ || exit 1
+chown -R sii2pplugin:adm /var/log/si-i2p-plugin/ /var/run/si-i2p-plugin/ || exit 1
+exit 0
