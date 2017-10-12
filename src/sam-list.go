@@ -104,7 +104,7 @@ func (samStack *samList) sendClientRequest(request string){
                 fmt.Println("of", len(samStack.stackOfSams))
                 if client.hostCheck(request){
                         fmt.Println("Client pipework for %s found.", request)
-                        client.sendRequest(request)
+                        go client.sendRequest(request)
                         found = true
                 }
         }
@@ -116,7 +116,7 @@ func (samStack *samList) sendClientRequest(request string){
                         fmt.Println("of", len(samStack.stackOfSams))
                         if samStack.stackOfSams[index].hostCheck(request){
                                 fmt.Println("Client pipework for %s found.", request)
-                                samStack.stackOfSams[index].sendRequest(request)
+                                go samStack.stackOfSams[index].sendRequest(request)
                                 found = true
                         }
                 }

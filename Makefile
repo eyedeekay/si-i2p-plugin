@@ -25,8 +25,8 @@ install:
 	install -D bin/si-i2p-plugin $(PREFIX)$(USR)$(LOCAL)/bin/
 	install -D bin/si-i2p-plugin.sh $(PREFIX)$(USR)$(LOCAL)/bin/
 	install -D init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
-	install -D systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system
-	install -D si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
+	install -D systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
+	install -D si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/
 
 remove:
 	rm -f $(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin \
@@ -37,18 +37,17 @@ remove:
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
 
-debug:
-	make
+debug: build
 	gdb ./bin/si-i2p-plugin
 
-try:
+try: build
 	./bin/si-i2p-plugin 2>err | tee -a log &
 
 test:
 	echo http://i2p-projekt.i2p > parent/send
 
 clean:
-	rm -rf parent i2p-projekt.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log
+	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log
 
 clobber:
 	rm -rf ../si-i2p-plugin_$(VERSION)*-1_amd64.deb
