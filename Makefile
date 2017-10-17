@@ -40,7 +40,7 @@ all:
 	make checkinstall; \
 	make checkinstall-static; \
 	make docker
-	make clean
+	make tidy
 
 install:
 	mkdir -p $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
@@ -73,6 +73,9 @@ test-harder:
 
 clean:
 	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude
+
+tidy:
+	rm -rf parent *.i2p *.html *-pak *err *log static-include static-exclude
 
 clobber:
 	rm -rf ../si-i2p-plugin_$(VERSION)*-1_amd64.deb
