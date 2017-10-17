@@ -8,3 +8,4 @@ RUN /bin/busybox chown -R sii2pplugindocker /opt
 RUN /bin/busybox rm /bin/busybox
 USER sii2pplugindocker
 ENTRYPOINT ./si-i2p-plugin-static
+
