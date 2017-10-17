@@ -159,10 +159,10 @@ func (samStack *samList) httpResponse(request string) (io.Reader, error){
         return response, err
 }
 
-func (samStack *samList) writeResponses(){
-        //for _, client := range samStack.stackOfSams {
-                //client.printResponse()
-        //}
+func (samStack *samList) writeResponse(){
+        for _, client := range samStack.stackOfSams {
+                samStack.recvPipe.WriteString(client.printResponse())
+        }
 }
 
 func (samStack *samList) readDelete() bool {

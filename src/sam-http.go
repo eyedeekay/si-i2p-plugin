@@ -187,7 +187,7 @@ func (samConn *samHttp) sendRequest(request string) int{
         return 0
 }
 
-func (samConn *samHttp) printRequest() string{
+func (samConn *samHttp) printResponse() string{
         line, _, err := samConn.recvBuff.ReadLine()
         samConn.checkErr(err)
         n := len(line)
