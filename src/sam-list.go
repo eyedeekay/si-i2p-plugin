@@ -160,9 +160,9 @@ func (samStack *samList) httpResponse(request string) (io.Reader, error){
 }
 
 func (samStack *samList) writeResponses(){
-        /*for _, client := range samStack.stackOfSams {
-
-        }*/
+        //for _, client := range samStack.stackOfSams {
+                //client.printResponse()
+        //}
 }
 
 func (samStack *samList) readDelete() bool {

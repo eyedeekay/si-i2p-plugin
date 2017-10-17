@@ -1,0 +1,4 @@
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -yq bash-static busybox-static
+RUN useradd -u 10001 sii2pplugindocker
+CMD bash

@@ -9,16 +9,38 @@ USR := usr/
 LOCAL := local/
 VERSION := 0.15
 
+
+CC := musl-gcc
+COMPILER := "-compiler gccgo"
+
+COMPILER_FLAGS := '-ldflags \'-linkmode external -extldflags "-static"\''
+#COMPILER_FLAGS := -gccgoflags '-extldflags "-fPIE" "-static" "-pie"'
+
 build:
+	go get github.com/eyedeekay/gosam
 	go build -o bin/si-i2p-plugin ./src
 
+build-static:
+	go get github.com/eyedeekay/gosam
+	go build -ldflags '-linkmode external -extldflags "-static"' \
+		-o bin/si-i2p-plugin-static \
+		./src
+
+build-gccgo-static:
+	go get github.com/eyedeekay/gosam
+	go build "$(COMPILER)" \
+		-gccgoflags '-extldflags "-fPIE" "-static" "-pie"' \
+		-o bin/si-i2p-plugin-static \
+		./src
+
 all:
-	make clean; \
+	make clobber; \
 	make; \
 	make static; \
 	make checkinstall; \
 	make checkinstall-static; \
 	make docker
+	make clean
 
 install:
 	mkdir -p $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
@@ -50,11 +72,13 @@ test-harder:
 	echo i2p-projekt.i2p > parent/send
 
 clean:
-	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log
+	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude
 
 clobber:
 	rm -rf ../si-i2p-plugin_$(VERSION)*-1_amd64.deb
 	docker rmi -f si-i2p-plugin-static si-i2p-plugin; true
+	docker rm -f si-i2p-plugin-static si-i2p-plugin; true
+	make clean
 
 cat:
 	cat parent/recv
@@ -84,10 +108,8 @@ checkinstall: build postinstall-pak postremove-pak description-pak
 		--backup=no \
 		--pakdir=../
 
-checkinstall-static: build postinstall-pak postremove-pak description-pak
+checkinstall-static: build postinstall-pak postremove-pak description-pak static-include static-exclude
 	make static
-	mv bin/si-i2p-plugin bin/si-i2p-plugin.bak; \
-	mv bin/si-i2p-plugin-static bin/si-i2p-plugin; \
 	checkinstall --default \
 		--install=no \
 		--fstrans=yes \
@@ -101,13 +123,13 @@ checkinstall-static: build postinstall-pak postremove-pak description-pak
 		--deldesc=yes \
 		--delspec=yes \
 		--backup=no \
+		--exclude=static-exclude \
+		--include=static-include \
 		--pakdir=../
-	mv bin/si-i2p-plugin bin/si-i2p-plugin-static; \
-	mv bin/si-i2p-plugin.bak bin/si-i2p-plugin; true
 
 postinstall-pak:
 	@echo "#! /bin/sh" | tee postinstall-pak
-	@echo "adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin || exit 1" | tee -a postinstall-pak
+	@echo "adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin; true" | tee -a postinstall-pak
 	@echo "mkdir -p $(PREFIX)$(VAR)$(LOG)si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ || exit 1" | tee -a postinstall-pak
 	@echo "chown -R sii2pplugin:adm $(PREFIX)$(VAR)$(LOG)si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ || exit 1" | tee -a postinstall-pak
 	@echo "exit 0" | tee -a postinstall-pak
@@ -115,6 +137,7 @@ postinstall-pak:
 
 postremove-pak:
 	@echo "#! /bin/sh" | tee postremove-pak
+	@echo "deluser sii2pplugin; true" | tee -a postremove-pak
 	@echo "exit 0" | tee -a postremove-pak
 	chmod +x postremove-pak
 
@@ -125,18 +148,35 @@ description-pak:
 	@echo "from sharing a single reply destination, to limit the use of i2p" | tee -a description-pak
 	@echo "metadata for fingerprinting purposes" | tee -a description-pak
 
+static-include:
+	@echo 'bin/si-i2p-plugin-static /usr/local/bin/' | tee static-include
+
+static-exclude:
+	@echo 'bin/si-i2p-plugin' | tee static-exclude
+
+
 static:
+	docker rm -f si-i2p-plugin-static; true
 	docker build --force-rm -f Dockerfile/Dockerfile.static -t si-i2p-plugin-static .
-	docker run -d --name si-i2p-plugin-static -t si-i2p-plugin-static
-	docker cp si-i2p-plugin-static:/opt/bin/si-i2p-plugin ./bin/si-i2p-plugin-static
-	docker rm -f si-i2p-plugin-static
+	docker run --name si-i2p-plugin-static -t si-i2p-plugin-static
+	docker cp si-i2p-plugin-static:/opt/bin/si-i2p-plugin-static ./bin/si-i2p-plugin-static
+
+uuser:
+	docker build --force-rm -f Dockerfile/Dockerfile.uuser -t si-i2p-plugin-uuser .
+	docker run -d --rm --name si-i2p-plugin-uuser -t si-i2p-plugin-uuser
+	docker exec -t si-i2p-plugin-uuser tail -n 1 /etc/passwd | tee si-i2p-plugin/passwd
+	docker cp si-i2p-plugin-uuser:/bin/bash-static si-i2p-plugin/bash
+	docker cp si-i2p-plugin-uuser:/bin/busybox si-i2p-plugin/busybox
+	docker rm -f si-i2p-plugin-uuser; docker rmi -f si-i2p-plugin-uuser
 
 docker:
 	make static
+	make uuser
 	docker build --force-rm -f Dockerfile/Dockerfile -t si-i2p-plugin .
-	docker rmi -f si-i2p-plugin-static
 
 docker-run:
 	docker run -d \
+		--cap-drop all \
 		--name si-i2p-plugin \
+		--user sii2pplugindocker \
 		-t si-i2p-plugin

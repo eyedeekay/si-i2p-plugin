@@ -31,6 +31,7 @@ type samHttp struct{
 
         recvPath string
         recvPipe *os.File
+        recvBuff bufio.Reader
 
         namePath string
         namePipe *os.File
@@ -76,6 +77,8 @@ func (samConn *samHttp) initPipes(){
                 samConn.checkErr(err)
                 fmt.Println("checking for problems...")
                 samConn.recvPipe, err = os.OpenFile(samConn.recvPath , os.O_RDWR|os.O_CREATE, 0755)
+                samConn.recvBuff = *bufio.NewReader(samConn.recvPipe)
+                fmt.Println("Opening the Named Pipe as a Buffer...")
                 fmt.Println("Created a named Pipe for recieving responses:", samConn.recvPath)
         }
 
@@ -185,7 +188,26 @@ func (samConn *samHttp) sendRequest(request string) int{
 }
 
 func (samConn *samHttp) printRequest() string{
-        return "request text"
+        line, _, err := samConn.recvBuff.ReadLine()
+        samConn.checkErr(err)
+        n := len(line)
+        fmt.Println("Reading n bytes from recv pipe:", strconv.Itoa(n) )
+        if n == 0 {
+                fmt.Println("Maintaining Connection:", samConn.hostGet())
+                return ""
+        }else if n < 0 {
+                fmt.Println("Something wierd happened with :", line)
+                fmt.Println("end determined at index :", strconv.Itoa(n))
+                return ""
+        }else{
+                s := string( line[:n] )
+                if s == "y" {
+                        fmt.Println("Deleting connection: %s", samConn.host )
+                        return s
+                }else{
+                        return ""
+                }
+        }
 }
 
 func (samConn *samHttp) readRequest(){
