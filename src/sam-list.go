@@ -159,7 +159,7 @@ func (samStack *samList) httpResponse(request string) (io.Reader, error){
         return response, err
 }
 
-func (samStack *samList) writeResponse(){
+func (samStack *samList) writeResponses(){
         for _, client := range samStack.stackOfSams {
                 samStack.recvPipe.WriteString(client.printResponse())
         }

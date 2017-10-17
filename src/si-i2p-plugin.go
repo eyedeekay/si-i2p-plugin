@@ -59,7 +59,7 @@ func main(){
                 fmt.Println("checking for requests to send...")
                 samStack.readRequest()
                 fmt.Println("checking for recieved responses...")
-                //samStack.writeResponses()
+                samStack.writeResponses()
                 fmt.Println("checking contents of delete pipe")
                 exit = samStack.readDelete()
                 go closeProxy(samStack)
