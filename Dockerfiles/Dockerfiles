@@ -1,0 +1,6 @@
+./Dockerfile
+./Dockerfile/Dockerfile
+./Dockerfile/Dockerfile.static
+./Dockerfile/Dockerfiles
+./Dockerfile/Dockerfile.build-fedora
+./Dockerfile/Dockerfile.uuser

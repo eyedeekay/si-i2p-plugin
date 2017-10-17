@@ -160,12 +160,12 @@ static-exclude:
 
 static:
 	docker rm -f si-i2p-plugin-static; true
-	docker build --force-rm -f Dockerfile/Dockerfile.static -t si-i2p-plugin-static .
+	docker build --force-rm -f Dockerfiles/Dockerfile.static -t si-i2p-plugin-static .
 	docker run --name si-i2p-plugin-static -t si-i2p-plugin-static
 	docker cp si-i2p-plugin-static:/opt/bin/si-i2p-plugin-static ./bin/si-i2p-plugin-static
 
 uuser:
-	docker build --force-rm -f Dockerfile/Dockerfile.uuser -t si-i2p-plugin-uuser .
+	docker build --force-rm -f Dockerfiles/Dockerfile.uuser -t si-i2p-plugin-uuser .
 	docker run -d --rm --name si-i2p-plugin-uuser -t si-i2p-plugin-uuser
 	docker exec -t si-i2p-plugin-uuser tail -n 1 /etc/passwd | tee si-i2p-plugin/passwd
 	docker cp si-i2p-plugin-uuser:/bin/bash-static si-i2p-plugin/bash
@@ -175,7 +175,7 @@ uuser:
 docker:
 	make static
 	make uuser
-	docker build --force-rm -f Dockerfile/Dockerfile -t si-i2p-plugin .
+	docker build --force-rm -f Dockerfiles/Dockerfile -t si-i2p-plugin .
 
 docker-run:
 	docker run -d \
