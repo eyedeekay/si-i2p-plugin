@@ -72,6 +72,7 @@ test-harder:
 	echo i2p-projekt.i2p > parent/send
 
 clean:
+	killall si-i2p-plugin; \
 	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude
 
 tidy:

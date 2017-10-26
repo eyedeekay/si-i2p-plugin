@@ -57,9 +57,8 @@ func main(){
         fmt.Println("Created client, starting loop...")
         for exit != true{
                 fmt.Println("checking for requests to send...")
-                samStack.readRequest()
-                fmt.Println("checking for recieved responses...")
-                samStack.writeResponses()
+                go samStack.readRequest()
+                go samStack.writeResponses()
                 fmt.Println("checking contents of delete pipe")
                 exit = samStack.readDelete()
                 go closeProxy(samStack)
