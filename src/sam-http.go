@@ -5,6 +5,7 @@ import (
         "bytes"
         "fmt"
 	"io"
+        "io/ioutil"
 	"log"
 	"net/http"
         "os"
@@ -188,19 +189,19 @@ func (samConn *samHttp) sendRequest(request string) int{
 }
 
 func (samConn *samHttp) printResponse() string{
-        line := samConn.recvBuff.Text()
-        //samConn.checkErr(err)
-        n := len(line)
+        b, err := ioutil.ReadFile(samConn.recvPath)
+        samConn.checkErr(err)
+        n := len(b)
         if n == 0 {
-                //fmt.Println("Maintaining Connection:", samConn.hostGet())
+                fmt.Println("Maintaining Connection:", samConn.hostGet())
                 return ""
         }else if n < 0 {
-                fmt.Println("Something wierd happened with :", line)
+                fmt.Println("Something wierd happened with :", b)
                 fmt.Println("end determined at index :", strconv.Itoa(n))
                 return ""
         }else{
                 fmt.Println("Reading n bytes from recv pipe:", strconv.Itoa(n) )
-                s := string( line[:n] )
+                s := string(b)
                 fmt.Println("Got response: %s", s )
                 return s
         }
