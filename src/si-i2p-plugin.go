@@ -6,6 +6,8 @@ import (
         "os"
         "os/signal"
         "time"
+        //"runtime"
+        "runtime/debug"
         "github.com/eyedeekay/gosam"
 )
 
@@ -53,13 +55,13 @@ func main(){
 
 
         defer samStack.cleanupClient()
-
+        debug.SetGCPercent(20)
         fmt.Println("Created client, starting loop...")
         for exit != true{
                 go samStack.readRequest()
                 go samStack.writeResponses()
                 go closeProxy(samStack)
-                time.Sleep(500 * time.Millisecond)
+                time.Sleep(100 * time.Millisecond)
         }
 }
 

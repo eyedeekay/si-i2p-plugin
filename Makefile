@@ -7,19 +7,18 @@ LOG := log/
 ETC := etc/
 USR := usr/
 LOCAL := local/
-VERSION := 0.15
+VERSION := 0.16
 
 
 CC := musl-gcc
 COMPILER := "-compiler gccgo"
 
-COMPILER_FLAGS := '-ldflags \'-linkmode external -extldflags "-static"\''
-#COMPILER_FLAGS := -gccgoflags '-extldflags "-fPIE" "-static" "-pie"'
+COMPILER_FLAGS := '-ldflags \'-linkmode external -extldflags "-static" "-fPIE" "-pie"\''
 
 build:
 	go get github.com/eyedeekay/gosam
 	go build -o bin/si-i2p-plugin ./src
-	echo 'built'
+	@echo 'built'
 
 build-static:
 	go get github.com/eyedeekay/gosam
@@ -65,6 +64,12 @@ debug: build
 
 try: build
 	./bin/si-i2p-plugin 2>err | tee -a log &
+
+memcheck: build
+	valgrind ./bin/si-i2p-plugin 2>err | tee -a log &
+
+test-bad:
+	echo http://t.i2p > parent/send
 
 test-easy:
 	echo http://i2p-projekt.i2p > parent/send

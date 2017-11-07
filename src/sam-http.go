@@ -191,7 +191,6 @@ func (samConn *samHttp) sendRequest(request string) int{
 func (samConn *samHttp) scannerText() (string, int) {
         s := ""
         for samConn.recvBuff.Scan() {
-                fmt.Println(samConn.recvBuff.Text())
                 s += samConn.recvBuff.Text()
         }
         fmt.Println(s)
@@ -209,11 +208,9 @@ func (samConn *samHttp) printResponse() string{
                 return ""
         }else if n < 0 {
                 fmt.Println("Something wierd happened with :" , s)
-                fmt.Println("end determined at index :", strconv.Itoa(n))
                 return ""
         }else{
-                fmt.Println("Reading n bytes from recv pipe:", strconv.Itoa(n) )
-                io.WriteString(samConn.recvPipe, s)
+                defer io.WriteString(samConn.recvPipe, s)
                 fmt.Println("Got response: %s", s )
                 return s
         }
