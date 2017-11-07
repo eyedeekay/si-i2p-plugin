@@ -19,6 +19,7 @@ COMPILER_FLAGS := '-ldflags \'-linkmode external -extldflags "-static"\''
 build:
 	go get github.com/eyedeekay/gosam
 	go build -o bin/si-i2p-plugin ./src
+	echo 'built'
 
 build-static:
 	go get github.com/eyedeekay/gosam

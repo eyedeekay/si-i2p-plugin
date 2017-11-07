@@ -5,7 +5,7 @@ import (
         "bytes"
         "fmt"
 	"io"
-        "io/ioutil"
+        //"io/ioutil"
 	"log"
 	"net/http"
         "os"
@@ -188,20 +188,36 @@ func (samConn *samHttp) sendRequest(request string) int{
         return 0
 }
 
+func (samConn *samHttp) scannerText() (string, bool) {
+        s := ""
+        for samConn.recvBuff.Scan() {
+                s += samConn.recvBuff.Text()
+        }
+        fmt.Println(s)
+        if s != "" {
+                return s, true
+        }else{
+                return "", false
+        }
+}
+
 func (samConn *samHttp) printResponse() string{
-        b, err := ioutil.ReadFile(samConn.recvPath)
-        samConn.checkErr(err)
-        n := len(b)
-        if n == 0 {
+        //b, err := ioutil.ReadFile(samConn.recvPath)
+        //samConn.checkErr(err)
+        //n := len(b)
+        s, b := samConn.scannerText()
+        if b == false {
+        //if n == 0 {
                 fmt.Println("Maintaining Connection:", samConn.hostGet())
-                return ""
-        }else if n < 0 {
-                fmt.Println("Something wierd happened with :", b)
-                fmt.Println("end determined at index :", strconv.Itoa(n))
+                //return ""
+        //}else if n < 0 {
+                fmt.Println("Something wierd happened with :" , b)
+                //fmt.Println("end determined at index :", strconv.Itoa(n))
                 return ""
         }else{
-                fmt.Println("Reading n bytes from recv pipe:", strconv.Itoa(n) )
-                s := string(b)
+                //fmt.Println("Reading n bytes from recv pipe:", strconv.Itoa(n) )
+                //s := string(b)
+                io.WriteString(samConn.recvPipe, s)
                 fmt.Println("Got response: %s", s )
                 return s
         }

@@ -167,6 +167,7 @@ func (samStack *samList) writeResponses(){
 
 func (samStack *samList) writeRecieved(response string){
         if response != "" {
+                fmt.Println("found a response")
                 samStack.recvPipe.WriteString(response)
         }
 }
@@ -177,7 +178,6 @@ func (samStack *samList) readDelete() bool {
         n := len(line)
         fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
         if n == 0 {
-                fmt.Println("Maintaining Connection.")
                 return false
         }else if n < 0 {
                 fmt.Println("Something wierd happened with :", line)
@@ -201,7 +201,8 @@ func (samStack *samList) cleanupClient(){
         for _, client := range samStack.stackOfSams {
                 client.cleanupClient()
         }
-        os.RemoveAll(filepath.Join(connectionDirectory))
+        samStack.delPipe.Close()
+        os.RemoveAll(filepath.Join(connectionDirectory, "parent"))
 }
 
 func (samStack *samList) checkErr(err error) {
