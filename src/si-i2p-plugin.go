@@ -59,7 +59,7 @@ func main(){
                 go samStack.readRequest()
                 go samStack.writeResponses()
                 go closeProxy(samStack)
-                time.Sleep(100 * time.Millisecond)
+                time.Sleep(500 * time.Millisecond)
         }
 }
 
