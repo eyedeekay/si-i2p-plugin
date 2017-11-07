@@ -210,7 +210,7 @@ func (samConn *samHttp) printResponse() string{
                 fmt.Println("Something wierd happened with :" , s)
                 return ""
         }else{
-                defer io.WriteString(samConn.recvPipe, s)
+                io.WriteString(samConn.recvPipe, s)
                 fmt.Println("Got response: %s", s )
                 return s
         }

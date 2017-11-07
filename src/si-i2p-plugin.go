@@ -41,7 +41,7 @@ func main(){
 
         goSam.ConnDebug = debugConnection
 
-        samStack := createSamList(samAddrString, samPortString)
+        samStack := createSamList(samAddrString, samPortString, address)
 
         c := make(chan os.Signal, 1)
         signal.Notify(c, os.Interrupt)
@@ -53,16 +53,16 @@ func main(){
                 }
         }()
 
-
-        defer samStack.cleanupClient()
         debug.SetGCPercent(20)
         fmt.Println("Created client, starting loop...")
         for exit != true{
                 go samStack.readRequest()
-                go samStack.writeResponses()
+                samStack.writeResponses()
                 go closeProxy(samStack)
-                time.Sleep(100 * time.Millisecond)
+                time.Sleep(10 * time.Millisecond)
         }
+
+        samStack.cleanupClient()
 }
 
 func closeProxy(samStack samList){

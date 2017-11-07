@@ -22,13 +22,15 @@ type samList struct{
         sendPath string
         sendPipe *os.File
         sendBuff bufio.Reader
+        //sendBuff bufio.Scanner
 
         recvPath string
         recvPipe *os.File
 
         delPath string
         delPipe *os.File
-        delBuff bufio.Reader
+        //delBuff bufio.Reader
+        delBuff bufio.Scanner
 }
 
 func (samStack * samList) initPipes(){
@@ -49,8 +51,9 @@ func (samStack * samList) initPipes(){
                 fmt.Println("checking for problems...")
                 samStack.sendPipe, samStack.err = os.OpenFile(samStack.sendPath , os.O_RDWR|os.O_CREATE, 0755)
                 fmt.Println("Opening the Named Pipe as a File...")
+                //samStack.sendBuff = *bufio.NewScanner(samStack.sendPipe)
                 samStack.sendBuff = *bufio.NewReader(samStack.sendPipe)
-                fmt.Println("Opening the Named Pipe as a Buffer...")
+                fmt.Println("Opening the Named Pipe as a Scanner...")
                 fmt.Println("Created a named Pipe for sending requests:", samStack.sendPath)
         }
 
@@ -63,6 +66,7 @@ func (samStack * samList) initPipes(){
                 samStack.checkErr(samStack.err)
                 fmt.Println("checking for problems...")
                 samStack.recvPipe, samStack.err = os.OpenFile(samStack.recvPath , os.O_RDWR|os.O_CREATE, 0755)
+                samStack.recvPipe.WriteString("")
                 fmt.Println("Created a named Pipe for recieving responses:", samStack.recvPath)
         }
 
@@ -75,9 +79,10 @@ func (samStack * samList) initPipes(){
                 samStack.checkErr(samStack.err)
                 fmt.Println("checking for problems...")
                 samStack.delPipe, samStack.err = os.OpenFile(samStack.delPath , os.O_RDWR|os.O_CREATE, 0755)
+                samStack.recvPipe.WriteString("")
                 fmt.Println("Opening the Named Pipe as a File...")
-                samStack.delBuff = *bufio.NewReader(samStack.delPipe)
-                fmt.Println("Opening the Named Pipe as a Buffer...")
+                samStack.delBuff = *bufio.NewScanner(samStack.delPipe)
+                fmt.Println("Opening the Named Pipe as a Scanner...")
                 fmt.Println("Created a named Pipe for closing the connection:", samStack.delPath)
         }
         samStack.up = true;
@@ -123,15 +128,29 @@ func (samStack *samList) sendClientRequest(request string){
         }
 }
 
+/*func (samStack *samList) sendText() (string, int) {
+        s := ""
+        for samStack.sendBuff.Scan() {
+                s += samStack.sendBuff.Text()
+        }
+        fmt.Println(s)
+        if s != "" {
+                return s, len(s)
+        }else{
+                return "", 0
+        }
+}*/
+
 func (samStack *samList) readRequest() string{
         line, _, err := samStack.sendBuff.ReadLine()
         samStack.checkErr(err)
         n := len(line)
+        //s, n := samStack.sendText()
         fmt.Println("Reading n bytes from Parent send pipe:", strconv.Itoa(n))
         if n == 0 {
                 fmt.Println("Flush the pipe maybe?:")
         }else if n < 0 {
-                fmt.Println("Something wierd happened with :", line)
+                fmt.Println("Something wierd happened with the Parent Send pipe." )
                 fmt.Println("end determined at index :", strconv.Itoa(n))
         }else{
                 s := string( line[:n] )
@@ -167,24 +186,38 @@ func (samStack *samList) writeResponses(){
 
 func (samStack *samList) writeRecieved(response string){
         if response != "" {
-                fmt.Println("found a response")
                 samStack.recvPipe.WriteString(response)
         }
 }
 
+func (samStack *samList) delText() (string, int) {
+        s := ""
+        //for samStack.delBuff.Scan() {
+                samStack.delBuff.Scan()
+                s += samStack.delBuff.Text()
+        //}
+        fmt.Println(s)
+        if s != "" {
+                return s, len(s)
+        }else{
+                return "", 0
+        }
+}
+
 func (samStack *samList) readDelete() bool {
-        line, _, err := samStack.delBuff.ReadLine()
-        samStack.checkErr(err)
-        n := len(line)
+        //line, _, err := samStack.delBuff.ReadLine()
+        //samStack.checkErr(err)
+        //n := len(line)
+        s, n := samStack.delText()
         fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
         if n == 0 {
                 return false
         }else if n < 0 {
-                fmt.Println("Something wierd happened with :", line)
+                fmt.Println("Something wierd happened with :", s)
                 fmt.Println("end determined at index :", strconv.Itoa(n))
                 return false
         }else{
-                s := string( line[:n] )
+                //s := string( line[:n] )
                 if s == "y" {
                         fmt.Println("Closing proxy.")
                         defer samStack.cleanupClient()
@@ -212,12 +245,14 @@ func (samStack *samList) checkErr(err error) {
 	}
 }
 
-func createSamList(samAddr string, samPort string) samList{
+func createSamList(samAddr string, samPort string, initAddress string) samList{
         var samStack samList
         fmt.Println("Generating parent proxy structure.")
         samStack.up = false
         fmt.Println("Parent proxy set to down.")
         samStack.createSamList(samAddr, samPort)
         fmt.Println("SAM list created")
+        //io.WriteString(samStack.sendPipe, initAddress + "\n")
+        samStack.sendPipe.WriteString(initAddress + "\n")
         return samStack
 }
