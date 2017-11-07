@@ -7,7 +7,7 @@ LOG := log/
 ETC := etc/
 USR := usr/
 LOCAL := local/
-VERSION := 0.16
+VERSION := 0.17
 
 
 CC := musl-gcc
@@ -68,18 +68,40 @@ try: build
 memcheck: build
 	valgrind ./bin/si-i2p-plugin 2>err | tee -a log &
 
+test:	test-bad test-easy test-hard
+
 test-bad:
-	echo http://t.i2p > parent/send
+	@echo " It should not simply crash upon recieving a bad request, instead"
+	@echo "it should log it, not make the request or touch the network at"
+	@echo "all, and move on."
+	echo http://notarealurl.i2p > parent/send
 
 test-easy:
+	@echo " It should know how to send requests for well-formed http url's"
+	@echo "that point to b32 addresses or sites in the address book"
 	echo http://i2p-projekt.i2p > parent/send
 
 test-harder:
+	@echo " It should also be able to recognize and correct simple"
+	@echo "formatting mistakes in URL's and correct them where appropriate."
 	echo i2p-projekt.i2p > parent/send
+
+test-loop:
+	@echo " It's rude and a privacy risk to use i2p-projekt.i2p(or any" "
+	@echo "nonlocal eepSite as a test url in the final application. Instead,"
+	@echo "it should generate a destination on this machine and query it as"
+	@echo "a test, then immediately tear down the test tunnel."
+	echo test.i2p > parent/serv
+	echo http://test.i2p > parent/send
+
 
 clean:
 	killall si-i2p-plugin; \
 	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude
+
+kill:
+	killall si-i2p-plugin; \
+	rm -rf parent *.i2p parent
 
 tidy:
 	rm -rf parent *.i2p *.html *-pak *err *log static-include static-exclude
@@ -92,6 +114,12 @@ clobber:
 
 cat:
 	cat parent/recv
+
+kitten:
+	cat i2p-projekt.i2p/recv
+
+test-cat:
+	cat i2p-projekt.i2p/recv > recv.html
 
 exit:
 	echo y > parent/del

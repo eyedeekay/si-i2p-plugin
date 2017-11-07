@@ -6,8 +6,6 @@ import (
         "os"
         "os/signal"
         "time"
-        //"runtime"
-        "runtime/debug"
         "github.com/eyedeekay/gosam"
 )
 
@@ -53,7 +51,6 @@ func main(){
                 }
         }()
 
-        debug.SetGCPercent(20)
         fmt.Println("Created client, starting loop...")
         for exit != true{
                 go samStack.readRequest()

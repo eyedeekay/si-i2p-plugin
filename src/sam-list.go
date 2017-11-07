@@ -8,6 +8,7 @@ import (
         "log"
         "os"
         "strconv"
+        "strings"
         "syscall"
 )
 
@@ -22,7 +23,7 @@ type samList struct{
         sendPath string
         sendPipe *os.File
         sendBuff bufio.Reader
-        //sendBuff bufio.Scanner
+        sendScan bufio.Scanner
 
         recvPath string
         recvPipe *os.File
@@ -51,7 +52,7 @@ func (samStack * samList) initPipes(){
                 fmt.Println("checking for problems...")
                 samStack.sendPipe, samStack.err = os.OpenFile(samStack.sendPath , os.O_RDWR|os.O_CREATE, 0755)
                 fmt.Println("Opening the Named Pipe as a File...")
-                //samStack.sendBuff = *bufio.NewScanner(samStack.sendPipe)
+                samStack.sendScan = *bufio.NewScanner(samStack.sendPipe)
                 samStack.sendBuff = *bufio.NewReader(samStack.sendPipe)
                 fmt.Println("Opening the Named Pipe as a Scanner...")
                 fmt.Println("Created a named Pipe for sending requests:", samStack.sendPath)
@@ -128,73 +129,11 @@ func (samStack *samList) sendClientRequest(request string){
         }
 }
 
-/*func (samStack *samList) sendText() (string, int) {
+func (samStack *samList) sendText() (string, int) {
         s := ""
-        for samStack.sendBuff.Scan() {
-                s += samStack.sendBuff.Text()
-        }
-        fmt.Println(s)
-        if s != "" {
-                return s, len(s)
-        }else{
-                return "", 0
-        }
-}*/
-
-func (samStack *samList) readRequest() string{
-        line, _, err := samStack.sendBuff.ReadLine()
-        samStack.checkErr(err)
-        n := len(line)
-        //s, n := samStack.sendText()
-        fmt.Println("Reading n bytes from Parent send pipe:", strconv.Itoa(n))
-        if n == 0 {
-                fmt.Println("Flush the pipe maybe?:")
-        }else if n < 0 {
-                fmt.Println("Something wierd happened with the Parent Send pipe." )
-                fmt.Println("end determined at index :", strconv.Itoa(n))
-        }else{
-                s := string( line[:n] )
-                fmt.Println("Sending request:", s)
-                samStack.sendClientRequest(s)
-                return s
-        }
-        return ""
-}
-
-func (samStack *samList) httpResponse(request string) (io.Reader, error){
-        found := false
-        var response io.Reader
-        var err error
-        for _, client := range samStack.stackOfSams {
-                if client.hostCheck(request) {
-                        response, err = os.OpenFile(client.recvPath, os.O_RDWR|os.O_CREATE, 0755)
-                        samStack.checkErr(err)
-                        found = true
-                }
-        }
-        if ! found {
-                fmt.Println("Child proxy not found for: ", request)
-        }
-        return response, err
-}
-
-func (samStack *samList) writeResponses(){
-        for _, client := range samStack.stackOfSams {
-                samStack.writeRecieved(client.printResponse())
-        }
-}
-
-func (samStack *samList) writeRecieved(response string){
-        if response != "" {
-                samStack.recvPipe.WriteString(response)
-        }
-}
-
-func (samStack *samList) delText() (string, int) {
-        s := ""
-        //for samStack.delBuff.Scan() {
-                samStack.delBuff.Scan()
-                s += samStack.delBuff.Text()
+        //for samStack.sendBuff.Scan() {
+        samStack.sendScan.Scan()
+        s += samStack.sendScan.Text()
         //}
         fmt.Println(s)
         if s != "" {
@@ -204,10 +143,54 @@ func (samStack *samList) delText() (string, int) {
         }
 }
 
+func (samStack *samList) readRequest() string{
+        s, n := samStack.sendText()
+        fmt.Println("Reading n bytes from Parent send pipe:", strconv.Itoa(n))
+        if n == 0 {
+                fmt.Println("Flush the pipe maybe?:")
+        }else if n < 0 {
+                fmt.Println("Something wierd happened with the Parent Send pipe." )
+                fmt.Println("end determined at index :", strconv.Itoa(n))
+        }else{
+                fmt.Println("Sending request:", s)
+                samStack.sendClientRequest(s)
+                return s
+        }
+        return ""
+}
+
+func (samStack *samList) writeResponses(){
+        for _, client := range samStack.stackOfSams {
+                samStack.writeRecieved(client.printResponse())
+        }
+}
+
+func (samStack *samList) responsify(input string) io.Reader {
+        tmp := strings.NewReader(input)
+        return tmp
+}
+
+func (samStack *samList) writeRecieved(response string){
+        if response != "" {
+                fmt.Println("write recieved")
+                //samStack.recvPipe.WriteString(response)
+                io.Copy(samStack.recvPipe, samStack.responsify(response))
+        }
+}
+
+func (samStack *samList) delText() (string, int) {
+        s := ""
+        samStack.delBuff.Scan()
+        s += samStack.delBuff.Text()
+        fmt.Println(s)
+        if s != "" {
+                return s, len(s)
+        }else{
+                return "", 0
+        }
+}
+
 func (samStack *samList) readDelete() bool {
-        //line, _, err := samStack.delBuff.ReadLine()
-        //samStack.checkErr(err)
-        //n := len(line)
         s, n := samStack.delText()
         fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
         if n == 0 {
@@ -217,7 +200,6 @@ func (samStack *samList) readDelete() bool {
                 fmt.Println("end determined at index :", strconv.Itoa(n))
                 return false
         }else{
-                //s := string( line[:n] )
                 if s == "y" {
                         fmt.Println("Closing proxy.")
                         defer samStack.cleanupClient()
@@ -252,7 +234,6 @@ func createSamList(samAddr string, samPort string, initAddress string) samList{
         fmt.Println("Parent proxy set to down.")
         samStack.createSamList(samAddr, samPort)
         fmt.Println("SAM list created")
-        //io.WriteString(samStack.sendPipe, initAddress + "\n")
         samStack.sendPipe.WriteString(initAddress + "\n")
         return samStack
 }

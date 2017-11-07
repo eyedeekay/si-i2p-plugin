@@ -5,7 +5,6 @@ import (
         "bytes"
         "fmt"
 	"io"
-//        "io/ioutil"
 	"log"
 	"net/http"
         "os"
@@ -191,14 +190,19 @@ func (samConn *samHttp) sendRequest(request string) int{
 func (samConn *samHttp) scannerText() (string, int) {
         s := ""
         for samConn.recvBuff.Scan() {
+                //samConn.recvBuff.Scan()
                 s += samConn.recvBuff.Text()
         }
-        fmt.Println(s)
         if s != "" {
                 return s, len(s)
         }else{
                 return "", 0
         }
+}
+
+func (samConn *samHttp) responsify(input string) io.Reader {
+        tmp := strings.NewReader(input)
+        return tmp
 }
 
 func (samConn *samHttp) printResponse() string{
@@ -210,8 +214,8 @@ func (samConn *samHttp) printResponse() string{
                 fmt.Println("Something wierd happened with :" , s)
                 return ""
         }else{
-                io.WriteString(samConn.recvPipe, s)
-                fmt.Println("Got response: %s", s )
+                defer io.Copy(samConn.recvPipe, samConn.responsify(s))
+                fmt.Println("Got response: %s", sr )
                 return s
         }
 }
