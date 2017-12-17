@@ -40,6 +40,10 @@ func (samStack * samList) initPipes(){
         if ! pathConnectionExists {
                 fmt.Println("Creating a connection:", "parent")
                 os.Mkdir(filepath.Join(connectionDirectory, "parent"), 0755)
+        }else{
+            os.RemoveAll(filepath.Join(connectionDirectory, "parent"))
+            fmt.Println("Creating a connection:", "parent")
+            os.Mkdir(filepath.Join(connectionDirectory, "parent"), 0755)
         }
 
         samStack.sendPath = filepath.Join(connectionDirectory, "parent", "send")
@@ -144,14 +148,18 @@ func (samStack *samList) sendText() (string, int) {
 }
 
 func (samStack *samList) readRequest() string{
-        s, n := samStack.sendText()
-        fmt.Println("Reading n bytes from Parent send pipe:", strconv.Itoa(n))
+        //s, n := samStack.sendText()
+        line, _, err := samStack.sendBuff.ReadLine()
+        samStack.checkErr(err)
+        n := len(line)
+        //fmt.Println("Reading n bytes from Parent send pipe:", strconv.Itoa(n))
         if n == 0 {
                 fmt.Println("Flush the pipe maybe?:")
         }else if n < 0 {
                 fmt.Println("Something wierd happened with the Parent Send pipe." )
                 fmt.Println("end determined at index :", strconv.Itoa(n))
         }else{
+                s := string( line[:n] )
                 fmt.Println("Sending request:", s)
                 samStack.sendClientRequest(s)
                 return s
@@ -172,8 +180,7 @@ func (samStack *samList) responsify(input string) io.Reader {
 
 func (samStack *samList) writeRecieved(response string){
         if response != "" {
-                fmt.Println("write recieved")
-                //samStack.recvPipe.WriteString(response)
+                fmt.Println("Got response: %s", response )
                 io.Copy(samStack.recvPipe, samStack.responsify(response))
         }
 }

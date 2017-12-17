@@ -51,6 +51,10 @@ func (samConn *samHttp) initPipes(){
         if ! pathConnectionExists {
                 fmt.Println("Creating a connection:", samConn.host)
                 os.Mkdir(filepath.Join(connectionDirectory, samConn.host), 0755)
+        }else{
+                os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
+                fmt.Println("Creating a connection:", samConn.host)
+                os.Mkdir(filepath.Join(connectionDirectory, samConn.host), 0755)
         }
 
         samConn.sendPath = filepath.Join(connectionDirectory, samConn.host, "send")
@@ -214,8 +218,7 @@ func (samConn *samHttp) printResponse() string{
                 fmt.Println("Something wierd happened with :" , s)
                 return ""
         }else{
-                defer io.Copy(samConn.recvPipe, samConn.responsify(s))
-                fmt.Println("Got response: %s", sr )
+                io.Copy(samConn.recvPipe, samConn.responsify(s))
                 return s
         }
 }
