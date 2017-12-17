@@ -26,13 +26,27 @@ start() {
 }
 
 stop() {
-  if [ ! -f "$PIDFILE" ] || ! kill -0 $(cat "$PIDFILE"); then
+  if [ ! -f "$PIDFILE" ] || kill -0 $(cat "$PIDFILE") ; then
     echo 'Service not running' >&2
     return 1
   fi
   echo 'Stopping destination-isolating proxy service…' >&2
   kill -15 $(cat "$PIDFILE") && rm -f "$PIDFILE"
   echo 'Service stopped' >&2
+}
+
+status() {
+  if [ -f /var/run/$PIDNAME ] && kill -0 $(cat /var/run/$PIDNAME); then
+    echo 'Currently open pipes:' >&2
+    su -c 'ls /var/si-i2p-plugin' $RUNAS >&2
+    su -c 'tail "$LOGFILE" $RUNAS' >&2
+    return 1
+  else
+    echo 'Service not running' >&2
+    su -c 'ls /var/si-i2p-plugin' $RUNAS >&2
+    return 1
+  fi
+  echo 'Starting destination-isolating proxy service…' >&2
 }
 
 uninstall() {
@@ -54,6 +68,9 @@ case "$1" in
     ;;
   stop)
     stop
+    ;;
+  status)
+    status
     ;;
   uninstall)
     uninstall

@@ -63,28 +63,36 @@ debug: build
 	gdb ./bin/si-i2p-plugin
 
 try: build
-	./bin/si-i2p-plugin 2>err | tee -a log &
+	./bin/si-i2p-plugin >log 2>err &
+	sleep 1
+	tail -f log err
 
 memcheck: build
-	valgrind ./bin/si-i2p-plugin 2>err | tee -a log &
+	valgrind ./bin/si-i2p-plugin 2>err >log 2>err &
+	tail -f log err
 
-test:	test-bad test-easy test-hard
+test:	test-easy #test-hard test-bad
 
 test-bad:
 	@echo " It should not simply crash upon recieving a bad request, instead"
 	@echo "it should log it, not make the request or touch the network at"
 	@echo "all, and move on."
 	echo http://notarealurl.i2p > parent/send
+	cat parent/recv
 
 test-easy:
 	@echo " It should know how to send requests for well-formed http url's"
 	@echo "that point to b32 addresses or sites in the address book"
 	echo http://i2p-projekt.i2p > parent/send
+	#cat parent/recv
+	cat i2p-projekt.i2p/recv
 
-test-harder:
+test-hard:
 	@echo " It should also be able to recognize and correct simple"
 	@echo "formatting mistakes in URL's and correct them where appropriate."
 	echo i2p-projekt.i2p > parent/send
+	cat parent/recv
+	cat i2p-projekt.i2p/recv
 
 test-loop:
 	@echo " It's rude and a privacy risk to use i2p-projekt.i2p(or any" "

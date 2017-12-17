@@ -6,7 +6,12 @@ CFGFILE=/etc/si-i2p-plugin/settings.cfg
 
 if [ -f /etc/si-i2p-plugin/settings.cfg ]; then
         . /etc/si-i2p-plugin/settings.cfg
-        si2p_config="$sam_addr $sam_port $proxy_addr $proxy_port $debug_info $testing_url"
+        si2p_config="-bridge-addr=$sam_addr \
+            -bridge-port=$sam_port \
+            -proxy-addr=$proxy_addr \
+            -proxy-port=$proxy_port \
+            -conn-debug=$debug_info \
+            -address=$testing_url"
 fi
 
 if [ ! -d "$working_dir" ]; then
