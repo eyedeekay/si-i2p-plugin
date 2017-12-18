@@ -65,11 +65,11 @@ debug: build
 try: build
 	./bin/si-i2p-plugin >log 2>err &
 	sleep 1
-	tail -f log err
+	tail -f log
 
 memcheck: build
 	valgrind ./bin/si-i2p-plugin 2>err >log 2>err &
-	tail -f log err
+	tail -f log
 
 test:	test-easy #test-hard test-bad
 
@@ -226,3 +226,6 @@ docker-run:
 		--name si-i2p-plugin \
 		--user sii2pplugindocker \
 		-t si-i2p-plugin
+
+ps:
+	ps aux | grep si-i2p-plugin | grep -v grep
