@@ -114,7 +114,7 @@ func (samStack *samList) sendClientRequest(request string){
         fmt.Println("of", len(samStack.stackOfSams))
         if client.hostCheck(request){
             fmt.Println("Client pipework for %s found.", request)
-            go client.sendRequest(request)
+            client.sendRequest(request)
             found = true
         }
     }
@@ -126,7 +126,7 @@ func (samStack *samList) sendClientRequest(request string){
             fmt.Println("of", len(samStack.stackOfSams))
             if samStack.stackOfSams[index].hostCheck(request){
                 fmt.Println("Client pipework for %s found.", request)
-                go samStack.stackOfSams[index].sendRequest(request)
+                samStack.stackOfSams[index].sendRequest(request)
                 found = true
             }
         }
@@ -171,7 +171,10 @@ func (samStack *samList) writeResponses(){
     for i, client := range samStack.stackOfSams {
         fmt.Println("Checking for responses: %s", i+1)
         fmt.Println("of: ", len(samStack.stackOfSams))
-        samStack.writeRecieved(client.printResponse())
+        b := samStack.writeRecieved(client.printResponse())
+        if b == true {
+            break
+        }
     }
 }
 
@@ -181,12 +184,15 @@ func (samStack *samList) responsify(input string) io.Reader {
     return tmp
 }
 
-func (samStack *samList) writeRecieved(response string){
+func (samStack *samList) writeRecieved(response string) bool {
     fmt.Println("Response test", response)
+    b := false
     if response != "" {
         fmt.Println("Got response: %s", response )
         io.Copy(samStack.recvPipe, samStack.responsify(response))
+        b = true
     }
+    return b
 }
 
 func (samStack *samList) delText() (string, int) {

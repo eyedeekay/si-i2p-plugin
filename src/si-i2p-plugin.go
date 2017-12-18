@@ -53,11 +53,11 @@ func main(){
 
     fmt.Println("Created client, starting loop...")
     for exit != true{
-        go samStack.readRequest()
+        samStack.readRequest()
+        go samStack.writeResponses()
         //go closeProxy(samStack)
-        samStack.writeResponses()
         go closeProxy(samStack)
-        time.Sleep(10 * time.Millisecond)
+        time.Sleep(100 * time.Millisecond)
     }
 
     samStack.cleanupClient()

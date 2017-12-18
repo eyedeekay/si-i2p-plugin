@@ -30,17 +30,9 @@ type samHttp struct{
     sendPipe *os.File
     sendBuff bufio.Reader
 
-/*    recvPath string
-    recvPipe *os.File
-    recvBuff bufio.Scanner
-*/
     namePath string
     namePipe *os.File
     name string
-
-    delPath string
-    delPipe *os.File
-    delBuff bufio.Reader
 }
 
 var connectionDirectory string
@@ -52,10 +44,6 @@ func (samConn *samHttp) initPipes(){
     if ! pathConnectionExists {
         fmt.Println("Creating a connection:", samConn.host)
         os.Mkdir(filepath.Join(connectionDirectory, samConn.host), 0755)
-    }else{
-        //os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
-        //fmt.Println("Creating a connection:", samConn.host)
-        //os.Mkdir(filepath.Join(connectionDirectory, samConn.host), 0755)
     }
 
     samConn.sendPath = filepath.Join(connectionDirectory, samConn.host, "send")
@@ -85,20 +73,6 @@ func (samConn *samHttp) initPipes(){
         fmt.Println("Created a named Pipe for the full name:", samConn.namePath)
     }
 
-    samConn.delPath = filepath.Join(connectionDirectory, samConn.host, "del")
-    pathDelExists, delPathErr := exists(samConn.delPath)
-    samConn.checkErr(delPathErr)
-    if ! pathDelExists{
-        err := syscall.Mkfifo(samConn.delPath, 0755)
-        fmt.Println("Preparing to create Pipe:", samConn.delPath)
-        samConn.checkErr(err)
-        fmt.Println("checking for problems...")
-        samConn.delPipe, err = os.OpenFile(samConn.delPath , os.O_RDWR|os.O_CREATE, 0755)
-        fmt.Println("Opening the Named Pipe as a File...")
-        samConn.delBuff = *bufio.NewReader(samConn.delPipe)
-        fmt.Println("Opening the Named Pipe as a Buffer...")
-        fmt.Println("Created a named Pipe for closing the connection:", samConn.delPath)
-    }
 }
 
 
@@ -115,7 +89,7 @@ func (samConn *samHttp) createClient(samAddr string, samPort string, request str
         samConn.host, _ = samConn.hostSet(request)
         samConn.initPipes()
     }
-    samConn.subCache = append(samConn.subCache, newSamUrl(request))
+    samConn.subCache = append(samConn.subCache, newSamUrl(samConn.host))
     samConn.writeName(request)
 }
 
@@ -156,7 +130,6 @@ func (samConn *samHttp) hostCheck(request string) bool{
             return false
         }
     }
-
 }
 
 func (samConn *samHttp) getRequest(request string) (string, string){
@@ -174,24 +147,29 @@ func (samConn *samHttp) getRequest(request string) (string, string){
 }
 
 func (samConn *samHttp) sendRequest(request string) int{
-    r, dir:= samConn.getRequest(request)
+    r, dir := samConn.getRequest(request)
     resp, err := samConn.http.Get(r)
     samConn.checkErr(err)
-    defer resp.Body.Close()
-    //io.Copy(samConn.recvPipe, resp.Body)
-    samConn.copyRequest(resp.Body, dir)
+    samConn.copyRequest(resp, dir)
     return 0
 }
 
-func (samConn *samHttp) copyRequest(response io.Reader, directory string){
+func (samConn *samHttp) copyRequest(response *http.Response, directory string){
+    b := false
     for _, url := range samConn.subCache {
-        url.copyDirectory(response, directory)
+        b = url.copyDirectory(response, directory)
+        if b == true {
+            break
+        }
+    }
+    if b == false {
+        samConn.subCache = append(samConn.subCache, newSamUrl(directory))
     }
 }
 
-func (samConn *samHttp) scannerText() (string, int) {
-    text := ""
-    length := 0
+func (samConn *samHttp) scannerText() (r string, l int) {
+   text := ""
+   length := 0
     for _, url := range samConn.subCache {
         text, length = url.scannerText()
         if length > 0 {
@@ -200,7 +178,6 @@ func (samConn *samHttp) scannerText() (string, int) {
     }
     return text, length
 }
-
 
 func (samConn *samHttp) responsify(input string) io.Reader {
     tmp := strings.NewReader(input)
@@ -240,27 +217,16 @@ func (samConn *samHttp) readRequest(){
 }
 
 func (samConn *samHttp) readDelete() bool {
-    line, _, err := samConn.delBuff.ReadLine()
-    samConn.checkErr(err)
-    n := len(line)
-    fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
-    if n == 0 {
-        fmt.Println("Maintaining Connection:", samConn.hostGet())
-        return false
-    }else if n < 0 {
-        fmt.Println("Something wierd happened with :", line)
-        fmt.Println("end determined at index :", strconv.Itoa(n))
-        return false
-    }else{
-        s := string( line[:n] )
-        if s == "y" {
-            fmt.Println("Deleting connection: %s", samConn.host )
-            defer samConn.cleanupClient()
-            return true
-        }else{
-            return false
+    b := false
+    for _, dir := range samConn.subCache {
+        n := dir.readDelete()
+        if n == 0 {
+            fmt.Println("Maintaining Connection:", samConn.hostGet())
+        }else if n > 0 {
+            b = true
         }
     }
+    return b
 }
 
 
@@ -296,7 +262,6 @@ func (samConn *samHttp) cleanupClient(){
     for _, url := range samConn.subCache {
         url.cleanupDirectory()
     }
-    samConn.delPipe.Close()
     samConn.sam.Close()
     os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }

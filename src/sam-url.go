@@ -2,19 +2,18 @@ package main
 
 import (
     "bufio"
-    /*"bytes"*/
+    //"bytes"
     "fmt"
-	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
     "os"
     "path/filepath"
-    /*"strings"
-    "strconv"*/
+    //"strings"
+    "strconv"
     "syscall"
-    /*"net/url"*/
+    //"net/url"
 
-	//"github.com/eyedeekay/gosam"
 )
 
 type samUrl struct{
@@ -26,7 +25,8 @@ type samUrl struct{
 
     recvPath string
     recvPipe *os.File
-    recvBuff bufio.Scanner
+    //recvWriter bufio.Writer
+    //recvReader bufio.Scanner
 
     delPath string
     delPipe *os.File
@@ -40,10 +40,6 @@ func (subUrl *samUrl) initPipes(){
     if ! pathConnectionExists {
         fmt.Println("Creating a connection:", subUrl.subdirectory)
         os.Mkdir(filepath.Join(connectionDirectory, subUrl.subdirectory), 0755)
-    }else{
-        os.RemoveAll(filepath.Join(connectionDirectory, subUrl.subdirectory))
-        fmt.Println("Creating a connection:", subUrl.subdirectory)
-        os.Mkdir(filepath.Join(connectionDirectory, subUrl.subdirectory), 0755)
     }
 
     subUrl.recvPath = filepath.Join(connectionDirectory, subUrl.subdirectory, "recv")
@@ -51,12 +47,12 @@ func (subUrl *samUrl) initPipes(){
     subUrl.checkErr(recvPathErr)
     if ! pathRecvExists {
         subUrl.recvPipe, subUrl.err = os.Create(subUrl.recvPath)
-        fmt.Println("Preparing to create Pipe:", subUrl.recvPath)
+        fmt.Println("Preparing to create File:", subUrl.recvPath)
         subUrl.checkErr(subUrl.err)
         fmt.Println("checking for problems...")
-        subUrl.recvBuff = *bufio.NewScanner(subUrl.recvPipe)
-        fmt.Println("Opening the Named Pipe as a Buffer...")
-        fmt.Println("Created a named Pipe for recieving responses:", subUrl.recvPath)
+        fmt.Println("Opening the File...")
+        subUrl.recvPipe, subUrl.err = os.OpenFile(subUrl.recvPath, os.O_RDWR|os.O_CREATE, 0755)
+        fmt.Println("Created a File for recieving responses:", subUrl.recvPath)
     }
 
     subUrl.delPath = filepath.Join(connectionDirectory, subUrl.subdirectory, "del")
@@ -77,22 +73,20 @@ func (subUrl *samUrl) initPipes(){
 
 func (subUrl *samUrl) createDirectory(requestdir string) {
     subUrl.http = &http.Client{Transport: subUrl.transport}
-    if subUrl.subdirectory == "" {
-        subUrl.subdirectory = subUrl.dirSet(requestdir)
-        subUrl.initPipes()
-    }
+    subUrl.subdirectory = subUrl.dirSet(requestdir)
+    subUrl.initPipes()
 }
 
 func (subUrl *samUrl) scannerText() (string, int) {
-    s := ""
-    for subUrl.recvBuff.Scan() {
-        //samConn.recvBuff.Scan()
-        s += subUrl.recvBuff.Text()
-    }
+    d, _ := ioutil.ReadFile(subUrl.recvPath)
+    s := string(d)
+    /*for subUrl.recvReader.Scan() {
+        s += subUrl.recvReader.Text()
+    }*/
     if s != "" {
         return s, len(s)
     }else{
-       return "no response", 0
+       return "", 0
     }
 }
 
@@ -100,16 +94,44 @@ func (subUrl *samUrl) dirSet(requestdir string) string {
     return requestdir
 }
 
-func (subUrl *samUrl) copyDirectory(response io.Reader, directory string){
+func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) bool{
+    b := false
     if directory == subUrl.subdirectory {
-        io.Copy(subUrl.recvPipe, response)
+        if response.StatusCode == http.StatusOK {
+            defer response.Body.Close()
+            body, _ := ioutil.ReadAll(response.Body)
+            subUrl.recvPipe.Write(body)
+        }
+        b = true
     }
+    return b
 }
 
 func (subUrl *samUrl) cleanupDirectory(){
     subUrl.recvPipe.Close()
     subUrl.delPipe.Close()
     os.RemoveAll(filepath.Join(connectionDirectory, subUrl.subdirectory))
+}
+
+func (subUrl *samUrl) readDelete() int {
+    line, _, err := subUrl.delBuff.ReadLine()
+    subUrl.checkErr(err)
+    n := len(line)
+    fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
+    if n < 0 {
+        fmt.Println("Something wierd happened with :", line)
+        fmt.Println("end determined at index :", strconv.Itoa(n))
+        return n
+    }else{
+        s := string( line[:n] )
+        if s == "y" {
+            fmt.Println("Deleting connection: %s", subUrl.subdirectory )
+            defer subUrl.cleanupDirectory()
+            return n
+        }else{
+            return n
+        }
+    }
 }
 
 func (subUrl *samUrl) checkErr(err error) {

@@ -228,4 +228,4 @@ docker-run:
 		-t si-i2p-plugin
 
 ps:
-	ps aux | grep si-i2p-plugin | grep -v grep
+	ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep
