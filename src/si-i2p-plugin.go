@@ -55,9 +55,8 @@ func main(){
     for exit != true{
         samStack.readRequest()
         go samStack.writeResponses()
-        //go closeProxy(samStack)
         go closeProxy(samStack)
-        time.Sleep(100 * time.Millisecond)
+        time.Sleep(10 * time.Millisecond)
     }
 
     samStack.cleanupClient()

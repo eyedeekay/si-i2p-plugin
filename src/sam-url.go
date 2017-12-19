@@ -13,6 +13,7 @@ import (
     "strconv"
     "syscall"
     //"net/url"
+    "time"
 
 )
 
@@ -24,9 +25,10 @@ type samUrl struct{
     subdirectory string
 
     recvPath string
-    recvPipe *os.File
-    //recvWriter bufio.Writer
-    //recvReader bufio.Scanner
+    recvFile *os.File
+
+    timePath string
+    timeFile *os.File
 
     delPath string
     delPipe *os.File
@@ -39,20 +41,33 @@ func (subUrl *samUrl) initPipes(){
     subUrl.checkErr(pathErr)
     if ! pathConnectionExists {
         fmt.Println("Creating a connection:", subUrl.subdirectory)
-        os.Mkdir(filepath.Join(connectionDirectory, subUrl.subdirectory), 0755)
+        os.MkdirAll(filepath.Join(connectionDirectory, subUrl.subdirectory), 0755)
     }
 
     subUrl.recvPath = filepath.Join(connectionDirectory, subUrl.subdirectory, "recv")
     pathRecvExists, recvPathErr := exists(subUrl.recvPath)
     subUrl.checkErr(recvPathErr)
     if ! pathRecvExists {
-        subUrl.recvPipe, subUrl.err = os.Create(subUrl.recvPath)
+        subUrl.recvFile, subUrl.err = os.Create(subUrl.recvPath)
         fmt.Println("Preparing to create File:", subUrl.recvPath)
         subUrl.checkErr(subUrl.err)
         fmt.Println("checking for problems...")
         fmt.Println("Opening the File...")
-        subUrl.recvPipe, subUrl.err = os.OpenFile(subUrl.recvPath, os.O_RDWR|os.O_CREATE, 0755)
+        subUrl.recvFile, subUrl.err = os.OpenFile(subUrl.recvPath, os.O_RDWR|os.O_CREATE, 0755)
         fmt.Println("Created a File for recieving responses:", subUrl.recvPath)
+    }
+
+    subUrl.timePath = filepath.Join(connectionDirectory, subUrl.subdirectory, "time")
+    pathTimeExists, recvTimeErr := exists(subUrl.timePath)
+    subUrl.checkErr(recvTimeErr)
+    if ! pathTimeExists {
+        subUrl.timeFile, subUrl.err = os.Create(subUrl.timePath)
+        fmt.Println("Preparing to create File:", subUrl.timePath)
+        subUrl.checkErr(subUrl.err)
+        fmt.Println("checking for problems...")
+        fmt.Println("Opening the File...")
+        subUrl.timeFile, subUrl.err = os.OpenFile(subUrl.timePath, os.O_RDWR|os.O_CREATE, 0755)
+        fmt.Println("Created a File for timing responses:", subUrl.timePath)
     }
 
     subUrl.delPath = filepath.Join(connectionDirectory, subUrl.subdirectory, "del")
@@ -98,7 +113,8 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
         if response.StatusCode == http.StatusOK {
             defer response.Body.Close()
             body, _ := ioutil.ReadAll(response.Body)
-            subUrl.recvPipe.Write(body)
+            subUrl.recvFile.Write(body)
+            subUrl.timeFile.WriteString(time.Now().String())
         }
         b = true
     }
@@ -106,7 +122,7 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 }
 
 func (subUrl *samUrl) cleanupDirectory(){
-    subUrl.recvPipe.Close()
+    subUrl.recvFile.Close()
     subUrl.delPipe.Close()
     os.RemoveAll(filepath.Join(connectionDirectory, subUrl.subdirectory))
 }

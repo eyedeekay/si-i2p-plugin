@@ -39,17 +39,20 @@ and recieve requests and get information about eepSites on the i2p network. If
 you were to, for instance, make a request for i2p-projekt.i2p through
 parent/send, it would look for the SAM session associated with that site(or
 create one if it doesn't exist) in a folder called "i2p-projekt.i2p". Inside
-that folder will be 4 files corresponding to the named pipes:
+that folder will be 5 files corresponding to the named pipes and the output
+files:
 
         destination_url.i2p/
                             send
                                  <- echo "desired-url" > destination_url.i2p/send
-                            recv
+                            recv (Output File)
                                  <- cat destination_url.i2p/recv
-                            name
+                            name (Named pipe but will probably become an output file)
                                  <- cat destination_url.i2p/name
                             del
                                  <- echo "y" > destination_url.i2p/del
+                            time (Output File)
+                                 <- cat destination_urrl.i2p/time
 
 In order to use them to interact with eepSites, you may either make your
 requests to the parent pipes  which will delegate the responses to the child
@@ -57,7 +60,12 @@ pipes automatically, or you may manually pipe the destination URL into
 destination\_url.i2p/send, and pipe out the result from
 destination\_url.i2p/recv. To retrieve the full cryptographic identifier of the
 eepSite, pipe out the destination from destination\_url.i2p/name and to close
-the pipe, pipe anything at all into destination\_url.i2p/del.
+the pipe, pipe anything at all into destination\_url.i2p/del. The final field,
+destination\_url.i2p/time is the time which the page in the folder was last
+recieved.
+
+When you retrieve a sub-directory of a site or a URL under the site, a new set
+of named pipes and output files
 
 What I'm doing right now:
 -------------------------

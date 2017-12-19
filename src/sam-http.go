@@ -110,19 +110,28 @@ func (samConn *samHttp) hostGet() string{
 }
 
 func (samConn *samHttp) hostCheck(request string) bool{
-    host := strings.SplitAfterN(request, ".i2p", 1 )[0]
+    host := strings.SplitAfterN(request, ".i2p", -1 )[0]
     _, err := url.ParseRequestURI(host)
     if err == nil {
-        comphost := strings.Replace(host, "http://", "", -1)
+            comphost := strings.Replace(host, "http://", "", -1)
+            comphost = strings.SplitAfterN(request, ".i2p", -1 )[0]
+            comphost = strings.Replace(host, "http://", "", -1)
         if samConn.host == comphost {
+            fmt.Println("Request host ", comphost)
+            fmt.Println("Is equal to client host", samConn.host)
             return true
         }else{
-            fmt.Println("Request host ", host)
+            fmt.Println("Request host ", comphost)
             fmt.Println("Is not equal to client host", samConn.host)
             return false
         }
     }else{
+        host = strings.Replace(host, "http://", "", -1)
+        host = strings.SplitAfterN(request, ".i2p", -1 )[0]
+        host = strings.Replace(host, "http://", "", -1)
         if samConn.host == host {
+            fmt.Println("Request host ", host)
+            fmt.Println("Is equal to client host", samConn.host)
             return true
         }else{
             fmt.Println("Request host ", host)

@@ -62,6 +62,9 @@ remove:
 debug: build
 	gdb ./bin/si-i2p-plugin
 
+run:
+	./bin/si-i2p-plugin 2>err | tee log
+
 try: build
 	./bin/si-i2p-plugin >log 2>err &
 	sleep 1
@@ -71,14 +74,23 @@ memcheck: build
 	valgrind ./bin/si-i2p-plugin 2>err >log 2>err &
 	tail -f log
 
-test:	test-easy #test-hard test-bad
+test:	test-easy test-hard # test-real test-fake
 
-test-bad:
+test-fake:
 	@echo " It should not simply crash upon recieving a bad request, instead"
 	@echo "it should log it, not make the request or touch the network at"
 	@echo "all, and move on."
 	echo http://notarealurl.i2p > parent/send
 	cat parent/recv
+
+test-lessfake:
+	@echo " It should not simply crash upon recieving a bad request, instead"
+	@echo "it should log it, not make the request or touch the network at"
+	@echo "all, and move on. This should include urls that don't exist under"
+	@echo "domains that do."
+	echo http://i2p-projekt.i2p/download > parent/send
+	cat parent/recv
+
 
 test-easy:
 	@echo " It should know how to send requests for well-formed http url's"
@@ -87,11 +99,18 @@ test-easy:
 	#cat parent/recv
 	cat i2p-projekt.i2p/recv
 
+test-real:
+	@echo " It should also be able to recognize and correct simple"
+	@echo "formatting mistakes in URL's and correct them where appropriate."
+	echo i2p-projekt.i2p/en/download > parent/send
+	#cat parent/recv
+	cat i2p-projekt.i2p/en/download/recv
+
 test-hard:
 	@echo " It should also be able to recognize and correct simple"
 	@echo "formatting mistakes in URL's and correct them where appropriate."
 	echo i2p-projekt.i2p > parent/send
-	cat parent/recv
+	#cat parent/recv
 	cat i2p-projekt.i2p/recv
 
 test-loop:
