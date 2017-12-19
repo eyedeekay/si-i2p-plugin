@@ -99,6 +99,13 @@ test-easy:
 	#cat parent/recv
 	cat i2p-projekt.i2p/recv
 
+test-diff:
+	@echo " It should know how to send requests for well-formed http url's"
+	@echo "that point to b32 addresses or sites in the address book"
+	echo http://inr.i2p > parent/send
+	#cat parent/recv
+	cat inr.i2p/recv
+
 test-real:
 	@echo " It should also be able to recognize and correct simple"
 	@echo "formatting mistakes in URL's and correct them where appropriate."
@@ -246,5 +253,15 @@ docker-run:
 		--user sii2pplugindocker \
 		-t si-i2p-plugin
 
+mps:
+	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep" 2>/dev/null
+
+mls:
+	ls -R *.i2p 2>/dev/null
+
+ls:
+	while true; do make -s mls 2>/dev/null; sleep 2; clear; done
+
 ps:
-	ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep
+	while true; do make -s mps 2>/dev/null; sleep 2; clear; done
+

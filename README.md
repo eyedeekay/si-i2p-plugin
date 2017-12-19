@@ -64,8 +64,29 @@ the pipe, pipe anything at all into destination\_url.i2p/del. The final field,
 destination\_url.i2p/time is the time which the page in the folder was last
 recieved.
 
-When you retrieve a sub-directory of a site or a URL under the site, a new set
-of named pipes and output files
+When you retrieve a sub-directory of a site or a URL under the domain, a new set
+of named pipes and output files will be created in a directory corresponding
+to that URL underneath the destination\_url.i2p/ folder. These folders can
+be created using either the parent/send pipe, which will automatically route
+it through the correct destination, or through destination\_url.i2p/send which
+will send it through a specific destination. The final behavior of this pipe is
+not yet determined but may be modified to only allow requests to the already
+authorized destination or not, as a way of electively sharing information
+between eepSites if so desired. For now, no validation of the intended
+destination is done in the child proxies. A subdirectory managed by a child
+proxy will look like
+
+        destination_url.i2p/
+                            subdirectory/
+                                         recv
+                                            cat destination_url.i2p/subdirecctory/recv
+                                         time
+                                            cat destination_url.i2p/subdirectory/time
+                                         del
+                                            echo "y" > destination_url.i2p/subdirectory/del
+
+Note that the send ane name pipes are not present as they are provided by the
+managing child proxy.
 
 What I'm doing right now:
 -------------------------
