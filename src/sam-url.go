@@ -80,9 +80,6 @@ func (subUrl *samUrl) createDirectory(requestdir string) {
 func (subUrl *samUrl) scannerText() (string, int) {
     d, _ := ioutil.ReadFile(subUrl.recvPath)
     s := string(d)
-    /*for subUrl.recvReader.Scan() {
-        s += subUrl.recvReader.Text()
-    }*/
     if s != "" {
         return s, len(s)
     }else{
@@ -91,6 +88,7 @@ func (subUrl *samUrl) scannerText() (string, int) {
 }
 
 func (subUrl *samUrl) dirSet(requestdir string) string {
+    fmt.Println("Requesting directory: ", requestdir)
     return requestdir
 }
 

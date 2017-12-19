@@ -134,8 +134,8 @@ func (samConn *samHttp) hostCheck(request string) bool{
 
 func (samConn *samHttp) getRequest(request string) (string, string){
     host := request
-    tmp := strings.SplitAfterN(request, ".i2p", -1)
-    directory := strings.Replace(request, tmp[0], "", -1)
+    //tmp := strings.SplitAfterN(request, ".i2p", -1)
+    directory := strings.Replace(request, "http://", "", -1)
     _, err := url.ParseRequestURI(host)
     if err != nil {
         host = "http://" + request

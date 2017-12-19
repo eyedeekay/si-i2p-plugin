@@ -105,7 +105,7 @@ test-loop:
 
 clean:
 	killall si-i2p-plugin; \
-	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude
+	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude del recv
 
 kill:
 	killall si-i2p-plugin; \
