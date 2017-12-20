@@ -88,12 +88,14 @@ proxy will look like
 Note that the send ane name pipes are not present as they are provided by the
 managing child proxy.
 
+Also, caching, after a fashion, is already available because the recieved files
+are just files.
+
 What I'm doing right now:
 -------------------------
 
-I'm doing the last of the parent pipe system. Making sure it the aggregator pipe
-does things correctly. I'm thinking I'll use this to teach myself more about
-AppArmor and SELinux profiles next.
+Making sure it the aggregator pipe does things correctly. I'm thinking I'll use
+this to teach myself more about AppArmor and SELinux profiles next.
 
 What the final version should do:
 ---------------------------------
@@ -103,10 +105,6 @@ and recieve requests as an http proxy in the familiar way.
 
 Silly Questions I'm asking myself about how I want it to work:
 --------------------------------------------------------------
-
-Should it be possible to disable the http proxy and interact with it only using
-named pipes? For right now, I'm leaning toward yes as this could be useful for
-ssh clients and similar applications.
 
 Should it do filtering? I really don't think so but if there's a simple way to
 strip outgoing information then maybe. I dislike complexity. It's why this has
@@ -168,7 +166,6 @@ Filtering. It doesn't remove unnecessary headers, Javascript, or regularize your
 user agent string. It will never filter Javascript on it's own, but it will make
 some attempt to filter headers and optionally rewrite the user-agent string(with
 the default being the current TBB string)before I consider it ready.
-
 
 Installation and Usage:
 =======================

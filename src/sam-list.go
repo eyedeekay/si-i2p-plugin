@@ -30,7 +30,6 @@ type samList struct{
 
     delPath string
     delPipe *os.File
-    //delBuff bufio.Reader
     delBuff bufio.Scanner
 }
 
