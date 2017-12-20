@@ -180,15 +180,14 @@ func (samStack *samList) writeResponses(){
 
 func (samStack *samList) responsify(input string) io.Reader {
     tmp := strings.NewReader(input)
-    fmt.Println("Responsifying string: ")
+    fmt.Println("Responsifying string:")
     return tmp
 }
 
 func (samStack *samList) writeRecieved(response string) bool {
-    fmt.Println("Response test", response)
     b := false
     if response != "" {
-        fmt.Println("Got response: %s", response )
+        fmt.Println("Got response:")
         io.Copy(samStack.recvPipe, samStack.responsify(response))
         b = true
     }

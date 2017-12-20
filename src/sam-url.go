@@ -53,7 +53,7 @@ func (subUrl *samUrl) initPipes(){
         subUrl.checkErr(subUrl.err)
         fmt.Println("checking for problems...")
         fmt.Println("Opening the File...")
-        subUrl.recvFile, subUrl.err = os.OpenFile(subUrl.recvPath, os.O_RDWR|os.O_CREATE, 0755)
+        subUrl.recvFile, subUrl.err = os.OpenFile(subUrl.recvPath, os.O_RDWR|os.O_CREATE, 0644)
         fmt.Println("Created a File for recieving responses:", subUrl.recvPath)
     }
 
@@ -66,7 +66,7 @@ func (subUrl *samUrl) initPipes(){
         subUrl.checkErr(subUrl.err)
         fmt.Println("checking for problems...")
         fmt.Println("Opening the File...")
-        subUrl.timeFile, subUrl.err = os.OpenFile(subUrl.timePath, os.O_RDWR|os.O_CREATE, 0755)
+        subUrl.timeFile, subUrl.err = os.OpenFile(subUrl.timePath, os.O_RDWR|os.O_CREATE, 0644)
         fmt.Println("Created a File for timing responses:", subUrl.timePath)
     }
 
@@ -111,18 +111,23 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
     b := false
     if directory == subUrl.subdirectory {
         if response.StatusCode == http.StatusOK {
-            defer response.Body.Close()
-            body, _ := ioutil.ReadAll(response.Body)
-            subUrl.recvFile.Write(body)
-            subUrl.timeFile.WriteString(time.Now().String())
+            subUrl.dealResponse(response)
         }
         b = true
     }
     return b
 }
 
+func (subUrl *samUrl) dealResponse(response *http.Response){
+    defer response.Body.Close()
+    body, _ := ioutil.ReadAll(response.Body)
+    subUrl.recvFile.Write(body)
+    subUrl.timeFile.WriteString(time.Now().String())
+}
+
 func (subUrl *samUrl) cleanupDirectory(){
     subUrl.recvFile.Close()
+    subUrl.timeFile.Close()
     subUrl.delPipe.Close()
     os.RemoveAll(filepath.Join(connectionDirectory, subUrl.subdirectory))
 }

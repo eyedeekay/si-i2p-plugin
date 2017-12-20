@@ -31,7 +31,7 @@ type samHttp struct{
     sendBuff bufio.Reader
 
     namePath string
-    namePipe *os.File
+    nameFile *os.File
     name string
 }
 
@@ -72,6 +72,19 @@ func (samConn *samHttp) initPipes(){
         samConn.namePipe, err = os.OpenFile(samConn.namePath , os.O_RDWR|os.O_CREATE, 0755)
         fmt.Println("Created a named Pipe for the full name:", samConn.namePath)
     }
+
+/*    subUrl.namePath = filepath.Join(connectionDirectory, subUrl.subdirectory, "name")
+    pathNameExists, recvNameErr := exists(subUrl.namePath)
+    subUrl.checkErr(recvNameErr)
+    if ! pathNameExists {
+        subUrl.nameFile, subUrl.err = os.Create(subUrl.namePath)
+        fmt.Println("Preparing to create File:", subUrl.namePath)
+        subUrl.checkErr(subUrl.err)
+        fmt.Println("checking for problems...")
+        fmt.Println("Opening the File...")
+        subUrl.nameFile, subUrl.err = os.OpenFile(subUrl.namePath, os.O_RDWR|os.O_CREATE, 0644)
+        fmt.Println("Created a File for the full name:", subUrl.namePath)
+    }*/
 
 }
 
@@ -172,6 +185,7 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string){
         }
     }
     if b == false {
+        fmt.Println("%s has not been retrieved yet. Setting up:")
         samConn.subCache = append(samConn.subCache, newSamUrl(directory))
     }
 }

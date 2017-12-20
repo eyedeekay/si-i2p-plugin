@@ -74,7 +74,7 @@ memcheck: build
 	valgrind ./bin/si-i2p-plugin 2>err >log 2>err &
 	tail -f log
 
-test:	test-easy test-hard # test-real test-fake
+test:	test-easy test-hard test-real test-diff test-dfhd test-dfsd # test-fake test-less test-loop test-fuzz
 
 test-fake:
 	@echo " It should not simply crash upon recieving a bad request, instead"
@@ -83,14 +83,13 @@ test-fake:
 	echo http://notarealurl.i2p > parent/send
 	cat parent/recv
 
-test-lessfake:
+test-less:
 	@echo " It should not simply crash upon recieving a bad request, instead"
 	@echo "it should log it, not make the request or touch the network at"
 	@echo "all, and move on. This should include urls that don't exist under"
 	@echo "domains that do."
 	echo http://i2p-projekt.i2p/download > parent/send
 	cat parent/recv
-
 
 test-easy:
 	@echo " It should know how to send requests for well-formed http url's"
@@ -99,12 +98,12 @@ test-easy:
 	#cat parent/recv
 	cat i2p-projekt.i2p/recv
 
-test-diff:
-	@echo " It should know how to send requests for well-formed http url's"
-	@echo "that point to b32 addresses or sites in the address book"
-	echo http://inr.i2p > parent/send
+test-hard:
+	@echo " It should also be able to recognize and correct simple"
+	@echo "formatting mistakes in URL's and correct them where appropriate."
+	echo i2p-projekt.i2p > parent/send
 	#cat parent/recv
-	cat inr.i2p/recv
+	cat i2p-projekt.i2p/recv
 
 test-real:
 	@echo " It should also be able to recognize and correct simple"
@@ -113,12 +112,28 @@ test-real:
 	#cat parent/recv
 	cat i2p-projekt.i2p/en/download/recv
 
-test-hard:
-	@echo " It should also be able to recognize and correct simple"
-	@echo "formatting mistakes in URL's and correct them where appropriate."
-	echo i2p-projekt.i2p > parent/send
+test-df: test-diff test-dfhd test-dfsd
+
+test-diff:
+	@echo " It should know how to send requests for well-formed http url's"
+	@echo "that point to b32 addresses or sites in the address book"
+	echo http://inr.i2p > parent/send
 	#cat parent/recv
-	cat i2p-projekt.i2p/recv
+	cat inr.i2p/recv
+
+test-dfhd:
+	@echo " It should know how to send requests for well-formed http url's"
+	@echo "that point to b32 addresses or sites in the address book"
+	echo inr.i2p > parent/send
+	#cat parent/recv
+	cat inr.i2p/recv
+
+test-dfsd:
+	@echo " It should know how to send requests for well-formed http url's"
+	@echo "that point to b32 addresses or sites in the address book"
+	echo inr.i2p/latest > parent/send
+	#cat parent/recv
+	cat inr.i2p/latest/recv
 
 test-loop:
 	@echo " It's rude and a privacy risk to use i2p-projekt.i2p(or any" "
