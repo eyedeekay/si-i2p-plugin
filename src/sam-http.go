@@ -2,7 +2,6 @@ package main
 
 import (
     "bufio"
-    "bytes"
     "fmt"
 	"io"
 	"log"
@@ -62,29 +61,17 @@ func (samConn *samHttp) initPipes(){
     }
 
     samConn.namePath = filepath.Join(connectionDirectory, samConn.host, "name")
-    pathNameExists, namePathErr := exists(samConn.namePath)
-    samConn.checkErr(namePathErr)
+    pathNameExists, recvNameErr := exists(samConn.namePath)
+    samConn.checkErr(recvNameErr)
     if ! pathNameExists {
-        err := syscall.Mkfifo(samConn.namePath, 0755)
-        fmt.Println("Preparing to create Pipe:", samConn.namePath)
-        samConn.checkErr(err)
-        fmt.Println("checking for problems...")
-        samConn.namePipe, err = os.OpenFile(samConn.namePath , os.O_RDWR|os.O_CREATE, 0755)
-        fmt.Println("Created a named Pipe for the full name:", samConn.namePath)
-    }
-
-/*    subUrl.namePath = filepath.Join(connectionDirectory, subUrl.subdirectory, "name")
-    pathNameExists, recvNameErr := exists(subUrl.namePath)
-    subUrl.checkErr(recvNameErr)
-    if ! pathNameExists {
-        subUrl.nameFile, subUrl.err = os.Create(subUrl.namePath)
-        fmt.Println("Preparing to create File:", subUrl.namePath)
-        subUrl.checkErr(subUrl.err)
+        samConn.nameFile, samConn.err = os.Create(samConn.namePath)
+        fmt.Println("Preparing to create File:", samConn.namePath)
+        samConn.checkErr(samConn.err)
         fmt.Println("checking for problems...")
         fmt.Println("Opening the File...")
-        subUrl.nameFile, subUrl.err = os.OpenFile(subUrl.namePath, os.O_RDWR|os.O_CREATE, 0644)
-        fmt.Println("Created a File for the full name:", subUrl.namePath)
-    }*/
+        samConn.nameFile, samConn.err = os.OpenFile(samConn.namePath, os.O_RDWR|os.O_CREATE, 0644)
+        fmt.Println("Created a File for the full name:", samConn.namePath)
+    }
 
 }
 
@@ -185,7 +172,7 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string){
         }
     }
     if b == false {
-        fmt.Println("%s has not been retrieved yet. Setting up:")
+        fmt.Println("%s has not been retrieved yet. Setting up:", directory)
         samConn.subCache = append(samConn.subCache, newSamUrl(directory))
     }
 }
@@ -265,7 +252,7 @@ func (samConn *samHttp) writeName(request string){
         samConn.name, samConn.err = samConn.sam.Lookup(samConn.host)
         fmt.Println("New Connection Name: %s", samConn.name)
         samConn.checkErr(samConn.err)
-        io.Copy(samConn.namePipe, bytes.NewBufferString(samConn.name))
+        samConn.nameFile.WriteString(samConn.name)
     }
 }
 
@@ -281,7 +268,7 @@ func (samConn *samHttp) checkName() bool{
 
 func (samConn *samHttp) cleanupClient(){
     samConn.sendPipe.Close()
-    samConn.namePipe.Close()
+    samConn.nameFile.Close()
     for _, url := range samConn.subCache {
         url.cleanupDirectory()
     }
