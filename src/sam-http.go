@@ -89,8 +89,8 @@ func (samConn *samHttp) createClient(samAddr string, samPort string, request str
         samConn.host, _ = samConn.hostSet(request)
         samConn.initPipes()
     }
-    samConn.subCache = append(samConn.subCache, newSamUrl(samConn.host))
     samConn.writeName(request)
+    samConn.subCache = append(samConn.subCache, newSamUrl(samConn.host))
 }
 
 func (samConn *samHttp) hostSet(request string) (string, string){
@@ -174,6 +174,12 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string){
     if b == false {
         fmt.Println("%s has not been retrieved yet. Setting up:", directory)
         samConn.subCache = append(samConn.subCache, newSamUrl(directory))
+        for _, url := range samConn.subCache {
+            b = url.copyDirectory(response, directory)
+            if b == true {
+                break
+            }
+        }
     }
 }
 
