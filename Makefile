@@ -7,7 +7,7 @@ LOG := log/
 ETC := etc/
 USR := usr/
 LOCAL := local/
-VERSION := 0.17
+VERSION := 0.18
 
 
 CC := musl-gcc
