@@ -269,7 +269,7 @@ docker-run:
 		-t si-i2p-plugin
 
 mps:
-	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep" 2>/dev/null
+	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep | grep -v https" 2>/dev/null
 
 mls:
 	ls -R *.i2p 2>/dev/null

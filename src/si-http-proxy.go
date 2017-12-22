@@ -29,3 +29,8 @@ func (proxy *samHttpProxy) prepare(){
 
 }
 
+func newHttpProxy() samHttpProxy {
+    var samProxy samHttpProxy
+    //samProxy.
+    return samProxy
+}
