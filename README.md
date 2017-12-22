@@ -106,6 +106,18 @@ What the final version should do:
 The final version should use the parent pipe and the aggregating pipe to send
 and recieve requests as an http proxy in the familiar way.
 
+Version Roadmap:
+
+  * ~~0.17 - Named Pipes work for top-level i2p domains and can retrieve~~
+   ~~directories under a site~~
+  * ~~0.18 - Named Pipes for i2p domains and can retrieve subdirectories,~~
+   ~~which it caches in clearly-named folders as normal files(Containing HTML)~~
+  * 0.19 - Expose an http proxy that hooks up to the existing infrastructure
+   for destination isolation
+  * 0.20 - Ready for more mainstream testing, should successfully isolate
+   requests for resources embedded in the retrieved web pages.
+  * 0.21 - First worthwhile release for people who aren't shell enthusiasts.
+
 Silly Questions I'm asking myself about how I want it to work:
 --------------------------------------------------------------
 
