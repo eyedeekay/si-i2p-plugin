@@ -143,6 +143,9 @@ test-loop:
 	echo test.i2p > parent/serv
 	echo http://test.i2p > parent/send
 
+test-http:
+	@echo "Test the http proxy in as simple a way as possible"
+	/usr/bin/curl -x 127.0.0.1:4443 -L i2p-projekt.i2p
 
 clean:
 	killall si-i2p-plugin; \
