@@ -18,7 +18,7 @@ import (
 
 type samHttpProxy struct {
     host string
-
+    client samList
     err error
 }
 
@@ -70,10 +70,10 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
     fmt.Println("")
     if proxy.checkURLType(rW, rq) {
-        client := &http.Client{}
+        //client := &http.Client{}
         rq.RequestURI = ""
-        //proxy.delHopHeaders(rq.Header)
-        resp, err := client.Do(rq)
+        proxy.delHopHeaders(rq.Header)
+        resp, err := proxy.client.sendClientRequestHttp(rq)
         if err != nil {
             http.Error(rW, "Server Error", http.StatusInternalServerError)
             fmt.Println("Fatal: ServeHTTP:", err)
@@ -93,5 +93,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
 func createHttpProxy(proxAddr string, proxPort string, samStack samList) samHttpProxy {
     var samProxy samHttpProxy
     samProxy.host = proxAddr + ":" + proxPort
+    fmt.Println("Starting HTTP proxy" + samProxy.host)
+    samProxy.client = samStack
     return samProxy
 }

@@ -4,6 +4,7 @@ import (
     "bufio"
     "path/filepath"
     "fmt"
+    "net/http"
     "io"
     "log"
     "os"
@@ -106,7 +107,7 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
     }
 }
 
-func (samStack *samList) sendClientRequest(request string){
+func (samStack *samList) sendClientRequest(request string) {
     found := false
     for index, client := range samStack.stackOfSams {
         fmt.Println("Checking client requests", index + 1)
@@ -130,6 +131,34 @@ func (samStack *samList) sendClientRequest(request string){
             }
         }
     }
+}
+
+func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Response, error) {
+    found := false
+    var resp *http.Response
+    for index, client := range samStack.stackOfSams {
+        fmt.Println("Checking client requests", index + 1)
+        fmt.Println("of", len(samStack.stackOfSams))
+        if client.hostCheckHttp(request){
+            fmt.Println("Client pipework for %s found.", request)
+            resp = client.sendRequestHttp(request)
+            found = true
+        }
+    }
+    if ! found {
+        fmt.Println("Client pipework for %s not found: Creating.", request)
+        samStack.createClient(request.Host)
+        for index := len(samStack.stackOfSams)-1; index >= 0 ; index-- {
+            fmt.Println("Checking client requests", index + 1)
+            fmt.Println("of", len(samStack.stackOfSams))
+            if samStack.stackOfSams[index].hostCheckHttp(request){
+                fmt.Println("Client pipework for %s found.", request)
+                resp = samStack.stackOfSams[index].sendRequestHttp(request)
+                found = true
+            }
+        }
+    }
+    return resp, nil
 }
 
 func (samStack *samList) sendText() (string, int) {

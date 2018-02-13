@@ -141,8 +141,56 @@ func (samConn *samHttp) hostCheck(request string) bool{
     }
 }
 
+func (samConn *samHttp) hostCheckHttp(req *http.Request) bool{
+    request := req.Host
+    host := strings.SplitAfterN(request, ".i2p", -1 )[0]
+    _, err := url.ParseRequestURI(host)
+    if err == nil {
+            comphost := strings.Replace(host, "http://", "", -1)
+            comphost = strings.SplitAfterN(request, ".i2p", -1 )[0]
+            comphost = strings.Replace(host, "http://", "", -1)
+        if samConn.host == comphost {
+            fmt.Println("Request host ", comphost)
+            fmt.Println("Is equal to client host", samConn.host)
+            return true
+        }else{
+            fmt.Println("Request host ", comphost)
+            fmt.Println("Is not equal to client host", samConn.host)
+            return false
+        }
+    }else{
+        host = strings.Replace(host, "http://", "", -1)
+        host = strings.SplitAfterN(request, ".i2p", -1 )[0]
+        host = strings.Replace(host, "http://", "", -1)
+        if samConn.host == host {
+            fmt.Println("Request host ", host)
+            fmt.Println("Is equal to client host", samConn.host)
+            return true
+        }else{
+            fmt.Println("Request host ", host)
+            fmt.Println("Is not equal to client host", samConn.host)
+            return false
+        }
+    }
+}
+
 func (samConn *samHttp) getRequest(request string) (string, string){
     host := request
+    //tmp := strings.SplitAfterN(request, ".i2p", -1)
+    directory := strings.Replace(request, "http://", "", -1)
+    _, err := url.ParseRequestURI(host)
+    if err != nil {
+        host = "http://" + request
+        fmt.Println("URL failed validation, correcting to:", host)
+    }else{
+        fmt.Println("URL passed validation:", request)
+    }
+    return host, directory
+}
+
+func (samConn *samHttp) getRequestHttp(req *http.Request) (string, string){//http.Response, string){
+    host := req.Host
+    request := req.URL.String()
     //tmp := strings.SplitAfterN(request, ".i2p", -1)
     directory := strings.Replace(request, "http://", "", -1)
     _, err := url.ParseRequestURI(host)
@@ -161,6 +209,14 @@ func (samConn *samHttp) sendRequest(request string) int{
     samConn.checkErr(err)
     samConn.copyRequest(resp, dir)
     return 0
+}
+
+func (samConn *samHttp) sendRequestHttp(request *http.Request) *http.Response{
+    r, dir := samConn.getRequestHttp(request)
+    resp, err := samConn.http.Get(r)
+    samConn.checkErr(err)
+    samConn.copyRequest(resp, dir)
+    return resp
 }
 
 func (samConn *samHttp) copyRequest(response *http.Response, directory string){
