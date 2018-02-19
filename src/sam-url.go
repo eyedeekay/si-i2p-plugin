@@ -3,7 +3,6 @@ package main
 import (
     "bufio"
     //"bytes"
-    "fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -37,10 +36,10 @@ type samUrl struct{
 
 func (subUrl *samUrl) initPipes(){
     pathConnectionExists, pathErr := exists(filepath.Join(connectionDirectory, subUrl.subdirectory))
-    fmt.Println("Directory Check", filepath.Join(connectionDirectory, subUrl.subdirectory))
+    log.Println("Directory Check", filepath.Join(connectionDirectory, subUrl.subdirectory))
     subUrl.checkErr(pathErr)
     if ! pathConnectionExists {
-        fmt.Println("Creating a connection:", subUrl.subdirectory)
+        log.Println("Creating a connection:", subUrl.subdirectory)
         os.MkdirAll(filepath.Join(connectionDirectory, subUrl.subdirectory), 0755)
     }
 
@@ -49,12 +48,12 @@ func (subUrl *samUrl) initPipes(){
     subUrl.checkErr(recvPathErr)
     if ! pathRecvExists {
         subUrl.recvFile, subUrl.err = os.Create(subUrl.recvPath)
-        fmt.Println("Preparing to create File:", subUrl.recvPath)
+        log.Println("Preparing to create File:", subUrl.recvPath)
         subUrl.checkErr(subUrl.err)
-        fmt.Println("checking for problems...")
-        fmt.Println("Opening the File...")
+        log.Println("checking for problems...")
+        log.Println("Opening the File...")
         subUrl.recvFile, subUrl.err = os.OpenFile(subUrl.recvPath, os.O_RDWR|os.O_CREATE, 0644)
-        fmt.Println("Created a File for recieving responses:", subUrl.recvPath)
+        log.Println("Created a File for recieving responses:", subUrl.recvPath)
     }
 
     subUrl.timePath = filepath.Join(connectionDirectory, subUrl.subdirectory, "time")
@@ -62,12 +61,12 @@ func (subUrl *samUrl) initPipes(){
     subUrl.checkErr(recvTimeErr)
     if ! pathTimeExists {
         subUrl.timeFile, subUrl.err = os.Create(subUrl.timePath)
-        fmt.Println("Preparing to create File:", subUrl.timePath)
+        log.Println("Preparing to create File:", subUrl.timePath)
         subUrl.checkErr(subUrl.err)
-        fmt.Println("checking for problems...")
-        fmt.Println("Opening the File...")
+        log.Println("checking for problems...")
+        log.Println("Opening the File...")
         subUrl.timeFile, subUrl.err = os.OpenFile(subUrl.timePath, os.O_RDWR|os.O_CREATE, 0644)
-        fmt.Println("Created a File for timing responses:", subUrl.timePath)
+        log.Println("Created a File for timing responses:", subUrl.timePath)
     }
 
     subUrl.delPath = filepath.Join(connectionDirectory, subUrl.subdirectory, "del")
@@ -75,14 +74,14 @@ func (subUrl *samUrl) initPipes(){
     subUrl.checkErr(delPathErr)
     if ! pathDelExists{
         err := syscall.Mkfifo(subUrl.delPath, 0755)
-        fmt.Println("Preparing to create Pipe:", subUrl.delPath)
+        log.Println("Preparing to create Pipe:", subUrl.delPath)
         subUrl.checkErr(err)
-        fmt.Println("checking for problems...")
+        log.Println("checking for problems...")
         subUrl.delPipe, err = os.OpenFile(subUrl.delPath , os.O_RDWR|os.O_CREATE, 0755)
-        fmt.Println("Opening the Named Pipe as a File...")
+        log.Println("Opening the Named Pipe as a File...")
         subUrl.delBuff = *bufio.NewReader(subUrl.delPipe)
-        fmt.Println("Opening the Named Pipe as a Buffer...")
-        fmt.Println("Created a named Pipe for closing the connection:", subUrl.delPath)
+        log.Println("Opening the Named Pipe as a Buffer...")
+        log.Println("Created a named Pipe for closing the connection:", subUrl.delPath)
     }
 }
 
@@ -103,7 +102,7 @@ func (subUrl *samUrl) scannerText() (string, int) {
 }
 
 func (subUrl *samUrl) dirSet(requestdir string) string {
-    fmt.Println("Requesting directory: ", requestdir)
+    log.Println("Requesting directory: ", requestdir)
     return requestdir
 }
 
@@ -136,15 +135,15 @@ func (subUrl *samUrl) readDelete() int {
     line, _, err := subUrl.delBuff.ReadLine()
     subUrl.checkErr(err)
     n := len(line)
-    fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
+    log.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
     if n < 0 {
-        fmt.Println("Something wierd happened with :", line)
-        fmt.Println("end determined at index :", strconv.Itoa(n))
+        log.Println("Something wierd happened with :", line)
+        log.Println("end determined at index :", strconv.Itoa(n))
         return n
     }else{
         s := string( line[:n] )
         if s == "y" {
-            fmt.Println("Deleting connection: %s", subUrl.subdirectory )
+            log.Println("Deleting connection: %s", subUrl.subdirectory )
             defer subUrl.cleanupDirectory()
             return n
         }else{
@@ -161,10 +160,18 @@ func (subUrl *samUrl) checkErr(err error) {
 }
 
 func newSamUrl(requestdir string) (samUrl){
-    fmt.Println("Creating a new cache directory.")
+    log.Println("Creating a new cache directory.")
     var subUrl samUrl
     subUrl.subdirectory = requestdir
     subUrl.createDirectory(requestdir)
     return subUrl
 }
 
+func newSamUrlHttp(request *http.Request) (samUrl){
+    log.Println("Creating a new cache directory.")
+    var subUrl samUrl
+    subUrl.subdirectory = request.Host + request.URL.Path
+    log.Println(subUrl.subdirectory)
+    subUrl.createDirectory(subUrl.subdirectory)
+    return subUrl
+}

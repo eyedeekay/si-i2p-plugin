@@ -2,7 +2,7 @@ package main
 
 import (
     "flag"
-	"fmt"
+	"log"
     "os"
     "os/signal"
     "time"
@@ -28,20 +28,22 @@ func main(){
     address   := *flag.String("url", "http://i2p-projekt.i2p",
         "i2p URL you want to retrieve")
 
+    log.SetOutput(os.Stdout)
+    log.SetFlags(log.Lshortfile)
 
-    fmt.Println( "Sam Address:", samAddrString )
-    fmt.Println( "Sam Port:", samPortString )
-    fmt.Println( "Proxy Address:", proxAddrString )
-    fmt.Println( "Proxy Port:", proxPortString )
-    fmt.Println( "Working Directory:", workDirectory )
-    fmt.Println( "Debug mode:", debugConnection)
-    fmt.Println( "Initial URL:", address)
+    log.Println( "Sam Address:", samAddrString )
+    log.Println( "Sam Port:", samPortString )
+    log.Println( "Proxy Address:", proxAddrString )
+    log.Println( "Proxy Port:", proxPortString )
+    log.Println( "Working Directory:", workDirectory )
+    log.Println( "Debug mode:", debugConnection)
+    log.Println( "Initial URL:", address)
 
     goSam.ConnDebug = debugConnection
 
     samStack := createSamList(samAddrString, samPortString, address)
-    samProxy := createHttpProxy(proxAddrString, proxPortString, samStack)
-    go samProxy.prepare()
+
+
     c := make(chan os.Signal, 1)
     signal.Notify(c, os.Interrupt)
     go func(){
@@ -52,7 +54,10 @@ func main(){
         }
     }()
 
-    fmt.Println("Created client, starting loop...")
+    samProxy := createHttpProxy(proxAddrString, proxPortString, samStack)
+    log.Println("Sam Proxy Started:" + samProxy.host)
+
+    log.Println("Created client, starting loop...")
     for exit != true{
         samStack.readRequest()
         go samStack.writeResponses()

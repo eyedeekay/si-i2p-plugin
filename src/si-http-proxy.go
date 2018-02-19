@@ -1,19 +1,9 @@
 package main
 
 import (
-    //"bufio"
-    "fmt"
+    "log"
 	"io"
-	//"log"
 	"net/http"
-    //"os"
-    //"path/filepath"
-    //"strings"
-    //"strconv"
-    //"syscall"
-    //"net/url"
-
-	//"github.com/eyedeekay/gosam"
 )
 
 type samHttpProxy struct {
@@ -36,6 +26,7 @@ var hopHeaders = []string{
 
 func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
 	for _, h := range hopHeaders {
+        log.Println("Sanitizing headers: " + h)
 		header.Del(h)
 	}
 }
@@ -43,6 +34,7 @@ func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
 func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 	for k, vv := range src {
 		for _, v := range vv {
+            log.Println("Copying headers: " + k + "," + v )
 			dst.Add(k, v)
 		}
 	}
@@ -50,17 +42,18 @@ func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 
 func (proxy *samHttpProxy) prepare(){
     handle := &samHttpProxy{}
+    log.Println("Initializing handler handle")
     if err := http.ListenAndServe(proxy.host, handle); err == nil {
-        fmt.Println("Fatal Error: proxy not started")
+        log.Println("Fatal Error: proxy not started")
     }
 }
 
 func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request) bool {
-    fmt.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
+    log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
     if rq.URL.Scheme != "http" && rq.URL.Scheme != "https" {
 	  	msg := "unsupported protocal scheme "+rq.URL.Scheme
 		http.Error(rW, msg, http.StatusBadRequest)
-		fmt.Println(msg)
+		log.Println(msg)
 		return false
 	}else{
         return true
@@ -68,19 +61,18 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 }
 
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
-    fmt.Println("")
     if proxy.checkURLType(rW, rq) {
+        log.Println("")
         //client := &http.Client{}
         rq.RequestURI = ""
         proxy.delHopHeaders(rq.Header)
         resp, err := proxy.client.sendClientRequestHttp(rq)
         if err != nil {
-            http.Error(rW, "Server Error", http.StatusInternalServerError)
-            fmt.Println("Fatal: ServeHTTP:", err)
+            http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+            log.Fatal("Fatal: ServeHTTP:", err)
         }
-        defer resp.Body.Close()
 
-        fmt.Println(rq.RemoteAddr, " ", resp.Status)
+        log.Println(rq.RemoteAddr, " ", resp.Status)
 
         proxy.delHopHeaders(resp.Header)
 
@@ -93,7 +85,10 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
 func createHttpProxy(proxAddr string, proxPort string, samStack samList) samHttpProxy {
     var samProxy samHttpProxy
     samProxy.host = proxAddr + ":" + proxPort
-    fmt.Println("Starting HTTP proxy" + samProxy.host)
+    log.Println("Starting HTTP proxy on:" + samProxy.host)
     samProxy.client = samStack
+    log.Println("Connected SAM isolation stack to the HTTP proxy server")
+    go samProxy.prepare()
+    log.Println("HTTP Proxy prepared")
     return samProxy
 }

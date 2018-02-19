@@ -3,18 +3,20 @@ package main
 import (
     "bufio"
     "path/filepath"
-    "fmt"
+    "log"
     "net/http"
     "io"
-    "log"
     "os"
     "strconv"
     "strings"
     "syscall"
+
+    "github.com/eyedeekay/gosam"
 )
 
 type samList struct{
     stackOfSams []samHttp
+    sam *goSam.Client
     err error
     up bool
 
@@ -38,11 +40,11 @@ func (samStack * samList) initPipes(){
     pathConnectionExists, err := exists(filepath.Join(connectionDirectory, "parent"))
     samStack.checkErr(err)
     if ! pathConnectionExists {
-        fmt.Println("Creating a connection:", "parent")
+        log.Println("Creating a connection:", "parent")
         os.Mkdir(filepath.Join(connectionDirectory, "parent"), 0755)
     }else{
         os.RemoveAll(filepath.Join(connectionDirectory, "parent"))
-        fmt.Println("Creating a connection:", "parent")
+        log.Println("Creating a connection:", "parent")
         os.Mkdir(filepath.Join(connectionDirectory, "parent"), 0755)
     }
 
@@ -51,15 +53,15 @@ func (samStack * samList) initPipes(){
     samStack.checkErr(sendErr)
     if ! pathSendExists {
         samStack.err = syscall.Mkfifo(samStack.sendPath, 0755)
-        fmt.Println("Preparing to create Pipe:", samStack.sendPath)
+        log.Println("Preparing to create Pipe:", samStack.sendPath)
         samStack.checkErr(samStack.err)
-        fmt.Println("checking for problems...")
+        log.Println("checking for problems...")
         samStack.sendPipe, samStack.err = os.OpenFile(samStack.sendPath , os.O_RDWR|os.O_CREATE, 0755)
-       fmt.Println("Opening the Named Pipe as a File...")
+       log.Println("Opening the Named Pipe as a File...")
         samStack.sendScan = *bufio.NewScanner(samStack.sendPipe)
         samStack.sendBuff = *bufio.NewReader(samStack.sendPipe)
-        fmt.Println("Opening the Named Pipe as a Scanner...")
-        fmt.Println("Created a named Pipe for sending requests:", samStack.sendPath)
+        log.Println("Opening the Named Pipe as a Scanner...")
+        log.Println("Created a named Pipe for sending requests:", samStack.sendPath)
     }
 
     samStack.recvPath = filepath.Join(connectionDirectory, "parent", "recv")
@@ -67,12 +69,12 @@ func (samStack * samList) initPipes(){
     samStack.checkErr(recvErr)
     if ! pathRecvExists {
         samStack.err = syscall.Mkfifo(samStack.recvPath, 0755)
-        fmt.Println("Preparing to create Pipe:", samStack.recvPath)
+        log.Println("Preparing to create Pipe:", samStack.recvPath)
         samStack.checkErr(samStack.err)
-        fmt.Println("checking for problems...")
+        log.Println("checking for problems...")
         samStack.recvPipe, samStack.err = os.OpenFile(samStack.recvPath , os.O_RDWR|os.O_CREATE, 0755)
         samStack.recvPipe.WriteString("")
-        fmt.Println("Created a named Pipe for recieving responses:", samStack.recvPath)
+        log.Println("Created a named Pipe for recieving responses:", samStack.recvPath)
     }
 
     samStack.delPath = filepath.Join(connectionDirectory, "parent", "del")
@@ -80,52 +82,62 @@ func (samStack * samList) initPipes(){
     samStack.checkErr(delErr)
     if ! pathDelExists{
         samStack.err = syscall.Mkfifo(samStack.delPath, 0755)
-        fmt.Println("Preparing to create Pipe:", samStack.delPath)
+        log.Println("Preparing to create Pipe:", samStack.delPath)
         samStack.checkErr(samStack.err)
-        fmt.Println("checking for problems...")
+        log.Println("checking for problems...")
         samStack.delPipe, samStack.err = os.OpenFile(samStack.delPath , os.O_RDWR|os.O_CREATE, 0755)
         samStack.recvPipe.WriteString("")
-        fmt.Println("Opening the Named Pipe as a File...")
+        log.Println("Opening the Named Pipe as a File...")
         samStack.delBuff = *bufio.NewScanner(samStack.delPipe)
-        fmt.Println("Opening the Named Pipe as a Scanner...")
-        fmt.Println("Created a named Pipe for closing the connection:", samStack.delPath)
+        log.Println("Opening the Named Pipe as a Scanner...")
+        log.Println("Created a named Pipe for closing the connection:", samStack.delPath)
     }
     samStack.up = true;
 }
 
 func (samStack *samList) createClient(request string){
-    fmt.Println("Requesting a new SAM-based http client")
-    samStack.stackOfSams = append(samStack.stackOfSams, newSamHttp(samStack.samAddrString, samStack.samPortString, request))
+    log.Println("Appending client to SAM stack.")
+    samStack.stackOfSams = append(samStack.stackOfSams, newSamHttp(samStack.samAddrString, samStack.samPortString, samStack.sam, request))
+}
+
+func (samStack *samList) createClientHttp(request *http.Request){
+    log.Println("Appending client to SAM stack.")
+    samStack.stackOfSams = append(samStack.stackOfSams, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, samStack.sam, request))
 }
 
 func (samStack *samList) createSamList(samAddrString string, samPortString string){
     samStack.samAddrString = samAddrString
     samStack.samPortString = samPortString
+    log.Println("Requesting a new SAM-based http client")
+    samCombined := samStack.samAddrString + ":" + samStack.samPortString
+    samStack.sam, samStack.err = goSam.NewClient(samCombined)
+    samStack.checkErr(samStack.err)
+    log.Println("Established SAM connection")
     if ! samStack.up {
         samStack.initPipes()
-        fmt.Println("Parent proxy pipes initialized. Parent proxy set to up.")
+        log.Println("Parent proxy pipes initialized. Parent proxy set to up.")
     }
 }
 
 func (samStack *samList) sendClientRequest(request string) {
     found := false
     for index, client := range samStack.stackOfSams {
-        fmt.Println("Checking client requests", index + 1)
-        fmt.Println("of", len(samStack.stackOfSams))
+        log.Println("Checking client requests", index + 1)
+        log.Println("of", len(samStack.stackOfSams))
         if client.hostCheck(request){
-            fmt.Println("Client pipework for %s found.", request)
+            log.Println("Client pipework for %s found.", request)
             client.sendRequest(request)
             found = true
         }
     }
     if ! found {
-        fmt.Println("Client pipework for %s not found: Creating.", request)
+        log.Println("Client pipework for %s not found: Creating.", request)
         samStack.createClient(request)
         for index := len(samStack.stackOfSams)-1; index >= 0 ; index-- {
-            fmt.Println("Checking client requests", index + 1)
-            fmt.Println("of", len(samStack.stackOfSams))
+            log.Println("Checking client requests", index + 1)
+            log.Println("of", len(samStack.stackOfSams))
             if samStack.stackOfSams[index].hostCheck(request){
-                fmt.Println("Client pipework for %s found.", request)
+                log.Println("Client pipework for %s found.", request)
                 samStack.stackOfSams[index].sendRequest(request)
                 found = true
             }
@@ -135,30 +147,34 @@ func (samStack *samList) sendClientRequest(request string) {
 
 func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Response, error) {
     found := false
-    var resp *http.Response
+    log.Println("The SAM stack me exists?")
     for index, client := range samStack.stackOfSams {
-        fmt.Println("Checking client requests", index + 1)
-        fmt.Println("of", len(samStack.stackOfSams))
-        if client.hostCheckHttp(request){
-            fmt.Println("Client pipework for %s found.", request)
-            resp = client.sendRequestHttp(request)
+        log.Println("Checking client requests", index + 1)
+        log.Println("of", len(samStack.stackOfSams))
+        if client.hostCheck(request.Host){
+            log.Println("Client pipework for %s found.", request.Host)
+            resp, err := client.sendRequestHttp(request)
+            defer resp.Body.Close()
             found = true
+            return resp, err
         }
     }
     if ! found {
-        fmt.Println("Client pipework for %s not found: Creating.", request)
-        samStack.createClient(request.Host)
+        log.Println("Client pipework for %s not found: Creating.", request.Host)
+        samStack.createClientHttp(request)
         for index := len(samStack.stackOfSams)-1; index >= 0 ; index-- {
-            fmt.Println("Checking client requests", index + 1)
-            fmt.Println("of", len(samStack.stackOfSams))
+            log.Println("Checking client requests", index + 1)
+            log.Println("of", len(samStack.stackOfSams))
             if samStack.stackOfSams[index].hostCheckHttp(request){
-                fmt.Println("Client pipework for %s found.", request)
-                resp = samStack.stackOfSams[index].sendRequestHttp(request)
+                log.Println("Client pipework for %s found.", request)
+                resp, err := samStack.stackOfSams[index].sendRequestHttp(request)
+                defer resp.Body.Close()
                 found = true
+                return resp, err
             }
         }
     }
-    return resp, nil
+    return nil, nil
 }
 
 func (samStack *samList) sendText() (string, int) {
@@ -167,7 +183,7 @@ func (samStack *samList) sendText() (string, int) {
     samStack.sendScan.Scan()
     s += samStack.sendScan.Text()
     //}
-    fmt.Println(s)
+    log.Println(s)
     if s != "" {
         return s, len(s)
     }else{
@@ -180,15 +196,15 @@ func (samStack *samList) readRequest() string{
     line, _, err := samStack.sendBuff.ReadLine()
     samStack.checkErr(err)
     n := len(line)
-    //fmt.Println("Reading n bytes from Parent send pipe:", strconv.Itoa(n))
+    //log.Println("Reading n bytes from Parent send pipe:", strconv.Itoa(n))
     if n == 0 {
-        fmt.Println("Flush the pipe maybe?:")
+        log.Println("Flush the pipe maybe?:")
     }else if n < 0 {
-        fmt.Println("Something wierd happened with the Parent Send pipe." )
-        fmt.Println("end determined at index :", strconv.Itoa(n))
+        log.Println("Something wierd happened with the Parent Send pipe." )
+        log.Println("end determined at index :", strconv.Itoa(n))
     }else{
         s := string( line[:n] )
-        fmt.Println("Sending request:", s)
+        log.Println("Sending request:", s)
         samStack.sendClientRequest(s)
         return s
     }
@@ -197,8 +213,8 @@ func (samStack *samList) readRequest() string{
 
 func (samStack *samList) writeResponses(){
     for i, client := range samStack.stackOfSams {
-        fmt.Println("Checking for responses: %s", i+1)
-        fmt.Println("of: ", len(samStack.stackOfSams))
+        log.Println("Checking for responses: %s", i+1)
+        log.Println("of: ", len(samStack.stackOfSams))
         b := samStack.writeRecieved(client.printResponse())
         if b == true {
             break
@@ -208,14 +224,14 @@ func (samStack *samList) writeResponses(){
 
 func (samStack *samList) responsify(input string) io.Reader {
     tmp := strings.NewReader(input)
-    fmt.Println("Responsifying string:")
+    log.Println("Responsifying string:")
     return tmp
 }
 
 func (samStack *samList) writeRecieved(response string) bool {
     b := false
     if response != "" {
-        fmt.Println("Got response:")
+        log.Println("Got response:")
         io.Copy(samStack.recvPipe, samStack.responsify(response))
         b = true
     }
@@ -226,7 +242,7 @@ func (samStack *samList) delText() (string, int) {
     s := ""
     samStack.delBuff.Scan()
     s += samStack.delBuff.Text()
-    fmt.Println(s)
+    log.Println(s)
     if s != "" {
         return s, len(s)
     }else{
@@ -236,16 +252,16 @@ func (samStack *samList) delText() (string, int) {
 
 func (samStack *samList) readDelete() bool {
     s, n := samStack.delText()
-    fmt.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
+    log.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
     if n == 0 {
         return false
     }else if n < 0 {
-        fmt.Println("Something wierd happened with :", s)
-        fmt.Println("end determined at index :", strconv.Itoa(n))
+        log.Println("Something wierd happened with :", s)
+        log.Println("end determined at index :", strconv.Itoa(n))
         return false
     }else{
         if s == "y" {
-            fmt.Println("Closing proxy.")
+            log.Println("Closing proxy.")
             defer samStack.cleanupClient()
             return true
         }else{
@@ -261,23 +277,25 @@ func (samStack *samList) cleanupClient(){
         client.cleanupClient()
     }
     samStack.delPipe.Close()
+    err := samStack.sam.Close()
+    samStack.checkErr(err)
     os.RemoveAll(filepath.Join(connectionDirectory, "parent"))
 }
 
 func (samStack *samList) checkErr(err error) {
 	if err != nil {
+        log.Fatal(err)
         samStack.cleanupClient()
-		log.Fatal(err)
 	}
 }
 
 func createSamList(samAddr string, samPort string, initAddress string) samList{
     var samStack samList
-    fmt.Println("Generating parent proxy structure.")
+    log.Println("Generating parent proxy structure.")
     samStack.up = false
-    fmt.Println("Parent proxy set to down.")
+    log.Println("Parent proxy set to down.")
     samStack.createSamList(samAddr, samPort)
-    fmt.Println("SAM list created")
+    log.Println("SAM list created")
     samStack.sendPipe.WriteString(initAddress + "\n")
     return samStack
 }

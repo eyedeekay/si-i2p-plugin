@@ -63,16 +63,17 @@ debug: build
 	gdb ./bin/si-i2p-plugin
 
 run:
-	./bin/si-i2p-plugin 2>err | tee log
+	./bin/si-i2p-plugin | tee log &>err & sleep 1; tail -f log err
 
 try: build
-	./bin/si-i2p-plugin >log 2>err &
+	./bin/si-i2p-plugin -conn-debug=true | tee log 2>err &
 	sleep 1
-	tail -f log
+	tail -f log err
 
 memcheck: build
-	valgrind ./bin/si-i2p-plugin 2>err >log 2>err &
-	tail -f log
+	valgrind ./bin/si-i2p-plugin 1>log 2>err &
+	sleep 2
+	tail -f log err
 
 test:	test-easy test-hard test-real test-diff test-dfhd test-dfsd # test-fake test-less test-loop test-fuzz
 
@@ -88,7 +89,7 @@ test-less:
 	@echo "it should log it, not make the request or touch the network at"
 	@echo "all, and move on. This should include urls that don't exist under"
 	@echo "domains that do."
-	echo http://i2p-projekt.i2p/download > parent/send
+	echo http://i2p-projekt.i2p/en/download > parent/send
 	cat parent/recv
 
 test-easy:
@@ -145,7 +146,11 @@ test-loop:
 
 test-http:
 	@echo "Test the http proxy in as simple a way as possible"
-	/usr/bin/curl -x 127.0.0.1:4443 -L i2p-projekt.i2p
+	/usr/bin/curl -x 127.0.0.1:4443 -L inr.i2p
+
+test-http-download:
+	@echo "Test the http proxy in as simple a way as possible"
+	/usr/bin/curl -x 127.0.0.1:4443 -L http://inr.i2p
 
 clean:
 	killall si-i2p-plugin; \
@@ -275,7 +280,13 @@ mps:
 	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep | grep -v https" 2>/dev/null
 
 mls:
-	ls -R *.i2p 2>/dev/null
+	@echo pipes
+	@echo ==================
+	ls *.i2p/* parent 2>/dev/null
+	@echo
+	@echo sourcedir
+	@echo ------------------
+	ls src bin 2>/dev/null
 
 ls:
 	while true; do make -s mls 2>/dev/null; sleep 2; clear; done
