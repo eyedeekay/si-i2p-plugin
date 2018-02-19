@@ -14,7 +14,7 @@ What works so far:
 
 ### The http proxy
 
-
+Not currently working, but getting there. Should be soon.
 
 ### The pipes
 

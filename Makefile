@@ -25,6 +25,7 @@ bin/si-i2p-plugin:
 	@echo 'built'
 
 #-ldflags '-linkmode external -extldflags "-fPIE -static -pie"' \
+
 debug: build
 	gdb ./bin/si-i2p-plugin
 
@@ -85,7 +86,7 @@ test-pipes:
 	make test-real; sleep 1
 	make test-diff; sleep 1
 	make test-dfhd; sleep 1
-	make test-dfsd; sleep 1 # test-fake test-less test-loop test-fuzz
+	make test-dfsd; sleep 1
 
 test-fake:
 	@echo " It should not simply crash upon recieving a bad request, instead"
