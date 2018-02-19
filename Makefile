@@ -15,10 +15,18 @@ COMPILER := "-compiler gccgo"
 
 COMPILER_FLAGS := '-ldflags \'-linkmode external -extldflags "-static" "-fPIE" "-pie"\''
 
-build:
+build: clean bin/si-i2p-plugin
+
+bin/si-i2p-plugin:
 	go get github.com/eyedeekay/gosam
-	go build -o bin/si-i2p-plugin ./src
+	go build \
+		-o bin/si-i2p-plugin \
+		./src
 	@echo 'built'
+
+#-ldflags '-linkmode external -extldflags "-fPIE -static -pie"' \
+debug: build
+	gdb ./bin/si-i2p-plugin
 
 build-static:
 	go get github.com/eyedeekay/gosam
@@ -29,7 +37,7 @@ build-static:
 build-gccgo-static:
 	go get github.com/eyedeekay/gosam
 	go build "$(COMPILER)" \
-		-gccgoflags '-extldflags "-fPIE" "-static" "-pie"' \
+		-gccgoflags '-extldflags "-fPIE -static -pie"' \
 		-o bin/si-i2p-plugin-static \
 		./src
 
@@ -58,31 +66,32 @@ remove:
 		$(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
-
-debug: build
-	gdb ./bin/si-i2p-plugin
-
 run:
 	./bin/si-i2p-plugin | tee log &>err & sleep 1; tail -f log err
 
 try: build
-	./bin/si-i2p-plugin -conn-debug=true | tee log 2>err &
+	./bin/si-i2p-plugin -conn-debug=true >log 2>err &
 	sleep 1
 	tail -f log err
 
 memcheck: build
-	valgrind ./bin/si-i2p-plugin 1>log 2>err &
+	valgrind --track-origins=yes ./bin/si-i2p-plugin -conn-debug=true 1>log 2>err &
 	sleep 2
 	tail -f log err
 
-test:	test-easy test-hard test-real test-diff test-dfhd test-dfsd # test-fake test-less test-loop test-fuzz
+test-pipes:
+	make test-easy; sleep 1
+	make test-hard; sleep 1
+	make test-real; sleep 1
+	make test-diff; sleep 1
+	make test-dfhd; sleep 1
+	make test-dfsd; sleep 1 # test-fake test-less test-loop test-fuzz
 
 test-fake:
 	@echo " It should not simply crash upon recieving a bad request, instead"
 	@echo "it should log it, not make the request or touch the network at"
 	@echo "all, and move on."
 	echo http://notarealurl.i2p > parent/send
-	cat parent/recv
 
 test-less:
 	@echo " It should not simply crash upon recieving a bad request, instead"
@@ -90,28 +99,21 @@ test-less:
 	@echo "all, and move on. This should include urls that don't exist under"
 	@echo "domains that do."
 	echo http://i2p-projekt.i2p/en/download > parent/send
-	cat parent/recv
 
 test-easy:
 	@echo " It should know how to send requests for well-formed http url's"
 	@echo "that point to b32 addresses or sites in the address book"
 	echo http://i2p-projekt.i2p > parent/send
-	#cat parent/recv
-	cat i2p-projekt.i2p/recv
 
 test-hard:
 	@echo " It should also be able to recognize and correct simple"
 	@echo "formatting mistakes in URL's and correct them where appropriate."
 	echo i2p-projekt.i2p > parent/send
-	#cat parent/recv
-	cat i2p-projekt.i2p/recv
 
 test-real:
 	@echo " It should also be able to recognize and correct simple"
 	@echo "formatting mistakes in URL's and correct them where appropriate."
 	echo i2p-projekt.i2p/en/download > parent/send
-	#cat parent/recv
-	cat i2p-projekt.i2p/en/download/recv
 
 test-df: test-diff test-dfhd test-dfsd
 
@@ -119,22 +121,16 @@ test-diff:
 	@echo " It should know how to send requests for well-formed http url's"
 	@echo "that point to b32 addresses or sites in the address book"
 	echo http://inr.i2p > parent/send
-	#cat parent/recv
-	cat inr.i2p/recv
 
 test-dfhd:
 	@echo " It should know how to send requests for well-formed http url's"
 	@echo "that point to b32 addresses or sites in the address book"
 	echo inr.i2p > parent/send
-	#cat parent/recv
-	cat inr.i2p/recv
 
 test-dfsd:
 	@echo " It should know how to send requests for well-formed http url's"
 	@echo "that point to b32 addresses or sites in the address book"
 	echo inr.i2p/latest > parent/send
-	#cat parent/recv
-	cat inr.i2p/latest/recv
 
 test-loop:
 	@echo " It's rude and a privacy risk to use i2p-projekt.i2p(or any" "
@@ -148,9 +144,9 @@ test-http:
 	@echo "Test the http proxy in as simple a way as possible"
 	/usr/bin/curl -x 127.0.0.1:4443 -L inr.i2p
 
-test-http-download:
+test-curl:
 	@echo "Test the http proxy in as simple a way as possible"
-	/usr/bin/curl -x 127.0.0.1:4443 -L http://inr.i2p
+	/usr/bin/curl -x 127.0.0.1:4443 http://inr.i2p
 
 clean:
 	killall si-i2p-plugin; \

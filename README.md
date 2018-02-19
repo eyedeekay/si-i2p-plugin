@@ -12,6 +12,12 @@ destination isolation before there is a facebook.i2p.
 What works so far:
 ------------------
 
+### The http proxy
+
+
+
+### The pipes
+
 It currently functions well as a file/pipe based interface to http services on
 the i2p network. It doesn't work as an http proxy yet.
 

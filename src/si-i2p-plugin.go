@@ -20,8 +20,10 @@ func main(){
         "host: of the HTTP proxy")
     proxPortString  := *flag.String("proxy-port", "4443",
         ":port of the HTTP proxy")
-    debugConnection := *flag.Bool("conn-debug", false,
+    debugConnection := *flag.Bool("conn-debug", true,
         "Print connection debug info" )
+    useHttpProxy := *flag.Bool("http-proxy", false,
+        "run the HTTP proxy" )
     Defwd, _ := os.Getwd()
     workDirectory   := *flag.String("directory", Defwd,
         "The working directory you want to use, defaults to current directory")
@@ -37,6 +39,7 @@ func main(){
     log.Println( "Proxy Port:", proxPortString )
     log.Println( "Working Directory:", workDirectory )
     log.Println( "Debug mode:", debugConnection)
+    log.Println( "Debug mode:", useHttpProxy)
     log.Println( "Initial URL:", address)
 
     goSam.ConnDebug = debugConnection
@@ -54,8 +57,12 @@ func main(){
         }
     }()
 
-    samProxy := createHttpProxy(proxAddrString, proxPortString, samStack)
-    log.Println("Sam Proxy Started:" + samProxy.host)
+    if useHttpProxy {
+        samProxy := createHttpProxy(proxAddrString, proxPortString, samStack)
+        log.Println("Sam Proxy Started:" + samProxy.host)
+    }
+
+    time.Sleep(3000 * time.Millisecond)
 
     log.Println("Created client, starting loop...")
     for exit != true{

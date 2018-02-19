@@ -8,7 +8,6 @@ import (
     "os"
     "path/filepath"
     "strings"
-    "strconv"
     "syscall"
     "net/url"
 
@@ -17,16 +16,16 @@ import (
 
 type samHttp struct{
     subCache []samUrl
-    //sam *goSam.Client
     err error
 
     transport *http.Transport
     http *http.Client
     host string
+    directory string
 
     sendPath string
     sendPipe *os.File
-    sendBuff bufio.Reader
+    sendScan bufio.Scanner
 
     namePath string
     nameFile *os.File
@@ -54,7 +53,8 @@ func (samConn *samHttp) initPipes(){
         log.Println("checking for problems...")
         samConn.sendPipe, err = os.OpenFile(samConn.sendPath , os.O_RDWR|os.O_CREATE, 0755)
         log.Println("Opening the Named Pipe as a File...")
-        samConn.sendBuff = *bufio.NewReader(samConn.sendPipe)
+        samConn.sendScan = *bufio.NewScanner(samConn.sendPipe)
+        samConn.sendScan.Split(bufio.ScanLines)
         log.Println("Opening the Named Pipe as a Buffer...")
         log.Println("Created a named Pipe for sending requests:", samConn.sendPath)
     }
@@ -78,7 +78,7 @@ func (samConn *samHttp) initPipes(){
 func (samConn *samHttp) createClient(request string) {
     samConn.http = &http.Client{Transport: samConn.transport}
     if samConn.host == "" {
-        samConn.host, _ = samConn.hostSet(request)
+        samConn.host, samConn.directory = samConn.hostSet(request)
         samConn.initPipes()
     }
     samConn.writeName(request)
@@ -88,10 +88,10 @@ func (samConn *samHttp) createClient(request string) {
 func (samConn *samHttp) createClientHttp(request *http.Request) {
     samConn.http = &http.Client{Transport: samConn.transport}
     if samConn.host == "" {
-        samConn.host, _ = samConn.hostSet(request.Host)
+        samConn.host, _ = samConn.hostSet(request.URL.String())
         samConn.initPipes()
     }
-    samConn.writeName(request.Host)
+    samConn.writeName(request.URL.String())
     samConn.subCache = append(samConn.subCache, newSamUrlHttp(request))
 }
 
@@ -190,17 +190,17 @@ func (samConn *samHttp) getURL(request string) (string, string){
     return host, directory
 }
 
-func (samConn *samHttp) getURLHttp(req *http.Request) (string, string){
+func (samConn *samHttp) getURLHttp(req *http.Request) (*http.Request, string){
     request := req.URL.String()
     //tmp := strings.SplitAfterN(request, ".i2p", -1)
     directory := strings.Replace(request, "http://", "", -1)
-    _, err := url.ParseRequestURI(req.Host)
+    _, err := url.ParseRequestURI(req.URL.String())
     if err != nil {
         log.Println("URL failed validation, correcting to:", request)
     }else{
         log.Println("URL passed validation:", request)
     }
-    return req.Host, directory
+    return req, directory
 }
 
 func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
@@ -213,7 +213,8 @@ func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
 
 func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Response, error ){
     r, dir := samConn.getURLHttp(request)
-    resp, err := samConn.http.Get(r)
+    resp, err := samConn.http.Do(r)
+    //defer resp.Body.Close()
     samConn.checkErr(err)
     samConn.copyRequest(resp, dir)
     return resp, err
@@ -271,21 +272,12 @@ func (samConn *samHttp) printResponse() string{
     }
 }
 
-func (samConn *samHttp) readRequest(){
-    line, _, err := samConn.sendBuff.ReadLine()
-    samConn.checkErr(err)
-    n := len(line)
-    log.Println("Reading n bytes from send pipe:", strconv.Itoa(n))
-    if n == 0 {
-        log.Println("Maintaining Connection:", samConn.hostGet())
-    }else if n < 0 {
-        log.Println("Something wierd happened with :", line)
-        log.Println("end determined at index :", strconv.Itoa(n))
-    }else{
-        s := string( line[:n] )
-        log.Println("Sending request:", s)
-        samConn.sendRequest(s)
+func (samConn *samHttp) readRequest() string{
+    text := samConn.sendScan.Text()
+    for samConn.sendScan.Scan(){
+        samConn.sendRequest(text)
     }
+    return text
 }
 
 func (samConn *samHttp) readDelete() bool {
@@ -376,6 +368,7 @@ func newSamHttpHttp(samAddrString string, samPortString string, sam *goSam.Clien
     samConn.name = ""
     samConn.host = ""
     log.Println(request.Host + request.URL.Path)
+    log.Println("Setting Transport")
     log.Println("Setting Dial function")
     samConn.transport = &http.Transport{
 		Dial: sam.Dial,

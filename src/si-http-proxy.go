@@ -9,6 +9,7 @@ import (
 type samHttpProxy struct {
     host string
     client samList
+    transport *http.Transport
     err error
 }
 
@@ -51,7 +52,7 @@ func (proxy *samHttpProxy) prepare(){
 func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request) bool {
     log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
     if rq.URL.Scheme != "http" && rq.URL.Scheme != "https" {
-	  	msg := "unsupported protocal scheme "+rq.URL.Scheme
+	  	msg := "unsupported protocal scheme " + rq.URL.Scheme
 		http.Error(rW, msg, http.StatusBadRequest)
 		log.Println(msg)
 		return false
@@ -63,14 +64,16 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
     if proxy.checkURLType(rW, rq) {
         log.Println("")
-        //client := &http.Client{}
+
         rq.RequestURI = ""
         proxy.delHopHeaders(rq.Header)
-        resp, err := proxy.client.sendClientRequestHttp(rq)
+        resp, err := proxy.client.sendClientRequestHttp(rq).Do(rq)
+
         if err != nil {
+            log.Println("Fatal: ServeHTTP:", err)
             http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-            log.Fatal("Fatal: ServeHTTP:", err)
         }
+        defer resp.Body.Close()
 
         log.Println(rq.RemoteAddr, " ", resp.Status)
 

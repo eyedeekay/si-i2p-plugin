@@ -109,8 +109,10 @@ func (subUrl *samUrl) dirSet(requestdir string) string {
 func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) bool{
     b := false
     if directory == subUrl.subdirectory {
-        if response.StatusCode == http.StatusOK {
-            subUrl.dealResponse(response)
+        if response != nil {
+            if response.StatusCode == http.StatusOK {
+                subUrl.dealResponse(response)
+            }
         }
         b = true
     }
