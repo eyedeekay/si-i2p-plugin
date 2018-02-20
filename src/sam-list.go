@@ -7,7 +7,6 @@ import (
     "net/http"
     "io"
     "os"
-    "strconv"
     "strings"
     "syscall"
 
@@ -119,7 +118,7 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
     }
 }
 
-func (samStack *samList) sendClientRequest(request string) {
+func (samStack *samList) sendClientRequest(request string) string{
     found := false
     for index, client := range samStack.stackOfSams {
         log.Println("Checking client requests", index + 1)
@@ -127,6 +126,7 @@ func (samStack *samList) sendClientRequest(request string) {
         if client.hostCheck(request){
             log.Println("Client pipework for %s found.", request)
             client.sendRequest(request)
+            log.Println("Request sent")
             found = true
         }
     }
@@ -139,10 +139,12 @@ func (samStack *samList) sendClientRequest(request string) {
             if client.hostCheck(request){
                 log.Println("Client pipework for %s found.", request)
                 client.sendRequest(request)
+                log.Println("Request sent")
                 found = true
             }
         }
     }
+    return request
 }
 
 func (samStack *samList) sendClientRequestHttp(request *http.Request) *http.Client {
@@ -155,7 +157,8 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) *http.Clie
             log.Println("Client pipework for %s found.", request.Host)
             log.Println("URL scheme", request.URL.Scheme)
             found = true
-            return client.http
+            log.Println("Request sent")
+            return client.sendRequestHttp(request)
         }
     }
     if ! found {
@@ -168,7 +171,8 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) *http.Clie
                 log.Println("Client pipework for %s found.", request.URL.String() )
                 log.Println("URL scheme", request.URL.Scheme)
                 found = true
-                return client.http
+                log.Println("Request sent")
+                return client.sendRequestHttp(request)
             }
         }
     }
@@ -177,7 +181,7 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) *http.Clie
 
 func (samStack *samList) readRequest() string{
     for samStack.sendScan.Scan(){
-        samStack.sendClientRequest(samStack.sendScan.Text())
+        return samStack.sendClientRequest(samStack.sendScan.Text())
     }
     return ""
 }
@@ -209,36 +213,16 @@ func (samStack *samList) writeRecieved(response string) bool {
     return b
 }
 
-func (samStack *samList) delText() (string, int) {
-    s := ""
-    samStack.delScan.Scan()
-    s += samStack.delScan.Text()
-    log.Println(s)
-    if s != "" {
-        return s, len(s)
-    }else{
-        return "", 0
-    }
-}
-
 func (samStack *samList) readDelete() bool {
-    s, n := samStack.delText()
-    log.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
-    if n == 0 {
-        return false
-    }else if n < 0 {
-        log.Println("Something wierd happened with :", s)
-        log.Println("end determined at index :", strconv.Itoa(n))
-        return false
-    }else{
-        if s == "y" {
-            log.Println("Closing proxy.")
+    for samStack.delScan.Scan(){
+        if samStack.delScan.Text() == "y" || samStack.delScan.Text() == "Y" {
             defer samStack.cleanupClient()
             return true
         }else{
             return false
         }
     }
+    return false
 }
 
 func (samStack *samList) cleanupClient(){

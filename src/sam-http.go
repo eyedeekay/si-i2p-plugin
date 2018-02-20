@@ -97,7 +97,8 @@ func (samConn *samHttp) createClientHttp(request *http.Request) {
 
 func (samConn *samHttp) hostSet(request string) (string, string){
     tmp := strings.Replace(request, "http://", "", -1)
-    host := strings.SplitAfterN(tmp, ".i2p", 1 )[0]
+    tmp2 := strings.SplitAfterN(tmp, ".i2p", 1 )[0]
+    host := strings.Replace(tmp2, "/", "", -1)
     _, err := url.ParseRequestURI("http://" + host)
     if err != nil {
         host = strings.Replace(host, "http://", "", -1)
@@ -205,26 +206,29 @@ func (samConn *samHttp) getURLHttp(req *http.Request) (*http.Request, string){
 
 func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
     r, dir := samConn.getURL(request)
+    log.Println("Getting resource", request)
     resp, err := samConn.http.Get(r)
+    //defer resp.Body.Close()
     samConn.checkErr(err)
+    log.Println("Pumping result to top of parent pipe")
     samConn.copyRequest(resp, dir)
     return resp, err
 }
 
-func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Response, error ){
+func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client){
     r, dir := samConn.getURLHttp(request)
-    resp, err := samConn.http.Do(r)
-    //defer resp.Body.Close()
-    samConn.checkErr(err)
-    samConn.copyRequest(resp, dir)
-    return resp, err
+    log.Println("Getting resource", r)
+    log.Println("In ", dir)
+    return samConn.http
 }
 
 func (samConn *samHttp) copyRequest(response *http.Response, directory string){
     b := false
     for _, url := range samConn.subCache {
+        log.Println("Seeking Subdirectory", url.subDirectory)
         b = url.copyDirectory(response, directory)
         if b == true {
+            log.Println("Found Subdirectory", url.subDirectory)
             break
         }
     }
@@ -232,44 +236,38 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string){
         log.Println("%s has not been retrieved yet. Setting up:", directory)
         samConn.subCache = append(samConn.subCache, newSamUrl(directory))
         for _, url := range samConn.subCache {
+            log.Println("Seeking Subdirectory", url.subDirectory)
             b = url.copyDirectory(response, directory)
             if b == true {
+                log.Println("Found Subdirectory", url.subDirectory)
                 break
             }
         }
     }
 }
 
-func (samConn *samHttp) scannerText() (r string, l int) {
-   text := ""
-   length := 0
+func (samConn *samHttp) scannerText() (string, error) {
+    text := ""
+    var err error
     for _, url := range samConn.subCache {
-        text, length = url.scannerText()
-        if length > 0 {
+        text, err = url.scannerText()
+        if len(text) > 0 {
             break
         }
     }
-    return text, length
+    return text, err
 }
-
+/**/
 func (samConn *samHttp) responsify(input string) io.Reader {
     tmp := strings.NewReader(input)
     log.Println("Turning string %s into a response", input)
     return tmp
 }
-
+/**/
 func (samConn *samHttp) printResponse() string{
-    s, n := samConn.scannerText()
-    if n == 0 {
-        log.Println("Maintaining Connection:", samConn.hostGet())
-        return ""
-    }else if n < 0 {
-        log.Println("Something wierd happened with :" , s)
-        return ""
-    }else{
-        //io.Copy(samConn.recvPipe, samConn.responsify(s))
-        return s
-    }
+    s, e := samConn.scannerText()
+    samConn.checkErr(e)
+    return s
 }
 
 func (samConn *samHttp) readRequest() string{

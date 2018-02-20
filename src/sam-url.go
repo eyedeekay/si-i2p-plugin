@@ -21,7 +21,7 @@ type samUrl struct{
 
     transport *http.Transport
     http *http.Client
-    subdirectory string
+    subDirectory string
 
     recvPath string
     recvFile *os.File
@@ -35,15 +35,15 @@ type samUrl struct{
 }
 
 func (subUrl *samUrl) initPipes(){
-    pathConnectionExists, pathErr := exists(filepath.Join(connectionDirectory, subUrl.subdirectory))
-    log.Println("Directory Check", filepath.Join(connectionDirectory, subUrl.subdirectory))
+    pathConnectionExists, pathErr := exists(filepath.Join(connectionDirectory, subUrl.subDirectory))
+    log.Println("Directory Check", filepath.Join(connectionDirectory, subUrl.subDirectory))
     subUrl.checkErr(pathErr)
     if ! pathConnectionExists {
-        log.Println("Creating a connection:", subUrl.subdirectory)
-        os.MkdirAll(filepath.Join(connectionDirectory, subUrl.subdirectory), 0755)
+        log.Println("Creating a connection:", subUrl.subDirectory)
+        os.MkdirAll(filepath.Join(connectionDirectory, subUrl.subDirectory), 0755)
     }
 
-    subUrl.recvPath = filepath.Join(connectionDirectory, subUrl.subdirectory, "recv")
+    subUrl.recvPath = filepath.Join(connectionDirectory, subUrl.subDirectory, "recv")
     pathRecvExists, recvPathErr := exists(subUrl.recvPath)
     subUrl.checkErr(recvPathErr)
     if ! pathRecvExists {
@@ -56,7 +56,7 @@ func (subUrl *samUrl) initPipes(){
         log.Println("Created a File for recieving responses:", subUrl.recvPath)
     }
 
-    subUrl.timePath = filepath.Join(connectionDirectory, subUrl.subdirectory, "time")
+    subUrl.timePath = filepath.Join(connectionDirectory, subUrl.subDirectory, "time")
     pathTimeExists, recvTimeErr := exists(subUrl.timePath)
     subUrl.checkErr(recvTimeErr)
     if ! pathTimeExists {
@@ -69,7 +69,7 @@ func (subUrl *samUrl) initPipes(){
         log.Println("Created a File for timing responses:", subUrl.timePath)
     }
 
-    subUrl.delPath = filepath.Join(connectionDirectory, subUrl.subdirectory, "del")
+    subUrl.delPath = filepath.Join(connectionDirectory, subUrl.subDirectory, "del")
     pathDelExists, delPathErr := exists(subUrl.delPath)
     subUrl.checkErr(delPathErr)
     if ! pathDelExists{
@@ -87,18 +87,19 @@ func (subUrl *samUrl) initPipes(){
 
 func (subUrl *samUrl) createDirectory(requestdir string) {
     subUrl.http = &http.Client{Transport: subUrl.transport}
-    subUrl.subdirectory = subUrl.dirSet(requestdir)
+    subUrl.subDirectory = subUrl.dirSet(requestdir)
     subUrl.initPipes()
 }
 
-func (subUrl *samUrl) scannerText() (string, int) {
-    d, _ := ioutil.ReadFile(subUrl.recvPath)
+func (subUrl *samUrl) scannerText() (string, error) {
+    d, err := ioutil.ReadFile(subUrl.recvPath)
+    subUrl.checkErr(err)
     s := string(d)
     if s != "" {
-        return s, len(s)
-    }else{
-       return "", 0
+        log.Println("Read file", s)
+        return s, err
     }
+    return "", err
 }
 
 func (subUrl *samUrl) dirSet(requestdir string) string {
@@ -108,9 +109,12 @@ func (subUrl *samUrl) dirSet(requestdir string) string {
 
 func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) bool{
     b := false
-    if directory == subUrl.subdirectory {
+    if directory == subUrl.subDirectory {
+        log.Println("Directory / ", directory + " : compare : " + subUrl.subDirectory )
         if response != nil {
+            log.Println("Response Status ", response.StatusCode)
             if response.StatusCode == http.StatusOK {
+                log.Println("Setting file in cache")
                 subUrl.dealResponse(response)
             }
         }
@@ -121,8 +125,11 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 
 func (subUrl *samUrl) dealResponse(response *http.Response){
     defer response.Body.Close()
-    body, _ := ioutil.ReadAll(response.Body)
+    body, err := ioutil.ReadAll(response.Body)
+    subUrl.checkErr(err)
+    log.Println("Writing files.")
     subUrl.recvFile.Write(body)
+    log.Println("Retrieval time: ", time.Now().String())
     subUrl.timeFile.WriteString(time.Now().String())
 }
 
@@ -130,7 +137,7 @@ func (subUrl *samUrl) cleanupDirectory(){
     subUrl.recvFile.Close()
     subUrl.timeFile.Close()
     subUrl.delPipe.Close()
-    os.RemoveAll(filepath.Join(connectionDirectory, subUrl.subdirectory))
+    os.RemoveAll(filepath.Join(connectionDirectory, subUrl.subDirectory))
 }
 
 func (subUrl *samUrl) readDelete() int {
@@ -145,7 +152,7 @@ func (subUrl *samUrl) readDelete() int {
     }else{
         s := string( line[:n] )
         if s == "y" {
-            log.Println("Deleting connection: %s", subUrl.subdirectory )
+            log.Println("Deleting connection: %s", subUrl.subDirectory )
             defer subUrl.cleanupDirectory()
             return n
         }else{
@@ -164,7 +171,7 @@ func (subUrl *samUrl) checkErr(err error) {
 func newSamUrl(requestdir string) (samUrl){
     log.Println("Creating a new cache directory.")
     var subUrl samUrl
-    subUrl.subdirectory = requestdir
+    subUrl.subDirectory = requestdir
     subUrl.createDirectory(requestdir)
     return subUrl
 }
@@ -172,8 +179,8 @@ func newSamUrl(requestdir string) (samUrl){
 func newSamUrlHttp(request *http.Request) (samUrl){
     log.Println("Creating a new cache directory.")
     var subUrl samUrl
-    subUrl.subdirectory = request.Host + request.URL.Path
-    log.Println(subUrl.subdirectory)
-    subUrl.createDirectory(subUrl.subdirectory)
+    subUrl.subDirectory = request.Host + request.URL.Path
+    log.Println(subUrl.subDirectory)
+    subUrl.createDirectory(subUrl.subDirectory)
     return subUrl
 }
