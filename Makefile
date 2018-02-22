@@ -312,5 +312,5 @@ demoservice:
 	docker build -f Dockerfiles/Dockerfile.demoservice -t eyedeekay/i2p-demoservice .
 
 demo: demoservice
-	docker run -d --name demoservice -p :4567 -p 7071:7070 -t eyedeekay/i2p-demoservice
-	docker logs -f demoservice > headers.log
+	docker run -d --cap-drop all --name demoservice -p :4567 -p 7071:7070 -t eyedeekay/i2p-demoservice
+	nohup docker logs -f demoservice | tee headers.log &
