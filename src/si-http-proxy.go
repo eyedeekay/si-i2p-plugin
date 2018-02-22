@@ -10,6 +10,7 @@ type samHttpProxy struct {
     host string
     client *samList
     transport *http.Transport
+    handle *samHttpProxy
     err error
 }
 
@@ -30,6 +31,7 @@ func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
         log.Println("Sanitizing headers: " + h)
 		header.Del(h)
 	}
+    proxy.client.test()
 }
 
 func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
@@ -42,9 +44,8 @@ func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 }
 
 func (proxy *samHttpProxy) prepare(){
-    handle := &samHttpProxy{}
     log.Println("Initializing handler handle")
-    if err := http.ListenAndServe(proxy.host, handle); err != nil {
+    if err := http.ListenAndServe(proxy.host, proxy.handle); err != nil {
         log.Println("Fatal Error: proxy not started")
     }
 }
@@ -65,7 +66,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
     if proxy.checkURLType(rW, rq) {
         log.Println(rq.URL.String())
 
-        //rq.RequestURI = ""
+        rq.RequestURI = ""
         proxy.delHopHeaders(rq.Header)
 
         client := proxy.client.sendClientRequestHttp(rq)
@@ -75,7 +76,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
             log.Println("Fatal: ServeHTTP:", err)
             http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
         }
-        defer resp.Body.Close()
+        //defer resp.Body.Close()
 
         log.Println(rq.RemoteAddr, " ", resp.Status)
 
@@ -96,6 +97,7 @@ func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAd
     //initRequest, _ := http.NewRequest("GET", initAddress, temp)
     //samProxy.client.sendClientRequestHttp(initRequest)
     //samProxy.client.sendClientRequest(initAddress)
+    samProxy.handle = &samProxy
     log.Println("Connected SAM isolation stack to the HTTP proxy server")
     go samProxy.prepare()
     log.Println("HTTP Proxy prepared")

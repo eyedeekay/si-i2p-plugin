@@ -94,6 +94,10 @@ func (samStack * samList) initPipes(){
     samStack.up = true;
 }
 
+func (samStack *samList) test(){
+    log.Println("TESTING")
+}
+
 func (samStack *samList) createClient(request string){
     log.Println("Appending client to SAM stack.")
     samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, samStack.samBridgeClient, request))
