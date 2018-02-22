@@ -31,7 +31,6 @@ func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
         log.Println("Sanitizing headers: " + h)
 		header.Del(h)
 	}
-    proxy.client.test()
 }
 
 func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
@@ -93,10 +92,6 @@ func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAd
     samProxy.host = proxAddr + ":" + proxPort
     log.Println("Starting HTTP proxy on:" + samProxy.host)
     samProxy.client = samStack
-    //var temp *bytes.Reader
-    //initRequest, _ := http.NewRequest("GET", initAddress, temp)
-    //samProxy.client.sendClientRequestHttp(initRequest)
-    //samProxy.client.sendClientRequest(initAddress)
     samProxy.handle = &samProxy
     log.Println("Connected SAM isolation stack to the HTTP proxy server")
     go samProxy.prepare()
