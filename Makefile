@@ -68,7 +68,10 @@ remove:
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
 run:
-	./bin/si-i2p-plugin | tee log &>err & sleep 1; tail -f log err
+	./bin/si-i2p-plugin >run.log &>run.err
+
+follow:
+	tail -f run.log run.err
 
 try: build
 	./bin/si-i2p-plugin -conn-debug=true >log 2>err &
@@ -184,12 +187,6 @@ clobber:
 
 cat:
 	cat parent/recv
-
-kitten:
-	cat i2p-projekt.i2p/recv
-
-test-cat:
-	cat i2p-projekt.i2p/recv > recv.html
 
 exit:
 	echo y > parent/del
@@ -307,10 +304,4 @@ ls:
 ps:
 	while true; do make -s mps 2>/dev/null; sleep 2; clear; done
 
-demoservice:
-	docker rm -f demoservice; \
-	docker build -f Dockerfiles/Dockerfile.demoservice -t eyedeekay/i2p-demoservice .
-
-demo: demoservice
-	docker run -d --cap-drop all --name demoservice -p :4567 -p 7071:7070 -t eyedeekay/i2p-demoservice
-	nohup docker logs -f demoservice | tee headers.log &
+include misc/Makefiles/demo.mk

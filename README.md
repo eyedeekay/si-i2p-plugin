@@ -186,10 +186,11 @@ multiple eepSites.
 What doesn't it do?
 ===================
 
-Filtering. It doesn't remove unnecessary headers, Javascript, or regularize your
-user agent string. It will never filter Javascript on it's own, but it will make
-some attempt to filter headers and optionally rewrite the user-agent string(with
-the default being the current TBB string)before I consider it ready.
+Much filtering. It sanitizes some unnecessary headers, but doesn't filter
+javascript or regularize your user agent string. It will never filter
+Javascript on it's own, but it will make some attempt to filter headers and
+optionally rewrite the user-agent string(with the default being the current
+TBB string)before I consider it ready.
 
 Installation and Usage:
 =======================

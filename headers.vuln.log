@@ -1,0 +1,6 @@
+19:44:44@414/[1;31merror[0m - RouterInfo: Can't open file 
+Listening on localhost:8080
+19:44:46@414/[1;31merror[0m - Clients: can't open file /var/lib/i2pd/collude-one.dat Creating new one with signature type 1 crypto type 0
+19:44:46@414/[1;31merror[0m - Clients: can't open file /var/lib/i2pd/collude-two.dat Creating new one with signature type 1 crypto type 0
+19:44:53@549/[1;31merror[0m - Destination: Can't publish LeaseSet. No outbound tunnels
+19:45:06@549/[1;31merror[0m - Destination: Can't publish LeaseSet. No outbound tunnels

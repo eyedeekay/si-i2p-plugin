@@ -1,0 +1,5 @@
+19:36:24@946/[1;31merror[0m - RouterInfo: Can't open file 
+Listening on localhost:8080
+19:36:25@946/[1;31merror[0m - Family: who the fuck is onelove is too long
+19:36:26@946/[1;31merror[0m - Clients: can't open file /var/lib/i2pd/collude-one.dat Creating new one with signature type 1 crypto type 0
+19:36:26@946/[1;31merror[0m - Clients: can't open file /var/lib/i2pd/collude-two.dat Creating new one with signature type 1 crypto type 0
