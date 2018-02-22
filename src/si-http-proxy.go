@@ -8,7 +8,7 @@ import (
 
 type samHttpProxy struct {
     host string
-    client samList
+    client *samList
     transport *http.Transport
     err error
 }
@@ -44,7 +44,7 @@ func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 func (proxy *samHttpProxy) prepare(){
     handle := &samHttpProxy{}
     log.Println("Initializing handler handle")
-    if err := http.ListenAndServe(proxy.host, handle); err == nil {
+    if err := http.ListenAndServe(proxy.host, handle); err != nil {
         log.Println("Fatal Error: proxy not started")
     }
 }
@@ -63,12 +63,14 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
     if proxy.checkURLType(rW, rq) {
-        log.Println("")
+        log.Println(rq.URL.String())
 
-        rq.RequestURI = ""
+        //rq.RequestURI = ""
         proxy.delHopHeaders(rq.Header)
-        resp, err := proxy.client.sendClientRequestHttp(rq).Do(rq)
 
+        client := proxy.client.sendClientRequestHttp(rq)
+
+        resp, err := client.Do(rq)
         if err != nil {
             log.Println("Fatal: ServeHTTP:", err)
             http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
@@ -85,11 +87,15 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
     }
 }
 
-func createHttpProxy(proxAddr string, proxPort string, samStack samList) samHttpProxy {
+func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) samHttpProxy {
     var samProxy samHttpProxy
     samProxy.host = proxAddr + ":" + proxPort
     log.Println("Starting HTTP proxy on:" + samProxy.host)
     samProxy.client = samStack
+    //var temp *bytes.Reader
+    //initRequest, _ := http.NewRequest("GET", initAddress, temp)
+    //samProxy.client.sendClientRequestHttp(initRequest)
+    //samProxy.client.sendClientRequest(initAddress)
     log.Println("Connected SAM isolation stack to the HTTP proxy server")
     go samProxy.prepare()
     log.Println("HTTP Proxy prepared")

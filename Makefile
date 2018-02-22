@@ -73,17 +73,18 @@ run:
 try: build
 	./bin/si-i2p-plugin -conn-debug=true >log 2>err &
 	sleep 1
-	tail -f log err
+	tail -f log | nl
 
 memcheck: build
 	valgrind --track-origins=yes ./bin/si-i2p-plugin -conn-debug=true 1>log 2>err &
 	sleep 2
-	tail -f log err
+	tail -f log | nl
 
 test-pipes:
 	make test-easy; sleep 1
-	make test-hard; sleep 1
+	make test-less; sleep 1
 	make test-real; sleep 1
+	make test-hard; sleep 1
 	make test-diff; sleep 1
 	make test-dfhd; sleep 1
 	make test-dfsd; sleep 1
@@ -141,13 +142,28 @@ test-loop:
 	echo test.i2p > parent/serv
 	echo http://test.i2p > parent/send
 
-test-http:
-	@echo "Test the http proxy in as simple a way as possible"
-	/usr/bin/curl -x 127.0.0.1:4443 -L inr.i2p
-
 test-curl:
 	@echo "Test the http proxy in as simple a way as possible"
+	/usr/bin/curl -x 127.0.0.1:4443 i2p-projekt.i2p
+
+test-http:
+	@echo "Test the http proxy in as simple a way as possible"
+	/usr/bin/curl -x 127.0.0.1:4443 http://i2p-projekt.i2p
+
+test-realcurl:
+	/usr/bin/curl -x 127.0.0.1:4443 http://i2p-projekt.i2p/en/download
+
+test-curldiff:
+	@echo "Test the http proxy in as simple a way as possible"
+	/usr/bin/curl -x 127.0.0.1:4443 inr.i2p
+
+test-httpdiff:
+	@echo "Test the http proxy in as simple a way as possible"
 	/usr/bin/curl -x 127.0.0.1:4443 http://inr.i2p
+
+test-httpdiffsd:
+	@echo "Test the http proxy in as simple a way as possible"
+	/usr/bin/curl -x 127.0.0.1:4443 http://inr.i2p/latest
 
 clean:
 	killall si-i2p-plugin; \

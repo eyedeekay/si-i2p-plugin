@@ -44,37 +44,44 @@ func main(){
 
     goSam.ConnDebug = debugConnection
 
-    samStack := createSamList(samAddrString, samPortString, address)
-
+    var samProxies *samList
+    samProxies = createSamList(samAddrString, samPortString, address)
 
     c := make(chan os.Signal, 1)
     signal.Notify(c, os.Interrupt)
     go func(){
         for sig := range c {
             if sig == os.Interrupt {
-                samStack.cleanupClient()
+                samProxies.cleanupClient()
             }
         }
     }()
 
+    time.Sleep(2000 * time.Millisecond)
+    httpUp := false
+
     if useHttpProxy {
-        samProxy := createHttpProxy(proxAddrString, proxPortString, samStack)
-        log.Println("Sam Proxy Started:" + samProxy.host)
+        if ! httpUp {
+            samProxy := createHttpProxy(proxAddrString, proxPortString, samProxies, address)
+            log.Println("HTTP Proxy Started:" + samProxy.host)
+            httpUp = true
+        }
     }
 
-    time.Sleep(4000 * time.Millisecond)
-
+    time.Sleep(2000 * time.Millisecond)
     log.Println("Created client, starting loop...")
+
     for exit != true{
-        samStack.readRequest()
-        go samStack.writeResponses()
-        go closeProxy(samStack)
+        samProxies.readRequest()
+        go samProxies.writeResponses()
+        go closeProxy(samProxies)
+
         time.Sleep(10 * time.Millisecond)
     }
 
-    samStack.cleanupClient()
+    samProxies.cleanupClient()
 }
 
-func closeProxy(samStack samList){
-    exit = samStack.readDelete()
+func closeProxy(samProxies *samList){
+    exit = samProxies.readDelete()
 }

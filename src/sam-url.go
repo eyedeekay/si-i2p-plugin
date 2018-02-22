@@ -2,25 +2,20 @@ package main
 
 import (
     "bufio"
-    //"bytes"
 	"io/ioutil"
 	"log"
 	"net/http"
     "os"
     "path/filepath"
-    //"strings"
+    "strings"
     "strconv"
     "syscall"
-    //"net/url"
     "time"
-
 )
 
 type samUrl struct{
     err error
 
-    transport *http.Transport
-    http *http.Client
     subDirectory string
 
     recvPath string
@@ -37,7 +32,7 @@ type samUrl struct{
 func (subUrl *samUrl) initPipes(){
     pathConnectionExists, pathErr := exists(filepath.Join(connectionDirectory, subUrl.subDirectory))
     log.Println("Directory Check", filepath.Join(connectionDirectory, subUrl.subDirectory))
-    subUrl.checkErr(pathErr)
+    subUrl.Fatal(pathErr)
     if ! pathConnectionExists {
         log.Println("Creating a connection:", subUrl.subDirectory)
         os.MkdirAll(filepath.Join(connectionDirectory, subUrl.subDirectory), 0755)
@@ -45,11 +40,11 @@ func (subUrl *samUrl) initPipes(){
 
     subUrl.recvPath = filepath.Join(connectionDirectory, subUrl.subDirectory, "recv")
     pathRecvExists, recvPathErr := exists(subUrl.recvPath)
-    subUrl.checkErr(recvPathErr)
+    subUrl.Fatal(recvPathErr)
     if ! pathRecvExists {
         subUrl.recvFile, subUrl.err = os.Create(subUrl.recvPath)
         log.Println("Preparing to create File:", subUrl.recvPath)
-        subUrl.checkErr(subUrl.err)
+        subUrl.Fatal(subUrl.err)
         log.Println("checking for problems...")
         log.Println("Opening the File...")
         subUrl.recvFile, subUrl.err = os.OpenFile(subUrl.recvPath, os.O_RDWR|os.O_CREATE, 0644)
@@ -58,11 +53,11 @@ func (subUrl *samUrl) initPipes(){
 
     subUrl.timePath = filepath.Join(connectionDirectory, subUrl.subDirectory, "time")
     pathTimeExists, recvTimeErr := exists(subUrl.timePath)
-    subUrl.checkErr(recvTimeErr)
+    subUrl.Fatal(recvTimeErr)
     if ! pathTimeExists {
         subUrl.timeFile, subUrl.err = os.Create(subUrl.timePath)
         log.Println("Preparing to create File:", subUrl.timePath)
-        subUrl.checkErr(subUrl.err)
+        subUrl.Fatal(subUrl.err)
         log.Println("checking for problems...")
         log.Println("Opening the File...")
         subUrl.timeFile, subUrl.err = os.OpenFile(subUrl.timePath, os.O_RDWR|os.O_CREATE, 0644)
@@ -71,11 +66,11 @@ func (subUrl *samUrl) initPipes(){
 
     subUrl.delPath = filepath.Join(connectionDirectory, subUrl.subDirectory, "del")
     pathDelExists, delPathErr := exists(subUrl.delPath)
-    subUrl.checkErr(delPathErr)
+    subUrl.Fatal(delPathErr)
     if ! pathDelExists{
         err := syscall.Mkfifo(subUrl.delPath, 0755)
         log.Println("Preparing to create Pipe:", subUrl.delPath)
-        subUrl.checkErr(err)
+        subUrl.Fatal(err)
         log.Println("checking for problems...")
         subUrl.delPipe, err = os.OpenFile(subUrl.delPath , os.O_RDWR|os.O_CREATE, 0755)
         log.Println("Opening the Named Pipe as a File...")
@@ -86,14 +81,13 @@ func (subUrl *samUrl) initPipes(){
 }
 
 func (subUrl *samUrl) createDirectory(requestdir string) {
-    subUrl.http = &http.Client{Transport: subUrl.transport}
     subUrl.subDirectory = subUrl.dirSet(requestdir)
     subUrl.initPipes()
 }
 
 func (subUrl *samUrl) scannerText() (string, error) {
     d, err := ioutil.ReadFile(subUrl.recvPath)
-    subUrl.checkErr(err)
+    subUrl.Fatal(err)
     s := string(d)
     if s != "" {
         log.Println("Read file", s)
@@ -103,13 +97,17 @@ func (subUrl *samUrl) scannerText() (string, error) {
 }
 
 func (subUrl *samUrl) dirSet(requestdir string) string {
-    log.Println("Requesting directory: ", requestdir)
-    return requestdir
+    log.Println("Requesting directory: ", requestdir + "/")
+    d1 := requestdir + "/"
+    d2 := strings.Replace(d1, "//", "/", -1)
+    return d2
 }
 
 func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) bool{
     b := false
-    if directory == subUrl.subDirectory {
+    d1 := strings.Replace(subUrl.subDirectory, "/", "", -1)
+    d2 := strings.Replace(directory, "/", "", -1)
+    if d2 == d1 {
         log.Println("Directory / ", directory + " : compare : " + subUrl.subDirectory )
         if response != nil {
             log.Println("Response Status ", response.StatusCode)
@@ -126,7 +124,7 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 func (subUrl *samUrl) dealResponse(response *http.Response){
     defer response.Body.Close()
     body, err := ioutil.ReadAll(response.Body)
-    subUrl.checkErr(err)
+    subUrl.Fatal(err)
     log.Println("Writing files.")
     subUrl.recvFile.Write(body)
     log.Println("Retrieval time: ", time.Now().String())
@@ -142,7 +140,7 @@ func (subUrl *samUrl) cleanupDirectory(){
 
 func (subUrl *samUrl) readDelete() int {
     line, _, err := subUrl.delBuff.ReadLine()
-    subUrl.checkErr(err)
+    subUrl.Fatal(err)
     n := len(line)
     log.Println("Reading n bytes from exit pipe:", strconv.Itoa(n))
     if n < 0 {
@@ -161,17 +159,22 @@ func (subUrl *samUrl) readDelete() int {
     }
 }
 
-func (subUrl *samUrl) checkErr(err error) {
+func (subUrl *samUrl) Warn(err error) {
 	if err != nil {
-        subUrl.cleanupDirectory()
-		log.Fatal(err)
+		log.Println("Warning: ", err)
+	}
+}
+
+func (subUrl *samUrl) Fatal(err error) {
+	if err != nil {
+        defer subUrl.cleanupDirectory()
+		log.Fatal("Fatal: ", err)
 	}
 }
 
 func newSamUrl(requestdir string) (samUrl){
     log.Println("Creating a new cache directory.")
     var subUrl samUrl
-    subUrl.subDirectory = requestdir
     subUrl.createDirectory(requestdir)
     return subUrl
 }
@@ -179,8 +182,7 @@ func newSamUrl(requestdir string) (samUrl){
 func newSamUrlHttp(request *http.Request) (samUrl){
     log.Println("Creating a new cache directory.")
     var subUrl samUrl
-    subUrl.subDirectory = request.Host + request.URL.Path
     log.Println(subUrl.subDirectory)
-    subUrl.createDirectory(subUrl.subDirectory)
+    subUrl.createDirectory(request.Host + request.URL.Path)
     return subUrl
 }
