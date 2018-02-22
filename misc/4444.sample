@@ -1,0 +1,29 @@
+This is an example of what a network of colluding sites might use to fingerprint
+you via uncareful use of the original i2p http proxy, either in i2p or i2pd.
+
+----- Request Start ----->
+
+Request path: /
+Request headers: Host: gw5sulzo7cett4ms7teva37fprtw2waeou6ttzo36dgqtvdf6rna.b32.i2p
+User-Agent: MYOB/6.66 (AN/ON)
+Connection: close
+X-I2P-DestB32: cfwvbl25nspvm2taodcsbuam3rm7jd7ryiq4ciiovixx5d42eh5a.b32.i2p
+X-I2P-DestHash: EW1Qr11sn1ZqYHDFINAM3Fn0j~HCIcEhDqovfo-aIfo=
+X-I2P-DestB64: gEBYt0ZxnV32xWLcfmRgYGIfuPDwA3ENi0~jW2VlXtZH~lb19KjJQvVXwwjK0nNJZs6e3fxqVOF8HZ-0vauVcdRJSoBYjVB3-k5TAK7cOuE4CsAnYAR8bImypqNr29xQC9Un~l1tnRCLToc7gU71xplq-0M-xYCtaIgl18~wMUGb3oqUbB-mFk0HtOnJZLwumUf2FYm-ZEHUtXFTRUHll~ipD8N8dFFXEvin8UwgyhVLEce1dQoKV6C08n0sz-C9oUtphC7lPYwsa5h3i1agMhmNTFYQ1d5hdXauBv39WO6nzJ5OOQFndcirjZzT7MOgn6ZQlNkT2NtG56COTczbKmwRzubS2bTiIW5Y~gGfK7empSTrsGfqo8jVdCQt44y0L3NXSFtEdmMjaK0dUL6rC5FY698ozYcoeqHbOdgwnJk70ORKmIXovnKO7epQWP~9bjR1z3lZxmnRs3hpEeESY32FxRVVKzaWrmAzYMtyWhGFo1l1yVfzDDkEde0Dw8WuAAAA
+
+
+<----- Request End -----
+
+----- Request Start ----->
+
+Request path: /
+Request headers: Host: qmhi6zbnb2wmacfbb5ps5e4poa5y343dlun3j3kdlblnuze3qiua.b32.i2p
+User-Agent: MYOB/6.66 (AN/ON)
+Connection: close
+X-I2P-DestB32: cfwvbl25nspvm2taodcsbuam3rm7jd7ryiq4ciiovixx5d42eh5a.b32.i2p
+X-I2P-DestHash: EW1Qr11sn1ZqYHDFINAM3Fn0j~HCIcEhDqovfo-aIfo=
+X-I2P-DestB64: gEBYt0ZxnV32xWLcfmRgYGIfuPDwA3ENi0~jW2VlXtZH~lb19KjJQvVXwwjK0nNJZs6e3fxqVOF8HZ-0vauVcdRJSoBYjVB3-k5TAK7cOuE4CsAnYAR8bImypqNr29xQC9Un~l1tnRCLToc7gU71xplq-0M-xYCtaIgl18~wMUGb3oqUbB-mFk0HtOnJZLwumUf2FYm-ZEHUtXFTRUHll~ipD8N8dFFXEvin8UwgyhVLEce1dQoKV6C08n0sz-C9oUtphC7lPYwsa5h3i1agMhmNTFYQ1d5hdXauBv39WO6nzJ5OOQFndcirjZzT7MOgn6ZQlNkT2NtG56COTczbKmwRzubS2bTiIW5Y~gGfK7empSTrsGfqo8jVdCQt44y0L3NXSFtEdmMjaK0dUL6rC5FY698ozYcoeqHbOdgwnJk70ORKmIXovnKO7epQWP~9bjR1z3lZxmnRs3hpEeESY32FxRVVKzaWrmAzYMtyWhGFo1l1yVfzDDkEde0Dw8WuAAAA
+
+
+<----- Request End -----
+

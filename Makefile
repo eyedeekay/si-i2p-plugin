@@ -265,14 +265,14 @@ static-exclude:
 
 static:
 	docker rm -f si-i2p-plugin-static; true
-	docker build --force-rm -f Dockerfiles/Dockerfile.static -t si-i2p-plugin-static .
-	docker run --name si-i2p-plugin-static -t si-i2p-plugin-static
+	docker build --force-rm -f Dockerfiles/Dockerfile.static -t eyedeekay/si-i2p-plugin-static .
+	docker run --name si-i2p-plugin-static -t eyedeekay/si-i2p-plugin-static
 	docker cp si-i2p-plugin-static:/opt/bin/si-i2p-plugin-static ./bin/si-i2p-plugin-static
 
 uuser:
-	docker build --force-rm -f Dockerfiles/Dockerfile.uuser -t si-i2p-plugin-uuser .
-	docker run -d --rm --name si-i2p-plugin-uuser -t si-i2p-plugin-uuser
-	docker exec -t si-i2p-plugin-uuser tail -n 1 /etc/passwd | tee si-i2p-plugin/passwd
+	docker build --force-rm -f Dockerfiles/Dockerfile.uuser -t eyedeekay/si-i2p-plugin-uuser .
+	docker run -d --rm --name si-i2p-plugin-uuser -t eyedeekay/si-i2p-plugin-uuser
+	docker exec -t eyedeekay/si-i2p-plugin-uuser tail -n 1 /etc/passwd | tee si-i2p-plugin/passwd
 	docker cp si-i2p-plugin-uuser:/bin/bash-static si-i2p-plugin/bash
 	docker cp si-i2p-plugin-uuser:/bin/busybox si-i2p-plugin/busybox
 	docker rm -f si-i2p-plugin-uuser; docker rmi -f si-i2p-plugin-uuser
@@ -280,14 +280,14 @@ uuser:
 docker:
 	make static
 	make uuser
-	docker build --force-rm -f Dockerfiles/Dockerfile -t si-i2p-plugin .
+	docker build --force-rm -f Dockerfiles/Dockerfile -t eyedeekay/si-i2p-plugin .
 
 docker-run:
 	docker run -d \
 		--cap-drop all \
 		--name si-i2p-plugin \
 		--user sii2pplugindocker \
-		-t si-i2p-plugin
+		-t eyedeekay/si-i2p-plugin
 
 mps:
 	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep | grep -v https" 2>/dev/null
@@ -307,3 +307,10 @@ ls:
 ps:
 	while true; do make -s mps 2>/dev/null; sleep 2; clear; done
 
+demoservice:
+	docker rm -f demoservice; \
+	docker build -f Dockerfiles/Dockerfile.demoservice -t eyedeekay/i2p-demoservice .
+
+demo: demoservice
+	docker run -d --name demoservice -p :4567 -p 7071:7070 -t eyedeekay/i2p-demoservice
+	docker logs -f demoservice > headers.log
