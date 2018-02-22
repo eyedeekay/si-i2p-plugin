@@ -14,7 +14,9 @@ What works so far:
 
 ### The http proxy
 
-Not currently working, but getting there. Should be soon.
+Still *extremely experimental*, but currently it is possible to set your web
+browser's HTTP proxy to localhost:4443 and use it to browse eepSites. I just got
+it working and it's not been tested much yet, YMMV.
 
 ### The pipes
 
