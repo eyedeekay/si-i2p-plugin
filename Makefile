@@ -10,7 +10,6 @@ LOCAL := local/
 VERSION := 0.19
 
 
-CC := musl-gcc
 COMPILER := "-compiler gccgo"
 
 COMPILER_FLAGS := '-ldflags \'-linkmode external -extldflags "-static" "-fPIE" "-pie"\''
@@ -67,8 +66,8 @@ remove:
 		$(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
-run:
-	./bin/si-i2p-plugin >run.log &>run.err
+run: build
+	./bin/si-i2p-plugin -conn-debug=true >run.log 2>run.err &
 
 follow:
 	tail -f run.log run.err
@@ -144,6 +143,8 @@ test-loop:
 	@echo "a test, then immediately tear down the test tunnel."
 	echo test.i2p > parent/serv
 	echo http://test.i2p > parent/send
+
+test-proxy: test-realcurl test-http test-curl test-curldiff test-httpdiff test-httpdiffsd
 
 test-curl:
 	@echo "Test the http proxy in as simple a way as possible"

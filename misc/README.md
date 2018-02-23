@@ -25,3 +25,7 @@ in the project root directory will generate and run the container, go to sleep
 for a while to allow the network to get ready and publish the services, and then
 make some requests to the servers over the default http proxy and the demo http
 proxy, and once they complete, copy the corresponding logs to misc/logs/.
+
+The echo server is borrowed from [1kastner's github gist](https://gist.github.com/1kastner/e083f9e813c0464e6a2ec8910553e632)
+and is unaltered so far. Eventually I'll make it print the destination on the
+page.

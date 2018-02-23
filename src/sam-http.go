@@ -311,13 +311,15 @@ func (samConn *samHttp) readDelete() bool {
 func (samConn *samHttp) writeName(request string, sam *goSam.Client){
     if samConn.host == "" {
         samConn.host, samConn.directory = samConn.hostSet(request)
-        log.Println("Setting hostname:" )
+        log.Println("Setting hostname:", samConn.host )
         samConn.initPipes()
     }
     log.Println("Attempting to write-out connection name:")
     if samConn.checkName() {
+        log.Println("Looking up hostname:", samConn.host )
         samConn.name, samConn.err = sam.Lookup(samConn.host)
         //log.Println("New Connection Name: ", samConn.host)
+        log.Println("Caching base64 address of:", samConn.host )
         samConn.Fatal(samConn.err)
         samConn.nameFile.WriteString(samConn.name)
     }
