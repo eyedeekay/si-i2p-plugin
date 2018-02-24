@@ -59,7 +59,6 @@ func main(){
         }
     }()
 
-    time.Sleep(2000 * time.Millisecond)
     httpUp := false
 
     if *useHttpProxy {
@@ -70,7 +69,6 @@ func main(){
         }
     }
 
-    time.Sleep(2000 * time.Millisecond)
     log.Println("Created client, starting loop...")
 
     for exit != true{

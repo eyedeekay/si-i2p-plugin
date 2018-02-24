@@ -62,29 +62,34 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 }
 
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
-    if proxy.checkURLType(rW, rq) {
-        log.Println(rq.URL.String())
+    log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
 
-        rq.RequestURI = ""
-        proxy.delHopHeaders(rq.Header)
-
-        client := proxy.client.sendClientRequestHttp(rq)
-
-        resp, err := client.Do(rq)
-        if err != nil {
-            log.Println("Fatal: ServeHTTP:", err)
-            http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-        }
-        //defer resp.Body.Close()
-
-        log.Println(rq.RemoteAddr, " ", resp.Status)
-
-        proxy.delHopHeaders(resp.Header)
-
-        proxy.copyHeader(rW.Header(), resp.Header)
-        rW.WriteHeader(resp.StatusCode)
-        io.Copy(rW, resp.Body)
+    if ! proxy.checkURLType(rW, rq) {
+        return
     }
+    log.Println(rq.URL.String())
+
+    rq.RequestURI = ""
+    proxy.delHopHeaders(rq.Header)
+
+    client, dir := proxy.client.sendClientRequestHttp(rq)
+
+    resp, err := client.Do(rq)
+    if err != nil {
+        log.Println("Fatal: ServeHTTP:", err)
+        http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+    }
+    resp = proxy.client.copyRequest(rq, resp, dir)
+    defer resp.Body.Close()
+
+    log.Println("Request Remote Address", rq.RemoteAddr)
+    log.Println("Response Status:", resp.Status)
+
+    proxy.delHopHeaders(resp.Header)
+
+    proxy.copyHeader(rW.Header(), resp.Header)
+    rW.WriteHeader(resp.StatusCode)
+    io.Copy(rW, resp.Body)
 }
 
 func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) samHttpProxy {

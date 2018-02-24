@@ -147,7 +147,7 @@ func (samStack *samList) sendClientRequest(request string) string{
     return request
 }
 
-func (samStack *samList) sendClientRequestHttp(request *http.Request) *http.Client {
+func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
     found := false
     if len(samStack.listOfClients) == 0 {
         samStack.createClientHttp(request)
@@ -178,7 +178,41 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) *http.Clie
             }
         }
     }
-    return nil
+    return nil, ""
+}
+
+func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory string)(*http.Response){
+    found := false
+    if len(samStack.listOfClients) == 0 {
+        samStack.createClientHttp(request)
+    }
+    for index, client := range samStack.listOfClients {
+        log.Println("Checking client requests", index + 1)
+        log.Println("of", len(samStack.listOfClients))
+        if client.hostCheck(request.Host){
+            log.Println("Client pipework for %s found.", request.Host)
+            log.Println("URL scheme", request.URL.Scheme)
+            found = true
+            log.Println("Request sent")
+            return client.copyRequestHttp(response, directory)
+        }
+    }
+    if ! found {
+        log.Println("Client pipework for %s not found: Creating.", request.Host)
+        samStack.createClientHttp(request)
+        for index, client := range samStack.listOfClients {
+            log.Println("Checking client requests", index + 1)
+            log.Println("of", len(samStack.listOfClients))
+            if client.hostCheckHttp(request){
+                log.Println("Client pipework for %s found.", request.URL.String() )
+                log.Println("URL scheme", request.URL.Scheme)
+                found = true
+                log.Println("Request sent")
+                return client.copyRequestHttp(response, directory)
+            }
+        }
+    }
+    return response
 }
 
 func (samStack *samList) readRequest() string{

@@ -45,7 +45,7 @@ demo-p1-fix:
 demo-p2-fix:
 	@echo $(shell tail -n 1 demo.b32.i2p).b32.i2p | tee parent/send
 
-demo-pipes: democonfig demo-p1-fix demo-p2-fix headers.fix.log
+demo-pipes: democonfig demo-p1-fix demo-p2-fix
 
 headers.fix.log: misc/log/headers.fix.log
 

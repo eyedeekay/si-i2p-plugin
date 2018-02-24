@@ -112,9 +112,13 @@ func (samConn *samHttp) createClientHttp(request *http.Request, sam *goSam.Clien
 }
 
 func (samConn *samHttp) hostSet(request string) (string, string){
+    log.Println(request)
     tmp := strings.Replace(request, "http://", "", -1)
+    log.Println(tmp)
     tmp2 := strings.SplitAfterN(tmp, ".i2p", 1 )[0]
+    log.Println(tmp2)
     host := strings.Replace(tmp2, "/", "", -1)
+    log.Println(host)
     _, err := url.ParseRequestURI("http://" + host)
     if err != nil {
         host = strings.Replace(host, "http://", "", -1)
@@ -231,11 +235,12 @@ func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
     return resp, err
 }
 
-func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client){
+func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, string){
     r, dir := samConn.getURLHttp(request)
     log.Println("Getting resource", r.URL.String())
+    //samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
     log.Println("In ", dir)
-    return samConn.subClient
+    return samConn.subClient, dir
 }
 
 func (samConn *samHttp) copyRequest(response *http.Response, directory string){
@@ -260,6 +265,31 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string){
             }
         }
     }
+}
+
+func (samConn *samHttp) copyRequestHttp(response *http.Response, directory string)(*http.Response){
+    b := false
+    for _, url := range samConn.subCache {
+        log.Println("Seeking Subdirectory", url.subDirectory)
+        b, d := url.copyDirectoryHttp(response, directory)
+        if b == true {
+            log.Println("Found Subdirectory", url.subDirectory)
+            return d
+        }
+    }
+    if b == false {
+        log.Println("has not been retrieved yet. Setting up:", directory)
+        samConn.subCache = append(samConn.subCache, newSamUrl(directory))
+        for _, url := range samConn.subCache {
+            log.Println("Seeking Subdirectory", url.subDirectory)
+            b, d := url.copyDirectoryHttp(response, directory)
+            if b == true {
+                log.Println("Found Subdirectory", url.subDirectory)
+                return d
+            }
+        }
+    }
+    return response
 }
 
 func (samConn *samHttp) scannerText() (string, error) {

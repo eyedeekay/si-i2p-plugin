@@ -121,6 +121,26 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
     return b
 }
 
+func (subUrl *samUrl) copyDirectoryHttp(response *http.Response, directory string) (bool, *http.Response){
+    b := false
+    d1 := strings.Replace(subUrl.subDirectory, "/", "", -1)
+    d2 := strings.Replace(directory, "/", "", -1)
+    if d2 == d1 {
+        log.Println("Directory / ", directory + " : compare : " + subUrl.subDirectory )
+        if response != nil {
+            log.Println("Response Status ", response.StatusCode)
+            if response.StatusCode == http.StatusOK {
+                log.Println("Setting file in cache")
+                b = true
+                resp := subUrl.dealResponseHttp(response)
+                return b, resp
+            }
+        }
+        b = true
+    }
+    return b, response
+}
+
 func (subUrl *samUrl) dealResponse(response *http.Response){
     defer response.Body.Close()
     body, err := ioutil.ReadAll(response.Body)
@@ -129,6 +149,16 @@ func (subUrl *samUrl) dealResponse(response *http.Response){
     subUrl.recvFile.Write(body)
     log.Println("Retrieval time: ", time.Now().String())
     subUrl.timeFile.WriteString(time.Now().String())
+}
+
+func (subUrl *samUrl) dealResponseHttp(response *http.Response)(*http.Response){
+    body, err := ioutil.ReadAll(response.Body)
+    subUrl.Fatal(err)
+    log.Println("Writing files.")
+    subUrl.recvFile.Write(body)
+    log.Println("Retrieval time: ", time.Now().String())
+    subUrl.timeFile.WriteString(time.Now().String())
+    return response
 }
 
 func (subUrl *samUrl) cleanupDirectory(){
