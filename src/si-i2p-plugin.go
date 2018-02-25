@@ -41,7 +41,7 @@ func main(){
     log.Println( "Proxy Port:", *proxPortString )
     log.Println( "Working Directory:", *workDirectory )
     log.Println( "Debug mode:", *debugConnection)
-    log.Println( "Debug mode:", *useHttpProxy)
+    log.Println( "Using HTTP proxy:", *useHttpProxy)
     log.Println( "Initial URL:", *address)
 
     goSam.ConnDebug = *debugConnection

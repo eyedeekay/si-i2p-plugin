@@ -10,6 +10,7 @@ if [ -f /etc/si-i2p-plugin/settings.cfg ]; then
             -bridge-port=$sam_port \
             -proxy-addr=$proxy_addr \
             -proxy-port=$proxy_port \
+            -http-proxy=$use_proxy \
             -conn-debug=$debug_info \
             -address=$testing_url"
 fi

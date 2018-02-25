@@ -79,20 +79,20 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
         log.Println("Fatal: ServeHTTP:", err)
         http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
     }
-    resp = proxy.client.copyRequest(rq, resp, dir)
-    defer resp.Body.Close()
+    r = proxy.client.copyRequest(rq, resp, dir)
+//    defer resp.Body.Close()
 
     log.Println("Request Remote Address", rq.RemoteAddr)
-    log.Println("Response Status:", resp.Status)
+    log.Println("Response Status:", r.Status)
 
-    proxy.delHopHeaders(resp.Header)
+    proxy.delHopHeaders(r.Header)
 
-    proxy.copyHeader(rW.Header(), resp.Header)
-    rW.WriteHeader(resp.StatusCode)
-    io.Copy(rW, resp.Body)
+    proxy.copyHeader(rW.Header(), r.Header)
+    rW.WriteHeader(r.StatusCode)
+    io.Copy(rW, r.Body)
 }
 
-func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) samHttpProxy {
+func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) *samHttpProxy {
     var samProxy samHttpProxy
     samProxy.host = proxAddr + ":" + proxPort
     log.Println("Starting HTTP proxy on:" + samProxy.host)
@@ -101,5 +101,5 @@ func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAd
     log.Println("Connected SAM isolation stack to the HTTP proxy server")
     go samProxy.prepare()
     log.Println("HTTP Proxy prepared")
-    return samProxy
+    return &samProxy
 }

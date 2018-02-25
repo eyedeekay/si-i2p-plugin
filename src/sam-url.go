@@ -152,6 +152,7 @@ func (subUrl *samUrl) dealResponse(response *http.Response){
 }
 
 func (subUrl *samUrl) dealResponseHttp(response *http.Response)(*http.Response){
+    //defer response.Body.Close()
     body, err := ioutil.ReadAll(response.Body)
     subUrl.Fatal(err)
     log.Println("Writing files.")

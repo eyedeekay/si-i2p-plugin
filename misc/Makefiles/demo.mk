@@ -7,7 +7,7 @@ democlean:
 	rm -f demo.b32.i2p
 
 demo: democlean demoservice
-	docker run -d --cap-drop all --name demoservice -p :4567 -p 7071:7070  -p 7656:7658 -t eyedeekay/i2p-demoservice
+	docker run -d --cap-drop all --name demoservice -p :4567 -p 7071:7070 -t eyedeekay/i2p-demoservice
 	sleep 10
 	make democonfig
 	@echo "WARNING: going to sleep for 20 minutes to allow new eepSite to become available"

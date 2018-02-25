@@ -10,7 +10,7 @@ LOCAL := local/
 VERSION := 0.19
 
 
-COMPILER := "-compiler gccgo"
+COMPILER := "-compiler gc"
 
 COMPILER_FLAGS := '-ldflags \'-linkmode external -extldflags "-static" "-fPIE" "-pie"\''
 
@@ -18,26 +18,32 @@ build: clean bin/si-i2p-plugin
 
 bin/si-i2p-plugin:
 	go get github.com/eyedeekay/gosam
-	go build \
+	go build "$(COMPILER)" -race \
 		-o bin/si-i2p-plugin \
 		./src
 	@echo 'built'
 
-#-ldflags '-linkmode external -extldflags "-fPIE -static -pie"' \
+
+release:
+	go build $(COMPILER) -race -buildmode=pie \
+		-o bin/si-i2p-plugin \
+		./src
+	@echo 'built release'
+
 
 debug: build
-	cgdb ./bin/si-i2p-plugin
+	lldb ./bin/si-i2p-plugin
 
 build-static:
 	go get github.com/eyedeekay/gosam
-	go build -ldflags '-linkmode external -extldflags "-static"' \
+	go build $(COMPILER) -extldflags "-static" -buildmode=pie \
 		-o bin/si-i2p-plugin-static \
 		./src
 
 build-gccgo-static:
 	go get github.com/eyedeekay/gosam
 	go build "$(COMPILER)" \
-		-gccgoflags '-extldflags "-fPIE -static -pie"' \
+		-gccgoflags -extldflags "-static" -buildmode=pie\
 		-o bin/si-i2p-plugin-static \
 		./src
 
@@ -84,7 +90,7 @@ memcheck: build
 
 clean:
 	killall si-i2p-plugin; \
-	rm -rf parent *.i2p bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude del recv
+	rm -rf parent ./.*.i2p/ *.i2p/ bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude del recv
 
 kill:
 	killall si-i2p-plugin; \
@@ -208,9 +214,6 @@ mls:
 	@echo ==================
 	ls *.i2p/* parent 2>/dev/null
 	@echo
-	@echo sourcedir
-	@echo ------------------
-	ls src bin 2>/dev/null
 
 ls:
 	while true; do make -s mls 2>/dev/null; sleep 2; clear; done

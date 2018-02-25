@@ -9,6 +9,7 @@ import (
     "path/filepath"
     "strings"
     "syscall"
+    //"time"
     "net/url"
 
 	"github.com/eyedeekay/gosam"
@@ -101,6 +102,7 @@ func (samConn *samHttp) createClientHttp(request *http.Request, sam *goSam.Clien
 	}
     log.Println("Initializing sub-client")
     samConn.subClient = &http.Client{
+        //Timeout: time.Second * 10,
         Transport: samConn.transport    }
 
     if samConn.host == "" {
@@ -337,20 +339,22 @@ func (samConn *samHttp) readDelete() bool {
     return b
 }
 
-
 func (samConn *samHttp) writeName(request string, sam *goSam.Client){
-    if samConn.host == "" {
-        samConn.host, samConn.directory = samConn.hostSet(request)
-        log.Println("Setting hostname:", samConn.host )
-        samConn.initPipes()
-    }
-    log.Println("Attempting to write-out connection name:")
     if samConn.checkName() {
         log.Println("Looking up hostname:", samConn.host )
         samConn.name, samConn.err = sam.Lookup(samConn.host)
         //log.Println("New Connection Name: ", samConn.host)
         log.Println("Caching base64 address of:", samConn.host )
-        samConn.Fatal(samConn.err)
+        samConn.Warn(samConn.err)
+        samConn.nameFile.WriteString(samConn.name)
+    }else{
+        samConn.host, samConn.directory = samConn.hostSet(request)
+        log.Println("Setting hostname:", samConn.host )
+        samConn.initPipes()
+        samConn.name, samConn.err = sam.Lookup(samConn.host)
+        //log.Println("New Connection Name: ", samConn.host)
+        log.Println("Caching base64 address of:", samConn.host )
+        samConn.Warn(samConn.err)
         samConn.nameFile.WriteString(samConn.name)
     }
 }
@@ -358,7 +362,7 @@ func (samConn *samHttp) writeName(request string, sam *goSam.Client){
 func (samConn *samHttp) checkName() bool{
     log.Println("seeing if the connection needs a name:")
     if samConn.name == "" {
-        log.Println("Naming connection:")
+        log.Println("Naming connection: Connection name was empty.")
         return true
     }else{
         return false
