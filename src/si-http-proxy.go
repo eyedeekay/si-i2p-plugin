@@ -79,8 +79,8 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
         log.Println("Fatal: ServeHTTP:", err)
         http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
     }
-    r = proxy.client.copyRequest(rq, resp, dir)
-//    defer resp.Body.Close()
+    r := proxy.client.copyRequest(rq, resp, dir)
+//    defer r.Body.Close()
 
     log.Println("Request Remote Address", rq.RemoteAddr)
     log.Println("Response Status:", r.Status)
