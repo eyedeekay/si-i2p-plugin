@@ -1,0 +1,4 @@
+#! /usr/bin/env sh
+
+##This is an experimental control panel for the named pipe implementation of
+#this system. It does literally nothing yet.
