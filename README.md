@@ -18,6 +18,41 @@ Still *extremely experimental*, but currently it is possible to set your web
 browser's HTTP proxy to localhost:4443 and use it to browse eepSites. I just got
 it working and it's not been tested much yet, YMMV.
 
+It is now slightly less experimental, but still not ready for general use. In
+particular, it's still having trouble interacting with the caching/monitoring
+features. That said, I believe it's currently doing the thing it was intended to
+do, generating a new client destination for every http service visited via the
+proxy. In order to use it with your browser, configure it to use the http proxy
+on localhost port 4443.
+
+#### Examples
+
+##### curl
+
+        curl -x 127.0.0.1:4443 http://i2p-projekt.i2p
+
+##### surf
+
+        export http_proxy="http://127.0.0.1:4443"
+        surf http://i2p-projekt.i2p
+
+##### mpc
+        export http_proxy="http://127.0.0.1:4443"
+        mpd http://example_cast.i2p/stream
+
+#### Current Concerns:
+
+There is an extant bug in caching that ends up leaving us with either a race
+condition or no caching for http proxy initiated requests. For right now, it
+just does no caching. This bug is next on the list.
+
+I haven't been able to observe any DNS leaks yet, but that doesn't mean they
+aren't there.
+
+Before version 0.21, a framework for generating service tunnels ad-hoc will also
+be in place. This will be used for fuzz-testing the http proxy and the pipe
+proxy.
+
 ### The pipes
 
 It currently functions well as a file/pipe based interface to http services on

@@ -1,0 +1,5 @@
+si-i2p-plugin
+
+Destination-isolating http proxy for i2p. Keeps multiple eepSites
+from sharing a single reply destination, to limit the use of i2p
+metadata for fingerprinting purposes
