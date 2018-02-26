@@ -15,7 +15,6 @@ import (
 
 type samUrl struct{
     err error
-
     subDirectory string
 
     recvPath string
@@ -153,13 +152,14 @@ func (subUrl *samUrl) dealResponse(response *http.Response){
 
 func (subUrl *samUrl) dealResponseHttp(response *http.Response)(*http.Response){
     //defer response.Body.Close()
+    r := &response
     body, err := ioutil.ReadAll(response.Body)
     subUrl.Fatal(err)
     log.Println("Writing files.")
     subUrl.recvFile.Write(body)
     log.Println("Retrieval time: ", time.Now().String())
     subUrl.timeFile.WriteString(time.Now().String())
-    return response
+    return *r
 }
 
 func (subUrl *samUrl) cleanupDirectory(){

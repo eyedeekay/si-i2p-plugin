@@ -3,6 +3,7 @@
 set -e
 
 CFGFILE=/etc/si-i2p-plugin/settings.cfg
+LOGFILE=/var/log/si-i2p-plugin/si-i2p-plugin.log
 
 if [ -f /etc/si-i2p-plugin/settings.cfg ]; then
         . /etc/si-i2p-plugin/settings.cfg
@@ -12,7 +13,7 @@ if [ -f /etc/si-i2p-plugin/settings.cfg ]; then
             -proxy-port=$proxy_port \
             -http-proxy=$use_proxy \
             -conn-debug=$debug_info \
-            -address=$testing_url"
+            -url=$testing_url"
 fi
 
 if [ ! -d "$working_dir" ]; then
@@ -20,4 +21,6 @@ if [ ! -d "$working_dir" ]; then
         exit 1
 fi
 
-cd "$working_dir" && si-i2p-plugin $si2p_config
+echo "si-i2p-plugin $si2p_config 1> \"$LOGFILE\" 2> \"$LOGFILE\""
+
+cd "$working_dir" && si-i2p-plugin $si2p_config 1> "$LOGFILE" 2> "$LOGFILE"

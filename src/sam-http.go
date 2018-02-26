@@ -238,9 +238,9 @@ func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
 }
 
 func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, string){
+    //samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
     r, dir := samConn.getURLHttp(request)
     log.Println("Getting resource", r.URL.String())
-    //samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
     log.Println("In ", dir)
     return samConn.subClient, dir
 }

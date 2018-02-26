@@ -33,7 +33,7 @@ func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
 	}
     header.Set("User-Agent", "MYOB/6.66 (AN/ON)")
 }
-/*
+
 func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 	for k, vv := range src {
 		for _, v := range vv {
@@ -42,7 +42,7 @@ func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 		}
 	}
 }
-*/
+
 func (proxy *samHttpProxy) prepare(){
     log.Println("Initializing handler handle")
     if err := http.ListenAndServe(proxy.host, proxy.handle); err != nil {
@@ -82,17 +82,17 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
         log.Println("Fatal: ServeHTTP:", err)
         http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
     }
-    r := proxy.client.copyRequest(rq, resp, dir)
+    //proxy.client.copyRequest(rq, resp, dir)
     //defer r.Body.Close()
 
     log.Println("Request Remote Address", rq.RemoteAddr)
-    log.Println("Response Status:", r.Status)
+    log.Println("Response Status:", resp.Status)
 
-    proxy.delHopHeaders(r.Header)
+    proxy.delHopHeaders(resp.Header)
 
-    //proxy.copyHeader(rW.Header(), r.Header)
-    rW.WriteHeader(r.StatusCode)
-    io.Copy(rW, r.Body)
+    proxy.copyHeader(rW.Header(), resp.Header)
+    rW.WriteHeader(resp.StatusCode)
+    io.Copy(rW, resp.Body)
 }
 
 func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) *samHttpProxy {

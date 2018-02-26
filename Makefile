@@ -10,7 +10,8 @@ LOCAL := local/
 VERSION := 0.19
 
 
-COMPILER := "-compiler gc"
+COMPILER := "-compiler gccgo"
+GO_COMPILER := "-compiler gc"
 
 COMPILER_FLAGS := '-ldflags \'-linkmode external -extldflags "-static" "-fPIE" "-pie"\''
 
@@ -18,25 +19,25 @@ build: clean bin/si-i2p-plugin
 
 bin/si-i2p-plugin:
 	go get github.com/eyedeekay/gosam
-	go build "$(COMPILER)" -race \
+	go build "$(COMPILER)" \
 		-o bin/si-i2p-plugin \
 		./src
 	@echo 'built'
 
 
 release:
-	go build $(COMPILER) -race -buildmode=pie \
+	go build "$(GO_COMPILER)" -race -buildmode=pie \
 		-o bin/si-i2p-plugin \
 		./src
 	@echo 'built release'
 
 
 debug: build
-	lldb ./bin/si-i2p-plugin
+	gdb ./bin/si-i2p-plugin
 
 build-static:
 	go get github.com/eyedeekay/gosam
-	go build $(COMPILER) -extldflags "-static" -buildmode=pie \
+	go build "$(GO_COMPILER)" -extldflags "-static" -buildmode=pie \
 		-o bin/si-i2p-plugin-static \
 		./src
 
@@ -83,7 +84,7 @@ try: build
 	sleep 1
 	tail -f log | nl
 
-memcheck: build
+memcheck: release
 	valgrind --track-origins=yes ./bin/si-i2p-plugin -conn-debug=true 1>log 2>err &
 	sleep 2
 	tail -f log | nl
