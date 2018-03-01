@@ -269,11 +269,11 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string){
     }
 }
 
-func (samConn *samHttp) copyRequestHttp(response *http.Response, directory string)(*http.Response){
+func (samConn *samHttp) copyRequestHttp(request *http.Request, response *http.Response, directory string)(*http.Response){
     b := false
     for _, url := range samConn.subCache {
         log.Println("Seeking Subdirectory", url.subDirectory)
-        b, d := url.copyDirectoryHttp(response, directory)
+        b, d := url.copyDirectoryHttp(request ,response, directory)
         if b == true {
             log.Println("Found Subdirectory", url.subDirectory)
             return d
@@ -284,7 +284,7 @@ func (samConn *samHttp) copyRequestHttp(response *http.Response, directory strin
         samConn.subCache = append(samConn.subCache, newSamUrl(directory))
         for _, url := range samConn.subCache {
             log.Println("Seeking Subdirectory", url.subDirectory)
-            b, d := url.copyDirectoryHttp(response, directory)
+            b, d := url.copyDirectoryHttp(request ,response, directory)
             if b == true {
                 log.Println("Found Subdirectory", url.subDirectory)
                 return d

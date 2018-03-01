@@ -121,7 +121,7 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
     return b
 }
 
-func (subUrl *samUrl) copyDirectoryHttp(response *http.Response, directory string) (bool, *http.Response){
+func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) (bool, *http.Response){
     b := false
     d1 := strings.Replace(subUrl.subDirectory, "/", "", -1)
     d2 := strings.Replace(directory, "/", "", -1)
@@ -132,7 +132,7 @@ func (subUrl *samUrl) copyDirectoryHttp(response *http.Response, directory strin
             if response.StatusCode == http.StatusOK {
                 log.Println("Setting file in cache")
                 b = true
-                resp := subUrl.dealResponseHttp(response)
+                resp := subUrl.dealResponseHttp(request ,response)
                 return b, resp
             }
         }
@@ -151,7 +151,7 @@ func (subUrl *samUrl) dealResponse(response *http.Response){
     subUrl.timeFile.WriteString(time.Now().String())
 }
 
-func (subUrl *samUrl) dealResponseHttp(response *http.Response)(*http.Response){
+func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response)(*http.Response){
     defer response.Body.Close()
     body, err := ioutil.ReadAll(response.Body)
     subUrl.Fatal(err)
@@ -165,7 +165,7 @@ func (subUrl *samUrl) dealResponseHttp(response *http.Response)(*http.Response){
         ProtoMinor:    1,
         Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
         ContentLength: int64(len(body)),
-        Request:       response.Request,
+        Request:       request,
         Header:        make(http.Header, 0),
     }
     log.Println("Retrieval time: ", time.Now().String())

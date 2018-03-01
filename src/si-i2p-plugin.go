@@ -76,7 +76,7 @@ func main(){
         go samProxies.writeResponses()
         go closeProxy(samProxies)
 
-        time.Sleep(10 * time.Millisecond)
+        time.Sleep(100 * time.Millisecond)
     }
 
     samProxies.cleanupClient()

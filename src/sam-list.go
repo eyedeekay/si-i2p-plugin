@@ -194,7 +194,7 @@ func (samStack *samList) copyRequest(request *http.Request, response *http.Respo
             log.Println("URL scheme", request.URL.Scheme)
             found = true
             log.Println("Request sent")
-            return client.copyRequestHttp(response, directory)
+            return client.copyRequestHttp(request ,response, directory)
         }
     }
     if ! found {
@@ -208,7 +208,7 @@ func (samStack *samList) copyRequest(request *http.Request, response *http.Respo
                 log.Println("URL scheme", request.URL.Scheme)
                 found = true
                 log.Println("Request sent")
-                return client.copyRequestHttp(response, directory)
+                return client.copyRequestHttp(request ,response, directory)
             }
         }
     }

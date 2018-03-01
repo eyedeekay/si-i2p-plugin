@@ -103,12 +103,12 @@ func (samServiceStack *samServices) Warn(err error) {
 
 func (samServiceStack *samServices) Fatal(err error) {
 	if err != nil {
-        defer samServiceStack.cleanupClient()
+        defer samServiceStack.cleanupServices()
         log.Fatal("Fatal: ", err)
 	}
 }
 
-func (samServiceStack *samServices) cleanupClient(){
+func (samServiceStack *samServices) cleanupServices(){
     samServiceStack.genrPipe.Close()
     samServiceStack.lsPipe.Close()
     for _, client := range samServiceStack.listOfServices {
@@ -118,4 +118,9 @@ func (samServiceStack *samServices) cleanupClient(){
     err := samServiceStack.samBridgeClient.Close()
     samServiceStack.Fatal(err)
     os.RemoveAll(filepath.Join(connectionDirectory, "service"))
+}
+
+func newSamServiceList(samStack *samList) *samServices {
+    var samServiceList samServices
+    return &samServiceList
 }
