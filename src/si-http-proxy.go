@@ -82,17 +82,17 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
         log.Println("Fatal: ServeHTTP:", err)
         http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
     }
-    //proxy.client.copyRequest(rq, resp, dir)
+    r := proxy.client.copyRequest(rq, resp, dir)
     //defer r.Body.Close()
 
     log.Println("Request Remote Address", rq.RemoteAddr)
-    log.Println("Response Status:", resp.Status)
+    log.Println("Response Status:", r.Status)
 
-    proxy.delHopHeaders(resp.Header)
+    proxy.delHopHeaders(r.Header)
 
-    proxy.copyHeader(rW.Header(), resp.Header)
-    rW.WriteHeader(resp.StatusCode)
-    io.Copy(rW, resp.Body)
+    proxy.copyHeader(rW.Header(), r.Header)
+    rW.WriteHeader(r.StatusCode)
+    io.Copy(rW, r.Body)
 }
 
 func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) *samHttpProxy {

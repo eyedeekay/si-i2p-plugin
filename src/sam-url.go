@@ -2,6 +2,7 @@ package main
 
 import (
     "bufio"
+    "bytes"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -151,15 +152,25 @@ func (subUrl *samUrl) dealResponse(response *http.Response){
 }
 
 func (subUrl *samUrl) dealResponseHttp(response *http.Response)(*http.Response){
-    //defer response.Body.Close()
-    r := &response
+    defer response.Body.Close()
     body, err := ioutil.ReadAll(response.Body)
     subUrl.Fatal(err)
     log.Println("Writing files.")
     subUrl.recvFile.Write(body)
+    r := &http.Response{
+        Status:        "200 OK",
+        StatusCode:    200,
+        Proto:         "HTTP/1.1",
+        ProtoMajor:    1,
+        ProtoMinor:    1,
+        Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
+        ContentLength: int64(len(body)),
+        Request:       response.Request,
+        Header:        make(http.Header, 0),
+    }
     log.Println("Retrieval time: ", time.Now().String())
     subUrl.timeFile.WriteString(time.Now().String())
-    return *r
+    return r
 }
 
 func (subUrl *samUrl) cleanupDirectory(){
