@@ -114,13 +114,14 @@ func (samConn *samHttp) createClientHttp(request *http.Request, sam *goSam.Clien
 }
 
 func (samConn *samHttp) hostSet(request string) (string, string){
-    log.Println(request)
+    log.Println("hostSet Trim 0 " + request)
+    //http://i2p-projekt.i2p/en/downloads
     tmp := strings.Replace(request, "http://", "", -1)
-    log.Println(tmp)
-    tmp2 := strings.SplitAfterN(tmp, ".i2p", 1 )[0]
-    log.Println(tmp2)
-    host := strings.Replace(tmp2, "/", "", -1)
-    log.Println(host)
+    log.Println("hostSet Trim 1 " + tmp)
+    //i2p-projekt.i2p/en/downloads
+    host := strings.SplitAfter(tmp, ".i2p")[0]
+    log.Println("hostSet Trim 2 " + host)
+    //i2p-projekt.i2p
     _, err := url.ParseRequestURI("http://" + host)
     if err != nil {
         host = strings.Replace(host, "http://", "", -1)
@@ -343,7 +344,7 @@ func (samConn *samHttp) writeName(request string, sam *goSam.Client){
     if samConn.checkName() {
         log.Println("Looking up hostname:", samConn.host )
         samConn.name, samConn.err = sam.Lookup(samConn.host)
-        //log.Println("New Connection Name: ", samConn.host)
+        log.Println("New Connection Name: ", samConn.host)
         log.Println("Caching base64 address of:", samConn.host )
         samConn.Warn(samConn.err)
         samConn.nameFile.WriteString(samConn.name)
@@ -352,7 +353,7 @@ func (samConn *samHttp) writeName(request string, sam *goSam.Client){
         log.Println("Setting hostname:", samConn.host )
         samConn.initPipes()
         samConn.name, samConn.err = sam.Lookup(samConn.host)
-        //log.Println("New Connection Name: ", samConn.host)
+        log.Println("New Connection Name: ", samConn.host)
         log.Println("Caching base64 address of:", samConn.host )
         samConn.Warn(samConn.err)
         samConn.nameFile.WriteString(samConn.name)
@@ -361,7 +362,7 @@ func (samConn *samHttp) writeName(request string, sam *goSam.Client){
 
 func (samConn *samHttp) checkName() bool{
     log.Println("seeing if the connection needs a name:")
-    if samConn.name == "" {
+    if samConn.name != "" {
         log.Println("Naming connection: Connection name was empty.")
         return true
     }else{

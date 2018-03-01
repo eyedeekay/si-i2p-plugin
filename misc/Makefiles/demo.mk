@@ -10,8 +10,6 @@ demo: democlean demoservice
 	docker run -d --cap-drop all --name demoservice -p :4567 -p 7071:7070 -t eyedeekay/i2p-demoservice
 	sleep 10
 	make democonfig
-	@echo "WARNING: going to sleep for 20 minutes to allow new eepSite to become available"
-	sleep 20m
 
 democonfig: demo.b32.i2pclean demo.b32.i2p
 
@@ -66,4 +64,6 @@ demolog:
 	mkdir -p misc/log
 
 dodemo: demolog run demo
+	@echo "WARNING: going to sleep for 20 minutes to allow new eepSite to become available"
+	sleep 20m
 	make demo-all

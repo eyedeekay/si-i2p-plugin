@@ -20,6 +20,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.send_header("Set-Cookie", "foo=bar")
         self.end_headers()
 
+        self.wfile.write("<html><head><title>Title goes here.</title></head>")
+        self.wfile.write("<body><p>This is a test.</p>")
+        self.wfile.write("</body></html>")
+
     def do_POST(self):
 
         request_path = self.path

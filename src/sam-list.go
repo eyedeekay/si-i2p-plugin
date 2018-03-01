@@ -294,6 +294,8 @@ func createSamList(samAddr string, samPort string, initAddress string) *samList{
     log.Println("Parent proxy set to down.")
     samStack.createSamList(samAddr, samPort)
     log.Println("SAM list created")
-    samStack.sendPipe.WriteString(initAddress + "\n")
+    if initAddress != "" {
+        samStack.sendPipe.WriteString(initAddress + "\n")
+    }
     return &samStack
 }

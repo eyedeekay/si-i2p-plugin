@@ -14,6 +14,12 @@ test-fake:
 	@echo "all, and move on."
 	echo http://notarealurl.i2p > parent/send
 
+test-leak:
+	@echo " When a client requests a clear web resource, perhaps by accident,"
+	@echo "the proxy should immediately refuse to fetch the data and not leak"
+	@echo "information to network services."
+	echo http://duckduckgo.com > parent/send
+
 test-less:
 	@echo " It should not simply crash upon recieving a bad request, instead"
 	@echo "it should log it, not make the request or touch the network at"

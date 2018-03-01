@@ -27,7 +27,7 @@ func main(){
     Defwd, _ := os.Getwd()
     workDirectory   := flag.String("directory", Defwd,
         "The working directory you want to use, defaults to current directory")
-    address   := flag.String("url", "http://i2p-projekt.i2p",
+    address   := flag.String("url", "",
         "i2p URL you want to retrieve")
 
     flag.Parse()
