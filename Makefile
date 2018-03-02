@@ -35,7 +35,8 @@ debug: build
 
 build-static:
 	go get github.com/eyedeekay/gosam
-	go build "$(GO_COMPILER)" -extldflags "-static" -buildmode=pie \
+	go build "$(GO_COMPILER)" -buildmode=pie \
+		-a -ldflags '-extldflags "-static"' \
 		-o bin/si-i2p-plugin-static \
 		./src
 
@@ -125,10 +126,10 @@ static:
 uuser:
 	docker build --force-rm -f Dockerfiles/Dockerfile.uuser -t eyedeekay/si-i2p-plugin-uuser .
 	docker run -d --rm --name si-i2p-plugin-uuser -t eyedeekay/si-i2p-plugin-uuser
-	docker exec -t eyedeekay/si-i2p-plugin-uuser tail -n 1 /etc/passwd | tee si-i2p-plugin/passwd
+	docker exec -t si-i2p-plugin-uuser tail -n 1 /etc/passwd | tee si-i2p-plugin/passwd
 	docker cp si-i2p-plugin-uuser:/bin/bash-static si-i2p-plugin/bash
 	docker cp si-i2p-plugin-uuser:/bin/busybox si-i2p-plugin/busybox
-	docker rm -f si-i2p-plugin-uuser; docker rmi -f si-i2p-plugin-uuser
+	docker rm -f si-i2p-plugin-uuser; docker rmi -f eyedeekay/si-i2p-plugin-uuser
 
 docker:
 	make static
@@ -140,6 +141,7 @@ docker-run:
 		--cap-drop all \
 		--name si-i2p-plugin \
 		--user sii2pplugindocker \
+		-p 44443:4443
 		-t eyedeekay/si-i2p-plugin
 
 mps:
