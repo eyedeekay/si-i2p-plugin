@@ -9,5 +9,4 @@ COPY misc/tunnels.conf /etc/i2pd/tunnels.conf
 COPY misc/i2pd.conf /etc/i2pd/i2pd.conf
 COPY misc/demo.sh /usr/bin/demo.sh
 COPY misc/reflect.py /usr/bin/reflect.py
-USER i2pd
 CMD /usr/bin/demo.sh

@@ -7,9 +7,14 @@ democlean:
 	rm -f demo.b32.i2p
 
 demo: democlean demoservice
-	docker run -d --cap-drop all --name demoservice -p :4567 -p 7071:7070 -t eyedeekay/i2p-demoservice
-	sleep 10
-	make democonfig
+	docker run -d \
+		--name demoservice \
+		-p :4567 \
+		-p 7071:7075 \
+		--volume $(PWD)/misc/i2pd_demo_data:/var/lib/i2pd:rw \
+		-t eyedeekay/i2p-demoservice
+
+			#--cap-drop all \
 
 democonfig: demo.b32.i2pclean demo.b32.i2p
 
