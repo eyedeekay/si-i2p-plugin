@@ -10,7 +10,7 @@ demo: democlean demoservice
 	docker run -d \
 		--name demoservice \
 		-p :4567 \
-		-p 7075:7075 \
+		-p 127.0.0.1:7075:7075 \
 		--volume $(PWD)/misc/i2pd_demo_data:/var/lib/i2pd:rw \
 		-t eyedeekay/i2p-demoservice
 
