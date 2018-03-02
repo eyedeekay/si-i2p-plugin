@@ -22,7 +22,7 @@ demo.b32.i2pclean:
 	rm -f demo.b32.i2p
 
 demo.b32.i2p:
-	/usr/bin/lynx -dump -listonly http://localhost:7075/?page=i2p_tunnels | grep b32 | sed 's| 12||g' | sed 's| 11||g' | sed 's| 10||g' | sed 's| 9||g' | sed 's| 8||g' | sed 's|http://localhost:7075/?page=local_destination&b32=||g' |  tr -d ' .' | tee demo.b32.i2p
+	/usr/bin/lynx -dump -listonly http://127.0.0.1:7075/?page=i2p_tunnels | grep b32 | sed 's| 12||g' | sed 's| 11||g' | sed 's| 10||g' | sed 's| 9||g' | sed 's| 8||g' | sed 's|http://127.0.0.1:7075/?page=local_destination&b32=||g' |  tr -d ' .' | tee demo.b32.i2p
 
 demo-1-vuln:
 	/usr/bin/curl -x 127.0.0.1:4444 $(shell head -n 1 demo.b32.i2p).b32.i2p
