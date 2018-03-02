@@ -1,5 +1,4 @@
 
-
 PREFIX := /
 VAR := var/
 RUN := run/
@@ -141,7 +140,7 @@ docker-run:
 		--cap-drop all \
 		--name si-i2p-plugin \
 		--user sii2pplugindocker \
-		-p 44443:4443
+		-p 44443:4443 \
 		-t eyedeekay/si-i2p-plugin
 
 mps:
