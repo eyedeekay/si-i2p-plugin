@@ -252,14 +252,13 @@ func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, st
     return samConn.subClient, dir
 }
 
-func (samConn *samHttp) copyRequest(response *http.Response, directory string){
+func (samConn *samHttp) findSubCache(response *http.Response, directory string) *samUrl{
     b := false
+    var u samUrl
     for _, url := range samConn.subCache {
         log.Println("Seeking Subdirectory", url.subDirectory)
-        b = url.copyDirectory(response, directory)
-        if b == true {
-            log.Println("Found Subdirectory", url.subDirectory)
-            break
+        if url.checkDirectory(response, directory) {
+            return &url
         }
     }
     if b == false {
@@ -267,38 +266,21 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string){
         samConn.subCache = append(samConn.subCache, newSamUrl(directory))
         for _, url := range samConn.subCache {
             log.Println("Seeking Subdirectory", url.subDirectory)
-            b = url.copyDirectory(response, directory)
             if b == true {
-                log.Println("Found Subdirectory", url.subDirectory)
-                break
+                u = url
             }
         }
     }
+    return &u
+}
+
+func (samConn *samHttp) copyRequest(response *http.Response, directory string){
+    samConn.findSubCache(response, directory).copyDirectory(response, directory)
 }
 
 func (samConn *samHttp) copyRequestHttp(request *http.Request, response *http.Response, directory string)(*http.Response){
-    b := false
-    for _, url := range samConn.subCache {
-        log.Println("Seeking Subdirectory", url.subDirectory)
-        b, d := url.copyDirectoryHttp(request ,response, directory)
-        if b == true {
-            log.Println("Found Subdirectory", url.subDirectory)
-            return d
-        }
-    }
-    if b == false {
-        log.Println("has not been retrieved yet. Setting up:", directory)
-        samConn.subCache = append(samConn.subCache, newSamUrl(directory))
-        for _, url := range samConn.subCache {
-            log.Println("Seeking Subdirectory", url.subDirectory)
-            b, d := url.copyDirectoryHttp(request ,response, directory)
-            if b == true {
-                log.Println("Found Subdirectory", url.subDirectory)
-                return d
-            }
-        }
-    }
-    return response
+    _, d := samConn.findSubCache(response, directory).copyDirectoryHttp(request, response, directory)
+    return d
 }
 
 func (samConn *samHttp) scannerText() (string, error) {

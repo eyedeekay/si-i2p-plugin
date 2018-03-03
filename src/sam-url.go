@@ -103,12 +103,18 @@ func (subUrl *samUrl) dirSet(requestdir string) string {
     return d2
 }
 
+func (subUrl *samUrl) checkDirectory(response *http.Response, directory string) bool {
+    b := false
+    if checkDirectory(response, directory) {
+        log.Println("Directory / ", directory + " : equals : " + subUrl.subDirectory )
+        b = true
+    }
+    return b
+}
+
 func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) bool{
     b := false
-    d1 := strings.Replace(subUrl.subDirectory, "/", "", -1)
-    d2 := strings.Replace(directory, "/", "", -1)
-    if d2 == d1 {
-        log.Println("Directory / ", directory + " : compare : " + subUrl.subDirectory )
+    if checkDirectory(response, directory) {
         if response != nil {
             log.Println("Response Status ", response.StatusCode)
             if response.StatusCode == http.StatusOK {
