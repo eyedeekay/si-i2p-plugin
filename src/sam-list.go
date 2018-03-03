@@ -156,7 +156,6 @@ func (samStack *samList) findClient(request string) *samHttp{
 }
 
 func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory string)(*http.Response){
-    //return samStack.findClientHttp(request).copyRequestHttp(request, response, directory)
     return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
 }
 

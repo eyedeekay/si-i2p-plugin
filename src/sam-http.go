@@ -114,13 +114,13 @@ func (samConn *samHttp) createClientHttp(request *http.Request, sam *goSam.Clien
 }
 
 func (samConn *samHttp) cleanURL(request string) (string, string){
-    log.Println("hostSet Trim 0 " + request)
+    log.Println("cleanURL Trim 0 " + request)
     //http://i2p-projekt.i2p/en/downloads
     url := strings.Replace(request, "http://", "", -1)
-    log.Println("hostSet Trim 1 " + url)
+    log.Println("cleanURL Request URL " + url)
     //i2p-projekt.i2p/en/downloads
     host := strings.SplitAfter(url, ".i2p")[0]
-    log.Println("hostSet Trim 2 " + host)
+    log.Println("cleanURL Trim 2 " + host)
     //i2p-projekt.i2p
     return host, url
 }
@@ -131,7 +131,9 @@ func (samConn *samHttp) hostSet(request string) (string, string){
     if err != nil {
         host = strings.Replace(host, "http://", "", -1)
     }
-    directory := strings.Replace(req, host + "/", "", -1) + "/"
+    //directory := strings.Replace(req, host + "/", "", -1) + "/"
+    //directory := strings.Replace(req, host + "/", "", -1) + "/"
+    directory := req
     log.Println("Setting up micro-proxy for:", "http://" + host)
     log.Println("in Directory", directory)
     return host, directory
