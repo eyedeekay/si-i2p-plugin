@@ -119,7 +119,17 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
 }
 
 func (samStack *samList) sendClientRequest(request string) string{
+    samStack.findClient(request).sendRequest(request)
+    return request
+}
+
+func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
+    return samStack.findClientHttp(request).sendRequestHttp(request)
+}
+
+func (samStack *samList) findClient(request string) *samHttp{
     found := false
+    var c samHttp
     for index, client := range samStack.listOfClients {
         log.Println("Checking client requests", index + 1)
         log.Println("of", len(samStack.listOfClients))
@@ -138,20 +148,16 @@ func (samStack *samList) sendClientRequest(request string) string{
             log.Println("of", len(samStack.listOfClients))
             if client.hostCheck(request){
                 log.Println("Client pipework for %s found.", request)
-                client.sendRequest(request)
-                log.Println("Request sent")
-                found = true
+                c = client
             }
         }
     }
-    return request
+    return &c
 }
 
-func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
+func (samStack *samList) findClientHttp(request *http.Request) *samHttp{
     found := false
-    if len(samStack.listOfClients) == 0 {
-        samStack.createClientHttp(request)
-    }
+    var c samHttp
     for index, client := range samStack.listOfClients {
         log.Println("Checking client requests", index + 1)
         log.Println("of", len(samStack.listOfClients))
@@ -159,8 +165,7 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
             log.Println("Client pipework for %s found.", request.Host)
             log.Println("URL scheme", request.URL.Scheme)
             found = true
-            log.Println("Request sent")
-            return client.sendRequestHttp(request)
+            return &client
         }
     }
     if ! found {
@@ -172,53 +177,20 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
             if client.hostCheckHttp(request){
                 log.Println("Client pipework for %s found.", request.URL.String() )
                 log.Println("URL scheme", request.URL.Scheme)
-                found = true
-                log.Println("Request sent")
-                return client.sendRequestHttp(request)
+                c = client
             }
         }
     }
-    return nil, ""
+    return &c
 }
 
 func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory string)(*http.Response){
-    found := false
-    if len(samStack.listOfClients) == 0 {
-        samStack.createClientHttp(request)
-    }
-    for index, client := range samStack.listOfClients {
-        log.Println("Checking client requests", index + 1)
-        log.Println("of", len(samStack.listOfClients))
-        if client.hostCheck(request.Host){
-            log.Println("Client pipework for %s found.", request.Host)
-            log.Println("URL scheme", request.URL.Scheme)
-            found = true
-            log.Println("Request sent")
-            return client.copyRequestHttp(request ,response, directory)
-        }
-    }
-    if ! found {
-        log.Println("Client pipework for %s not found: Creating.", request.Host)
-        samStack.createClientHttp(request)
-        for index, client := range samStack.listOfClients {
-            log.Println("Checking client requests", index + 1)
-            log.Println("of", len(samStack.listOfClients))
-            if client.hostCheckHttp(request){
-                log.Println("Client pipework for %s found.", request.URL.String() )
-                log.Println("URL scheme", request.URL.Scheme)
-                found = true
-                log.Println("Request sent")
-                return client.copyRequestHttp(request ,response, directory)
-            }
-        }
-    }
-    return response
+    return samStack.findClientHttp(request).copyRequestHttp(request, response, directory)
 }
 
 func (samStack *samList) readRequest() string{
     for samStack.sendScan.Scan(){
         return samStack.sendClientRequest(samStack.sendScan.Text())
-        //break
     }
     return ""
 }

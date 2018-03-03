@@ -43,12 +43,17 @@ misc/log/headers.vuln.log:
 	docker logs demoservice | tee misc/log/headers.vuln.log
 
 demo-p1-fix:
-	@echo $(shell head -n 1 demo.b32.i2p).b32.i2p | tee parent/send
+	@echo lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p | tee parent/send
+	#@echo $(shell head -n 1 demo.b32.i2p).b32.i2p | tee parent/send
 
 demo-p2-fix:
-	@echo $(shell tail -n 1 demo.b32.i2p).b32.i2p | tee parent/send
+	@echo zcofypupen75rdv5zihviweyw5emk2l34idq423kbhj7n3owoe5a.b32.i2p | tee parent/send
+	#@echo $(shell tail -n 1 demo.b32.i2p).b32.i2p | tee parent/send
 
-demo-pipes: democonfig demo-p1-fix demo-p2-fix
+demo-p3-fix:
+	@echo zjjjd756aucwz3pa2fl4mb3po2wtf752aefpod4gvedwreeox52q.b32.i2p | tee parent/send
+
+demo-pipes: democonfig demo-p1-fix demo-p2-fix demo-p3-fix
 
 headers.fix.log: misc/log/headers.fix.log
 

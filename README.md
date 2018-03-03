@@ -40,10 +40,8 @@ first place.
 
 #### Current Concerns:
 
-~~There is an extant bug in caching that ends up leaving us with either a race~~
-~~condition or no caching for http proxy initiated requests. For right now, it~~
-~~just does no caching. This bug is next on the list.~~ I am pretty sure I have
-fixed this.
+URL validation needs quite a bit of work, and I may need some additional way of
+validating responses.
 
 I haven't been able to observe any DNS leaks yet, but that doesn't mean they
 aren't there. My plan is to implement some kind of proper URL validation for it.
@@ -140,9 +138,8 @@ are just files.
 What I'm doing right now:
 -------------------------
 
-Chasing down the last few bugs in the client-side components and figuring out
-how to implement the service-generation components. Implementing the test tunnel
-so I can stop pinging i2p-projekt.i2p all the time like an asshole.
+Improving i2p url pre-validation and implementing pipe-controlled service
+tunnels.
 
 What the final version should do:
 ---------------------------------
