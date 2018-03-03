@@ -124,7 +124,7 @@ func (samStack *samList) sendClientRequest(request string) string{
 }
 
 func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
-    return samStack.findClientHttp(request).sendRequestHttp(request)
+    return samStack.findClient(request.URL.String()).sendRequestHttp(request)
 }
 
 func (samStack *samList) findClient(request string) *samHttp{
@@ -135,9 +135,9 @@ func (samStack *samList) findClient(request string) *samHttp{
         log.Println("of", len(samStack.listOfClients))
         if client.hostCheck(request){
             log.Println("Client pipework for %s found.", request)
-            client.sendRequest(request)
             log.Println("Request sent")
             found = true
+            return &client
         }
     }
     if ! found {
@@ -155,37 +155,9 @@ func (samStack *samList) findClient(request string) *samHttp{
     return &c
 }
 
-func (samStack *samList) findClientHttp(request *http.Request) *samHttp{
-    found := false
-    var c samHttp
-    for index, client := range samStack.listOfClients {
-        log.Println("Checking client requests", index + 1)
-        log.Println("of", len(samStack.listOfClients))
-        if client.hostCheck(request.Host){
-            log.Println("Client pipework for %s found.", request.Host)
-            log.Println("URL scheme", request.URL.Scheme)
-            found = true
-            return &client
-        }
-    }
-    if ! found {
-        log.Println("Client pipework for %s not found: Creating.", request.Host)
-        samStack.createClientHttp(request)
-        for index, client := range samStack.listOfClients {
-            log.Println("Checking client requests", index + 1)
-            log.Println("of", len(samStack.listOfClients))
-            if client.hostCheckHttp(request){
-                log.Println("Client pipework for %s found.", request.URL.String() )
-                log.Println("URL scheme", request.URL.Scheme)
-                c = client
-            }
-        }
-    }
-    return &c
-}
-
 func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory string)(*http.Response){
-    return samStack.findClientHttp(request).copyRequestHttp(request, response, directory)
+    //return samStack.findClientHttp(request).copyRequestHttp(request, response, directory)
+    return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
 }
 
 func (samStack *samList) readRequest() string{

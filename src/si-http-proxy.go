@@ -84,8 +84,10 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
     }
     //omg. I am like 76+% sure I need to implement a non-trivialclose but am also drinking because the world makes me sad. So I am probably wrong. Because it all sucks.
     r := proxy.client.copyRequest(rq, resp, dir)
-    //defer r.Close
+    //
+
     if r != nil {
+        //defer r.Close()
         log.Println("SAM-Provided Tunnel Address:", rq.RemoteAddr)
         log.Println("Response Status:", r.Status)
 

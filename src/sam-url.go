@@ -166,7 +166,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
         Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
         ContentLength: int64(len(body)),
         Request:       request,
-        Header:        request.Header, //make(http.Header, 0),
+        Header:        request.Header,
     }
     log.Println("Retrieval time: ", time.Now().String())
     subUrl.timeFile.WriteString(time.Now().String())
