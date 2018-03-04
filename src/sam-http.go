@@ -213,13 +213,13 @@ func (samConn *samHttp) getURL(request string) (string, string){
     directory := strings.Replace(request, "http://", "", -1)
     _, err := url.ParseRequestURI(host)
     if err != nil {
-        if strings.Contains(host, ".b32.i2p") {
+        /*if strings.Contains(host, ".b32.i2p") {
             host = request
             log.Println("URL failed validation, correcting to:", host)
-        }else{
+        }else{*/
             host = "http://" + request
             log.Println("URL failed validation, correcting to:", host)
-        }
+        /*}*/
     }else{
         log.Println("URL passed validation:", request)
     }
@@ -238,9 +238,7 @@ func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
 }
 
 func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, string){
-    //r, dir := samConn.getURLHttp(request)
     r, dir := samConn.getURL(request.URL.String())
-    //log.Println("Getting resource", r.URL.String())
     log.Println("Getting resource", r)
     log.Println("In ", dir)
     return samConn.subClient, dir
@@ -260,7 +258,8 @@ func (samConn *samHttp) findSubCache(response *http.Response, directory string) 
         samConn.subCache = append(samConn.subCache, newSamUrl(directory))
         for _, url := range samConn.subCache {
             log.Println("Seeking Subdirectory", url.subDirectory)
-            if b == true {
+            if url.checkDirectory(directory) {
+            //if b == true {
                 u = url
             }
         }
