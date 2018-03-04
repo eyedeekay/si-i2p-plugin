@@ -98,7 +98,7 @@ func (subUrl *samUrl) scannerText() (string, error) {
 
 func (subUrl *samUrl) dirSet(requestdir string) string {
     log.Println("Requesting directory: ", requestdir + "/")
-    d1 := requestdir + "/"
+    d1 := requestdir
     d2 := strings.Replace(d1, "//", "/", -1)
     return d2
 }
@@ -108,6 +108,8 @@ func (subUrl *samUrl) checkDirectory(directory string) bool {
     if directory == subUrl.subDirectory {
         log.Println("Directory / ", directory + " : equals : " + subUrl.subDirectory )
         b = true
+    }else{
+        log.Println("Directory / ", directory + " : does not equal : " + subUrl.subDirectory )
     }
     return b
 }
@@ -127,21 +129,18 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
     return b
 }
 
-func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) (bool, *http.Response){
-    b := false
+func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) (*http.Response){
     if subUrl.checkDirectory(directory) {
         if response != nil {
             log.Println("Response Status ", response.StatusCode)
             if response.StatusCode == http.StatusOK {
                 log.Println("Setting file in cache")
-                b = true
                 resp := subUrl.dealResponseHttp(request ,response)
-                return b, resp
+                return resp
             }
         }
-        b = true
     }
-    return b, response
+    return response
 }
 
 func (subUrl *samUrl) dealResponse(response *http.Response){

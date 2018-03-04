@@ -82,9 +82,9 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
         log.Println("Fatal: ServeHTTP:", err)
         http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
     }
-    //omg. I am like 76+% sure I need to implement a non-trivialclose but am also drinking because the world makes me sad. So I am probably wrong. Because it all sucks.
+
     r := proxy.client.copyRequest(rq, resp, dir)
-    //
+
 
     if r != nil {
         //defer r.Close()

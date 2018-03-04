@@ -88,6 +88,7 @@ func (samConn *samHttp) createClient(request string, sam *goSam.Client) {
 
     if samConn.host == "" {
         samConn.host, samConn.directory = samConn.hostSet(request)
+        //samConn.host, samConn.directory = samConn.getURL(request)
         samConn.initPipes()
     }
     samConn.writeName(request, sam)
@@ -107,6 +108,7 @@ func (samConn *samHttp) createClientHttp(request *http.Request, sam *goSam.Clien
 
     if samConn.host == "" {
         samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
+        //samConn.host, samConn.directory = samConn.getURL(request.URL.String())
         samConn.initPipes()
     }
     samConn.writeName(request.URL.String(), sam)
@@ -122,21 +124,19 @@ func (samConn *samHttp) cleanURL(request string) (string, string){
     host := strings.SplitAfter(url, ".i2p")[0]
     log.Println("cleanURL Trim 2 " + host)
     //i2p-projekt.i2p
+    /*_, err := url.ParseRequestURI("http://" + host)
+    if err != nil {
+        samConn.Fatal(err)
+        //host = strings.Replace(host, "http://", "", -1)
+    }*/
     return host, url
 }
 
 func (samConn *samHttp) hostSet(request string) (string, string){
     host, req := samConn.cleanURL(request)
-    _, err := url.ParseRequestURI("http://" + host)
-    if err != nil {
-        host = strings.Replace(host, "http://", "", -1)
-    }
-    //directory := strings.Replace(req, host + "/", "", -1) + "/"
-    //directory := strings.Replace(req, host + "/", "", -1) + "/"
-    directory := req
     log.Println("Setting up micro-proxy for:", "http://" + host)
-    log.Println("in Directory", directory)
-    return host, directory
+    log.Println("in Directory", req)
+    return host, req
 }
 
 func (samConn *samHttp) hostGet() string{
@@ -210,28 +210,39 @@ func (samConn *samHttp) hostCheckHttp(req *http.Request) bool{
 
 func (samConn *samHttp) getURL(request string) (string, string){
     host := request
-    //tmp := strings.SplitAfterN(request, ".i2p", -1)
     directory := strings.Replace(request, "http://", "", -1)
     _, err := url.ParseRequestURI(host)
     if err != nil {
-        host = "http://" + request
-        log.Println("URL failed validation, correcting to:", host)
+        if strings.Contains(host, ".b32.i2p") {
+            host = request
+            log.Println("URL failed validation, correcting to:", host)
+        }else{
+            host = "http://" + request
+            log.Println("URL failed validation, correcting to:", host)
+        }
     }else{
         log.Println("URL passed validation:", request)
     }
+    log.Println("Request will be managed in:", directory)
     return host, directory
 }
 
 func (samConn *samHttp) getURLHttp(req *http.Request) (*http.Request, string){
     request := req.URL.String()
-    //tmp := strings.SplitAfterN(request, ".i2p", -1)
     directory := strings.Replace(request, "http://", "", -1)
     _, err := url.ParseRequestURI(req.URL.String())
     if err != nil {
-        log.Println("URL failed validation, correcting to:", request)
+        if strings.Contains(request, ".b32.i2p") {
+            request = request
+            log.Println("URL failed validation, correcting to:", request)
+        }else{
+            request = "http://" + request
+            log.Println("URL failed validation, correcting to:", request)
+        }
     }else{
         log.Println("URL passed validation:", request)
     }
+    log.Println("Request will be managed in:", directory)
     return req, directory
 }
 
@@ -246,8 +257,10 @@ func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
 }
 
 func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, string){
-    r, dir := samConn.getURLHttp(request)
-    log.Println("Getting resource", r.URL.String())
+    //r, dir := samConn.getURLHttp(request)
+    r, dir := samConn.getURL(request.URL.String())
+    //log.Println("Getting resource", r.URL.String())
+    log.Println("Getting resource", r)
     log.Println("In ", dir)
     return samConn.subClient, dir
 }
@@ -279,8 +292,7 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string){
 }
 
 func (samConn *samHttp) copyRequestHttp(request *http.Request, response *http.Response, directory string)(*http.Response){
-    _, d := samConn.findSubCache(response, directory).copyDirectoryHttp(request, response, directory)
-    return d
+    return samConn.findSubCache(response, directory).copyDirectoryHttp(request, response, directory)
 }
 
 func (samConn *samHttp) scannerText() (string, error) {
@@ -388,9 +400,8 @@ func exists(path string) (bool, error) {
 }
 
 func newSamHttp(samAddrString string, samPortString string, sam *goSam.Client, request string) (samHttp){
-    log.Println("Creating a new SAMv3 Client.")
+    log.Println("Creating a new SAMv3 Client: ", request)
     var samConn samHttp
-    log.Println(request)
     samConn.createClient(request, sam)
     return samConn
 }
