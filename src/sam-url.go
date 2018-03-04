@@ -103,9 +103,9 @@ func (subUrl *samUrl) dirSet(requestdir string) string {
     return d2
 }
 
-func (subUrl *samUrl) checkDirectory(response *http.Response, directory string) bool {
+func (subUrl *samUrl) checkDirectory(directory string) bool {
     b := false
-    if checkDirectory(response, directory) {
+    if directory == subUrl.subDirectory {
         log.Println("Directory / ", directory + " : equals : " + subUrl.subDirectory )
         b = true
     }
@@ -114,7 +114,7 @@ func (subUrl *samUrl) checkDirectory(response *http.Response, directory string) 
 
 func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) bool{
     b := false
-    if checkDirectory(response, directory) {
+    if subUrl.checkDirectory(directory) {
         if response != nil {
             log.Println("Response Status ", response.StatusCode)
             if response.StatusCode == http.StatusOK {
@@ -129,10 +129,7 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 
 func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) (bool, *http.Response){
     b := false
-    d1 := strings.Replace(subUrl.subDirectory, "/", "", -1)
-    d2 := strings.Replace(directory, "/", "", -1)
-    if d2 == d1 {
-        log.Println("Directory / ", directory + " : compare : " + subUrl.subDirectory )
+    if subUrl.checkDirectory(directory) {
         if response != nil {
             log.Println("Response Status ", response.StatusCode)
             if response.StatusCode == http.StatusOK {
