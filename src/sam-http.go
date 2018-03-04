@@ -227,25 +227,6 @@ func (samConn *samHttp) getURL(request string) (string, string){
     return host, directory
 }
 
-func (samConn *samHttp) getURLHttp(req *http.Request) (*http.Request, string){
-    request := req.URL.String()
-    directory := strings.Replace(request, "http://", "", -1)
-    _, err := url.ParseRequestURI(req.URL.String())
-    if err != nil {
-        if strings.Contains(request, ".b32.i2p") {
-            request = request
-            log.Println("URL failed validation, correcting to:", request)
-        }else{
-            request = "http://" + request
-            log.Println("URL failed validation, correcting to:", request)
-        }
-    }else{
-        log.Println("URL passed validation:", request)
-    }
-    log.Println("Request will be managed in:", directory)
-    return req, directory
-}
-
 func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
     r, dir := samConn.getURL(request)
     log.Println("Getting resource", request)
