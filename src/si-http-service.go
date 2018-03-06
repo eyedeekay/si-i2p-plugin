@@ -11,6 +11,7 @@ import (
     "syscall"
 
     "github.com/eyedeekay/gosam"
+    //"github.com/cryptix/goSam"
 )
 
 

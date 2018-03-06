@@ -14,6 +14,9 @@ demo-p2-fix:
 demo-p3-fix:
 	@echo zjjjd756aucwz3pa2fl4mb3po2wtf752aefpod4gvedwreeox52q.b32.i2p | tee parent/send
 
+static-end-pipe:
+	@echo gkso46tc47hdua2kva5zahj3unmyh6ia7bv5oc2ybn2hmeowpz7a.b32.i2p | tee parent/send
+
 headers.fix.log: misc/log/headers.fix.log
 
 misc/log/headers.fix.log:

@@ -2,17 +2,20 @@ package main
 
 import (
     "bufio"
+    "fmt"
 	"io"
 	"log"
+//    "net"
 	"net/http"
     "os"
     "path/filepath"
     "strings"
     "syscall"
-    "time"
+    //"time"
     "net/url"
 
 	"github.com/eyedeekay/gosam"
+    //"github.com/cryptix/goSam"
 )
 
 type samHttp struct{
@@ -21,6 +24,7 @@ type samHttp struct{
 
     transport *http.Transport
     subClient *http.Client
+    //Timeout time.Duration
     host string
     directory string
 
@@ -31,6 +35,16 @@ type samHttp struct{
     namePath string
     nameFile *os.File
     name string
+
+
+    idPath string
+    idFile *os.File
+    id int32
+
+    base64Path string
+    base64File *os.File
+    base64 string
+
 }
 
 var connectionDirectory string
@@ -73,6 +87,32 @@ func (samConn *samHttp) initPipes(){
         log.Println("Created a File for the full name:", samConn.namePath)
     }
 
+    samConn.idPath = filepath.Join(connectionDirectory, samConn.host, "id")
+    pathIdExists, recvIdErr := exists(samConn.idPath)
+    samConn.Fatal(recvIdErr)
+    if ! pathIdExists {
+        samConn.idFile, samConn.err = os.Create(samConn.idPath)
+        log.Println("Preparing to create File:", samConn.idPath)
+        samConn.Fatal(samConn.err)
+        log.Println("checking for problems...")
+        log.Println("Opening the File...")
+        samConn.idFile, samConn.err = os.OpenFile(samConn.idPath, os.O_RDWR|os.O_CREATE, 0644)
+        log.Println("Created a File for the full id:", samConn.idPath)
+    }
+
+    samConn.base64Path = filepath.Join(connectionDirectory, samConn.host, "base64")
+    pathBase64Exists, recvBase64Err := exists(samConn.base64Path)
+    samConn.Fatal(recvBase64Err)
+    if ! pathBase64Exists {
+        samConn.base64File, samConn.err = os.Create(samConn.base64Path)
+        log.Println("Preparing to create File:", samConn.base64Path)
+        samConn.Fatal(samConn.err)
+        log.Println("checking for problems...")
+        log.Println("Opening the File...")
+        samConn.base64File, samConn.err = os.OpenFile(samConn.base64Path, os.O_RDWR|os.O_CREATE, 0644)
+        log.Println("Created a File for the full local base64:", samConn.base64Path)
+    }
+
 }
 
 
@@ -84,7 +124,7 @@ func (samConn *samHttp) createClient(request string, sam *goSam.Client) {
 	}
     log.Println("Initializing sub-client")
     samConn.subClient = &http.Client{
-        Timeout: time.Duration(60 * time.Second),
+        //Timeout: client.Timeout,
         Transport: samConn.transport    }
 
     if samConn.host == "" {
@@ -104,7 +144,7 @@ func (samConn *samHttp) createClientHttp(request *http.Request, sam *goSam.Clien
 	}
     log.Println("Initializing sub-client")
     samConn.subClient = &http.Client{
-        //Timeout: time.Second * 10,
+        //Timeout: client.Timeout,
         Transport: samConn.transport    }
 
     if samConn.host == "" {
@@ -139,7 +179,6 @@ func (samConn *samHttp) hostGet() string{
 }
 
 func (samConn *samHttp) hostCheck(request string) bool{
-    log.Println("PROBLEMATIC AREA:")
     host, _ := samConn.cleanURL(request)
     _, err := url.ParseRequestURI(host)
     if err == nil {
@@ -183,7 +222,7 @@ func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
     r, dir := samConn.getURL(request)
     log.Println("Getting resource", request)
     resp, err := samConn.subClient.Get(r)
-    samConn.Fatal(err)
+    samConn.Warn(err)
     log.Println("Pumping result to top of parent pipe")
     samConn.copyRequest(resp, dir)
     return resp, err
@@ -274,21 +313,34 @@ func (samConn *samHttp) readDelete() bool {
 
 func (samConn *samHttp) writeName(request string, sam *goSam.Client){
     if samConn.checkName() {
+        samConn.host, samConn.directory = samConn.hostSet(request)
+        log.Println("Setting hostname:", samConn.host )
         log.Println("Looking up hostname:", samConn.host )
         samConn.name, samConn.err = sam.Lookup(samConn.host)
-        log.Println("New Connection Name: ", samConn.host)
-        log.Println("Caching base64 address of:", samConn.host )
-        samConn.Warn(samConn.err)
         samConn.nameFile.WriteString(samConn.name)
+        log.Println("Caching base64 address of:", samConn.host + " " + samConn.name )
+        samConn.id, samConn.base64, samConn.err = sam.CreateStreamSession("")
+        samConn.idFile.WriteString(fmt.Sprint(samConn.id))
+        samConn.Warn(samConn.err)
+        log.Println("Tunnel id: ", samConn.id)
+        log.Println("Tunnel dest: ", samConn.base64)
+        samConn.base64File.WriteString(samConn.base64)
+        log.Println("New Connection Name: ", samConn.base64)
     }else{
         samConn.host, samConn.directory = samConn.hostSet(request)
         log.Println("Setting hostname:", samConn.host )
         samConn.initPipes()
+        log.Println("Looking up hostname:", samConn.host )
         samConn.name, samConn.err = sam.Lookup(samConn.host)
-        log.Println("New Connection Name: ", samConn.host)
-        log.Println("Caching base64 address of:", samConn.host )
-        samConn.Warn(samConn.err)
+        log.Println("Caching base64 address of:", samConn.host + " " + samConn.name )
         samConn.nameFile.WriteString(samConn.name)
+        samConn.id, samConn.base64, samConn.err = sam.CreateStreamSession("")
+        samConn.idFile.WriteString(fmt.Sprint(samConn.id))
+        samConn.Warn(samConn.err)
+        log.Println("Tunnel id: ", samConn.id)
+        log.Println("Tunnel dest: ", samConn.base64)
+        samConn.base64File.WriteString(samConn.base64)
+        log.Println("New Connection Name: ", samConn.base64)
     }
 }
 
@@ -334,6 +386,7 @@ func exists(path string) (bool, error) {
 func newSamHttp(samAddrString string, samPortString string, sam *goSam.Client, request string) (samHttp){
     log.Println("Creating a new SAMv3 Client: ", request)
     var samConn samHttp
+    //samConn.Timeout = time.Duration(600 * time.Second)
     samConn.createClient(request, sam)
     return samConn
 }
@@ -342,6 +395,7 @@ func newSamHttpHttp(samAddrString string, samPortString string, sam *goSam.Clien
     log.Println("Creating a new SAMv3 Client.")
     var samConn samHttp
     log.Println(request.Host + request.URL.Path)
+    //samConn.Timeout = time.Duration(600 * time.Second)
     samConn.createClientHttp(request, sam)
     //client.Do(request)
     //samConn.createClient(request.URL.String(), sam)

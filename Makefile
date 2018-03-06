@@ -23,6 +23,7 @@ bin/si-i2p-plugin:
 
 
 release:
+	go get -u github.com/eyedeekay/gosam
 	go build "$(GO_COMPILER)" -race -buildmode=pie \
 		-o bin/si-i2p-plugin \
 		./src

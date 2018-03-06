@@ -6,7 +6,9 @@ import (
     "os"
     "os/signal"
     "time"
+
     "github.com/eyedeekay/gosam"
+    //"github.com/cryptix/goSam"
 )
 
 var exit bool = false
