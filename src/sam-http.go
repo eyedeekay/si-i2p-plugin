@@ -84,7 +84,7 @@ func (samConn *samHttp) createClient(request string, sam *goSam.Client) {
 	}
     log.Println("Initializing sub-client")
     samConn.subClient = &http.Client{
-        Timeout: time.Duration(10 * time.Second),
+        Timeout: time.Duration(60 * time.Second),
         Transport: samConn.transport    }
 
     if samConn.host == "" {
