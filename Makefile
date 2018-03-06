@@ -15,7 +15,7 @@ GO_COMPILER := "-compiler gc"
 build: clean bin/si-i2p-plugin
 
 bin/si-i2p-plugin:
-	go get github.com/eyedeekay/gosam
+	go get -u github.com/eyedeekay/gosam
 	go build "$(COMPILER)" \
 		-o bin/si-i2p-plugin \
 		./src

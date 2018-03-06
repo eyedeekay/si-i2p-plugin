@@ -87,7 +87,6 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
 
 
     if r != nil {
-        //defer r.Close()
         log.Println("SAM-Provided Tunnel Address:", rq.RemoteAddr)
         log.Println("Response Status:", r.Status)
 

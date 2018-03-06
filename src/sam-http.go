@@ -84,6 +84,7 @@ func (samConn *samHttp) createClient(request string, sam *goSam.Client) {
 	}
     log.Println("Initializing sub-client")
     samConn.subClient = &http.Client{
+        Timeout: time.Duration(10 * time.Second),
         Transport: samConn.transport    }
 
     if samConn.host == "" {
@@ -123,12 +124,6 @@ func (samConn *samHttp) cleanURL(request string) (string, string){
     //i2p-projekt.i2p/en/downloads
     host := strings.SplitAfter(url, ".i2p")[0]
     log.Println("cleanURL Trim 2 " + host)
-    //i2p-projekt.i2p
-    /*_, err := url.ParseRequestURI("http://" + host)
-    if err != nil {
-        samConn.Fatal(err)
-        //host = strings.Replace(host, "http://", "", -1)
-    }*/
     return host, url
 }
 
@@ -144,25 +139,10 @@ func (samConn *samHttp) hostGet() string{
 }
 
 func (samConn *samHttp) hostCheck(request string) bool{
-    host := strings.SplitAfterN(request, ".i2p", -1 )[0]
+    log.Println("PROBLEMATIC AREA:")
+    host, _ := samConn.cleanURL(request)
     _, err := url.ParseRequestURI(host)
     if err == nil {
-            comphost := strings.Replace(host, "http://", "", -1)
-            comphost = strings.SplitAfterN(request, ".i2p", -1 )[0]
-            comphost = strings.Replace(host, "http://", "", -1)
-        if samConn.host == comphost {
-            log.Println("Request host ", comphost)
-            log.Println("Is equal to client host", samConn.host)
-            return true
-        }else{
-            log.Println("Request host ", comphost)
-            log.Println("Is not equal to client host", samConn.host)
-            return false
-        }
-    }else{
-        host = strings.Replace(host, "http://", "", -1)
-        host = strings.SplitAfterN(request, ".i2p", -1 )[0]
-        host = strings.Replace(host, "http://", "", -1)
         if samConn.host == host {
             log.Println("Request host ", host)
             log.Println("Is equal to client host", samConn.host)
@@ -172,30 +152,7 @@ func (samConn *samHttp) hostCheck(request string) bool{
             log.Println("Is not equal to client host", samConn.host)
             return false
         }
-    }
-}
-
-func (samConn *samHttp) hostCheckHttp(req *http.Request) bool{
-    request := req.Host
-    host := strings.SplitAfterN(request, ".i2p", -1 )[0]
-    _, err := url.ParseRequestURI(host)
-    if err == nil {
-            comphost := strings.Replace(host, "http://", "", -1)
-            comphost = strings.SplitAfterN(request, ".i2p", -1 )[0]
-            comphost = strings.Replace(host, "http://", "", -1)
-        if samConn.host == comphost {
-            log.Println("Request host ", comphost)
-            log.Println("Is equal to client host", samConn.host)
-            return true
-        }else{
-            log.Println("Request host ", comphost)
-            log.Println("Is not equal to client host", samConn.host)
-            return false
-        }
     }else{
-        host = strings.Replace(host, "http://", "", -1)
-        host = strings.SplitAfterN(request, ".i2p", -1 )[0]
-        host = strings.Replace(host, "http://", "", -1)
         if samConn.host == host {
             log.Println("Request host ", host)
             log.Println("Is equal to client host", samConn.host)
@@ -209,29 +166,24 @@ func (samConn *samHttp) hostCheckHttp(req *http.Request) bool{
 }
 
 func (samConn *samHttp) getURL(request string) (string, string){
-    host := request
+    r := request
     directory := strings.Replace(request, "http://", "", -1)
-    _, err := url.ParseRequestURI(host)
+    _, err := url.ParseRequestURI(r)
     if err != nil {
-        /*if strings.Contains(host, ".b32.i2p") {
-            host = request
-            log.Println("URL failed validation, correcting to:", host)
-        }else{*/
-            host = "http://" + request
-            log.Println("URL failed validation, correcting to:", host)
-        /*}*/
+        r = "http://" + request
+        log.Println("URL failed validation, correcting to:", r)
     }else{
         log.Println("URL passed validation:", request)
     }
     log.Println("Request will be managed in:", directory)
-    return host, directory
+    return r, directory
 }
 
 func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
     r, dir := samConn.getURL(request)
     log.Println("Getting resource", request)
     resp, err := samConn.subClient.Get(r)
-    samConn.Warn(err)
+    samConn.Fatal(err)
     log.Println("Pumping result to top of parent pipe")
     samConn.copyRequest(resp, dir)
     return resp, err
@@ -239,8 +191,8 @@ func (samConn *samHttp) sendRequest(request string) (*http.Response, error ){
 
 func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, string){
     r, dir := samConn.getURL(request.URL.String())
-    log.Println("Getting resource", r)
-    log.Println("In ", dir)
+    log.Println("Getting resource", r, "In ", dir)
+    //log.Println("In ", dir)
     return samConn.subClient, dir
 }
 

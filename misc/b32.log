@@ -1,0 +1,47 @@
+sam-http.go:40: Directory Check lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+
+rw.go:25: > "NAMING LOOKUP NAME=lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p\n"
+rw.go:47: < "NAMING REPLY RESULT=OK NAME=ME VALUE=ozBf5~16UohGWTIgQ-ezAEmNQDa0~uPcG9BhUZuKZzJOvFCJf0MNb2THn-u6Fe3HiBZ-hKV5dHYx1XV8TsSX7SwbxKUEPw7ADmhSEHohYRZYQHNzCmGE4pXmb0AJ6~-2hlqpsE-e9gCYfxPDrVMV3-dcTeXE5iso3hnxyZrrDwSOcWkfnXAl3aB5KWp5ivELaHIwjDsw95iTCZj8s3M3cHhYrOQik1NL~w98aqgC4jsDPFdpzdhfjW38WXn3US1kxS8p9lxgpKxpORCpddSo32-ACfe9PJhVN0F~HTDK0IYfBzjtLIw3eopCDDpnK19xm4US6bjvplhOEPyjQ4hrssuYfk~LU-Qn7rv-S1LGmzdCoVRLAnbMxBSp86sZxRYsxpURvs1tBhP3Ojcv71e7JphYgXUXcVa2OnkOMwGCYKudTHz2dAiZGzEqAVBhb0nthVo7uZWvM-2Sev6m2QNfFPntnNi-upSDbmHIPT3dhtGpW7m-v4xbnPjNemQCHteBBQAEAAEAAA==\n"
+
+sam-http.go:336: New Connection Name:  lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+sam-http.go:337: Caching base64 address of: lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+
+sam-url.go:220: Creating a new cache directory.
+sam-url.go:100: Requesting directory:  lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p/
+sam-url.go:34: Directory Check lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+sam-url.go:46: Preparing to create File: lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p/recv
+sam-url.go:48: checking for problems...
+sam-url.go:49: Opening the File...
+sam-url.go:51: Created a File for recieving responses: lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p/recv
+sam-url.go:59: Preparing to create File: lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p/time
+sam-url.go:61: checking for problems...
+sam-url.go:62: Opening the File...
+sam-url.go:64: Created a File for timing responses: lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p/time
+sam-url.go:72: Preparing to create Pipe: lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p/del
+sam-url.go:74: checking for problems...
+sam-url.go:76: Opening the Named Pipe as a File...
+sam-url.go:78: Opening the Named Pipe as a Buffer...
+sam-url.go:79: Created a named Pipe for closing the connection: lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p/del
+
+sam-list.go:147: Checking client requests 1
+sam-list.go:148: of 1
+sam-http.go:167: Request host  lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+sam-http.go:168: Is equal to client host lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+sam-list.go:150: Client pipework for %s found. lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+sam-http.go:221: URL failed validation, correcting to: http://lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+sam-http.go:226: Request will be managed in: lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+sam-http.go:232: Getting resource lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+
+rw.go:25: > "NAMING LOOKUP NAME=lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p\n"
+rw.go:47: < "NAMING REPLY RESULT=OK NAME=ME VALUE=ozBf5~16UohGWTIgQ-ezAEmNQDa0~uPcG9BhUZuKZzJOvFCJf0MNb2THn-u6Fe3HiBZ-hKV5dHYx1XV8TsSX7SwbxKUEPw7ADmhSEHohYRZYQHNzCmGE4pXmb0AJ6~-2hlqpsE-e9gCYfxPDrVMV3-dcTeXE5iso3hnxyZrrDwSOcWkfnXAl3aB5KWp5ivELaHIwjDsw95iTCZj8s3M3cHhYrOQik1NL~w98aqgC4jsDPFdpzdhfjW38WXn3US1kxS8p9lxgpKxpORCpddSo32-ACfe9PJhVN0F~HTDK0IYfBzjtLIw3eopCDDpnK19xm4US6bjvplhOEPyjQ4hrssuYfk~LU-Qn7rv-S1LGmzdCoVRLAnbMxBSp86sZxRYsxpURvs1tBhP3Ojcv71e7JphYgXUXcVa2OnkOMwGCYKudTHz2dAiZGzEqAVBhb0nthVo7uZWvM-2Sev6m2QNfFPntnNi-upSDbmHIPT3dhtGpW7m-v4xbnPjNemQCHteBBQAEAAEAAA==\n"
+
+rw.go:25: > "SESSION CREATE STYLE=STREAM ID=923573703 DESTINATION=TRANSIENT\n"
+rw.go:47: < "SESSION STATUS RESULT=OK DESTINATION=c3y1yJqIH4ZOIHQPbeb7tlekqs3XA2YFlzwOj3TW6zqNuUOj0~KuFCX1grd2ACvzVmPCne5wvpTCZGXN7kJFgmVF6gPZITjUC8DeWh8tbuZfhZzVdsQRI1dNxiibyCwUfDGRfYMBnVW0kr9CpojUvEwOlNeDoaZLo6W8uT9Q~km6rFD3K-Xk9UyVMRjMkeoJXrR2rTI4~4~ZEbJ22lVtmg28ecrnGRbKC2SAenzR5Zn5nxsZQm8jvc5c3HpHZvmoZxxAtP9iUNzJ7dupy1-b~ESkTaTHJIP9tgTlZ3nP-FF7cDBRaDokECO8PXLOlpFDE6MBbijHejamjjqMycrqal6dptdig-zbtmJ7iTA7P1z04hCkUFW3hM5LU3R9IN49dxie9iKIjGsQGvbPelkpsWdgyJ78ZW1~P0~WA-pvD9mGHJGfLzQQd1Mc4htWAxHb1yTAG6jfx0VjVmAHyDrdrKiC7FYzcT6vsrZfI12cfbenEA5BnyG~HVyNtQSYmWLqAAAA1R6d6A42wfDHdonw2ncWHIY7dQk7kibJhAoIwPmMrl0SnQ3mBDLOifWLokbh5iGD3fjFTS~JDDuaahY2nnlARpTY7DeFxtp3HSMOBdyYyeZe47hVF6IpF6zEtFH08jusVMGME3ScZgCPVWIQYkio8UyQZT9ykGsQV4XgX3zOnO2IgEB44KFHVT~yO-WI7~ghF2kNKDToshIMVPp-5RjkwBMlpYJEX8j7bdlkYceRmkHsi1CbBigO4NmsikKb9p0pNX0DszMV9hrPhshwBqzNn25vIII3w03Y4NPrgCUEt1APMkdm8B7pZUADR7nWtVdM6hYE3Lkgpu3gX-VzrQ~3GGDnr5w1tChO2hrwvfbmAggfJM0p\n"
+
+rw.go:25: > "HELLO VERSION MIN=3.0 MAX=3.0\n"
+rw.go:47: < "HELLO REPLY RESULT=OK VERSION=3.0\n"
+
+rw.go:25: > "STREAM CONNECT ID=923573703 DESTINATION=\n"
+rw.go:47: < "SESSION STATUS RESULT=INVALID_KEY\n"
+
+sam-http.go:364: Warning:  Get http://lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p: Unknown Reply: &{Topic:SESSION Type:STATUS Pairs:map[RESULT:INVALID_KEY]}

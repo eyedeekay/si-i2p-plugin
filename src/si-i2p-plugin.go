@@ -20,7 +20,7 @@ func main(){
         "host: of the HTTP proxy")
     proxPortString  := flag.String("proxy-port", "4443",
         ":port of the HTTP proxy")
-    debugConnection := flag.Bool("conn-debug", false,
+    debugConnection := flag.Bool("conn-debug", true,
         "Print connection debug info" )
     useHttpProxy := flag.Bool("http-proxy", true,
         "run the HTTP proxy" )
