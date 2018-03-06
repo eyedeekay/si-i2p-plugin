@@ -19,13 +19,9 @@ What works so far:
 
 ### The http proxy
 
-Still *extremely experimental*, but currently it is possible to set your web
-browser's HTTP proxy to localhost:4443 and use it to browse eepSites. I just got
-it working and it's not been tested much yet, YMMV.
-
-I think I've solved the race condition thing now, which makes it usable. It's
-not even that bad. As expected, it takes a little longer to get the site in the
-first place.
+Still *only slightly less experimental*, but currently it is possible to set
+your web browser's HTTP proxy to localhost:4443 and use it to browse eepSites.
+I've chased down most of the most frequently occurring bugs I created so far.
 
 #### Examples
 
@@ -35,13 +31,19 @@ first place.
 
 ##### surf
 
-        export http_proxy="http://127.0.0.1:4443"
-        surf http://i2p-projekt.i2p
+        export http_proxy="http://127.0.0.1:4443" surf http://i2p-projekt.i2p
 
 #### Current Concerns:
 
-URL validation needs quite a bit of work, and I may need some additional way of
-validating responses.
+URL validation is informally useful now, but sometimes responses that have
+unexpected elements still give it trouble. I'll go into that more soon, I've
+been up all night.
+
+There's a fair amount of overhead with the generation of all the tunnels and the
+search-select process. I expect I'll be able to shave it down in many places
+though.
+
+I broke the close pipe. Should be an easy fix.
 
 I haven't been able to observe any DNS leaks yet, but that doesn't mean they
 aren't there. My plan is to implement some kind of proper URL validation for it.
@@ -138,8 +140,7 @@ are just files.
 What I'm doing right now:
 -------------------------
 
-Improving i2p url pre-validation and implementing pipe-controlled service
-tunnels.
+Implementing pipe-controlled service tunnels.
 
 What the final version should do:
 ---------------------------------
@@ -155,7 +156,7 @@ Version Roadmap:
    ~~which it caches in clearly-named folders as normal files(Containing HTML)~~
   * ~~0.19 - Expose an http proxy that hooks up to the existing infrastructure~~
    ~~for destination isolation~~
-  * 0.20 - Ready for more mainstream testing, should successfully isolate
+  * 0.20 - ~~Ready for more mainstream testing~~, should successfully isolate
    requests for resources embedded in the retrieved web pages and should be able
    to generate services on the fly by talking to the SAM bridge.
   * 0.21 - First worthwhile release for people who aren't shell enthusiasts.
