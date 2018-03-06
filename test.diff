@@ -1,0 +1,55 @@
+/usr/bin/curl -x '127.0.0.1:4444' -L lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p     |	/usr/bin/curl -x '127.0.0.1:4443' -L lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
+<!DOCTYPE html>												<!DOCTYPE html>
+<html>													<html>
+<head>													<head>
+  <title> What is my Base64? </title>									  <title> What is my Base64? </title>
+</head>													</head>
+  <body>												  <body>
+    <pre><code>												    <pre><code>
+Header: User-Agent, Value: [MYOB/6.66 (AN/ON)]								Header: User-Agent, Value: [MYOB/6.66 (AN/ON)]
+Header: Connection, Value: [close]								      |	Header: Accept-Encoding, Value: [gzip]
+Header: X-I2p-Destb32, Value: [7ze6imoq72tsaaqtpv2cnzjucwe4wgslxkrqqkjk7xeiifel5okq.b32.i2p]	      |	Header: X-I2p-Destb32, Value: [hlu5tme2dvtkthh5qweqjmfqjnmoeo4uolm37p5xeholfdmvpv7q.b32.i2p]
+Header: X-I2p-Desthash, Value: [~knkMdD-pyACE310JuU0FYnLGku6owgpKv3IhBSL65U=]			      |	Header: X-I2p-Desthash, Value: [OunZsJodZqmc~YWJBLCwS1jiO5Ry2b-~tyHcso2VfX8=]
+Header: X-I2p-Destb64, Value: [OIfvupXdTzJiyDM~Dp9aEyVKGB1LSUMr9tzqqHgXf4ipr6b08Q5kVkRy3sYzyOWAi-u-i7 |	Header: X-I2p-Destb64, Value: [7sWPpCWlg9o8c6uYZR3jaFKKzRDfYEqlTMYy~-Tu~fHPcUhmvnEFwc4XKGLu-AtyDGzzyR
+    </pre></code>											    </pre></code>
+  </body>												  </body>
+</html>													</html>
+/usr/bin/curl -x '127.0.0.1:4444' -L zcofypupen75rdv5zihviweyw5emk2l34idq423kbhj7n3owoe5a.b32.i2p     |	/usr/bin/curl -x '127.0.0.1:4443' -L zcofypupen75rdv5zihviweyw5emk2l34idq423kbhj7n3owoe5a.b32.i2p
+<!DOCTYPE html>												<!DOCTYPE html>
+<html>													<html>
+<head>													<head>
+  <title> What is my Base64? </title>									  <title> What is my Base64? </title>
+</head>													</head>
+  <body>												  <body>
+    <pre><code>												    <pre><code>
+[32m												      >	Header: Accept-Encoding, Value: [gzip]
+[0m[32m												      >	Header: X-I2p-Destb32, Value: [66fvj5rfyrebiaotchb2elywp4rk5kvb77r63dfafubepct23ura.b32.i2p]
+[0m[32m												      >	Header: X-I2p-Desthash, Value: [94tU9iXESBQB0xHDoi8WfyKuqqH~4-2MoC0CR4p63SI=]
+[0m[32m												      >	Header: X-I2p-Destb64, Value: [~ihlfVPQLM50DalvEY9yNJjOghxk9kuyxHni4fVxMf1MY9NYRorygib8YILmy2uTyBcbo-
+[0mHeader: User-Agent, Value: [MYOB/6.66 (AN/ON)]								Header: User-Agent, Value: [MYOB/6.66 (AN/ON)]
+[31mHeader: Connection, Value: [close]								      <
+[0m[31mHeader: X-I2p-Destb32, Value: [7ze6imoq72tsaaqtpv2cnzjucwe4wgslxkrqqkjk7xeiifel5okq.b32.i2p]	      <
+[0m[31mHeader: X-I2p-Desthash, Value: [~knkMdD-pyACE310JuU0FYnLGku6owgpKv3IhBSL65U=]			      <
+[0m[31mHeader: X-I2p-Destb64, Value: [OIfvupXdTzJiyDM~Dp9aEyVKGB1LSUMr9tzqqHgXf4ipr6b08Q5kVkRy3sYzyOWAi-u-i7 <
+[0m    </pre></code>											    </pre></code>
+  </body>												  </body>
+</html>													</html>
+/usr/bin/curl -x '127.0.0.1:4444' -L zjjjd756aucwz3pa2fl4mb3po2wtf752aefpod4gvedwreeox52q.b32.i2p     |	/usr/bin/curl -x '127.0.0.1:4443' -L zjjjd756aucwz3pa2fl4mb3po2wtf752aefpod4gvedwreeox52q.b32.i2p
+<!DOCTYPE html>												<!DOCTYPE html>
+<html>													<html>
+<head>													<head>
+  <title> What is my Base64? </title>									  <title> What is my Base64? </title>
+</head>													</head>
+  <body>												  <body>
+    <pre><code>												    <pre><code>
+[31mHeader: X-I2p-Destb32, Value: [7ze6imoq72tsaaqtpv2cnzjucwe4wgslxkrqqkjk7xeiifel5okq.b32.i2p]	      <
+[0m[31mHeader: X-I2p-Desthash, Value: [~knkMdD-pyACE310JuU0FYnLGku6owgpKv3IhBSL65U=]			      <
+[0m[31mHeader: X-I2p-Destb64, Value: [OIfvupXdTzJiyDM~Dp9aEyVKGB1LSUMr9tzqqHgXf4ipr6b08Q5kVkRy3sYzyOWAi-u-i7 <
+[0mHeader: User-Agent, Value: [MYOB/6.66 (AN/ON)]								Header: User-Agent, Value: [MYOB/6.66 (AN/ON)]
+Header: Connection, Value: [close]								      |	Header: Accept-Encoding, Value: [gzip]
+[32m												      >	Header: X-I2p-Destb32, Value: [ilx5ncydolriq4cbtxtktjagrhujtc52z5qh6fl5i4fvhnzz52yq.b32.i2p]
+[0m[32m												      >	Header: X-I2p-Desthash, Value: [Qu~WiwNy4ohwQZ3mqaQGieiZi7rPYH8VfUcLU7c57rE=]
+[0m[32m												      >	Header: X-I2p-Destb64, Value: [jJggw7sOou48MxN-j2pxID9uCZwHMKA4TANKUNufsL2QmMSYbvDE9E9IAYF9F7zzboGyLN
+[0m    </pre></code>											    </pre></code>
+  </body>												  </body>
+</html>													</html>
