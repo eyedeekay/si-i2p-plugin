@@ -23,6 +23,11 @@ Still *only slightly less experimental*, but currently it is possible to set
 your web browser's HTTP proxy to localhost:4443 and use it to browse eepSites.
 I've chased down most of the most frequently occurring bugs I created so far.
 
+This is pretty exciting though, when a site contains a resource which it pulls
+from another site, the proxy requests that down it's own tunnel, and not via the
+tunnel associated with the site that contains the resource. If a tunnel doesn't
+exist, it's created.
+
 #### Examples
 
 ##### curl
@@ -41,7 +46,7 @@ been up all night.
 
 There's a fair amount of overhead with the generation of all the tunnels and the
 search-select process. I expect I'll be able to shave it down in many places
-though.
+though. It's also not awesome at retrieving a whole bunch of images at a time.
 
 I broke the close pipe. Should be an easy fix.
 
@@ -51,6 +56,9 @@ aren't there. My plan is to implement some kind of proper URL validation for it.
 Before version 0.21, a framework for generating service tunnels ad-hoc will also
 be in place. This will be used for fuzz-testing the http proxy and the pipe
 proxy. Almost everything will be improved by the availability of this.
+
+I use two web browsers, uzbl and surf. uzbl seems to have trouble with CSS over
+the http proxy while surf does not.
 
 ### The pipes
 

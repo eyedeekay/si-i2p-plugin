@@ -93,3 +93,9 @@ test-httpdiff:
 test-httpdiffsd:
 	@echo "Test the http proxy in as simple a way as possible"
 	/usr/bin/curl -x 127.0.0.1:4443 http://inr.i2p/latest
+
+test-browser:
+	http_proxy=http://127.0.0.1:4443 surf http://inr.i2p
+
+test-browser-diff:
+	http_proxy=http://127.0.0.1:4443 surf http://i2p-projekt.i2p
