@@ -82,22 +82,23 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
 
     resp, err := client.Do(rq)
     if err != nil {
-        log.Println("Fatal: ServeHTTP:", err)
-        http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-    }
+        log.Println("Encountered an oddly formed response. Skipping.")
+        //http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+    }else{
 
-    r := proxy.client.copyRequest(rq, resp, dir)
+        r := proxy.client.copyRequest(rq, resp, dir)
 
 
-    if r != nil {
-        log.Println("SAM-Provided Tunnel Address:", rq.RemoteAddr)
-        log.Println("Response Status:", r.Status)
+        if r != nil {
+            log.Println("SAM-Provided Tunnel Address:", rq.RemoteAddr)
+            log.Println("Response Status:", r.Status)
 
-        proxy.delHopHeaders(r.Header)
+            proxy.delHopHeaders(r.Header)
 
-        proxy.copyHeader(rW.Header(), r.Header)
-        rW.WriteHeader(r.StatusCode)
-        io.Copy(rW, r.Body)
+            proxy.copyHeader(rW.Header(), r.Header)
+            rW.WriteHeader(r.StatusCode)
+            io.Copy(rW, r.Body)
+        }
     }
 }
 

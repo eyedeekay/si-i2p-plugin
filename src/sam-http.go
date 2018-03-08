@@ -250,8 +250,8 @@ func (samConn *samHttp) findSubCache(response *http.Response, directory string) 
         for _, url := range samConn.subCache {
             log.Println("Seeking Subdirectory", url.subDirectory)
             if url.checkDirectory(directory) {
-            //if b == true {
                 u = url
+                return &u
             }
         }
     }

@@ -146,33 +146,36 @@ func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Re
 func (subUrl *samUrl) dealResponse(response *http.Response){
     defer response.Body.Close()
     body, err := ioutil.ReadAll(response.Body)
-    subUrl.Fatal(err)
-    log.Println("Writing files.")
-    subUrl.recvFile.Write(body)
-    log.Println("Retrieval time: ", time.Now().String())
-    subUrl.timeFile.WriteString(time.Now().String())
+    if subUrl.Warn(err) {
+        log.Println("Writing files.")
+        subUrl.recvFile.Write(body)
+        log.Println("Retrieval time: ", time.Now().String())
+        subUrl.timeFile.WriteString(time.Now().String())
+    }
 }
 
 func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response)(*http.Response){
     defer response.Body.Close()
     body, err := ioutil.ReadAll(response.Body)
-    subUrl.Fatal(err)
-    log.Println("Writing files.")
-    subUrl.recvFile.Write(body)
-    r := &http.Response{
-        Status:        "200 OK",
-        StatusCode:    200,
-        Proto:         "HTTP/1.1",
-        ProtoMajor:    1,
-        ProtoMinor:    1,
-        Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
-        ContentLength: int64(len(body)),
-        Request:       request,
-        Header:        request.Header,
+    if subUrl.Warn(err) {
+        log.Println("Writing files.")
+        subUrl.recvFile.Write(body)
+        r := &http.Response{
+            Status:        "200 OK",
+            StatusCode:    200,
+            Proto:         "HTTP/1.1",
+            ProtoMajor:    1,
+            ProtoMinor:    1,
+            Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
+            ContentLength: int64(len(body)),
+            Request:       request,
+            Header:        request.Header,
+        }
+        log.Println("Retrieval time: ", time.Now().String())
+        subUrl.timeFile.WriteString(time.Now().String())
+        return r
     }
-    log.Println("Retrieval time: ", time.Now().String())
-    subUrl.timeFile.WriteString(time.Now().String())
-    return r
+    return response
 }
 
 func (subUrl *samUrl) cleanupDirectory(){
@@ -203,10 +206,12 @@ func (subUrl *samUrl) readDelete() int {
     }
 }
 
-func (subUrl *samUrl) Warn(err error) {
+func (subUrl *samUrl) Warn(err error) bool {
 	if err != nil {
 		log.Println("Warning: ", err)
+        return false
 	}
+    return true
 }
 
 func (subUrl *samUrl) Fatal(err error) {
