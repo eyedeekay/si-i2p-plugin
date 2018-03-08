@@ -22,7 +22,7 @@ func main(){
         "host: of the HTTP proxy")
     proxPortString  := flag.String("proxy-port", "4443",
         ":port of the HTTP proxy")
-    debugConnection := flag.Bool("conn-debug", true,
+    debugConnection := flag.Bool("conn-debug", false,
         "Print connection debug info" )
     useHttpProxy := flag.Bool("http-proxy", true,
         "run the HTTP proxy" )
@@ -74,9 +74,9 @@ func main(){
     log.Println("Created client, starting loop...")
 
     for exit != true{
-        samProxies.readRequest()
-        go samProxies.writeResponses()
         go closeProxy(samProxies)
+        go samProxies.writeResponses()
+        samProxies.readRequest()
 
         time.Sleep(100 * time.Millisecond)
     }

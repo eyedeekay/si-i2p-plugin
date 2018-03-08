@@ -119,9 +119,8 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
     }
 }
 
-func (samStack *samList) sendClientRequest(request string) string{
+func (samStack *samList) sendClientRequest(request string){
     samStack.findClient(request).sendRequest(request)
-    return request
 }
 
 func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
@@ -160,21 +159,34 @@ func (samStack *samList) copyRequest(request *http.Request, response *http.Respo
     return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
 }
 
-func (samStack *samList) readRequest() string{
+/*func (samStack *samList) readRequest() string{
     for samStack.sendScan.Scan(){
         return samStack.sendClientRequest(samStack.sendScan.Text())
     }
     return ""
+}*/
+
+func (samStack *samList) readRequest(){
+    log.Println("Reading requests:")
+    for samStack.sendScan.Scan(){
+        if samStack.sendScan.Text() != "" {
+            go samStack.sendClientRequest(samStack.sendScan.Text())
+        }
+    }
 }
 
 func (samStack *samList) writeResponses(){
+    log.Println("Writing responses:")
     for i, client := range samStack.listOfClients {
         log.Println("Checking for responses: %s", i+1)
         log.Println("of: ", len(samStack.listOfClients))
-        b := samStack.writeRecieved(client.printResponse())
-        if b == true {
-            break
+        //b :=
+        if client.printResponse() != "" {
+            go samStack.writeRecieved(client.printResponse())
         }
+        //if b == true {
+            //break
+        //}
     }
 }
 
@@ -195,6 +207,7 @@ func (samStack *samList) writeRecieved(response string) bool {
 }
 
 func (samStack *samList) readDelete() bool {
+    log.Println("Managing pipes:")
     for samStack.delScan.Scan(){
         if samStack.delScan.Text() == "y" || samStack.delScan.Text() == "Y" {
             defer samStack.cleanupClient()
