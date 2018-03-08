@@ -159,13 +159,6 @@ func (samStack *samList) copyRequest(request *http.Request, response *http.Respo
     return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
 }
 
-/*func (samStack *samList) readRequest() string{
-    for samStack.sendScan.Scan(){
-        return samStack.sendClientRequest(samStack.sendScan.Text())
-    }
-    return ""
-}*/
-
 func (samStack *samList) readRequest(){
     log.Println("Reading requests:")
     for samStack.sendScan.Scan(){

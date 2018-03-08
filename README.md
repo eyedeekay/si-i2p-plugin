@@ -40,15 +40,10 @@ exist, it's created.
 
 #### Current Concerns:
 
-URL validation is informally useful now, but sometimes responses that have
-unexpected elements still give it trouble. I'll go into that more soon, I've
-been up all night.
-
 There's a fair amount of overhead with the generation of all the tunnels and the
-search-select process. I expect I'll be able to shave it down in many places
-though. It's also not awesome at retrieving a whole bunch of images at a time.
-
-I broke the close pipe. Should be an easy fix.
+search-select process. I am shaving off time in various places as it becomes
+clear where parts of it can be run in parallel. It's not awesome at retrieving a
+whole bunch of images at a time.
 
 I haven't been able to observe any DNS leaks yet, but that doesn't mean they
 aren't there. My plan is to implement some kind of proper URL validation for it.
@@ -56,9 +51,6 @@ aren't there. My plan is to implement some kind of proper URL validation for it.
 Before version 0.21, a framework for generating service tunnels ad-hoc will also
 be in place. This will be used for fuzz-testing the http proxy and the pipe
 proxy. Almost everything will be improved by the availability of this.
-
-I use two web browsers, uzbl and surf. uzbl seems to have trouble with CSS over
-the http proxy while surf does not.
 
 ### The pipes
 
