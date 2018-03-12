@@ -48,9 +48,6 @@ If it wasn't super, super obvious to everyone, it's really, really easy to tell
 the difference between this proxy and the default i2p/i2pd http proxies and I
 don't think there's anything I can do about that.
 
-I haven't been able to observe any DNS leaks yet, but that doesn't mean they
-aren't there. My plan is to implement some kind of proper URL validation for it.
-
 Before version 0.21, a framework for generating service tunnels ad-hoc will also
 be in place. This will be used for fuzz-testing the http proxy and the pipe
 proxy. Almost everything will be improved by the availability of this.
