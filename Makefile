@@ -21,10 +21,19 @@ bin/si-i2p-plugin:
 		./src
 	@echo 'built'
 
+build-arm: bin/si-i2p-plugin-arm
+
+bin/si-i2p-plugin-arm:
+	go get -u github.com/eyedeekay/gosam
+	GOARCH=arm GOARM=7 go build "$(GO_COMPILER)" \
+		-o bin/si-i2p-plugin-arm \
+		./src
+	@echo 'built'
 
 release:
 	go get -u github.com/eyedeekay/gosam
-	go build "$(GO_COMPILER)" -buildmode=pie \
+	go build "$(GO_COMPILER)" \
+		-buildmode=pie \
 		-o bin/si-i2p-plugin \
 		./src
 	@echo 'built release'
