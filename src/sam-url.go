@@ -207,7 +207,9 @@ func (subUrl *samUrl) readDelete() int {
 }
 
 func (subUrl *samUrl) Log(msg ...string) {
-	log.Println("LOG: ", msg)
+	if verbose {
+		log.Println("LOG: ", msg)
+	}
 }
 
 func (subUrl *samUrl) Warn(err error, errmsg string, msg ...string) bool {

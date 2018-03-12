@@ -31,7 +31,7 @@ var hopHeaders = []string{
 
 func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
 	for _, h := range hopHeaders {
-		log.Println("Sanitizing headers: " + h)
+		proxy.Log("Sanitizing headers: " + h)
 		header.Del(h)
 	}
 	header.Set("User-Agent", "MYOB/6.66 (AN/ON)")
@@ -40,16 +40,16 @@ func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
 func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 	for k, vv := range src {
 		for _, v := range vv {
-			log.Println("Copying headers: " + k + "," + v)
+			proxy.Log("Copying headers: " + k + "," + v)
 			dst.Add(k, v)
 		}
 	}
 }
 
 func (proxy *samHttpProxy) prepare() {
-	log.Println("Initializing handler handle")
+	proxy.Log("Initializing handler handle")
 	if err := http.ListenAndServe(proxy.host, proxy.handle); err != nil {
-		log.Println("Fatal Error: proxy not started")
+		proxy.Log("Fatal Error: proxy not started")
 	}
 }
 
@@ -58,7 +58,7 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 	if rq.URL.Scheme != "http" && rq.URL.Scheme != "https" {
 		msg := "unsupported protocal scheme " + rq.URL.Scheme
 		http.Error(rW, msg, http.StatusBadRequest)
-		log.Println(msg)
+		proxy.Log(msg)
 		return false
 	} else {
 		return true
@@ -71,26 +71,26 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	if !proxy.checkURLType(rW, rq) {
 		return
 	}
-	log.Println(rq.URL.String())
+	proxy.Log(rq.URL.String())
 
 	rq.RequestURI = ""
 	proxy.delHopHeaders(rq.Header)
 
 	client, dir := proxy.client.sendClientRequestHttp(rq)
 
-	log.Println("Client was retrieved: ", dir)
+	proxy.Log("Client was retrieved: ", dir)
 
 	resp, err := client.Do(rq)
 	if err != nil {
-		log.Println("Encountered an oddly formed response. Skipping.", err)
+		proxy.Warn(err, "Encountered an oddly formed response. Skipping.", "Processing Response")
 		//http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
 	} else {
 
 		r := proxy.client.copyRequest(rq, resp, dir)
 
 		if r != nil {
-			log.Println("SAM-Provided Tunnel Address:", rq.RemoteAddr)
-			log.Println("Response Status:", r.Status)
+			proxy.Log("SAM-Provided Tunnel Address:", rq.RemoteAddr)
+			proxy.Log("Response Status:", r.Status)
 
 			proxy.delHopHeaders(r.Header)
 
@@ -100,6 +100,25 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 		}
 	}
 }
+
+func (proxy *samHttpProxy) Log(msg ...string) {
+	if verbose {
+		log.Println("LOG: ", msg)
+	}
+}
+
+func (proxy *samHttpProxy) Warn(err error, errmsg string, msg ...string) bool {
+	log.Println(msg)
+	if err != nil {
+		log.Println("WARN: ", err)
+		return false
+	}
+	proxy.err = nil
+	return true
+}
+
+//func (proxy *samHttpProxy) Fatal(err error, errmsg string, msg ...string){
+//}
 
 func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) *samHttpProxy {
 	var samProxy samHttpProxy

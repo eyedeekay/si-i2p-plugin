@@ -12,6 +12,7 @@ import (
 )
 
 var exit bool = false
+var verbose bool = false
 
 func main() {
 	samAddrString := flag.String("bridge-addr", "127.0.0.1",
@@ -26,6 +27,8 @@ func main() {
 		"Print connection debug info")
 	useHttpProxy := flag.Bool("http-proxy", true,
 		"run the HTTP proxy")
+	verboseLogging := flag.Bool("verbose", false,
+		"Print connection debug info")
 	Defwd, _ := os.Getwd()
 	workDirectory := flag.String("directory", Defwd,
 		"The working directory you want to use, defaults to current directory")
@@ -43,8 +46,11 @@ func main() {
 	log.Println("Proxy Port:", *proxPortString)
 	log.Println("Working Directory:", *workDirectory)
 	log.Println("Debug mode:", *debugConnection)
+	log.Println("Verbose mode:", *verboseLogging)
 	log.Println("Using HTTP proxy:", *useHttpProxy)
 	log.Println("Initial URL:", *address)
+
+	verbose = *verboseLogging
 
 	goSam.ConnDebug = *debugConnection
 

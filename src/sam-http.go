@@ -54,66 +54,66 @@ var connectionDirectory string
 
 func (samConn *samHttp) initPipes() {
 	pathConnectionExists, pathErr := exists(filepath.Join(connectionDirectory, samConn.host))
-	log.Println("Directory Check", filepath.Join(connectionDirectory, samConn.host))
-	samConn.Fatal(pathErr)
+	//samConn.Log("Directory Check", filepath.Join(connectionDirectory, samConn.host))
+	samConn.Fatal(pathErr, "Directory Check Error", "Directory Check", filepath.Join(connectionDirectory, samConn.host))
 	if !pathConnectionExists {
-		log.Println("Creating a connection:", samConn.host)
+		samConn.Log("Creating a connection:", samConn.host)
 		os.Mkdir(filepath.Join(connectionDirectory, samConn.host), 0755)
 	}
 
 	samConn.sendPath = filepath.Join(connectionDirectory, samConn.host, "send")
 	pathSendExists, sendPathErr := exists(samConn.sendPath)
-	samConn.Fatal(sendPathErr)
+	samConn.Fatal(sendPathErr, "Path Check Error", "Path Check", samConn.sendPath)
 	if !pathSendExists {
 		err := syscall.Mkfifo(samConn.sendPath, 0755)
-		log.Println("Preparing to create Pipe:", samConn.sendPath)
-		samConn.Fatal(err)
-		log.Println("checking for problems...")
+		samConn.Log("Preparing to create Pipe:", samConn.sendPath)
+		samConn.Fatal(err, "File Creation Error", "Creating File", samConn.sendPath)
+		samConn.Log("checking for problems...")
 		samConn.sendPipe, err = os.OpenFile(samConn.sendPath, os.O_RDWR|os.O_CREATE, 0755)
-		log.Println("Opening the Named Pipe as a File...")
+		samConn.Log("Opening the Named Pipe as a File...")
 		samConn.sendScan = *bufio.NewScanner(samConn.sendPipe)
 		samConn.sendScan.Split(bufio.ScanLines)
-		log.Println("Opening the Named Pipe as a Buffer...")
-		log.Println("Created a named Pipe for sending requests:", samConn.sendPath)
+		samConn.Log("Opening the Named Pipe as a Buffer...")
+		samConn.Log("Created a named Pipe for sending requests:", samConn.sendPath)
 	}
 
 	samConn.namePath = filepath.Join(connectionDirectory, samConn.host, "name")
 	pathNameExists, recvNameErr := exists(samConn.namePath)
-	samConn.Fatal(recvNameErr)
+	samConn.Fatal(recvNameErr, "Name File Check error", "Name File Check", samConn.namePath)
 	if !pathNameExists {
 		samConn.nameFile, samConn.err = os.Create(samConn.namePath)
-		log.Println("Preparing to create File:", samConn.namePath)
-		samConn.Fatal(samConn.err)
-		log.Println("checking for problems...")
-		log.Println("Opening the File...")
+		samConn.Log("Preparing to create File:", samConn.namePath)
+		samConn.Fatal(samConn.err, "File Creation Error", "Creating File", samConn.namePath)
+		samConn.Log("checking for problems...")
+		samConn.Log("Opening the File...")
 		samConn.nameFile, samConn.err = os.OpenFile(samConn.namePath, os.O_RDWR|os.O_CREATE, 0644)
-		log.Println("Created a File for the full name:", samConn.namePath)
+		samConn.Log("Created a File for the full name:", samConn.namePath)
 	}
 
 	samConn.idPath = filepath.Join(connectionDirectory, samConn.host, "id")
 	pathIdExists, recvIdErr := exists(samConn.idPath)
-	samConn.Fatal(recvIdErr)
+	samConn.Fatal(recvIdErr, "ID File Check Error", "ID File Check", samConn.idPath)
 	if !pathIdExists {
 		samConn.idFile, samConn.err = os.Create(samConn.idPath)
-		log.Println("Preparing to create File:", samConn.idPath)
-		samConn.Fatal(samConn.err)
-		log.Println("checking for problems...")
-		log.Println("Opening the File...")
+		samConn.Log("Preparing to create File:", samConn.idPath)
+		samConn.Fatal(samConn.err, "File Creation Error", "Creating File", samConn.idPath)
+		samConn.Log("checking for problems...")
+		samConn.Log("Opening the File...")
 		samConn.idFile, samConn.err = os.OpenFile(samConn.idPath, os.O_RDWR|os.O_CREATE, 0644)
-		log.Println("Created a File for the full id:", samConn.idPath)
+		samConn.Log("Created a File for the full id:", samConn.idPath)
 	}
 
 	samConn.base64Path = filepath.Join(connectionDirectory, samConn.host, "base64")
 	pathBase64Exists, recvBase64Err := exists(samConn.base64Path)
-	samConn.Fatal(recvBase64Err)
+	samConn.Fatal(recvBase64Err, "Local Base64 File Check Error", "Local Base64 File Check", samConn.base64Path)
 	if !pathBase64Exists {
 		samConn.base64File, samConn.err = os.Create(samConn.base64Path)
-		log.Println("Preparing to create File:", samConn.base64Path)
-		samConn.Fatal(samConn.err)
-		log.Println("checking for problems...")
-		log.Println("Opening the File...")
+		samConn.Log("Preparing to create File:", samConn.base64Path)
+		samConn.Fatal(samConn.err, "File Creation Error", "Creating File", samConn.base64Path)
+		samConn.Log("checking for problems...")
+		samConn.Log("Opening the File...")
 		samConn.base64File, samConn.err = os.OpenFile(samConn.base64Path, os.O_RDWR|os.O_CREATE, 0644)
-		log.Println("Created a File for the full local base64:", samConn.base64Path)
+		samConn.Log("Created a File for the full local base64:", samConn.base64Path)
 	}
 
 }
@@ -121,9 +121,9 @@ func (samConn *samHttp) initPipes() {
 func (samConn *samHttp) Dial(network, addr string) (net.Conn, error) {
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
-	samConn.Fatal(samConn.err)
+	samConn.Fatal(samConn.err, "SAM connection error", "Initializing SAM connection")
 	samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
-	samConn.Warn(samConn.err)
+	samConn.Warn(samConn.err, "Stream connection error", "Connecting SAM streams")
 	return samConn.samBridgeClient.SamConn, nil
 	//return samConn.samBridgeClient.Dial(network, addr)
 }
@@ -133,14 +133,14 @@ func (samConn *samHttp) createClient(request string, samAddrString string, samPo
 	samConn.samPortString = samPortString
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
-	samConn.Fatal(samConn.err)
-	log.Println("Setting Transport")
-	log.Println("Setting Dial function")
+	samConn.Fatal(samConn.err, "SAM Client Connection Error", "SAM client connecting", samCombined)
+	samConn.Log("Setting Transport")
+	samConn.Log("Setting Dial function")
 	samConn.transport = &http.Transport{
 		//Dial: samConn.samBridgeClient.Dial,
 		Dial: samConn.Dial,
 	}
-	log.Println("Initializing sub-client")
+	samConn.Log("Initializing sub-client")
 	samConn.subClient = &http.Client{
 		//Timeout: client.Timeout,
 		Transport: samConn.transport}
@@ -158,14 +158,14 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 	samConn.samPortString = samPortString
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
-	samConn.Fatal(samConn.err)
-	log.Println("Setting Transport")
-	log.Println("Setting Dial function")
+	samConn.Fatal(samConn.err, "SAM Connection Error", "Connecting to SAM Bridge", samCombined)
+	samConn.Log("Setting Transport")
+	samConn.Log("Setting Dial function")
 	samConn.transport = &http.Transport{
 		//Dial: samConn.samBridgeClient.Dial,
 		Dial: samConn.Dial,
 	}
-	log.Println("Initializing sub-client")
+	samConn.Log("Initializing sub-client")
 	samConn.subClient = &http.Client{
 		//Timeout: client.Timeout,
 		Transport: samConn.transport}
@@ -179,20 +179,20 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 }
 
 func (samConn *samHttp) cleanURL(request string) (string, string) {
-	log.Println("cleanURL Trim 0 " + request)
+	samConn.Log("cleanURL Trim 0 " + request)
 	//http://i2p-projekt.i2p/en/downloads
 	url := strings.Replace(request, "http://", "", -1)
-	log.Println("cleanURL Request URL " + url)
+	samConn.Log("cleanURL Request URL " + url)
 	//i2p-projekt.i2p/en/downloads
 	host := strings.SplitAfter(url, ".i2p")[0]
-	log.Println("cleanURL Trim 2 " + host)
+	samConn.Log("cleanURL Trim 2 " + host)
 	return host, url
 }
 
 func (samConn *samHttp) hostSet(request string) (string, string) {
 	host, req := samConn.cleanURL(request)
-	log.Println("Setting up micro-proxy for:", "http://"+host)
-	log.Println("in Directory", req)
+	samConn.Log("Setting up micro-proxy for:", "http://"+host)
+	samConn.Log("in Directory", req)
 	return host, req
 }
 
@@ -205,22 +205,22 @@ func (samConn *samHttp) hostCheck(request string) bool {
 	_, err := url.ParseRequestURI(host)
 	if err == nil {
 		if samConn.host == host {
-			log.Println("Request host ", host)
-			log.Println("Is equal to client host", samConn.host)
+			samConn.Log("Request host ", host)
+			samConn.Log("Is equal to client host", samConn.host)
 			return true
 		} else {
-			log.Println("Request host ", host)
-			log.Println("Is not equal to client host", samConn.host)
+			samConn.Log("Request host ", host)
+			samConn.Log("Is not equal to client host", samConn.host)
 			return false
 		}
 	} else {
 		if samConn.host == host {
-			log.Println("Request host ", host)
-			log.Println("Is equal to client host", samConn.host)
+			samConn.Log("Request host ", host)
+			samConn.Log("Is equal to client host", samConn.host)
 			return true
 		} else {
-			log.Println("Request host ", host)
-			log.Println("Is not equal to client host", samConn.host)
+			samConn.Log("Request host ", host)
+			samConn.Log("Is not equal to client host", samConn.host)
 			return false
 		}
 	}
@@ -232,28 +232,28 @@ func (samConn *samHttp) getURL(request string) (string, string) {
 	_, err := url.ParseRequestURI(r)
 	if err != nil {
 		r = "http://" + request
-		log.Println("URL failed validation, correcting to:", r)
+		samConn.Log("URL failed validation, correcting to:", r)
 	} else {
-		log.Println("URL passed validation:", request)
+		samConn.Log("URL passed validation:", request)
 	}
-	log.Println("Request will be managed in:", directory)
+	samConn.Log("Request will be managed in:", directory)
 	return r, directory
 }
 
 func (samConn *samHttp) sendRequest(request string) (*http.Response, error) {
 	r, dir := samConn.getURL(request)
-	log.Println("Getting resource", request)
+	samConn.Log("Getting resource", request)
 	resp, err := samConn.subClient.Get(r)
-	samConn.Warn(err)
-	log.Println("Pumping result to top of parent pipe")
+	samConn.Warn(err, "Response Error", "Getting Response")
+	samConn.Log("Pumping result to top of parent pipe")
 	samConn.copyRequest(resp, dir)
 	return resp, err
 }
 
 func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, string) {
 	r, dir := samConn.getURL(request.URL.String())
-	log.Println("Getting resource", r, "In ", dir)
-	//log.Println("In ", dir)
+	samConn.Log("Getting resource", r, "In ", dir)
+	//samConn.Log("In ", dir)
 	return samConn.subClient, dir
 }
 
@@ -261,16 +261,16 @@ func (samConn *samHttp) findSubCache(response *http.Response, directory string) 
 	b := false
 	var u samUrl
 	for _, url := range samConn.subCache {
-		log.Println("Seeking Subdirectory", url.subDirectory)
+		samConn.Log("Seeking Subdirectory", url.subDirectory)
 		if url.checkDirectory(directory) {
 			return &url
 		}
 	}
 	if b == false {
-		log.Println("has not been retrieved yet. Setting up:", directory)
+		samConn.Log("has not been retrieved yet. Setting up:", directory)
 		samConn.subCache = append(samConn.subCache, newSamUrl(directory))
 		for _, url := range samConn.subCache {
-			log.Println("Seeking Subdirectory", url.subDirectory)
+			samConn.Log("Seeking Subdirectory", url.subDirectory)
 			if url.checkDirectory(directory) {
 				u = url
 				return &u
@@ -303,14 +303,14 @@ func (samConn *samHttp) scannerText() (string, error) {
 /**/
 func (samConn *samHttp) responsify(input string) io.Reader {
 	tmp := strings.NewReader(input)
-	log.Println("Turning string into a response", input)
+	samConn.Log("Turning string into a response", input)
 	return tmp
 }
 
 /**/
 func (samConn *samHttp) printResponse() string {
 	s, e := samConn.scannerText()
-	samConn.Fatal(e)
+	samConn.Fatal(e, "Response Retrieval Error", "Retrieving Responses")
 	return s
 }
 
@@ -327,7 +327,7 @@ func (samConn *samHttp) readDelete() bool {
 	for _, dir := range samConn.subCache {
 		n := dir.readDelete()
 		if n == 0 {
-			log.Println("Maintaining Connection:", samConn.hostGet())
+			samConn.Log("Maintaining Connection:", samConn.hostGet())
 		} else if n > 0 {
 			b = true
 		}
@@ -338,46 +338,46 @@ func (samConn *samHttp) readDelete() bool {
 func (samConn *samHttp) writeName(request string) {
 	if samConn.checkName() {
 		samConn.host, samConn.directory = samConn.hostSet(request)
-		log.Println("Setting hostname:", samConn.host)
-		log.Println("Looking up hostname:", samConn.host)
+		samConn.Log("Setting hostname:", samConn.host)
+		samConn.Log("Looking up hostname:", samConn.host)
 		samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
 		samConn.nameFile.WriteString(samConn.name)
-		log.Println("Caching base64 address of:", samConn.host+" "+samConn.name)
+		samConn.Log("Caching base64 address of:", samConn.host+" "+samConn.name)
 		samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
 		samConn.idFile.WriteString(fmt.Sprint(samConn.id))
-		samConn.Warn(samConn.err)
+		samConn.Warn(samConn.err, "Local Base64 Caching error", "Cachine Base64 Address of:", request)
 		log.Println("Tunnel id: ", samConn.id)
-		log.Println("Tunnel dest: ", samConn.base64)
+		samConn.Log("Tunnel dest: ", samConn.base64)
 		samConn.base64File.WriteString(samConn.base64)
-		log.Println("New Connection Name: ", samConn.base64)
-		//log.Println("Connecting Streams: ", samConn.id, " ", samConn.base64)
+		samConn.Log("New Connection Name: ", samConn.base64)
+		//samConn.Log("Connecting Streams: ", samConn.id, " ", samConn.base64)
 		//samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.base64)
 		//samConn.Warn(samConn.err)
 	} else {
 		samConn.host, samConn.directory = samConn.hostSet(request)
-		log.Println("Setting hostname:", samConn.host)
+		samConn.Log("Setting hostname:", samConn.host)
 		samConn.initPipes()
-		log.Println("Looking up hostname:", samConn.host)
+		samConn.Log("Looking up hostname:", samConn.host)
 		samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
-		log.Println("Caching base64 address of:", samConn.host+" "+samConn.name)
+		samConn.Log("Caching base64 address of:", samConn.host+" "+samConn.name)
 		samConn.nameFile.WriteString(samConn.name)
 		samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
 		samConn.idFile.WriteString(fmt.Sprint(samConn.id))
-		samConn.Warn(samConn.err)
+		samConn.Warn(samConn.err, "Local Base64 Caching error", "Cachine Base64 Address of:", request)
 		log.Println("Tunnel id: ", samConn.id)
-		log.Println("Tunnel dest: ", samConn.base64)
+		samConn.Log("Tunnel dest: ", samConn.base64)
 		samConn.base64File.WriteString(samConn.base64)
-		log.Println("New Connection Name: ", samConn.base64)
-		//log.Println("Connecting Streams: ", samConn.id, " ", samConn.base64)
+		samConn.Log("New Connection Name: ", samConn.base64)
+		//samConn.Log("Connecting Streams: ", samConn.id, " ", samConn.base64)
 		//samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.base64)
 		//samConn.Warn(samConn.err)
 	}
 }
 
 func (samConn *samHttp) checkName() bool {
-	log.Println("seeing if the connection needs a name:")
+	samConn.Log("seeing if the connection needs a name:")
 	if samConn.name != "" {
-		log.Println("Naming connection: Connection name was empty.")
+		samConn.Log("Naming connection: Connection name was empty.")
 		return true
 	} else {
 		return false
@@ -391,25 +391,33 @@ func (samConn *samHttp) cleanupClient() {
 		url.cleanupDirectory()
 	}
 	err := samConn.samBridgeClient.Close()
-	samConn.Fatal(err)
+	samConn.Fatal(err, "Closing SAM Bridge Error", "Closing SAM Bridge")
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
-func (samConn *samHttp) Warn(err error) bool {
-	if err != nil {
-		log.Println("Warning: ", err)
-		return true
+func (samConn *samHttp) Log(msg ...string) {
+	if verbose {
+		log.Println("LOG: ", msg)
 	}
-	return false
 }
 
-func (samConn *samHttp) Fatal(err error) bool {
+func (samConn *samHttp) Warn(err error, errmsg string, msg ...string) bool {
+	log.Println(msg)
 	if err != nil {
-		defer samConn.cleanupClient()
-		log.Fatal("Fatal: ", err)
-		return true
+		log.Println("WARN: ", err)
+		return false
 	}
-	return false
+	samConn.err = nil
+	return true
+}
+
+func (samConn *samHttp) Fatal(err error, errmsg string, msg ...string) {
+	log.Println(msg)
+	if err != nil {
+		samConn.err = err
+		defer samConn.cleanupClient()
+		log.Fatal("FATAL: ", errmsg, err)
+	}
 }
 
 func exists(path string) (bool, error) {
