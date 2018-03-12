@@ -15,7 +15,7 @@ checkinstall: release postinstall-pak postremove-pak description-pak
 		--pakdir=../
 
 checkinstall-arm: build-arm postinstall-pak postremove-pak description-pak static-include static-exclude
-	checkinstall --default \
+	ARCH=armhf checkinstall --default \
 		--install=no \
 		--fstrans=yes \
 		--maintainer=problemsolver@openmailbox.org \
