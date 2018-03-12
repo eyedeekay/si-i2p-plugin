@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
-	//"github.com/eyedeekay/gosam"
-	//"github.com/cryptix/goSam"
 )
 
 type samList struct {

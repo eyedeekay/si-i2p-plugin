@@ -57,8 +57,12 @@ func main() {
 	var samProxies *samList
 	samProxies = createSamList(*samAddrString, *samPortString, *address)
 
+//    var samServices *samServices
+//    samServices = createSamServiceList(*samAddrString, *samPortString)
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
+
 	go func() {
 		for sig := range c {
 			if sig == os.Interrupt {

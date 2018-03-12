@@ -11,7 +11,6 @@ import (
 	"syscall"
 
 	"github.com/eyedeekay/gosam"
-	//"github.com/cryptix/goSam"
 )
 
 type samServices struct {
@@ -39,11 +38,11 @@ func (samServiceStack *samServices) initPipes() {
 	pathConnectionExists, err := exists(filepath.Join(connectionDirectory, "service"))
 	samServiceStack.Fatal(err)
 	if !pathConnectionExists {
-		log.Println("Creating a connection:", "service")
+		samServiceStack.Log("Creating a connection:", "service")
 		os.Mkdir(filepath.Join(connectionDirectory, "service"), 0755)
 	} else {
 		os.RemoveAll(filepath.Join(connectionDirectory, "service"))
-		log.Println("Creating a connection:", "service")
+		samServiceStack.Log("Creating a connection:", "service")
 		os.Mkdir(filepath.Join(connectionDirectory, "service"), 0755)
 	}
 
@@ -52,15 +51,15 @@ func (samServiceStack *samServices) initPipes() {
 	samServiceStack.Fatal(genrErr)
 	if !pathgenrExists {
 		samServiceStack.err = syscall.Mkfifo(samServiceStack.genrPath, 0755)
-		log.Println("Preparing to create Pipe:", samServiceStack.genrPath)
+		samServiceStack.Log("Preparing to create Pipe:", samServiceStack.genrPath)
 		samServiceStack.Fatal(samServiceStack.err)
-		log.Println("checking for problems...")
+		samServiceStack.Log("checking for problems...")
 		samServiceStack.genrPipe, samServiceStack.err = os.OpenFile(samServiceStack.genrPath, os.O_RDWR|os.O_CREATE, 0755)
-		log.Println("Opening the Named Pipe as a Scanner...")
+		samServiceStack.Log("Opening the Named Pipe as a Scanner...")
 		samServiceStack.genrScan = *bufio.NewScanner(samServiceStack.genrPipe)
 		samServiceStack.genrScan.Split(bufio.ScanLines)
-		log.Println("Opening the Named Pipe as a Scanner...")
-		log.Println("Created a named Pipe for generating new i2p http services:", samServiceStack.genrPath)
+		samServiceStack.Log("Opening the Named Pipe as a Scanner...")
+		samServiceStack.Log("Created a named Pipe for generating new i2p http services:", samServiceStack.genrPath)
 	}
 
 	samServiceStack.lsPath = filepath.Join(connectionDirectory, "service", "ls")
@@ -68,12 +67,12 @@ func (samServiceStack *samServices) initPipes() {
 	samServiceStack.Fatal(lsErr)
 	if !pathlsExists {
 		samServiceStack.err = syscall.Mkfifo(samServiceStack.lsPath, 0755)
-		log.Println("Preparing to create Pipe:", samServiceStack.lsPath)
+		samServiceStack.Log("Preparing to create Pipe:", samServiceStack.lsPath)
 		samServiceStack.Fatal(samServiceStack.err)
-		log.Println("checking for problems...")
+		samServiceStack.Log("checking for problems...")
 		samServiceStack.lsPipe, samServiceStack.err = os.OpenFile(samServiceStack.lsPath, os.O_RDWR|os.O_CREATE, 0755)
 		samServiceStack.lsPipe.WriteString("")
-		log.Println("Created a named Pipe for monitoring service information:", samServiceStack.lsPath)
+		samServiceStack.Log("Created a named Pipe for monitoring service information:", samServiceStack.lsPath)
 	}
 
 	samServiceStack.delPath = filepath.Join(connectionDirectory, "service", "del")
@@ -81,18 +80,42 @@ func (samServiceStack *samServices) initPipes() {
 	samServiceStack.Fatal(delErr)
 	if !pathDelExists {
 		samServiceStack.err = syscall.Mkfifo(samServiceStack.delPath, 0755)
-		log.Println("Preparing to create Pipe:", samServiceStack.delPath)
+		samServiceStack.Log("Preparing to create Pipe:", samServiceStack.delPath)
 		samServiceStack.Fatal(samServiceStack.err)
-		log.Println("checking for problems...")
+		samServiceStack.Log("checking for problems...")
 		samServiceStack.delPipe, samServiceStack.err = os.OpenFile(samServiceStack.delPath, os.O_RDWR|os.O_CREATE, 0755)
 		samServiceStack.lsPipe.WriteString("")
-		log.Println("Opening the Named Pipe as a File...")
+		samServiceStack.Log("Opening the Named Pipe as a File...")
 		samServiceStack.delScan = *bufio.NewScanner(samServiceStack.delPipe)
 		samServiceStack.delScan.Split(bufio.ScanLines)
-		log.Println("Opening the Named Pipe as a Scanner...")
-		log.Println("Created a named Pipe for closing all i2p http services:", samServiceStack.delPath)
+		samServiceStack.Log("Opening the Named Pipe as a Scanner...")
+		samServiceStack.Log("Created a named Pipe for closing all i2p http services:", samServiceStack.delPath)
 	}
 	samServiceStack.up = true
+}
+
+func (samServiceStack *samServices) createService(alias string) {
+	samServiceStack.Log("Appending service to SAM service stack.")
+	samServiceStack.listOfServices = append(samServiceStack.listOfServices, createSamHttpService(samServiceStack.samAddrString, samServiceStack.samPortString, alias))
+}
+
+func (samServiceStack *samServices) createServiceList(samAddr string, samPort string) {
+	samServiceStack.samAddrString = samAddr
+	samServiceStack.samPortString = samPort
+	//samServiceStack.
+    samServiceStack.Log("Established SAM connection")
+	if !samServiceStack.up {
+		samServiceStack.initPipes()
+		samServiceStack.Log("Parent proxy pipes initialized. Parent proxy set to up.")
+	}
+}
+
+//func (samServiceStack *samServices) Blank() {}
+
+func (samServiceStack *samServices) Log(msg ...string) {
+	if verbose {
+		log.Println("LOG: ", msg)
+	}
 }
 
 func (samServiceStack *samServices) Warn(err error) {
@@ -120,7 +143,8 @@ func (samServiceStack *samServices) cleanupServices() {
 	os.RemoveAll(filepath.Join(connectionDirectory, "service"))
 }
 
-func newSamServiceList(samStack *samList) *samServices {
+func createSamServiceList(samAddr string, samPort string) *samServices {
 	var samServiceList samServices
+	samServiceList.createServiceList(samAddr, samPort)
 	return &samServiceList
 }

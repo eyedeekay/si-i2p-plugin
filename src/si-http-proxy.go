@@ -117,8 +117,12 @@ func (proxy *samHttpProxy) Warn(err error, errmsg string, msg ...string) bool {
 	return true
 }
 
-//func (proxy *samHttpProxy) Fatal(err error, errmsg string, msg ...string){
-//}
+/*func (proxy *samHttpProxy) Fatal(err error, errmsg string, msg ...string){
+    if err != nil {
+		defer samServiceStack.cleanupServices()
+		log.Fatal("Fatal: ", err)
+	}
+}*/
 
 func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) *samHttpProxy {
 	var samProxy samHttpProxy

@@ -71,6 +71,12 @@ func (samService *samHttpService) initPipes() {
 
 }
 
+func (samService *samHttpService) Log(msg ...string) {
+	if verbose {
+		log.Println("LOG: ", msg)
+	}
+}
+
 func (samService *samHttpService) Warn(err error) {
 	if err != nil {
 		log.Println("Warning: ", err)
@@ -90,4 +96,9 @@ func (samService *samHttpService) cleanupClient() {
 		url.cleanupDirectory()
 	}
 	os.RemoveAll(filepath.Join(connectionDirectory, samService.host))
+}
+
+func createSamHttpService(samAddr string, samPort string, alias string) samHttpService {
+    var samService samHttpService
+    return samService
 }
