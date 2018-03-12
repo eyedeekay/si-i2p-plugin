@@ -29,3 +29,21 @@ proxy, and once they complete, copy the corresponding logs to misc/logs/.
 The echo server is borrowed from [1kastner's github gist](https://gist.github.com/1kastner/e083f9e813c0464e6a2ec8910553e632)
 and is unaltered so far. Eventually I'll make it print the destination on the
 page.
+
+Attacking the Proxy:
+--------------------
+
+### Software Fingerprinting:
+
+This proxy is trivially distinguishable from the default i2p http proxies in at
+least 2 ways, probably three, maybe more. I doubt I'm going to be able to do
+anything about *all* of them, but the same colluding adversary can identify
+*this proxy* by identifying which resources you *don't* request from their site,
+and which destinations request *only* those neglected resources from their site.
+This probably does not compromise anonymity because they can only link requests
+for resources they own, and those requests will not be similar for resources
+that they do not own.
+
+### Timing Attacks:
+
+Open question, but I'm going to try and break it this way too.
