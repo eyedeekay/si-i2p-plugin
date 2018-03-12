@@ -82,7 +82,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request){
 
     resp, err := client.Do(rq)
     if err != nil {
-        log.Println("Encountered an oddly formed response. Skipping.")
+        log.Println("Encountered an oddly formed response. Skipping.", err)
         //http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
     }else{
 

@@ -24,7 +24,7 @@ bin/si-i2p-plugin:
 
 release:
 	go get -u github.com/eyedeekay/gosam
-	go build "$(GO_COMPILER)" -race -buildmode=pie \
+	go build "$(GO_COMPILER)" -buildmode=pie \
 		-o bin/si-i2p-plugin \
 		./src
 	@echo 'built release'
@@ -137,9 +137,20 @@ docker:
 	docker build --force-rm -f Dockerfiles/Dockerfile -t eyedeekay/si-i2p-plugin .
 
 docker-run:
-	docker run -d \
+	docker run \
 		--cap-drop all \
 		--name si-i2p-plugin \
+		--user sii2pplugindocker \
+		-p 44443:4443 \
+		-t eyedeekay/si-i2p-plugin
+
+docker-run-thirdeye:
+	docker run \
+		--name thirdeye-proxy \
+		--network thirdeye \
+		--network-alias thirdeye-proxy \
+		--hostname thirdeye-proxy \
+		--cap-drop all \
 		--user sii2pplugindocker \
 		-p 44443:4443 \
 		-t eyedeekay/si-i2p-plugin

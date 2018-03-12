@@ -10,18 +10,16 @@ import (
     "strings"
     "syscall"
 
-    "github.com/eyedeekay/gosam"
+    //"github.com/eyedeekay/gosam"
     //"github.com/cryptix/goSam"
 )
 
 type samList struct{
     listOfClients []samHttp
-    samBridgeClient *goSam.Client
-    err error
-    up bool
-
     samAddrString string
     samPortString string
+    err error
+    up bool
 
     sendPath string
     sendPipe *os.File
@@ -97,20 +95,19 @@ func (samStack * samList) initPipes(){
 
 func (samStack *samList) createClient(request string){
     log.Println("Appending client to SAM stack.")
-    samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, samStack.samBridgeClient, request))
+    //samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, samStack.samBridgeClient, request))
+    samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request))
 }
 
 func (samStack *samList) createClientHttp(request *http.Request){
     log.Println("Appending client to SAM stack.")
-    samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, samStack.samBridgeClient, request))
+    samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request))
 }
 
 func (samStack *samList) createSamList(samAddrString string, samPortString string){
     samStack.samAddrString = samAddrString
     samStack.samPortString = samPortString
     log.Println("Requesting a new SAM-based http client")
-    samCombined := samStack.samAddrString + ":" + samStack.samPortString
-    samStack.samBridgeClient, samStack.err = goSam.NewClient(samCombined)
     samStack.Fatal(samStack.err)
     log.Println("Established SAM connection")
     if ! samStack.up {
@@ -219,22 +216,26 @@ func (samStack *samList) cleanupClient(){
         client.cleanupClient()
     }
     samStack.delPipe.Close()
-    err := samStack.samBridgeClient.Close()
-    samStack.Fatal(err)
     os.RemoveAll(filepath.Join(connectionDirectory, "parent"))
 }
 
-func (samStack *samList) Warn(err error) {
+func (samStack *samList) Warn(err error) bool {
 	if err != nil {
-        log.Println("Warning: ", err)
+        log.Println("WARN: ", err)
+        samStack.err = err
+        return true
 	}
+    return false
 }
 
-func (samStack *samList) Fatal(err error) {
+func (samStack *samList) Fatal(err error) bool {
 	if err != nil {
         defer samStack.cleanupClient()
-        log.Fatal("Fatal: ", err)
+        log.Fatal("FATAL: ", err)
+        samStack.err = err
+        return true
 	}
+    return false
 }
 
 func createSamList(samAddr string, samPort string, initAddress string) *samList{

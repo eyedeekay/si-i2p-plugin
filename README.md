@@ -1,6 +1,8 @@
 Destination-Isolating i2p HTTP Proxy(SAM Application)
 =====================================================
 
+*one eepSite, one tunnel.*
+
 This is an i2p SAM application which presents an HTTP proxy(on port 4443 by
 default) that acts as an intermediate between your browser and the i2p network.
 Then it uses the SAM library to create a unique destination for each i2p site
@@ -40,10 +42,9 @@ exist, it's created.
 
 #### Current Concerns:
 
-There's a fair amount of overhead with the generation of all the tunnels and the
-search-select process. I am shaving off time in various places as it becomes
-clear where parts of it can be run in parallel. It's not awesome at retrieving a
-whole bunch of images at a time.
+If it wasn't super, super obvious to everyone, it's really, really easy to tell
+the difference between this proxy and the default i2p/i2pd http proxies and I
+don't think there's anything I can do about that.
 
 I haven't been able to observe any DNS leaks yet, but that doesn't mean they
 aren't there. My plan is to implement some kind of proper URL validation for it.
@@ -51,6 +52,9 @@ aren't there. My plan is to implement some kind of proper URL validation for it.
 Before version 0.21, a framework for generating service tunnels ad-hoc will also
 be in place. This will be used for fuzz-testing the http proxy and the pipe
 proxy. Almost everything will be improved by the availability of this.
+
+I haven't implemented addresshelpers/jump host interaction yet, but I have a
+good idea how to now.
 
 ### The pipes
 
@@ -159,7 +163,8 @@ Version Roadmap:
   * 0.20 - ~~Ready for more mainstream testing~~, ~~should successfully isolate~~
    ~~requests for resources embedded in the retrieved web pages~~ and should be
    able to generate services on the fly by talking to the SAM bridge.
-  * 0.21 - First worthwhile release for people who aren't shell enthusiasts.
+  * 0.21 - Addresshelper. First worthwhile release for people who aren't shell
+  enthusiasts.
 
 Silly Questions I'm asking myself about how I want it to work:
 --------------------------------------------------------------

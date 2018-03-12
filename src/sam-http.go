@@ -5,7 +5,7 @@ import (
     "fmt"
 	"io"
 	"log"
-//    "net"
+    "net"
 	"net/http"
     "os"
     "path/filepath"
@@ -22,8 +22,13 @@ type samHttp struct{
     subCache []samUrl
     err error
 
+    samBridgeClient *goSam.Client
+    samAddrString string
+    samPortString string
+
     transport *http.Transport
     subClient *http.Client
+
     //Timeout time.Duration
     host string
     directory string
@@ -115,12 +120,27 @@ func (samConn *samHttp) initPipes(){
 
 }
 
+func (samConn *samHttp) Dial(network, addr string) (net.Conn, error){
+    samCombined := samConn.samAddrString + ":" + samConn.samPortString
+    samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
+    samConn.Fatal(samConn.err)
+    samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
+    samConn.Warn(samConn.err)
+	return samConn.samBridgeClient.SamConn, nil
+    //return samConn.samBridgeClient.Dial(network, addr)
+}
 
-func (samConn *samHttp) createClient(request string, sam *goSam.Client) {
+func (samConn *samHttp) createClient(request string, samAddrString string, samPortString string) {
+    samConn.samAddrString = samAddrString
+    samConn.samPortString = samPortString
+    samCombined := samConn.samAddrString + ":" + samConn.samPortString
+    samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
+    samConn.Fatal(samConn.err)
     log.Println("Setting Transport")
     log.Println("Setting Dial function")
     samConn.transport = &http.Transport{
-		Dial: sam.Dial,
+		//Dial: samConn.samBridgeClient.Dial,
+        Dial: samConn.Dial,
 	}
     log.Println("Initializing sub-client")
     samConn.subClient = &http.Client{
@@ -129,18 +149,23 @@ func (samConn *samHttp) createClient(request string, sam *goSam.Client) {
 
     if samConn.host == "" {
         samConn.host, samConn.directory = samConn.hostSet(request)
-        //samConn.host, samConn.directory = samConn.getURL(request)
         samConn.initPipes()
     }
-    samConn.writeName(request, sam)
+    samConn.writeName(request)
     samConn.subCache = append(samConn.subCache, newSamUrl(samConn.directory))
 }
 
-func (samConn *samHttp) createClientHttp(request *http.Request, sam *goSam.Client) {
+func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString string, samPortString string) {
+    samConn.samAddrString = samAddrString
+    samConn.samPortString = samPortString
+    samCombined := samConn.samAddrString + ":" + samConn.samPortString
+    samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
+    samConn.Fatal(samConn.err)
     log.Println("Setting Transport")
     log.Println("Setting Dial function")
     samConn.transport = &http.Transport{
-		Dial: sam.Dial,
+		//Dial: samConn.samBridgeClient.Dial,
+        Dial: samConn.Dial,
 	}
     log.Println("Initializing sub-client")
     samConn.subClient = &http.Client{
@@ -149,10 +174,9 @@ func (samConn *samHttp) createClientHttp(request *http.Request, sam *goSam.Clien
 
     if samConn.host == "" {
         samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
-        //samConn.host, samConn.directory = samConn.getURL(request.URL.String())
         samConn.initPipes()
     }
-    samConn.writeName(request.URL.String(), sam)
+    samConn.writeName(request.URL.String()) //, samConn.samBridgeClient)
     samConn.subCache = append(samConn.subCache, newSamUrlHttp(request))
 }
 
@@ -311,36 +335,42 @@ func (samConn *samHttp) readDelete() bool {
     return b
 }
 
-func (samConn *samHttp) writeName(request string, sam *goSam.Client){
+func (samConn *samHttp) writeName(request string){
     if samConn.checkName() {
         samConn.host, samConn.directory = samConn.hostSet(request)
         log.Println("Setting hostname:", samConn.host )
         log.Println("Looking up hostname:", samConn.host )
-        samConn.name, samConn.err = sam.Lookup(samConn.host)
+        samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
         samConn.nameFile.WriteString(samConn.name)
         log.Println("Caching base64 address of:", samConn.host + " " + samConn.name )
-        samConn.id, samConn.base64, samConn.err = sam.CreateStreamSession("")
+        samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
         samConn.idFile.WriteString(fmt.Sprint(samConn.id))
         samConn.Warn(samConn.err)
         log.Println("Tunnel id: ", samConn.id)
         log.Println("Tunnel dest: ", samConn.base64)
         samConn.base64File.WriteString(samConn.base64)
         log.Println("New Connection Name: ", samConn.base64)
+        //log.Println("Connecting Streams: ", samConn.id, " ", samConn.base64)
+        //samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.base64)
+        //samConn.Warn(samConn.err)
     }else{
         samConn.host, samConn.directory = samConn.hostSet(request)
         log.Println("Setting hostname:", samConn.host )
         samConn.initPipes()
         log.Println("Looking up hostname:", samConn.host )
-        samConn.name, samConn.err = sam.Lookup(samConn.host)
+        samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
         log.Println("Caching base64 address of:", samConn.host + " " + samConn.name )
         samConn.nameFile.WriteString(samConn.name)
-        samConn.id, samConn.base64, samConn.err = sam.CreateStreamSession("")
+        samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
         samConn.idFile.WriteString(fmt.Sprint(samConn.id))
         samConn.Warn(samConn.err)
         log.Println("Tunnel id: ", samConn.id)
         log.Println("Tunnel dest: ", samConn.base64)
         samConn.base64File.WriteString(samConn.base64)
         log.Println("New Connection Name: ", samConn.base64)
+        //log.Println("Connecting Streams: ", samConn.id, " ", samConn.base64)
+        //samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.base64)
+        //samConn.Warn(samConn.err)
     }
 }
 
@@ -360,20 +390,26 @@ func (samConn *samHttp) cleanupClient(){
     for _, url := range samConn.subCache {
         url.cleanupDirectory()
     }
+    err := samConn.samBridgeClient.Close()
+    samConn.Fatal(err)
     os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
-func (samConn *samHttp) Warn(err error) {
+func (samConn *samHttp) Warn(err error) bool {
 	if err != nil {
         log.Println("Warning: ", err)
+        return true
 	}
+    return false
 }
 
-func (samConn *samHttp) Fatal(err error) {
+func (samConn *samHttp) Fatal(err error) bool {
 	if err != nil {
         defer samConn.cleanupClient()
         log.Fatal("Fatal: ", err)
+        return true
 	}
+    return false
 }
 
 func exists(path string) (bool, error) {
@@ -383,21 +419,17 @@ func exists(path string) (bool, error) {
     return true, err
 }
 
-func newSamHttp(samAddrString string, samPortString string, sam *goSam.Client, request string) (samHttp){
+func newSamHttp(samAddrString string, samPortString string, request string) (samHttp){
     log.Println("Creating a new SAMv3 Client: ", request)
     var samConn samHttp
-    //samConn.Timeout = time.Duration(600 * time.Second)
-    samConn.createClient(request, sam)
+    samConn.createClient(request, samAddrString, samPortString)
     return samConn
 }
 
-func newSamHttpHttp(samAddrString string, samPortString string, sam *goSam.Client, request *http.Request) (samHttp){
+func newSamHttpHttp(samAddrString string, samPortString string, request *http.Request) (samHttp){
     log.Println("Creating a new SAMv3 Client.")
     var samConn samHttp
     log.Println(request.Host + request.URL.Path)
-    //samConn.Timeout = time.Duration(600 * time.Second)
-    samConn.createClientHttp(request, sam)
-    //client.Do(request)
-    //samConn.createClient(request.URL.String(), sam)
+    samConn.createClientHttp(request, samAddrString, samPortString)
     return samConn
 }
