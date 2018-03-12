@@ -1,8 +1,0 @@
-FROM alpine:edge
-RUN apk update -U && apk add go go-tools go-doc git make musl-dev musl musl-utils
-RUN adduser -s /opt/bin/si-i2p-plugin-static -S -H -D sii2pplugin sii2pplugin
-COPY . /opt/
-RUN chown -R sii2pplugin /opt/
-WORKDIR /opt/
-RUN go get github.com/eyedeekay/gosam
-CMD make build-static

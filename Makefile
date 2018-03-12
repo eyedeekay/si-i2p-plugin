@@ -9,14 +9,14 @@ LOCAL := local/
 VERSION := 0.19
 
 
-COMPILER := "-compiler gccgo"
-GO_COMPILER := "-compiler gc"
-
 build: clean bin/si-i2p-plugin
 
 bin/si-i2p-plugin:
 	go get -u github.com/eyedeekay/gosam
-	go build "$(COMPILER)" \
+	GOOS=linux GOARCH=amd64 go build \
+		-a \
+		-tags netgo \
+		-ldflags '-w -extldflags "-static"' \
 		-o bin/si-i2p-plugin \
 		./src
 	@echo 'built'
@@ -25,14 +25,21 @@ build-arm: bin/si-i2p-plugin-arm
 
 bin/si-i2p-plugin-arm:
 	go get -u github.com/eyedeekay/gosam
-	GOARCH=arm GOARM=7 go build "$(GO_COMPILER)" \
+	GOARCH=arm GOARM=7 go build \
+		-a \
+		-tags netgo \
+		-ldflags '-w -extldflags "-static"' \
+		-buildmode=pie \
 		-o bin/si-i2p-plugin-arm \
 		./src
 	@echo 'built'
 
 release:
 	go get -u github.com/eyedeekay/gosam
-	go build "$(GO_COMPILER)" \
+	GOOS=linux GOARCH=amd64 go build \
+		-a \
+		-tags netgo \
+		-ldflags '-w -extldflags "-static"' \
 		-buildmode=pie \
 		-o bin/si-i2p-plugin \
 		./src
@@ -42,26 +49,12 @@ release:
 debug: build
 	gdb ./bin/si-i2p-plugin
 
-build-static:
-	go get github.com/eyedeekay/gosam
-	go build "$(GO_COMPILER)" -buildmode=pie \
-		-a -ldflags '-extldflags "-static"' \
-		-o bin/si-i2p-plugin-static \
-		./src
-
-build-gccgo-static:
-	go get github.com/eyedeekay/gosam
-	go build "$(COMPILER)" \
-		-gccgoflags -extldflags "-static" -buildmode=pie\
-		-o bin/si-i2p-plugin-static \
-		./src
-
 all:
 	make clobber; \
-	make; \
-	make static; \
+	make release; \
+	make build-arm; \
 	make checkinstall; \
-	make checkinstall-static; \
+	make checkinstall-arm; \
 	make docker
 	make tidy
 
@@ -92,14 +85,9 @@ try: build
 	sleep 1
 	tail -f log | nl
 
-memcheck: release
-	valgrind --track-origins=yes ./bin/si-i2p-plugin -conn-debug=true 1>log 2>err &
-	sleep 2
-	tail -f log | nl
-
 clean:
 	killall si-i2p-plugin; \
-	rm -rf parent ./.*.i2p/ *.i2p/ bin/si-i2p-plugin bin/si-i2p-plugin-static *.html *-pak *err *log static-include static-exclude del recv
+	rm -rf parent ./.*.i2p/ *.i2p/ *.html *-pak *err *log static-include static-exclude del recv
 
 kill:
 	killall si-i2p-plugin; \
@@ -126,30 +114,14 @@ noexit:
 user:
 	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
 
-static:
-	docker rm -f si-i2p-plugin-static; true
-	docker build --force-rm -f Dockerfiles/Dockerfile.static -t eyedeekay/si-i2p-plugin-static .
-	docker run --name si-i2p-plugin-static -t eyedeekay/si-i2p-plugin-static
-	docker cp si-i2p-plugin-static:/opt/bin/si-i2p-plugin-static ./bin/si-i2p-plugin-static
-
-uuser:
-	docker build --force-rm -f Dockerfiles/Dockerfile.uuser -t eyedeekay/si-i2p-plugin-uuser .
-	docker run -d --rm --name si-i2p-plugin-uuser -t eyedeekay/si-i2p-plugin-uuser
-	docker exec -t si-i2p-plugin-uuser tail -n 1 /etc/passwd | tee si-i2p-plugin/passwd
-	docker cp si-i2p-plugin-uuser:/bin/bash-static si-i2p-plugin/bash
-	docker cp si-i2p-plugin-uuser:/bin/busybox si-i2p-plugin/busybox
-	docker rm -f si-i2p-plugin-uuser; docker rmi -f eyedeekay/si-i2p-plugin-uuser
-
 docker:
-	make static
-	make uuser
 	docker build --force-rm -f Dockerfiles/Dockerfile -t eyedeekay/si-i2p-plugin .
 
 docker-run:
 	docker run \
 		--cap-drop all \
 		--name si-i2p-plugin \
-		--user sii2pplugindocker \
+		--user sii2pplugin \
 		-p 44443:4443 \
 		-t eyedeekay/si-i2p-plugin
 
@@ -160,12 +132,12 @@ docker-run-thirdeye:
 		--network-alias thirdeye-proxy \
 		--hostname thirdeye-proxy \
 		--cap-drop all \
-		--user sii2pplugindocker \
+		--user sii2pplugin \
 		-p 44443:4443 \
 		-t eyedeekay/si-i2p-plugin
 
 mps:
-	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep | grep -v https" 2>/dev/null
+	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep | grep -v https" 2> /dev/null
 
 mls:
 	@echo pipes

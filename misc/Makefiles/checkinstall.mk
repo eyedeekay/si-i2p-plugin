@@ -1,4 +1,4 @@
-checkinstall: build postinstall-pak postremove-pak description-pak
+checkinstall: release postinstall-pak postremove-pak description-pak
 	checkinstall --default \
 		--install=no \
 		--fstrans=yes \
@@ -14,14 +14,13 @@ checkinstall: build postinstall-pak postremove-pak description-pak
 		--backup=no \
 		--pakdir=../
 
-checkinstall-static: build postinstall-pak postremove-pak description-pak static-include static-exclude
-	make static
+checkinstall-arm: build-arm postinstall-pak postremove-pak description-pak static-include static-exclude
 	checkinstall --default \
 		--install=no \
 		--fstrans=yes \
 		--maintainer=problemsolver@openmailbox.org \
 		--pkgname="si-i2p-plugin" \
-		--pkgversion="$(VERSION)-static" \
+		--pkgversion="$(VERSION)-arm" \
 		--pkglicense=gpl \
 		--pkggroup=net \
 		--pkgsource=./src/ \
@@ -55,7 +54,7 @@ description-pak:
 	@echo "metadata for fingerprinting purposes" | tee -a description-pak
 
 static-include:
-	@echo 'bin/si-i2p-plugin-static /usr/local/bin/' | tee static-include
+	@echo 'bin/si-i2p-plugin-arm /usr/local/bin/' | tee static-include
 
 static-exclude:
 	@echo 'bin/si-i2p-plugin' | tee static-exclude
