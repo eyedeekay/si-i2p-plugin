@@ -1,0 +1,532 @@
+si-i2p-plugin.go:40: Sam Address: 127.0.0.1
+si-i2p-plugin.go:41: Sam Port: 7656
+si-i2p-plugin.go:42: Proxy Address: 127.0.0.1
+si-i2p-plugin.go:43: Proxy Port: 4443
+si-i2p-plugin.go:44: Working Directory: /home/idk/local-manifest/crypto-manifest/si-i2p-plugin
+si-i2p-plugin.go:45: Debug mode: false
+si-i2p-plugin.go:46: Using HTTP proxy: true
+si-i2p-plugin.go:47: Initial URL: 
+sam-list.go:242: Generating parent proxy structure.
+sam-list.go:244: Parent proxy set to down.
+sam-list.go:109: Requesting a new SAM-based http client
+sam-list.go:111: Established SAM connection
+sam-list.go:43: Creating a connection: parent
+sam-list.go:52: Preparing to create Pipe: parent/send
+sam-list.go:54: checking for problems...
+sam-list.go:56: Opening the Named Pipe as a Scanner...
+sam-list.go:59: Opening the Named Pipe as a Scanner...
+sam-list.go:60: Created a named Pipe for sending requests: parent/send
+sam-list.go:68: Preparing to create Pipe: parent/recv
+sam-list.go:70: checking for problems...
+sam-list.go:73: Created a named Pipe for recieving responses: parent/recv
+sam-list.go:81: Preparing to create Pipe: parent/del
+sam-list.go:83: checking for problems...
+sam-list.go:86: Opening the Named Pipe as a File...
+sam-list.go:89: Opening the Named Pipe as a Scanner...
+sam-list.go:90: Created a named Pipe for closing the connection: parent/del
+sam-list.go:114: Parent proxy pipes initialized. Parent proxy set to up.
+sam-list.go:246: SAM list created
+si-http-proxy.go:107: Starting HTTP proxy on:127.0.0.1:4443
+si-http-proxy.go:110: Connected SAM isolation stack to the HTTP proxy server
+si-http-proxy.go:112: HTTP Proxy prepared
+si-i2p-plugin.go:69: HTTP Proxy Started:127.0.0.1:4443
+si-i2p-plugin.go:74: Created client, starting loop...
+sam-list.go:159: Reading requests:
+si-http-proxy.go:50: Initializing handler handle
+sam-list.go:199: Managing pipes:
+sam-list.go:168: Writing responses:
+si-http-proxy.go:69: 127.0.0.1:40012   GET   http://i2p-projekt.i2p/en/download
+si-http-proxy.go:57: 127.0.0.1:40012   GET   http://i2p-projekt.i2p/en/download
+si-http-proxy.go:74: http://i2p-projekt.i2p/en/download
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+sam-list.go:140: Client pipework for %s not found: Creating. http://i2p-projekt.i2p/en/download
+sam-list.go:96: Appending client to SAM stack.
+sam-http.go:427: Creating a new SAMv3 Client:  http://i2p-projekt.i2p/en/download
+sam-http.go:137: Setting Transport
+sam-http.go:138: Setting Dial function
+sam-http.go:143: Initializing sub-client
+sam-http.go:182: cleanURL Trim 0 http://i2p-projekt.i2p/en/download
+sam-http.go:185: cleanURL Request URL i2p-projekt.i2p/en/download
+sam-http.go:188: cleanURL Trim 2 i2p-projekt.i2p
+sam-http.go:194: Setting up micro-proxy for: http://i2p-projekt.i2p
+sam-http.go:195: in Directory i2p-projekt.i2p/en/download
+sam-http.go:57: Directory Check i2p-projekt.i2p
+sam-http.go:378: seeing if the connection needs a name:
+sam-http.go:182: cleanURL Trim 0 http://i2p-projekt.i2p/en/download
+sam-http.go:185: cleanURL Request URL i2p-projekt.i2p/en/download
+sam-http.go:188: cleanURL Trim 2 i2p-projekt.i2p
+sam-http.go:194: Setting up micro-proxy for: http://i2p-projekt.i2p
+sam-http.go:195: in Directory i2p-projekt.i2p/en/download
+sam-http.go:358: Setting hostname: i2p-projekt.i2p
+sam-http.go:57: Directory Check i2p-projekt.i2p
+sam-http.go:360: Looking up hostname: i2p-projekt.i2p
+sam-http.go:362: Caching base64 address of: i2p-projekt.i2p 8ZAW~KzGFMUEj0pdchy6GQOOZbuzbqpWtiApEj8LHy2~O~58XKxRrA43cA23a9oDpNZDqWhRWEtehSnX5NoCwJcXWWdO1ksKEUim6cQLP-VpQyuZTIIqwSADwgoe6ikxZG0NGvy5FijgxF4EW9zg39nhUNKRejYNHhOBZKIX38qYyXoB8XCVJybKg89aMMPsCT884F0CLBKbHeYhpYGmhE4YW~aV21c5pebivvxeJPWuTBAOmYxAIgJE3fFU-fucQn9YyGUFa8F3t-0Vco-9qVNSEWfgrdXOdKT6orr3sfssiKo3ybRWdTpxycZ6wB4qHWgTSU5A-gOA3ACTCMZBsASN3W5cz6GRZCspQ0HNu~R~nJ8V06Mmw~iVYOu5lDvipmG6-dJky6XRxCedczxMM1GWFoieQ8Ysfuxq-j8keEtaYmyUQme6TcviCEvQsxyVirr~dTC-F8aZ~y2AlG5IJz5KD02nO6TRkI2fgjHhv9OZ9nskh-I2jxAzFP6Is1kyAAAA
+sam-http.go:367: Tunnel id:  713581427
+sam-http.go:368: Tunnel dest:  xDDudBzcfY33IZ4vK~uml4Yqsi-cS4qWrEoOiAbdl2bcIjDMTA0k2iPj1D6jkcBYK0tian7xgEUqJ8byF4H7WUuhuPxstEqXaB8qutXk~gkYHt9Hig0UWERm3wD~SE5Jn0bJdlhm0xY8rOtWA0fWqKEY7-AZpTiOl1vBY1uvZvb9bTX4JMaedcddmMMLltoVSg4kJ7AluxqRQ8L1yNOHrrTiu2NNiTo3wmu17GbUTQsqZId5XPv7O9b6Xo0TS4oJPqDvPJh9Plz-OFLNlKqbv9XsnWUP7z0DewIkyAgvuu9yljl7x6KUsoeK3MJ~GngGqzXraUoMbysW8u4Hl6xMRyQlbXXSG3RAIRxw-eU8VuzL1UNDvC5GqtetH37a7djUYs3IHhv4cUzUZLq5U66Afdxhq5z2i46X0cCQ-kJWsRCwaBGhOaEym1toxdZWkN6h8hALW0x-ED4z9ERVfZW6ZXY5S-wS30gIDtlEWW-PLmkZLzbE9d5k4-yoGNcUw5VWAAAAxdvYN9F5TOeW9kVXzaWxE-0vfZCkOTUR6Epnb5jth1z1pjGGv50PsB-v7YFgfPxcEUN8Vt07ocXxgLCZMzGJtmyAy6DbDG6Fv52UiXkL~GVsigj1g48TdhoPaK7~-j0OLEC7XdALowVTe~rjmVgrUU5uC0dqB6mXMF8dEULvp8Jd4DOHDn-m96nBoqDfm6NQ1nQIVRO3hTgA7OD29TXhILBx~Bk0WbD5fSmR03ygIvdMmr9RHcKBr4xG3wPkRGEBnJoOlrYGxUp9Hui4KSpuAUUUrHjRFNkTbA9nacoH2r93KDiLEsryAKBAtGSvWsZDDZ4tqKa9TcwoywVycvrRLHzDkhimH3KqM49NltCwcJQPQsps
+sam-http.go:370: New Connection Name:  xDDudBzcfY33IZ4vK~uml4Yqsi-cS4qWrEoOiAbdl2bcIjDMTA0k2iPj1D6jkcBYK0tian7xgEUqJ8byF4H7WUuhuPxstEqXaB8qutXk~gkYHt9Hig0UWERm3wD~SE5Jn0bJdlhm0xY8rOtWA0fWqKEY7-AZpTiOl1vBY1uvZvb9bTX4JMaedcddmMMLltoVSg4kJ7AluxqRQ8L1yNOHrrTiu2NNiTo3wmu17GbUTQsqZId5XPv7O9b6Xo0TS4oJPqDvPJh9Plz-OFLNlKqbv9XsnWUP7z0DewIkyAgvuu9yljl7x6KUsoeK3MJ~GngGqzXraUoMbysW8u4Hl6xMRyQlbXXSG3RAIRxw-eU8VuzL1UNDvC5GqtetH37a7djUYs3IHhv4cUzUZLq5U66Afdxhq5z2i46X0cCQ-kJWsRCwaBGhOaEym1toxdZWkN6h8hALW0x-ED4z9ERVfZW6ZXY5S-wS30gIDtlEWW-PLmkZLzbE9d5k4-yoGNcUw5VWAAAAxdvYN9F5TOeW9kVXzaWxE-0vfZCkOTUR6Epnb5jth1z1pjGGv50PsB-v7YFgfPxcEUN8Vt07ocXxgLCZMzGJtmyAy6DbDG6Fv52UiXkL~GVsigj1g48TdhoPaK7~-j0OLEC7XdALowVTe~rjmVgrUU5uC0dqB6mXMF8dEULvp8Jd4DOHDn-m96nBoqDfm6NQ1nQIVRO3hTgA7OD29TXhILBx~Bk0WbD5fSmR03ygIvdMmr9RHcKBr4xG3wPkRGEBnJoOlrYGxUp9Hui4KSpuAUUUrHjRFNkTbA9nacoH2r93KDiLEsryAKBAtGSvWsZDDZ4tqKa9TcwoywVycvrRLHzDkhimH3KqM49NltCwcJQPQsps
+sam-url.go:233: Creating a new cache directory.
+sam-url.go:210: LOG:  [Requesting directory:  i2p-projekt.i2p/en/download/]
+sam-url.go:210: LOG:  [Starting Directory Creation i2p-projekt.i2p/en/download]
+sam-url.go:224: [Directory Check i2p-projekt.i2p/en/download]
+sam-url.go:224: [Checking file i2p-projekt.i2p/en/download/recv]
+sam-url.go:224: [Checking file i2p-projekt.i2p/en/download/time]
+sam-url.go:224: [Checking file i2p-projekt.i2p/en/download/del]
+sam-list.go:143: Checking client requests 1
+sam-list.go:144: of 1
+sam-http.go:182: cleanURL Trim 0 http://i2p-projekt.i2p/en/download
+sam-http.go:185: cleanURL Request URL i2p-projekt.i2p/en/download
+sam-http.go:188: cleanURL Trim 2 i2p-projekt.i2p
+sam-http.go:218: Request host  i2p-projekt.i2p
+sam-http.go:219: Is equal to client host i2p-projekt.i2p
+sam-list.go:146: Client pipework for %s found. http://i2p-projekt.i2p/en/download
+sam-http.go:237: URL passed validation: http://i2p-projekt.i2p/en/download
+sam-http.go:239: Request will be managed in: i2p-projekt.i2p/en/download
+sam-http.go:255: Getting resource http://i2p-projekt.i2p/en/download In  i2p-projekt.i2p/en/download
+si-http-proxy.go:81: Client was retrieved:  i2p-projekt.i2p/en/download
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 1
+sam-http.go:182: cleanURL Trim 0 http://i2p-projekt.i2p/en/download
+sam-http.go:185: cleanURL Request URL i2p-projekt.i2p/en/download
+sam-http.go:188: cleanURL Trim 2 i2p-projekt.i2p
+sam-http.go:218: Request host  i2p-projekt.i2p
+sam-http.go:219: Is equal to client host i2p-projekt.i2p
+sam-list.go:133: Client pipework for %s found. http://i2p-projekt.i2p/en/download
+sam-list.go:134: Request sent
+sam-http.go:264: Seeking Subdirectory i2p-projekt.i2p/en/download
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/en/download : equals : i2p-projekt.i2p/en/download]
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/en/download : equals : i2p-projekt.i2p/en/download]
+sam-url.go:135: Response Status  200
+sam-url.go:210: LOG:  [Setting file in cache]
+sam-url.go:214: [Reading response from proxy]
+sam-url.go:210: LOG:  [Writing files.]
+sam-url.go:210: LOG:  [Retrieval time:  2018-03-12 07:26:10.922638867 -0400 EDT]
+si-http-proxy.go:92: SAM-Provided Tunnel Address: 127.0.0.1:40012
+si-http-proxy.go:93: Response Status: 200 OK
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+si-http-proxy.go:43: Copying headers: User-Agent,MYOB/6.66 (AN/ON)
+si-http-proxy.go:69: 127.0.0.1:40054   GET   http://i2p-projekt.i2p/
+si-http-proxy.go:57: 127.0.0.1:40054   GET   http://i2p-projekt.i2p/
+si-http-proxy.go:74: http://i2p-projekt.i2p/
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 1
+sam-http.go:182: cleanURL Trim 0 http://i2p-projekt.i2p/
+sam-http.go:185: cleanURL Request URL i2p-projekt.i2p/
+sam-http.go:188: cleanURL Trim 2 i2p-projekt.i2p
+sam-http.go:218: Request host  i2p-projekt.i2p
+sam-http.go:219: Is equal to client host i2p-projekt.i2p
+sam-list.go:133: Client pipework for %s found. http://i2p-projekt.i2p/
+sam-list.go:134: Request sent
+sam-http.go:237: URL passed validation: http://i2p-projekt.i2p/
+sam-http.go:239: Request will be managed in: i2p-projekt.i2p/
+sam-http.go:255: Getting resource http://i2p-projekt.i2p/ In  i2p-projekt.i2p/
+si-http-proxy.go:81: Client was retrieved:  i2p-projekt.i2p/
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 1
+sam-http.go:182: cleanURL Trim 0 http://i2p-projekt.i2p/
+sam-http.go:185: cleanURL Request URL i2p-projekt.i2p/
+sam-http.go:188: cleanURL Trim 2 i2p-projekt.i2p
+sam-http.go:218: Request host  i2p-projekt.i2p
+sam-http.go:219: Is equal to client host i2p-projekt.i2p
+sam-list.go:133: Client pipework for %s found. http://i2p-projekt.i2p/
+sam-list.go:134: Request sent
+sam-http.go:264: Seeking Subdirectory i2p-projekt.i2p/en/download
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/ : does not equal : i2p-projekt.i2p/en/download]
+sam-http.go:270: has not been retrieved yet. Setting up: i2p-projekt.i2p/
+sam-url.go:233: Creating a new cache directory.
+sam-url.go:210: LOG:  [Requesting directory:  i2p-projekt.i2p//]
+sam-url.go:210: LOG:  [Starting Directory Creation i2p-projekt.i2p]
+sam-url.go:224: [Directory Check i2p-projekt.i2p]
+sam-url.go:224: [Checking file i2p-projekt.i2p/recv]
+sam-url.go:224: [Checking file i2p-projekt.i2p/time]
+sam-url.go:224: [Checking file i2p-projekt.i2p/del]
+sam-http.go:273: Seeking Subdirectory i2p-projekt.i2p/en/download
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/ : does not equal : i2p-projekt.i2p/en/download]
+sam-http.go:273: Seeking Subdirectory i2p-projekt.i2p/
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/ : equals : i2p-projekt.i2p/]
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/ : equals : i2p-projekt.i2p/]
+sam-url.go:135: Response Status  200
+sam-url.go:210: LOG:  [Setting file in cache]
+sam-url.go:214: [Reading response from proxy]
+sam-url.go:210: LOG:  [Writing files.]
+sam-url.go:210: LOG:  [Retrieval time:  2018-03-12 07:26:16.592798949 -0400 EDT]
+si-http-proxy.go:92: SAM-Provided Tunnel Address: 127.0.0.1:40054
+si-http-proxy.go:93: Response Status: 200 OK
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+si-http-proxy.go:43: Copying headers: User-Agent,MYOB/6.66 (AN/ON)
+si-http-proxy.go:69: 127.0.0.1:40060   GET   http://i2p-projekt.i2p/
+si-http-proxy.go:57: 127.0.0.1:40060   GET   http://i2p-projekt.i2p/
+si-http-proxy.go:74: http://i2p-projekt.i2p/
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 1
+sam-http.go:182: cleanURL Trim 0 http://i2p-projekt.i2p/
+sam-http.go:185: cleanURL Request URL i2p-projekt.i2p/
+sam-http.go:188: cleanURL Trim 2 i2p-projekt.i2p
+sam-http.go:218: Request host  i2p-projekt.i2p
+sam-http.go:219: Is equal to client host i2p-projekt.i2p
+sam-list.go:133: Client pipework for %s found. http://i2p-projekt.i2p/
+sam-list.go:134: Request sent
+sam-http.go:237: URL passed validation: http://i2p-projekt.i2p/
+sam-http.go:239: Request will be managed in: i2p-projekt.i2p/
+sam-http.go:255: Getting resource http://i2p-projekt.i2p/ In  i2p-projekt.i2p/
+si-http-proxy.go:81: Client was retrieved:  i2p-projekt.i2p/
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 1
+sam-http.go:182: cleanURL Trim 0 http://i2p-projekt.i2p/
+sam-http.go:185: cleanURL Request URL i2p-projekt.i2p/
+sam-http.go:188: cleanURL Trim 2 i2p-projekt.i2p
+sam-http.go:218: Request host  i2p-projekt.i2p
+sam-http.go:219: Is equal to client host i2p-projekt.i2p
+sam-list.go:133: Client pipework for %s found. http://i2p-projekt.i2p/
+sam-list.go:134: Request sent
+sam-http.go:264: Seeking Subdirectory i2p-projekt.i2p/en/download
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/ : does not equal : i2p-projekt.i2p/en/download]
+sam-http.go:270: has not been retrieved yet. Setting up: i2p-projekt.i2p/
+sam-url.go:233: Creating a new cache directory.
+sam-url.go:210: LOG:  [Requesting directory:  i2p-projekt.i2p//]
+sam-url.go:210: LOG:  [Starting Directory Creation i2p-projekt.i2p]
+sam-url.go:224: [Directory Check i2p-projekt.i2p]
+sam-url.go:224: [Checking file i2p-projekt.i2p/recv]
+sam-url.go:224: [Checking file i2p-projekt.i2p/time]
+sam-url.go:224: [Checking file i2p-projekt.i2p/del]
+sam-http.go:273: Seeking Subdirectory i2p-projekt.i2p/en/download
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/ : does not equal : i2p-projekt.i2p/en/download]
+sam-http.go:273: Seeking Subdirectory i2p-projekt.i2p/
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/ : equals : i2p-projekt.i2p/]
+sam-url.go:210: LOG:  [Directory /  i2p-projekt.i2p/ : equals : i2p-projekt.i2p/]
+sam-url.go:135: Response Status  200
+sam-url.go:210: LOG:  [Setting file in cache]
+sam-url.go:214: [Reading response from proxy]
+sam-url.go:210: LOG:  [Writing files.]
+sam-url.go:210: LOG:  [Retrieval time:  2018-03-12 07:26:49.605349009 -0400 EDT]
+si-http-proxy.go:92: SAM-Provided Tunnel Address: 127.0.0.1:40060
+si-http-proxy.go:93: Response Status: 200 OK
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+si-http-proxy.go:43: Copying headers: User-Agent,MYOB/6.66 (AN/ON)
+si-http-proxy.go:69: 127.0.0.1:40100   GET   http://inr.i2p/
+si-http-proxy.go:57: 127.0.0.1:40100   GET   http://inr.i2p/
+si-http-proxy.go:74: http://inr.i2p/
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 1
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:222: Request host  inr.i2p
+sam-http.go:223: Is not equal to client host i2p-projekt.i2p
+sam-list.go:140: Client pipework for %s not found: Creating. http://inr.i2p/
+sam-list.go:96: Appending client to SAM stack.
+sam-http.go:427: Creating a new SAMv3 Client:  http://inr.i2p/
+sam-http.go:137: Setting Transport
+sam-http.go:138: Setting Dial function
+sam-http.go:143: Initializing sub-client
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:194: Setting up micro-proxy for: http://inr.i2p
+sam-http.go:195: in Directory inr.i2p/
+sam-http.go:57: Directory Check inr.i2p
+sam-http.go:378: seeing if the connection needs a name:
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:194: Setting up micro-proxy for: http://inr.i2p
+sam-http.go:195: in Directory inr.i2p/
+sam-http.go:358: Setting hostname: inr.i2p
+sam-http.go:57: Directory Check inr.i2p
+sam-http.go:360: Looking up hostname: inr.i2p
+sam-http.go:362: Caching base64 address of: inr.i2p GGB99wXYBnX-wOxQ~Xrvo7AvngoYgifvZZL54ksZWzclcirG7AysqfkAKyv906PxfM4y2DcN2K9m4-D99yFj-1BdnUuIEqfi2yuaaVoWuOffT3h9ne~kZnq3C-wrmczD70Gxk4shvSVxMdUEFvEip8QY4K0R-FiKBsFAfWGTE3b9d-QCzP0H9VP5V-CaYjYVQuMRgMluk9gnoLRipvV7483f~rmGgYX8xwygEAQ3v9P4hrAlJrP0lWJLI1K6KQucP3THIxZ4A9Xxnl0I7EZAT8bHwzschFrcDPYM~DtQdkJTz2VphocbNLfIExTrFt88-xC69WE-fSbaMf9jucT4f5kdpfpRu0kM~am40etxPs8uXGF-L9IXCjgUkJHrWdPHeGhnx-ye2xvUTLO2jyga8iY89Ee3IpqivVUg-iAQJzX9NXC29sf0YzNj8d8mdWRNuzbLSx9CVJ3l1NPJr4k7hmCqf8lBGXNIFZQL4Wez1PPcM4gw0o73gqIxkxvVzVcpAAAA
+sam-http.go:367: Tunnel id:  884987163
+sam-http.go:368: Tunnel dest:  -qkBMhAhQA0txgGwj7GxTosJ8gKPrIrDR47-dHQsuwa2vDlTtSxUjhoNJELwsL8g~oFet5b54SFEjs-zL7rrobyzHgNb3RJdCr2c3y5GDV9K-XIWd9xJBg233IJ~bACYY9UtMj8WRUoe-pP9R10e0V9mYnWaDcSd6q-2QhWI5EjaS2nF8XVl2x5GicYW6Bj~gBv6wllbGY~7Z85zLSzWCmE8XGw2KrvMBO7BG1Fy4Gqh9SfqVa64-erRcJPMr6DOz2LWrxCEu-7SeVbRnutI9yz-bZA893f4YdiAEVuy5hhbADGgoK~lTEa2Kt~mmemjlqiIh3L2QyGb6kD-d8~Ke2LnyV7kfX-MPKeOHsFWCGqe-IBfeyIBGyNo74BDBMJCfzbMrqp0KE3oPQyHCDVBx76n2en~AJfxTSTWpMX~nptNiUnSJJhyeg0LsFrP8PPobFi4IBRVZ-xP8LOnGq-rz2KFO6EUtGQPmGAkSZeKMvQ8zeFHycqeUlzc4wUp32~YAAAAmj1SUpPKTlTBBZdD5M4LMumKm9LzmturIwzAbxHbO7P31gbaqUd8VtsVpY63wEk6zn4wxtD4mkMN4Gg~oTvT6I3V0fbHtkOU6ZS9iLp32ZiBOWOtx0m4n6xyeH2aHdWhp28nk4d-C689oaFwrinvCkZ9n6bR3uaNqZlhvbEnoUmtka4jO74kDtg4T2Pk4TqtLoXPeoDRMYokETB6x13LAE8RAGQEEXSWgchK88Y9NxR5S0TgF~GklwpU4dkeFhdJS4Ne3D5rGJJkKZ8MmAIKWUsxFC1xh7vfzD24emy~sBflWr0dvDlbbvMIkUMhB3GkDMozR3DyAbjT9plOJKoAfFXAOvQfgv4iFEUnm77MtMhutx9S
+sam-http.go:370: New Connection Name:  -qkBMhAhQA0txgGwj7GxTosJ8gKPrIrDR47-dHQsuwa2vDlTtSxUjhoNJELwsL8g~oFet5b54SFEjs-zL7rrobyzHgNb3RJdCr2c3y5GDV9K-XIWd9xJBg233IJ~bACYY9UtMj8WRUoe-pP9R10e0V9mYnWaDcSd6q-2QhWI5EjaS2nF8XVl2x5GicYW6Bj~gBv6wllbGY~7Z85zLSzWCmE8XGw2KrvMBO7BG1Fy4Gqh9SfqVa64-erRcJPMr6DOz2LWrxCEu-7SeVbRnutI9yz-bZA893f4YdiAEVuy5hhbADGgoK~lTEa2Kt~mmemjlqiIh3L2QyGb6kD-d8~Ke2LnyV7kfX-MPKeOHsFWCGqe-IBfeyIBGyNo74BDBMJCfzbMrqp0KE3oPQyHCDVBx76n2en~AJfxTSTWpMX~nptNiUnSJJhyeg0LsFrP8PPobFi4IBRVZ-xP8LOnGq-rz2KFO6EUtGQPmGAkSZeKMvQ8zeFHycqeUlzc4wUp32~YAAAAmj1SUpPKTlTBBZdD5M4LMumKm9LzmturIwzAbxHbO7P31gbaqUd8VtsVpY63wEk6zn4wxtD4mkMN4Gg~oTvT6I3V0fbHtkOU6ZS9iLp32ZiBOWOtx0m4n6xyeH2aHdWhp28nk4d-C689oaFwrinvCkZ9n6bR3uaNqZlhvbEnoUmtka4jO74kDtg4T2Pk4TqtLoXPeoDRMYokETB6x13LAE8RAGQEEXSWgchK88Y9NxR5S0TgF~GklwpU4dkeFhdJS4Ne3D5rGJJkKZ8MmAIKWUsxFC1xh7vfzD24emy~sBflWr0dvDlbbvMIkUMhB3GkDMozR3DyAbjT9plOJKoAfFXAOvQfgv4iFEUnm77MtMhutx9S
+sam-url.go:233: Creating a new cache directory.
+sam-url.go:210: LOG:  [Requesting directory:  inr.i2p//]
+sam-url.go:210: LOG:  [Starting Directory Creation inr.i2p]
+sam-url.go:224: [Directory Check inr.i2p]
+sam-url.go:224: [Checking file inr.i2p/recv]
+sam-url.go:224: [Checking file inr.i2p/time]
+sam-url.go:224: [Checking file inr.i2p/del]
+sam-list.go:143: Checking client requests 1
+sam-list.go:144: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:222: Request host  inr.i2p
+sam-http.go:223: Is not equal to client host i2p-projekt.i2p
+sam-list.go:143: Checking client requests 2
+sam-list.go:144: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:218: Request host  inr.i2p
+sam-http.go:219: Is equal to client host inr.i2p
+sam-list.go:146: Client pipework for %s found. http://inr.i2p/
+sam-http.go:237: URL passed validation: http://inr.i2p/
+sam-http.go:239: Request will be managed in: inr.i2p/
+sam-http.go:255: Getting resource http://inr.i2p/ In  inr.i2p/
+si-http-proxy.go:81: Client was retrieved:  inr.i2p/
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:222: Request host  inr.i2p
+sam-http.go:223: Is not equal to client host i2p-projekt.i2p
+sam-list.go:130: Checking client requests 2
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:218: Request host  inr.i2p
+sam-http.go:219: Is equal to client host inr.i2p
+sam-list.go:133: Client pipework for %s found. http://inr.i2p/
+sam-list.go:134: Request sent
+sam-http.go:264: Seeking Subdirectory inr.i2p/
+sam-url.go:210: LOG:  [Directory /  inr.i2p/ : equals : inr.i2p/]
+sam-url.go:210: LOG:  [Directory /  inr.i2p/ : equals : inr.i2p/]
+sam-url.go:135: Response Status  200
+sam-url.go:210: LOG:  [Setting file in cache]
+sam-url.go:214: [Reading response from proxy]
+sam-url.go:210: LOG:  [Writing files.]
+sam-url.go:210: LOG:  [Retrieval time:  2018-03-12 07:27:15.476792438 -0400 EDT]
+si-http-proxy.go:92: SAM-Provided Tunnel Address: 127.0.0.1:40100
+si-http-proxy.go:93: Response Status: 200 OK
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+si-http-proxy.go:43: Copying headers: User-Agent,MYOB/6.66 (AN/ON)
+si-http-proxy.go:69: 127.0.0.1:40114   GET   http://inr.i2p/
+si-http-proxy.go:57: 127.0.0.1:40114   GET   http://inr.i2p/
+si-http-proxy.go:74: http://inr.i2p/
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:222: Request host  inr.i2p
+sam-http.go:223: Is not equal to client host i2p-projekt.i2p
+sam-list.go:130: Checking client requests 2
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:218: Request host  inr.i2p
+sam-http.go:219: Is equal to client host inr.i2p
+sam-list.go:133: Client pipework for %s found. http://inr.i2p/
+sam-list.go:134: Request sent
+sam-http.go:237: URL passed validation: http://inr.i2p/
+sam-http.go:239: Request will be managed in: inr.i2p/
+sam-http.go:255: Getting resource http://inr.i2p/ In  inr.i2p/
+si-http-proxy.go:81: Client was retrieved:  inr.i2p/
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:222: Request host  inr.i2p
+sam-http.go:223: Is not equal to client host i2p-projekt.i2p
+sam-list.go:130: Checking client requests 2
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/
+sam-http.go:185: cleanURL Request URL inr.i2p/
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:218: Request host  inr.i2p
+sam-http.go:219: Is equal to client host inr.i2p
+sam-list.go:133: Client pipework for %s found. http://inr.i2p/
+sam-list.go:134: Request sent
+sam-http.go:264: Seeking Subdirectory inr.i2p/
+sam-url.go:210: LOG:  [Directory /  inr.i2p/ : equals : inr.i2p/]
+sam-url.go:210: LOG:  [Directory /  inr.i2p/ : equals : inr.i2p/]
+sam-url.go:135: Response Status  200
+sam-url.go:210: LOG:  [Setting file in cache]
+sam-url.go:214: [Reading response from proxy]
+sam-url.go:210: LOG:  [Writing files.]
+sam-url.go:210: LOG:  [Retrieval time:  2018-03-12 07:27:17.61841806 -0400 EDT]
+si-http-proxy.go:92: SAM-Provided Tunnel Address: 127.0.0.1:40114
+si-http-proxy.go:93: Response Status: 200 OK
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+si-http-proxy.go:43: Copying headers: User-Agent,MYOB/6.66 (AN/ON)
+si-http-proxy.go:69: 127.0.0.1:40116   GET   http://inr.i2p/latest
+si-http-proxy.go:57: 127.0.0.1:40116   GET   http://inr.i2p/latest
+si-http-proxy.go:74: http://inr.i2p/latest
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/latest
+sam-http.go:185: cleanURL Request URL inr.i2p/latest
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:222: Request host  inr.i2p
+sam-http.go:223: Is not equal to client host i2p-projekt.i2p
+sam-list.go:130: Checking client requests 2
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/latest
+sam-http.go:185: cleanURL Request URL inr.i2p/latest
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:218: Request host  inr.i2p
+sam-http.go:219: Is equal to client host inr.i2p
+sam-list.go:133: Client pipework for %s found. http://inr.i2p/latest
+sam-list.go:134: Request sent
+sam-http.go:237: URL passed validation: http://inr.i2p/latest
+sam-http.go:239: Request will be managed in: inr.i2p/latest
+sam-http.go:255: Getting resource http://inr.i2p/latest In  inr.i2p/latest
+si-http-proxy.go:81: Client was retrieved:  inr.i2p/latest
+sam-list.go:130: Checking client requests 1
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/latest
+sam-http.go:185: cleanURL Request URL inr.i2p/latest
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:222: Request host  inr.i2p
+sam-http.go:223: Is not equal to client host i2p-projekt.i2p
+sam-list.go:130: Checking client requests 2
+sam-list.go:131: of 2
+sam-http.go:182: cleanURL Trim 0 http://inr.i2p/latest
+sam-http.go:185: cleanURL Request URL inr.i2p/latest
+sam-http.go:188: cleanURL Trim 2 inr.i2p
+sam-http.go:218: Request host  inr.i2p
+sam-http.go:219: Is equal to client host inr.i2p
+sam-list.go:133: Client pipework for %s found. http://inr.i2p/latest
+sam-list.go:134: Request sent
+sam-http.go:264: Seeking Subdirectory inr.i2p/
+sam-url.go:210: LOG:  [Directory /  inr.i2p/latest : does not equal : inr.i2p/]
+sam-http.go:270: has not been retrieved yet. Setting up: inr.i2p/latest
+sam-url.go:233: Creating a new cache directory.
+sam-url.go:210: LOG:  [Requesting directory:  inr.i2p/latest/]
+sam-url.go:210: LOG:  [Starting Directory Creation inr.i2p/latest]
+sam-url.go:224: [Directory Check inr.i2p/latest]
+sam-url.go:224: [Checking file inr.i2p/latest/recv]
+sam-url.go:224: [Checking file inr.i2p/latest/time]
+sam-url.go:224: [Checking file inr.i2p/latest/del]
+sam-http.go:273: Seeking Subdirectory inr.i2p/
+sam-url.go:210: LOG:  [Directory /  inr.i2p/latest : does not equal : inr.i2p/]
+sam-http.go:273: Seeking Subdirectory inr.i2p/latest
+sam-url.go:210: LOG:  [Directory /  inr.i2p/latest : equals : inr.i2p/latest]
+sam-url.go:210: LOG:  [Directory /  inr.i2p/latest : equals : inr.i2p/latest]
+sam-url.go:135: Response Status  200
+sam-url.go:210: LOG:  [Setting file in cache]
+sam-url.go:214: [Reading response from proxy]
+sam-url.go:210: LOG:  [Writing files.]
+sam-url.go:210: LOG:  [Retrieval time:  2018-03-12 07:27:21.696315396 -0400 EDT]
+si-http-proxy.go:92: SAM-Provided Tunnel Address: 127.0.0.1:40116
+si-http-proxy.go:93: Response Status: 200 OK
+si-http-proxy.go:34: Sanitizing headers: Accept
+si-http-proxy.go:34: Sanitizing headers: Accept-Encoding
+si-http-proxy.go:34: Sanitizing headers: Keep-Alive
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authenticate
+si-http-proxy.go:34: Sanitizing headers: Proxy-Authorization
+si-http-proxy.go:34: Sanitizing headers: Proxy-Connection
+si-http-proxy.go:34: Sanitizing headers: Te
+si-http-proxy.go:34: Sanitizing headers: Trailers
+si-http-proxy.go:34: Sanitizing headers: Transfer-Encoding
+si-http-proxy.go:34: Sanitizing headers: Upgrade
+si-http-proxy.go:34: Sanitizing headers: X-Forwarded-For
+si-http-proxy.go:43: Copying headers: User-Agent,MYOB/6.66 (AN/ON)

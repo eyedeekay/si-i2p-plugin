@@ -73,26 +73,55 @@ test-proxy: test-realcurl test-http test-curl test-curldiff test-httpdiff test-h
 
 test-curl:
 	@echo "Test the http proxy in as simple a way as possible"
-	/usr/bin/curl -x 127.0.0.1:4443 i2p-projekt.i2p
+	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 i2p-projekt.i2p
 
 test-http:
 	@echo "Test the http proxy in as simple a way as possible"
-	/usr/bin/curl -x 127.0.0.1:4443 http://i2p-projekt.i2p
+	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://i2p-projekt.i2p
 
 test-realcurl:
-	/usr/bin/curl -x 127.0.0.1:4443 http://i2p-projekt.i2p/en/download
+	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://i2p-projekt.i2p/en/download
 
 test-curldiff:
 	@echo "Test the http proxy in as simple a way as possible"
-	/usr/bin/curl -x 127.0.0.1:4443 inr.i2p
+	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 inr.i2p
 
 test-httpdiff:
 	@echo "Test the http proxy in as simple a way as possible"
-	/usr/bin/curl -x 127.0.0.1:4443 http://inr.i2p
+	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://inr.i2p
 
 test-httpdiffsd:
 	@echo "Test the http proxy in as simple a way as possible"
-	/usr/bin/curl -x 127.0.0.1:4443 http://inr.i2p/latest
+	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://inr.i2p/latest
+
+test-proxy-time: clean-time test-realcurl-time test-http-time test-curl-time test-curldiff-time test-httpdiff-time test-httpdiffsd-time
+
+clean-time:
+	 rm -f misc/timed-test-newproxy.txt
+
+test-curl-time:
+	@echo "timing request to i2p-projekt.i2p/ via curl" | tee -a misc/timed-test-newproxy.txt
+	/usr/bin/curl -o /dev/null -w "@misc/curl-format.txt" -x 127.0.0.1:4443 i2p-projekt.i2p | tee -a misc/timed-test-newproxy.txt
+
+test-http-time:
+	@echo "timing request to http://i2p-projekt.i2p/ via curl" | tee -a misc/timed-test-newproxy.txt
+	/usr/bin/curl -o /dev/null -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://i2p-projekt.i2p | tee -a misc/timed-test-newproxy.txt
+
+test-realcurl-time:
+	@echo "timing request to http://i2p-projekt.i2p/en/download via curl" | tee -a misc/timed-test-newproxy.txt
+	/usr/bin/curl -o /dev/null -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://i2p-projekt.i2p/en/download | tee -a misc/timed-test-newproxy.txt
+
+test-curldiff-time:
+	@echo "timing request to inr.i2p/ via curl" | tee -a misc/timed-test-newproxy.txt
+	/usr/bin/curl -o /dev/null -w "@misc/curl-format.txt" -x 127.0.0.1:4443 inr.i2p | tee -a misc/timed-test-newproxy.txt
+
+test-httpdiff-time:
+	@echo "timing request to http://inr.i2p/ via curl" | tee -a misc/timed-test-newproxy.txt
+	/usr/bin/curl -o /dev/null -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://inr.i2p | tee -a misc/timed-test-newproxy.txt
+
+test-httpdiffsd-time:
+	@echo "timing request to http://inr.i2p/latest via curl" | tee -a misc/timed-test-newproxy.txt
+	/usr/bin/curl -o /dev/null -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://inr.i2p/latest | tee -a misc/timed-test-newproxy.txt
 
 test-browser:
 	http_proxy=http://127.0.0.1:4443 surf http://inr.i2p
