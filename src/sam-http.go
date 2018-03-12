@@ -137,7 +137,6 @@ func (samConn *samHttp) createClient(request string, samAddrString string, samPo
 	samConn.Log("Setting Transport")
 	samConn.Log("Setting Dial function")
 	samConn.transport = &http.Transport{
-		//Dial: samConn.samBridgeClient.Dial,
 		Dial: samConn.Dial,
 	}
 	samConn.Log("Initializing sub-client")
@@ -162,7 +161,6 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 	samConn.Log("Setting Transport")
 	samConn.Log("Setting Dial function")
 	samConn.transport = &http.Transport{
-		//Dial: samConn.samBridgeClient.Dial,
 		Dial: samConn.Dial,
 	}
 	samConn.Log("Initializing sub-client")
@@ -253,7 +251,6 @@ func (samConn *samHttp) sendRequest(request string) (*http.Response, error) {
 func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, string) {
 	r, dir := samConn.getURL(request.URL.String())
 	samConn.Log("Getting resource", r, "In ", dir)
-	//samConn.Log("In ", dir)
 	return samConn.subClient, dir
 }
 
@@ -350,9 +347,6 @@ func (samConn *samHttp) writeName(request string) {
 		samConn.Log("Tunnel dest: ", samConn.base64)
 		samConn.base64File.WriteString(samConn.base64)
 		samConn.Log("New Connection Name: ", samConn.base64)
-		//samConn.Log("Connecting Streams: ", samConn.id, " ", samConn.base64)
-		//samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.base64)
-		//samConn.Warn(samConn.err)
 	} else {
 		samConn.host, samConn.directory = samConn.hostSet(request)
 		samConn.Log("Setting hostname:", samConn.host)
@@ -368,9 +362,6 @@ func (samConn *samHttp) writeName(request string) {
 		samConn.Log("Tunnel dest: ", samConn.base64)
 		samConn.base64File.WriteString(samConn.base64)
 		samConn.Log("New Connection Name: ", samConn.base64)
-		//samConn.Log("Connecting Streams: ", samConn.id, " ", samConn.base64)
-		//samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.base64)
-		//samConn.Warn(samConn.err)
 	}
 }
 

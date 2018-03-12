@@ -71,6 +71,10 @@ func (samService *samHttpService) initPipes() {
 
 }
 
+func (samService *samHttpService) serviceCheck(alias string) bool {
+    return false
+}
+
 func (samService *samHttpService) Log(msg ...string) {
 	if verbose {
 		log.Println("LOG: ", msg)
@@ -99,6 +103,6 @@ func (samService *samHttpService) cleanupClient() {
 }
 
 func createSamHttpService(samAddr string, samPort string, alias string) samHttpService {
-    var samService samHttpService
-    return samService
+	var samService samHttpService
+	return samService
 }

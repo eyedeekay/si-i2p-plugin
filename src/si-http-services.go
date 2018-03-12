@@ -99,15 +99,56 @@ func (samServiceStack *samServices) createService(alias string) {
 	samServiceStack.listOfServices = append(samServiceStack.listOfServices, createSamHttpService(samServiceStack.samAddrString, samServiceStack.samPortString, alias))
 }
 
+func (samServiceStack *samServices) findService(request string) *samHttpService {
+	found := false
+	var s samHttpService
+	for index, service := range samServiceStack.listOfServices {
+		log.Println("Checking client requests", index+1)
+		log.Println("of", len(samServiceStack.listOfServices))
+		if service.serviceCheck(request) {
+			samServiceStack.Log("Client pipework for %s found.", request)
+			samServiceStack.Log("Request sent")
+			found = true
+			return &service
+		}
+	}
+	if !found {
+		samServiceStack.Log("Client pipework for %s not found: Creating.", request)
+		samServiceStack.createService(request)
+		for index, service := range samServiceStack.listOfServices {
+			log.Println("Checking client requests", index+1)
+			log.Println("of", len(samServiceStack.listOfServices))
+			if service.serviceCheck(request) {
+				samServiceStack.Log("Client pipework for %s found.", request)
+				s = service
+			}
+		}
+	}
+	return &s
+}
+
 func (samServiceStack *samServices) createServiceList(samAddr string, samPort string) {
 	samServiceStack.samAddrString = samAddr
 	samServiceStack.samPortString = samPort
 	//samServiceStack.
-    samServiceStack.Log("Established SAM connection")
+	samServiceStack.Log("Established SAM connection")
 	if !samServiceStack.up {
 		samServiceStack.initPipes()
 		samServiceStack.Log("Parent proxy pipes initialized. Parent proxy set to up.")
 	}
+}
+
+func (samServiceStack *samServices) readDelete() bool {
+	samServiceStack.Log("Managing pipes:")
+	for samServiceStack.delScan.Scan() {
+		if samServiceStack.delScan.Text() == "y" || samServiceStack.delScan.Text() == "Y" {
+			defer samServiceStack.cleanupServices()
+			return true
+		} else {
+			return false
+		}
+	}
+	return false
 }
 
 //func (samServiceStack *samServices) Blank() {}
