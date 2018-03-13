@@ -2,24 +2,34 @@ package main
 
 import (
 	"bufio"
+    //"fmt"
 	//"io"
 	"log"
+    //"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	//"strings"
 	"syscall"
+    //"time"
 	//"net/url"
+
 	"github.com/eyedeekay/gosam"
+
 )
 
 type samHttpService struct {
 	subCache        []samUrl
+    err             error
+
 	samBridgeClient *goSam.Client
-	err             error
+	samAddrString   string
+	samPortString   string
 
 	transport *http.Transport
 	subClient *http.Client
+
+
 	host      string
 	directory string
 
