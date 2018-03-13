@@ -12,12 +12,11 @@ import (
 )
 
 type samServices struct {
-	listOfServices  []samHttpService
-	err             error
-	up              bool
-
-	samAddrString string
-	samPortString string
+	listOfServices []samHttpService
+	samAddrString  string
+	samPortString  string
+	err            error
+	up             bool
 
 	genrPath string
 	genrPipe *os.File
@@ -136,7 +135,7 @@ func (samServiceStack *samServices) createServiceList(samAddr string, samPort st
 }
 
 func (samServiceStack *samServices) sendServiceRequest(index string) {
-    samServiceStack.findService(index).sendContent(index)
+	samServiceStack.findService(index).sendContent(index)
 }
 
 func (samServiceStack *samServices) responsify(input string) io.Reader {
@@ -154,8 +153,8 @@ func (samServiceStack *samServices) readRequest() {
 	}
 }
 
-func (samServiceStack *samServices) writeDetails(details string) bool{
-    b := false
+func (samServiceStack *samServices) writeDetails(details string) bool {
+	b := false
 	if details != "" {
 		samServiceStack.Log("Got response:")
 		io.Copy(samServiceStack.lsPipe, samServiceStack.responsify(details))

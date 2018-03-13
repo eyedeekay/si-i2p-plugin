@@ -14,9 +14,9 @@ import (
 )
 
 type samHttpService struct {
-	subCache []samUrl
-    samBridgeClient *goSam.Client
-	err      error
+	subCache        []samUrl
+	samBridgeClient *goSam.Client
+	err             error
 
 	transport *http.Transport
 	subClient *http.Client
@@ -30,6 +30,14 @@ type samHttpService struct {
 	namePath string
 	nameFile *os.File
 	name     string
+
+	idPath string
+	idFile *os.File
+	id     int32
+
+	base64Path string
+	base64File *os.File
+	base64     string
 }
 
 func (samService *samHttpService) initPipes() {
@@ -80,11 +88,11 @@ func (samService *samHttpService) sendContent(index string) (*http.Response, err
 	samService.Log("Pumping result to top of parent pipe")
 	samService.copyRequest(resp, dir)
 	return resp, err*/
-    return nil, nil
+	return nil, nil
 }
 
 func (samService *samHttpService) serviceCheck(alias string) bool {
-    return false
+	return false
 }
 
 func (samService *samHttpService) scannerText() (string, error) {
@@ -134,8 +142,8 @@ func (samConn *samHttp) writeName(request string) {
 }
 */
 
-func (samService *samHttpService) printDetails() string{
-    s, e := samService.scannerText()
+func (samService *samHttpService) printDetails() string {
+	s, e := samService.scannerText()
 	samService.Fatal(e, "Response Retrieval Error", "Retrieving Responses")
 	return s
 }
@@ -164,7 +172,7 @@ func (samService *samHttpService) cleanupClient() {
 	for _, url := range samService.subCache {
 		url.cleanupDirectory()
 	}
-    err := samService.samBridgeClient.Close()
+	err := samService.samBridgeClient.Close()
 	samService.Fatal(err, "SAM Service Connection Closing Error", "Closing SAM service Connection")
 	os.RemoveAll(filepath.Join(connectionDirectory, samService.host))
 }
