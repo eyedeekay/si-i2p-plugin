@@ -24,13 +24,14 @@ What works so far:
 Again, *slightly less experimental*, but currently it is possible to set
 your web browser's HTTP proxy to localhost:4443 and use it to browse eepSites.
 I've mostly managed to stop all the bugs and hangs that would keep someone from
-using it successfully.
+using it successfully and I'm even pretty sure it's mostly safe at this point.
+It should at least fail early if something bad happens.
 
-This is pretty exciting though, when a site contains a resource which it pulls
-from another site, the proxy requests that down it's own tunnel, and not via the
-tunnel associated with the site that contains the resource. If a tunnel doesn't
-exist, it's created. This can be used to identify that you are using this
-version of the proxy though, but not much else.
+I am now fairly certain that it can't be forced to retrieve URL's outside the
+i2p network under normal circumstances in properly configured browsers. Intrepid
+observers may find it fun to start testing things now. Funnily enough, it would
+have crashed under vanilla firefox last week because the captive portal shit.
+Failed closed though, and now it's handled more gracefully.
 
 #### Examples
 
@@ -54,6 +55,11 @@ ridiculous, like presume you're using a captive portal and attempt to direct
 you to a captive portal login assistance page. God captive portals are fucking
 stupid. Who knew? Seriously, stay off my clearly labeled sites.
 
+I am now fairly certain that it can't be forced to retrieve URL's outside the
+i2p network in properly configured browsers under normal circumstances. Remember
+to set [*] Use this proxy server for all protocols or other relevant browser
+configurations. This appears to be the default behavior for surf and uzbl.
+
 Before version 0.21, a framework for generating service tunnels ad-hoc will also
 be in place. This will be used for fuzz-testing the http proxy and the pipe
 proxy. Almost everything will be improved by the availability of this.
@@ -62,8 +68,9 @@ I haven't implemented addresshelpers/jump host interaction yet, but I have a
 good idea how to now.
 
 It would appear that, since it doesn't have to do lookups for sites that it has
-already visited, this proxy can sometimes be faster than the standard http
-proxy.
+already created a tunnel for, this proxy can sometimes be faster than the
+standard http proxy. I'm not sure how to confirm this but will attempt to
+correlate it with longitudinal testing.
 
 ### The pipes
 

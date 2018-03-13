@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+    "strings"
 )
 
 type samHttpProxy struct {
@@ -55,9 +56,18 @@ func (proxy *samHttpProxy) prepare() {
 
 func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request) bool {
 	log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
-	/*if rq.URL.Scheme != "http" && rq.URL.Scheme != "https" {
-	  //Don't delete. Eventually it will have a better way to handle https.
-	*/
+    test := strings.Split(rq.URL.String(), ".i2p")
+    if len(test) < 2 {
+        proxy.Log("Non i2p domain detected. Skipping.")//Outproxy support? Might be cool.
+        return false
+    }else{
+        trim := strings.Replace(test[0], "https://", "", -1)
+        t := strings.Replace(trim, "http://", "", -1)
+        n := strings.Split(t, "/")
+        if len(n) > 1 {
+            return false
+        }
+    }
 	if rq.URL.Scheme != "http" {
 		var msg string
 		if rq.URL.Scheme != "https" {
@@ -74,7 +84,7 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 }
 
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
-	log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
+	//log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
 
 	if !proxy.checkURLType(rW, rq) {
 		return

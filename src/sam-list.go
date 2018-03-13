@@ -133,6 +133,14 @@ func (samStack *samList) findClient(request string) *samHttp {
     if len(test) < 2 {
         samStack.Log("Non i2p domain detected. Skipping.")//Outproxy support? Might be cool.
         return nil
+    }else{
+        trim := strings.Replace(test[0], "https://", "", -1)
+        t := strings.Replace(trim, "http://", "", -1)
+        n := strings.Split(t, "/")
+        if len(n) > 1 {
+            samStack.Log(".i2p in path, not domain detected. Skipping.")
+            return nil
+        }
     }
 	for index, client := range samStack.listOfClients {
 		log.Println("Checking client requests", index+1)
