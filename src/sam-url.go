@@ -156,7 +156,7 @@ func (subUrl *samUrl) dealResponse(response *http.Response) {
 
 func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
 	defer response.Body.Close()
-    header := response.Header
+	header := response.Header
 	body, err := ioutil.ReadAll(response.Body)
 	if subUrl.Warn(err, "Response Read Error", "Reading response from proxy") {
 		subUrl.Log("Writing files.")

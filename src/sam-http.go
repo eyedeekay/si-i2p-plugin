@@ -411,17 +411,6 @@ func (samConn *samHttp) Fatal(err error, errmsg string, msg ...string) {
 	}
 }
 
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return true, err
-}
-
 func newSamHttp(samAddrString string, samPortString string, request string) samHttp {
 	log.Println("Creating a new SAMv3 Client: ", request)
 	var samConn samHttp

@@ -4,7 +4,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-    "strings"
+	"strings"
 )
 
 type samHttpProxy struct {
@@ -58,33 +58,33 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 
 	log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
 
-    test := strings.Split(rq.URL.String(), ".i2p")
+	test := strings.Split(rq.URL.String(), ".i2p")
 
-    if len(test) < 2 {
-        msg := "Non i2p domain detected. Skipping."
-        proxy.Log(msg) //Outproxy support? Might be cool.
-        http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-        return false
-    }else{
-        n := strings.Split(strings.Replace(strings.Replace(test[0], "https://", "", -1), "http://", "", -1), "/")
-        if len(n) > 1 {
-            msg := "Non i2p domain detected, possible attempt to impersonate i2p domain in path. Skipping."
-            proxy.Log(msg) //Outproxy support? Might be cool. Riskier here.
-            http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-            return false
-        }
-    }
+	if len(test) < 2 {
+		msg := "Non i2p domain detected. Skipping."
+		proxy.Log(msg) //Outproxy support? Might be cool.
+		http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+		return false
+	} else {
+		n := strings.Split(strings.Replace(strings.Replace(test[0], "https://", "", -1), "http://", "", -1), "/")
+		if len(n) > 1 {
+			msg := "Non i2p domain detected, possible attempt to impersonate i2p domain in path. Skipping."
+			proxy.Log(msg) //Outproxy support? Might be cool. Riskier here.
+			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+			return false
+		}
+	}
 	if rq.URL.Scheme != "http" {
 		if rq.URL.Scheme == "https" {
 			msg := "Dropping https request for now, assumed attempt to get clearnet resource." + rq.URL.Scheme
-            proxy.Log(msg)
-            http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-            return false
+			proxy.Log(msg)
+			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+			return false
 		} else {
 			msg := "unsupported protocal scheme " + rq.URL.Scheme
-            proxy.Log(msg)
-            http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-            return false
+			proxy.Log(msg)
+			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+			return false
 		}
 	} else {
 		return true
@@ -105,33 +105,33 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	client, dir := proxy.client.sendClientRequestHttp(rq)
 
-    proxy.Log("Retrieving client")
+	proxy.Log("Retrieving client")
 
-    if client != nil {
-        proxy.Log("Client was retrieved: ", dir)
+	if client != nil {
+		proxy.Log("Client was retrieved: ", dir)
 
-        resp, err := client.Do(rq)
-        if err != nil {
-            proxy.Warn(err, "Encountered an oddly formed response. Skipping.", "Processing Response")
-            http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-        } else {
+		resp, err := client.Do(rq)
+		if err != nil {
+			proxy.Warn(err, "Encountered an oddly formed response. Skipping.", "Processing Response")
+			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+		} else {
 
-            r := proxy.client.copyRequest(rq, resp, dir)
+			r := proxy.client.copyRequest(rq, resp, dir)
 
-            if r != nil {
-                proxy.Log("SAM-Provided Tunnel Address:", rq.RemoteAddr)
-                proxy.Log("Response Status:", r.Status)
+			if r != nil {
+				proxy.Log("SAM-Provided Tunnel Address:", rq.RemoteAddr)
+				proxy.Log("Response Status:", r.Status)
 
-                proxy.delHopHeaders(r.Header)
+				proxy.delHopHeaders(r.Header)
 
-                proxy.copyHeader(rW.Header(), r.Header)
-                rW.WriteHeader(r.StatusCode)
-                io.Copy(rW, r.Body)
-            }
-        }
-    }else{
-        proxy.Log(dir)
-    }
+				proxy.copyHeader(rW.Header(), r.Header)
+				rW.WriteHeader(r.StatusCode)
+				io.Copy(rW, r.Body)
+			}
+		}
+	} else {
+		proxy.Log(dir)
+	}
 }
 
 func (proxy *samHttpProxy) Log(msg ...string) {
