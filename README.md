@@ -48,6 +48,12 @@ If it wasn't super, super obvious to everyone, it's really, really easy to tell
 the difference between this proxy and the default i2p/i2pd http proxies and I
 don't think there's anything I can do about that.
 
+I am currently attacking this proxy while using various browsers. It seems more
+complicated browsers are easier to attack. They might even do something
+ridiculous, like presume you're using a captive portal and attempt to direct
+you to a captive portal login assistance page. God captive portals are fucking
+stupid. Who knew? Seriously, stay off my clearly labeled sites.
+
 Before version 0.21, a framework for generating service tunnels ad-hoc will also
 be in place. This will be used for fuzz-testing the http proxy and the pipe
 proxy. Almost everything will be improved by the availability of this.

@@ -111,16 +111,29 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
 }
 
 func (samStack *samList) sendClientRequest(request string) {
-	samStack.findClient(request).sendRequest(request)
+	client := samStack.findClient(request)
+    if client != nil {
+        client.sendRequest(request)
+    }
 }
 
 func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
-	return samStack.findClient(request.URL.String()).sendRequestHttp(request)
+    client := samStack.findClient(request.URL.String())
+    if client != nil {
+        return client.sendRequestHttp(request)
+    }else{
+        return nil, ""
+    }
 }
 
 func (samStack *samList) findClient(request string) *samHttp {
 	found := false
 	var c samHttp
+    test := strings.Split(request, ".i2p")
+    if len(test) < 2 {
+        samStack.Log("Non i2p domain detected. Skipping.")//Outproxy support? Might be cool.
+        return nil
+    }
 	for index, client := range samStack.listOfClients {
 		log.Println("Checking client requests", index+1)
 		log.Println("of", len(samStack.listOfClients))

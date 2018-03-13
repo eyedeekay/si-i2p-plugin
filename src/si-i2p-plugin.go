@@ -27,7 +27,7 @@ func main() {
 		"Print connection debug info")
 	useHttpProxy := flag.Bool("http-proxy", true,
 		"run the HTTP proxy")
-	verboseLogging := flag.Bool("verbose", false,
+	verboseLogging := flag.Bool("verbose", true,
 		"Print connection debug info")
 	Defwd, _ := os.Getwd()
 	workDirectory := flag.String("directory", Defwd,

@@ -56,16 +56,16 @@ func (proxy *samHttpProxy) prepare() {
 func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request) bool {
 	log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
 	/*if rq.URL.Scheme != "http" && rq.URL.Scheme != "https" {
-    //Don't delete. Eventually it will have a better way to handle https.
-    */
-    if rq.URL.Scheme != "http" {
-        var msg string
-        if rq.URL.Scheme != "https" {
-            msg = "Dropping https request for now, assumed attempt to get clearnet resource." + rq.URL.Scheme
-        }else{
-            msg = "unsupported protocal scheme " + rq.URL.Scheme
-            http.Error(rW, msg, http.StatusBadRequest)
-        }
+	  //Don't delete. Eventually it will have a better way to handle https.
+	*/
+	if rq.URL.Scheme != "http" {
+		var msg string
+		if rq.URL.Scheme != "https" {
+			msg = "Dropping https request for now, assumed attempt to get clearnet resource." + rq.URL.Scheme
+		} else {
+			msg = "unsupported protocal scheme " + rq.URL.Scheme
+			http.Error(rW, msg, http.StatusBadRequest)
+		}
 		proxy.Log(msg)
 		return false
 	} else {
@@ -88,25 +88,27 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	proxy.Log("Client was retrieved: ", dir)
 
-	resp, err := client.Do(rq)
-	if err != nil {
-		proxy.Warn(err, "Encountered an oddly formed response. Skipping.", "Processing Response")
-		//http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-	} else {
+    if client != nil {
+        resp, err := client.Do(rq)
+        if err != nil {
+            proxy.Warn(err, "Encountered an oddly formed response. Skipping.", "Processing Response")
+            http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+        } else {
 
-		r := proxy.client.copyRequest(rq, resp, dir)
+            r := proxy.client.copyRequest(rq, resp, dir)
 
-		if r != nil {
-			proxy.Log("SAM-Provided Tunnel Address:", rq.RemoteAddr)
-			proxy.Log("Response Status:", r.Status)
+            if r != nil {
+                proxy.Log("SAM-Provided Tunnel Address:", rq.RemoteAddr)
+                proxy.Log("Response Status:", r.Status)
 
-			proxy.delHopHeaders(r.Header)
+                proxy.delHopHeaders(r.Header)
 
-			proxy.copyHeader(rW.Header(), r.Header)
-			rW.WriteHeader(r.StatusCode)
-			io.Copy(rW, r.Body)
-		}
-	}
+                proxy.copyHeader(rW.Header(), r.Header)
+                rW.WriteHeader(r.StatusCode)
+                io.Copy(rW, r.Body)
+            }
+        }
+    }
 }
 
 func (proxy *samHttpProxy) Log(msg ...string) {
@@ -125,9 +127,9 @@ func (proxy *samHttpProxy) Warn(err error, errmsg string, msg ...string) bool {
 	return true
 }
 
-func (proxy *samHttpProxy) Fatal(err error, errmsg string, msg ...string){
-    if err != nil {
-        proxy.err = err
+func (proxy *samHttpProxy) Fatal(err error, errmsg string, msg ...string) {
+	if err != nil {
+		proxy.err = err
 		defer proxy.client.cleanupClient()
 		log.Fatal("Fatal: ", err)
 	}

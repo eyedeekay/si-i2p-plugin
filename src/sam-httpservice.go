@@ -2,25 +2,24 @@ package main
 
 import (
 	"bufio"
-    "fmt"
+	"fmt"
 	//"io"
 	"log"
-    //"net"
+	//"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	//"strings"
 	"syscall"
-    //"time"
+	//"time"
 	//"net/url"
 
 	"github.com/eyedeekay/gosam"
-
 )
 
 type samHttpService struct {
-	subCache        []samUrl
-    err             error
+	subCache []samUrl
+	err      error
 
 	samBridgeClient *goSam.Client
 	samAddrString   string
@@ -28,7 +27,6 @@ type samHttpService struct {
 
 	transport *http.Transport
 	subClient *http.Client
-
 
 	host      string
 	directory string
@@ -118,11 +116,11 @@ func (samService *samHttpService) scannerText() (string, error) {
 }
 
 func (samService *samHttpService) hostSet(alias string) (string, string) {
-    return "", ""
+	return "", ""
 }
 
 func (samService *samHttpService) checkName() bool {
-    return false
+	return false
 }
 
 func (samService *samHttpService) writeName(request string) {
