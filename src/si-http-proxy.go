@@ -128,7 +128,7 @@ func (proxy *samHttpProxy) Warn(err error, errmsg string, msg ...string) bool {
 func (proxy *samHttpProxy) Fatal(err error, errmsg string, msg ...string){
     if err != nil {
         proxy.err = err
-		defer samServiceStack.cleanupServices()
+		defer proxy.client.cleanupClient()
 		log.Fatal("Fatal: ", err)
 	}
 }

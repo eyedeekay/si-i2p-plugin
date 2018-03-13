@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-    //"fmt"
+    "fmt"
 	//"io"
 	"log"
     //"net"
@@ -117,40 +117,46 @@ func (samService *samHttpService) scannerText() (string, error) {
 	return text, err
 }
 
-/*
-func (samConn *samHttp) writeName(request string) {
-	if samConn.checkName() {
-		samConn.host, samConn.directory = samConn.hostSet(request)
-		samConn.Log("Setting hostname:", samConn.host)
-		samConn.Log("Looking up hostname:", samConn.host)
-		samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
-		samConn.nameFile.WriteString(samConn.name)
-		samConn.Log("Caching base64 address of:", samConn.host+" "+samConn.name)
-		samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
-		samConn.idFile.WriteString(fmt.Sprint(samConn.id))
-		samConn.Warn(samConn.err, "Local Base64 Caching error", "Cachine Base64 Address of:", request)
-		log.Println("Tunnel id: ", samConn.id)
-		samConn.Log("Tunnel dest: ", samConn.base64)
-		samConn.base64File.WriteString(samConn.base64)
-		samConn.Log("New Connection Name: ", samConn.base64)
+func (samService *samHttpService) hostSet(alias string) (string, string) {
+    return "", ""
+}
+
+func (samService *samHttpService) checkName() bool {
+    return false
+}
+
+func (samService *samHttpService) writeName(request string) {
+	if samService.checkName() {
+		samService.host, samService.directory = samService.hostSet(request)
+		samService.Log("Setting hostname:", samService.host)
+		samService.Log("Looking up hostname:", samService.host)
+		samService.name, samService.err = samService.samBridgeClient.Lookup(samService.host)
+		samService.nameFile.WriteString(samService.name)
+		samService.Log("Caching base64 address of:", samService.host+" "+samService.name)
+		samService.id, samService.base64, samService.err = samService.samBridgeClient.CreateStreamSession("")
+		samService.idFile.WriteString(fmt.Sprint(samService.id))
+		samService.Warn(samService.err, "Local Base64 Caching error", "Cachine Base64 Address of:", request)
+		log.Println("Tunnel id: ", samService.id)
+		samService.Log("Tunnel dest: ", samService.base64)
+		samService.base64File.WriteString(samService.base64)
+		samService.Log("New Connection Name: ", samService.base64)
 	} else {
-		samConn.host, samConn.directory = samConn.hostSet(request)
-		samConn.Log("Setting hostname:", samConn.host)
-		samConn.initPipes()
-		samConn.Log("Looking up hostname:", samConn.host)
-		samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
-		samConn.Log("Caching base64 address of:", samConn.host+" "+samConn.name)
-		samConn.nameFile.WriteString(samConn.name)
-		samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
-		samConn.idFile.WriteString(fmt.Sprint(samConn.id))
-		samConn.Warn(samConn.err, "Local Base64 Caching error", "Cachine Base64 Address of:", request)
-		log.Println("Tunnel id: ", samConn.id)
-		samConn.Log("Tunnel dest: ", samConn.base64)
-		samConn.base64File.WriteString(samConn.base64)
-		samConn.Log("New Connection Name: ", samConn.base64)
+		samService.host, samService.directory = samService.hostSet(request)
+		samService.Log("Setting hostname:", samService.host)
+		samService.initPipes()
+		samService.Log("Looking up hostname:", samService.host)
+		samService.name, samService.err = samService.samBridgeClient.Lookup(samService.host)
+		samService.Log("Caching base64 address of:", samService.host+" "+samService.name)
+		samService.nameFile.WriteString(samService.name)
+		samService.id, samService.base64, samService.err = samService.samBridgeClient.CreateStreamSession("")
+		samService.idFile.WriteString(fmt.Sprint(samService.id))
+		samService.Warn(samService.err, "Local Base64 Caching error", "Cachine Base64 Address of:", request)
+		log.Println("Tunnel id: ", samService.id)
+		samService.Log("Tunnel dest: ", samService.base64)
+		samService.base64File.WriteString(samService.base64)
+		samService.Log("New Connection Name: ", samService.base64)
 	}
 }
-*/
 
 func (samService *samHttpService) printDetails() string {
 	s, e := samService.scannerText()
