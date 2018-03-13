@@ -8,8 +8,9 @@ USR := usr/
 LOCAL := local/
 VERSION := 0.19
 
+rebuild: clean build
 
-build: clean bin/si-i2p-plugin
+build: bin/si-i2p-plugin
 
 bin/si-i2p-plugin:
 	go get -u github.com/eyedeekay/gosam
@@ -45,8 +46,21 @@ release:
 		./src
 	@echo 'built release'
 
+android: bin/si-i2p-plugin-arm-droid
 
-debug: build
+bin/si-i2p-plugin-arm-droid:
+	go get -u github.com/eyedeekay/gosam
+	GOARCH=arm GOARM=7 go build \
+		-a \
+		-tags netgo \
+		-ldflags '-w -extldflags "-static"' \
+		-buildmode=pie \
+		-o bin/si-i2p-plugin-arm \
+		./src
+	@echo 'built'
+
+
+debug: rebuild
 	gdb ./bin/si-i2p-plugin
 
 all:
@@ -87,7 +101,10 @@ try: build
 
 clean:
 	killall si-i2p-plugin; \
-	rm -rf parent ./.*.i2p/ *.i2p/ *.html *-pak *err *log static-include static-exclude del recv
+	rm -rf parent ./.*.i2p/ *.i2p/ \
+		*.html *-pak *err *log \
+		static-include static-exclude \
+		bin/si-i2p-plugin bin/si-i2p-plugin-arm
 
 kill:
 	killall si-i2p-plugin; \
@@ -96,11 +113,10 @@ kill:
 tidy:
 	rm -rf parent *.i2p *.html *-pak *err *log static-include static-exclude
 
-clobber:
+clobber: clean
 	rm -rf ../si-i2p-plugin_$(VERSION)*-1_amd64.deb
 	docker rmi -f si-i2p-plugin-static si-i2p-plugin; true
 	docker rm -f si-i2p-plugin-static si-i2p-plugin; true
-	make clean
 
 cat:
 	cat parent/recv

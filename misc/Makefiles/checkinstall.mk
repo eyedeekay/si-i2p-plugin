@@ -15,7 +15,7 @@ checkinstall: release postinstall-pak postremove-pak description-pak
 		--pakdir=../
 
 checkinstall-arm: build-arm postinstall-pak postremove-pak description-pak static-include static-exclude
-	ARCH=armhf checkinstall --default \
+	checkinstall --default \
 		--install=no \
 		--fstrans=yes \
 		--maintainer=problemsolver@openmailbox.org \
@@ -28,8 +28,8 @@ checkinstall-arm: build-arm postinstall-pak postremove-pak description-pak stati
 		--deldesc=yes \
 		--delspec=yes \
 		--backup=no \
-		--exclude=static-exclude \
-		--include=static-include \
+		--exclude=arm-exclude \
+		--include=arm-include \
 		--pakdir=../
 
 postinstall-pak:
@@ -53,8 +53,8 @@ description-pak:
 	@echo "from sharing a single reply destination, to limit the use of i2p" | tee -a description-pak
 	@echo "metadata for fingerprinting purposes" | tee -a description-pak
 
-static-include:
-	@echo 'bin/si-i2p-plugin-arm /usr/local/bin/' | tee static-include
+arm-include:
+	@echo 'bin/si-i2p-plugin-arm /usr/local/bin/' | tee arm-include
 
-static-exclude:
-	@echo 'bin/si-i2p-plugin' | tee static-exclude
+arm-exclude:
+	@echo 'bin/si-i2p-plugin' | tee arm-exclude

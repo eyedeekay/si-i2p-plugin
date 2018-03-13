@@ -5,17 +5,14 @@ import (
 	"log"
 	"path/filepath"
 	//"net/http"
-	//"io"
+	"io"
 	"os"
-	//"strings"
+	"strings"
 	"syscall"
-
-	"github.com/eyedeekay/gosam"
 )
 
 type samServices struct {
 	listOfServices  []samHttpService
-	samBridgeClient *goSam.Client
 	err             error
 	up              bool
 
@@ -138,6 +135,46 @@ func (samServiceStack *samServices) createServiceList(samAddr string, samPort st
 	}
 }
 
+func (samServiceStack *samServices) sendServiceRequest(index string) {
+    samServiceStack.findService(index).sendContent(index)
+}
+
+func (samServiceStack *samServices) responsify(input string) io.Reader {
+	tmp := strings.NewReader(input)
+	samServiceStack.Log("Responsifying string:")
+	return tmp
+}
+
+func (samServiceStack *samServices) readRequest() {
+	samServiceStack.Log("Reading requests:")
+	for samServiceStack.genrScan.Scan() {
+		if samServiceStack.genrScan.Text() != "" {
+			go samServiceStack.sendServiceRequest(samServiceStack.genrScan.Text())
+		}
+	}
+}
+
+func (samServiceStack *samServices) writeDetails(details string) bool{
+    b := false
+	if details != "" {
+		samServiceStack.Log("Got response:")
+		io.Copy(samServiceStack.lsPipe, samServiceStack.responsify(details))
+		b = true
+	}
+	return b
+}
+
+func (samServiceStack *samServices) writeResponses() {
+	samServiceStack.Log("Writing responses:")
+	for i, service := range samServiceStack.listOfServices {
+		log.Println("Checking for responses: %s", i+1)
+		log.Println("of: ", len(samServiceStack.listOfServices))
+		if service.printDetails() != "" {
+			go samServiceStack.writeDetails(service.printDetails())
+		}
+	}
+}
+
 func (samServiceStack *samServices) readDelete() bool {
 	samServiceStack.Log("Managing pipes:")
 	for samServiceStack.delScan.Scan() {
@@ -179,8 +216,6 @@ func (samServiceStack *samServices) cleanupServices() {
 		client.cleanupClient()
 	}
 	samServiceStack.delPipe.Close()
-	err := samServiceStack.samBridgeClient.Close()
-	samServiceStack.Fatal(err)
 	os.RemoveAll(filepath.Join(connectionDirectory, "service"))
 }
 

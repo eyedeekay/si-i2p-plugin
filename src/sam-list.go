@@ -92,7 +92,6 @@ func (samStack *samList) initPipes() {
 
 func (samStack *samList) createClient(request string) {
 	samStack.Log("Appending client to SAM stack.")
-	//samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, samStack.samBridgeClient, request))
 	samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request))
 }
 
@@ -104,8 +103,6 @@ func (samStack *samList) createClientHttp(request *http.Request) {
 func (samStack *samList) createSamList(samAddrString string, samPortString string) {
 	samStack.samAddrString = samAddrString
 	samStack.samPortString = samPortString
-	//samStack.Log("Requesting a new SAM-based http client")
-	//samStack.Fatal(samStack.err, "", )
 	samStack.Log("Established SAM connection")
 	if !samStack.up {
 		samStack.initPipes()
@@ -167,13 +164,9 @@ func (samStack *samList) writeResponses() {
 	for i, client := range samStack.listOfClients {
 		log.Println("Checking for responses: %s", i+1)
 		log.Println("of: ", len(samStack.listOfClients))
-		//b :=
 		if client.printResponse() != "" {
 			go samStack.writeRecieved(client.printResponse())
 		}
-		//if b == true {
-		//break
-		//}
 	}
 }
 
