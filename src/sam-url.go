@@ -156,6 +156,7 @@ func (subUrl *samUrl) dealResponse(response *http.Response) {
 
 func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
 	defer response.Body.Close()
+    header := response.Header
 	body, err := ioutil.ReadAll(response.Body)
 	if subUrl.Warn(err, "Response Read Error", "Reading response from proxy") {
 		subUrl.Log("Writing files.")
@@ -169,7 +170,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 			Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
 			ContentLength: int64(len(body)),
 			Request:       request,
-			Header:        request.Header,
+			Header:        header,
 		}
 		subUrl.Log("Retrieval time: ", time.Now().String())
 		subUrl.timeFile.WriteString(time.Now().String())

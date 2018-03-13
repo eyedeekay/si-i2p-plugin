@@ -122,25 +122,49 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
     if client != nil {
         return client.sendRequestHttp(request)
     }else{
-        return nil, ""
+        return nil, "nil client"
     }
+}
+
+func (samStack *samList) checkURLType(request string) bool {
+
+	samStack.Log(request)
+
+    test := strings.Split(request, ".i2p")
+
+    if len(test) < 2 {
+        msg := "Non i2p domain detected. Skipping."
+        samStack.Log(msg) //Outproxy support? Might be cool.
+        return false
+    }else{
+        n := strings.Split(strings.Replace(strings.Replace(test[0], "https://", "", -1), "http://", "", -1), "/")
+        if len(n) > 1 {
+            msg := "Non i2p domain detected, possible attempt to impersonate i2p domain in path. Skipping."
+            samStack.Log(msg) //Outproxy support? Might be cool. Riskier here.
+            return false
+        }
+    }
+    strings.Contains(request, "http")
+	if ! strings.Contains(request, "http") {
+		if strings.Contains(request, "https") {
+			msg := "Dropping https request for now, assumed attempt to get clearnet resource."
+            samStack.Log(msg)
+            return false
+		} else {
+			msg := "unsupported protocal scheme " + request
+            samStack.Log(msg)
+            return false
+		}
+	} else {
+		return true
+	}
 }
 
 func (samStack *samList) findClient(request string) *samHttp {
 	found := false
 	var c samHttp
-    test := strings.Split(request, ".i2p")
-    if len(test) < 2 {
-        samStack.Log("Non i2p domain detected. Skipping.")//Outproxy support? Might be cool.
+    if ! samStack.checkURLType(request) {
         return nil
-    }else{
-        trim := strings.Replace(test[0], "https://", "", -1)
-        t := strings.Replace(trim, "http://", "", -1)
-        n := strings.Split(t, "/")
-        if len(n) > 1 {
-            samStack.Log(".i2p in path, not domain detected. Skipping.")
-            return nil
-        }
     }
 	for index, client := range samStack.listOfClients {
 		log.Println("Checking client requests", index+1)
