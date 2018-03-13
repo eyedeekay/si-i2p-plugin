@@ -55,9 +55,17 @@ func (proxy *samHttpProxy) prepare() {
 
 func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request) bool {
 	log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
-	if rq.URL.Scheme != "http" && rq.URL.Scheme != "https" {
-		msg := "unsupported protocal scheme " + rq.URL.Scheme
-		http.Error(rW, msg, http.StatusBadRequest)
+	/*if rq.URL.Scheme != "http" && rq.URL.Scheme != "https" {
+    //Don't delete. Eventually it will have a better way to handle https.
+    */
+    if rq.URL.Scheme != "http" {
+        var msg string
+        if rq.URL.Scheme != "https" {
+            msg = "Dropping https request for now, assumed attempt to get clearnet resource." + rq.URL.Scheme
+        }else{
+            msg = "unsupported protocal scheme " + rq.URL.Scheme
+            http.Error(rW, msg, http.StatusBadRequest)
+        }
 		proxy.Log(msg)
 		return false
 	} else {
@@ -117,12 +125,13 @@ func (proxy *samHttpProxy) Warn(err error, errmsg string, msg ...string) bool {
 	return true
 }
 
-/*func (proxy *samHttpProxy) Fatal(err error, errmsg string, msg ...string){
+func (proxy *samHttpProxy) Fatal(err error, errmsg string, msg ...string){
     if err != nil {
+        proxy.err = err
 		defer samServiceStack.cleanupServices()
 		log.Fatal("Fatal: ", err)
 	}
-}*/
+}
 
 func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) *samHttpProxy {
 	var samProxy samHttpProxy
