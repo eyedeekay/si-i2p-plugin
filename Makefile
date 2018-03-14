@@ -50,15 +50,14 @@ android: bin/si-i2p-plugin-arm-droid
 
 bin/si-i2p-plugin-arm-droid:
 	go get -u github.com/eyedeekay/gosam
-	GOARCH=arm GOARM=7 go build \
+	gomobile build \
+		-target=android \
 		-a \
 		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
-		-buildmode=pie \
-		-o bin/si-i2p-plugin-arm \
-		./src
+		-ldflags '-w -extldflags "-llog -static"' \
+		-o bin/si-i2p-plugin-droid \
+		./src/android
 	@echo 'built'
-
 
 debug: rebuild
 	gdb ./bin/si-i2p-plugin
@@ -101,7 +100,7 @@ try: build
 
 clean:
 	killall si-i2p-plugin; \
-	rm -rf parent ./.*.i2p/ *.i2p/ \
+	rm -rf parent ./.*.i2p*/ ./*.i2p*/ \
 		*.html *-pak *err *log \
 		static-include static-exclude \
 		bin/si-i2p-plugin bin/si-i2p-plugin-arm

@@ -1,15 +1,12 @@
 FROM fedora
 RUN dnf update -y
 RUN dnf install -y make golang gcc rpm-build rpm git fedora-packager fedora-review @development-tools
-RUN wget ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/home:/ikoinoba/CentOS_CentOS-6/x86_64/checkinstall-1.6.2-3.el6.1.x86_64.rpm
-RUN rpm --install checkinstall-1.6.2-3.el6.1.x86_64.rpm
 RUN groupadd sii2pplugin
 RUN adduser --system --home-dir /home/sii2pplugin -g sii2pplugin sii2pplugin
 COPY . /home/sii2pplugin/si-i2p-plugin
 RUN chown -R sii2pplugin:sii2pplugin /home/sii2pplugin
 WORKDIR /home/sii2pplugin/si-i2p-plugin
-#USER sii2pplugin
+USER sii2pplugin
 RUN go get github.com/eyedeekay/gosam
 RUN make
-#CMD export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" && make checkinstall-rpm
 CMD find / -name rpm

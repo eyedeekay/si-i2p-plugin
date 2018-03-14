@@ -122,6 +122,7 @@ func (samConn *samHttp) Dial(network, addr string) (net.Conn, error) {
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
 	samConn.Fatal(samConn.err, "SAM connection error", "Initializing SAM connection")
+    samConn.Log(samConn.name)
 	samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
 	samConn.Warn(samConn.err, "Stream connection error", "Connecting SAM streams")
 	return samConn.samBridgeClient.SamConn, nil
