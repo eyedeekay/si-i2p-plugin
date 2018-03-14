@@ -49,6 +49,9 @@ If it wasn't super, super obvious to everyone, it's really, really easy to tell
 the difference between this proxy and the default i2p/i2pd http proxies and I
 don't think there's anything I can do about that.
 
+It checks to see if it's getting an i2p url by splitting it at the first ".i2p"
+which unfortunately means that I can't use it to visit trac.i2p2.i2p.
+
 I am currently attacking this proxy while using various browsers. It seems more
 complicated browsers are easier to attack. They might even do something
 ridiculous, like presume you're using a captive portal and attempt to direct
