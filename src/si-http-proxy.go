@@ -1,7 +1,9 @@
 package main
 
 import (
+    "bytes"
 	"io"
+    "io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -42,7 +44,11 @@ func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 	for k, vv := range src {
 		for _, v := range vv {
 			proxy.Log("Copying headers: " + k + "," + v)
-			dst.Add(k, v)
+            if dst.Get(k) != "" {
+                dst.Set(k, v)
+            }else{
+                dst.Add(k, v)
+            }
 		}
 	}
 }
@@ -125,8 +131,16 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 				proxy.delHopHeaders(r.Header)
 
 				proxy.copyHeader(rW.Header(), r.Header)
-				rW.WriteHeader(r.StatusCode)
-				io.Copy(rW, r.Body)
+
+
+                log.Println("Response status:", r.StatusCode)
+
+                rW.WriteHeader(r.StatusCode)
+                read, err := ioutil.ReadAll(r.Body)
+
+                if proxy.Warn(err, "Response body error:", "Read response body"){
+                    io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
+                }
 			}
 		}
 	} else {

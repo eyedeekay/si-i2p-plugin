@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
-	//"time"
+	"time"
 	"net/url"
 
 	"github.com/eyedeekay/gosam"
@@ -121,12 +121,15 @@ func (samConn *samHttp) initPipes() {
 func (samConn *samHttp) Dial(network, addr string) (net.Conn, error) {
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
-	samConn.Fatal(samConn.err, "SAM connection error", "Initializing SAM connection")
-    samConn.Log(samConn.name)
-	samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
-	samConn.Warn(samConn.err, "Stream connection error", "Connecting SAM streams")
+	if samConn.Warn(samConn.err, "SAM connection error", "Initializing SAM connection") {
+		if samConn.name != "" {
+			if samConn.id != 0 {
+				samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
+				samConn.Warn(samConn.err, "Stream connection error", "Connecting SAM streams")
+			}
+		}
+	}
 	return samConn.samBridgeClient.SamConn, nil
-	//return samConn.samBridgeClient.Dial(network, addr)
 }
 
 func (samConn *samHttp) createClient(request string, samAddrString string, samPortString string) {
@@ -167,6 +170,7 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 	samConn.Log("Initializing sub-client")
 	samConn.subClient = &http.Client{
 		//Timeout: client.Timeout,
+        Timeout: time.Duration(600 * time.Second),
 		Transport: samConn.transport}
 
 	if samConn.host == "" {
