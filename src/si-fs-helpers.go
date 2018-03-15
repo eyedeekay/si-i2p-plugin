@@ -18,17 +18,26 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
+func truncatePath(str string) string {
+    num := 254
+	bnoden := str
+	if len(str) > num {
+		bnoden = str[0:num] + "..."
+	}
+	return bnoden
+}
+
 func setupFolder(directory string) bool {
-	pathConnectionExists, err := exists(filepath.Join(connectionDirectory))
-	if e, _ := Fatal(err, "Parent Directory Error", "Parent Directory Check", filepath.Join(connectionDirectory)); e {
+	pathConnectionExists, err := exists(truncatePath(filepath.Join(connectionDirectory)))
+	if e, _ := Fatal(err, "Parent Directory Error", "Parent Directory Check", truncatePath(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
 			Log("Creating a connection:", directory)
-			os.Mkdir(filepath.Join(connectionDirectory, directory), 0755)
+			os.Mkdir(truncatePath(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
 		} else {
-			os.RemoveAll(filepath.Join(connectionDirectory, directory))
+			os.RemoveAll(truncatePath(filepath.Join(connectionDirectory, directory)))
 			Log("Creating a connection:", directory)
-			os.Mkdir(filepath.Join(connectionDirectory, directory), 0755)
+			os.Mkdir(truncatePath(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
 		}
 	} else {
@@ -37,11 +46,11 @@ func setupFolder(directory string) bool {
 }
 
 func checkFolder(directory string) bool {
-	pathConnectionExists, err := exists(filepath.Join(connectionDirectory))
-	if e, _ := Fatal(err, "Parent Directory Error", "Parent Directory Check", filepath.Join(connectionDirectory)); e {
+	pathConnectionExists, err := exists(truncatePath(filepath.Join(connectionDirectory)))
+	if e, _ := Fatal(err, "Parent Directory Error", "Parent Directory Check", truncatePath(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
 			Log("Creating a connection:", directory)
-			os.MkdirAll(filepath.Join(connectionDirectory, directory), 0755)
+			os.MkdirAll(truncatePath(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
 		}else{
             return false
@@ -52,7 +61,7 @@ func checkFolder(directory string) bool {
 }
 
 func setupFiFo(directory, path string) (string, *os.File, error) {
-	mkPath := filepath.Join(connectionDirectory, directory, path)
+	mkPath := filepath.Join(connectionDirectory, directory, truncatePath(path))
 	pathExists, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "File Check Error", "File Check", mkPath); e {
 		if !pathExists {
@@ -74,13 +83,13 @@ func setupFiFo(directory, path string) (string, *os.File, error) {
 }
 
 func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
-	mkPath := filepath.Join(connectionDirectory, directory, path)
+	mkPath := filepath.Join(connectionDirectory, directory, truncatePath(path))
 	_, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "File Check Error", "File Check", mkPath); e {
 		Log("Opening the Named Pipe as a Scanner...")
         retScanner := bufio.NewScanner(pipe)
         retScanner.Split(bufio.ScanLines)
-        Log("Created a named Pipe for sending requests:", path)
+        Log("Created a named Pipe for sending requests:", mkPath)
 		return retScanner, nil
 	}else{
         return nil, c
