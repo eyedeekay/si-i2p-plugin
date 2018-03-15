@@ -98,13 +98,26 @@ func closeProxy(samProxies *samList) {
 	exit = samProxies.readDelete()
 }
 
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
+func Log(msg ...string) {
+	if verbose {
+		log.Println("LOG: ", msg)
 	}
-	if os.IsNotExist(err) {
+}
+
+func Warn(err error, errmsg string, msg ...string) (bool, error) {
+	log.Println(msg)
+	if err != nil {
+		log.Println("WARN: ", err)
 		return false, nil
 	}
-	return true, err
+	return true, nil
+}
+
+func Fatal(err error, errmsg string, msg ...string) (bool, error) {
+	log.Println(msg)
+	if err != nil {
+		log.Fatal("FATAL: ", errmsg, err)
+		return false, err
+	}
+	return true, nil
 }

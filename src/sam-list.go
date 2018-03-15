@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 )
 
 type samList struct {
@@ -16,97 +15,66 @@ type samList struct {
 	samAddrString string
 	samPortString string
 	err           error
+    c             bool
 	up            bool
+	dir           string
 
 	sendPath string
 	sendPipe *os.File
-	sendScan bufio.Scanner
+	sendScan *bufio.Scanner
 
 	recvPath string
 	recvPipe *os.File
 
 	delPath string
 	delPipe *os.File
-	delScan bufio.Scanner
+	delScan *bufio.Scanner
 }
 
 func (samStack *samList) initPipes() {
-	pathConnectionExists, err := exists(filepath.Join(connectionDirectory, "parent"))
-	samStack.Fatal(err, "Parent Directory Error", "Parent Directory Check", filepath.Join(connectionDirectory, "parent"))
-	if !pathConnectionExists {
-		samStack.Log("Creating a connection:", "parent")
-		os.Mkdir(filepath.Join(connectionDirectory, "parent"), 0755)
-	} else {
-		os.RemoveAll(filepath.Join(connectionDirectory, "parent"))
-		samStack.Log("Creating a connection:", "parent")
-		os.Mkdir(filepath.Join(connectionDirectory, "parent"), 0755)
-	}
+    setupFolder(samStack.dir)
 
-	samStack.sendPath = filepath.Join(connectionDirectory, "parent", "send")
-	pathSendExists, sendErr := exists(samStack.sendPath)
-	samStack.Fatal(sendErr, "Send File Check Error", "Send File Check", samStack.sendPath)
-	if !pathSendExists {
-		samStack.err = syscall.Mkfifo(samStack.sendPath, 0755)
-		samStack.Log("Preparing to create Pipe:", samStack.sendPath)
-		samStack.Fatal(samStack.err, "Pipe Creation Error", "Creating Pipe", samStack.sendPath)
-		samStack.Log("checking for problems...")
-		samStack.sendPipe, samStack.err = os.OpenFile(samStack.sendPath, os.O_RDWR|os.O_CREATE, 0755)
-		samStack.Log("Opening the Named Pipe as a Scanner...")
-		samStack.sendScan = *bufio.NewScanner(samStack.sendPipe)
-		samStack.sendScan.Split(bufio.ScanLines)
-		samStack.Log("Opening the Named Pipe as a Scanner...")
-		samStack.Log("Created a named Pipe for sending requests:", samStack.sendPath)
-	}
+    samStack.sendPath, samStack.sendPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "send")
+    if samStack.c, samStack.err = Fatal(samStack.err, "Pipe setup error", "Pipe setup"); samStack.c {
+        samStack.sendScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "send", samStack.sendPipe)
+        if samStack.c, samStack.err = Fatal(samStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samStack.c {
+            samStack.cleanupClient()
+        }
+    }
 
-	samStack.recvPath = filepath.Join(connectionDirectory, "parent", "recv")
-	pathRecvExists, recvErr := exists(samStack.recvPath)
-	samStack.Fatal(recvErr, "Recv File Check Error", "Recv File Check", samStack.recvPath)
-	if !pathRecvExists {
-		samStack.err = syscall.Mkfifo(samStack.recvPath, 0755)
-		samStack.Log("Preparing to create Pipe:", samStack.recvPath)
-		samStack.Fatal(samStack.err, "Pipe Creation Error", "Creating Pipe", samStack.recvPath)
-		samStack.Log("checking for problems...")
-		samStack.recvPipe, samStack.err = os.OpenFile(samStack.recvPath, os.O_RDWR|os.O_CREATE, 0755)
-		samStack.recvPipe.WriteString("")
-		samStack.Log("Created a named Pipe for recieving responses:", samStack.recvPath)
-	}
+    samStack.recvPath, samStack.recvPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "recv")
+    if samStack.c, samStack.err = Fatal(samStack.err, "Pipe setup error", "Pipe setup"); samStack.c {
+        samStack.recvPipe.WriteString("")
+    }
 
-	samStack.delPath = filepath.Join(connectionDirectory, "parent", "del")
-	pathDelExists, delErr := exists(samStack.delPath)
-	samStack.Fatal(delErr, "Del File Check Error", "Del File Check", samStack.delPath)
-	if !pathDelExists {
-		samStack.err = syscall.Mkfifo(samStack.delPath, 0755)
-		samStack.Log("Preparing to create Pipe:", samStack.delPath)
-		samStack.Fatal(samStack.err, "Pipe Creation Error", "Creating Pipe", samStack.delPath)
-		samStack.Log("checking for problems...")
-		samStack.delPipe, samStack.err = os.OpenFile(samStack.delPath, os.O_RDWR|os.O_CREATE, 0755)
-		samStack.recvPipe.WriteString("")
-		samStack.Log("Opening the Named Pipe as a File...")
-		samStack.delScan = *bufio.NewScanner(samStack.delPipe)
-		samStack.delScan.Split(bufio.ScanLines)
-		samStack.Log("Opening the Named Pipe as a Scanner...")
-		samStack.Log("Created a named Pipe for closing the connection:", samStack.delPath)
-	}
+    samStack.delPath, samStack.delPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "del")
+    if samStack.c, samStack.err = Fatal(samStack.err, "Pipe setup error", "Pipe setup"); samStack.c {
+        samStack.delScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "del", samStack.delPipe)
+        if samStack.c, samStack.err = Fatal(samStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samStack.c {
+            samStack.cleanupClient()
+        }
+    }
+
 	samStack.up = true
 }
 
 func (samStack *samList) createClient(request string) {
-	samStack.Log("Appending client to SAM stack.")
+	Log("Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request))
 }
 
 func (samStack *samList) createClientHttp(request *http.Request) {
-	samStack.Log("Appending client to SAM stack.")
+	Log("Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request))
 }
 
 func (samStack *samList) createSamList(samAddrString string, samPortString string) {
 	samStack.samAddrString = samAddrString
 	samStack.samPortString = samPortString
-	samStack.Log("Established SAM connection")
+	Log("Established SAM connection")
 	if !samStack.up {
 		samStack.initPipes()
-		samStack.Log("Parent proxy pipes initialized. Parent proxy set to up.")
+		Log("Parent proxy pipes initialized. Parent proxy set to up.")
 	}
 }
 
@@ -128,19 +96,19 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
 
 func (samStack *samList) checkURLType(request string) bool {
 
-	samStack.Log(request)
+	Log(request)
 
 	test := strings.Split(request, ".i2p")
 
 	if len(test) < 2 {
 		msg := "Non i2p domain detected. Skipping."
-		samStack.Log(msg) //Outproxy support? Might be cool.
+		Log(msg) //Outproxy support? Might be cool.
 		return false
 	} else {
 		n := strings.Split(strings.Replace(strings.Replace(test[0], "https://", "", -1), "http://", "", -1), "/")
 		if len(n) > 1 {
 			msg := "Non i2p domain detected, possible attempt to impersonate i2p domain in path. Skipping."
-			samStack.Log(msg) //Outproxy support? Might be cool. Riskier here.
+			Log(msg) //Outproxy support? Might be cool. Riskier here.
 			return false
 		}
 	}
@@ -148,11 +116,11 @@ func (samStack *samList) checkURLType(request string) bool {
 	if !strings.Contains(request, "http") {
 		if strings.Contains(request, "https") {
 			msg := "Dropping https request for now, assumed attempt to get clearnet resource."
-			samStack.Log(msg)
+			Log(msg)
 			return false
 		} else {
 			msg := "unsupported protocal scheme " + request
-			samStack.Log(msg)
+			Log(msg)
 			return false
 		}
 	} else {
@@ -170,20 +138,20 @@ func (samStack *samList) findClient(request string) *samHttp {
 		log.Println("Checking client requests", index+1)
 		log.Println("of", len(samStack.listOfClients))
 		if client.hostCheck(request) {
-			samStack.Log("Client pipework for %s found.", request)
-			samStack.Log("Request sent")
+			Log("Client pipework for %s found.", request)
+			Log("Request sent")
 			found = true
 			return &client
 		}
 	}
 	if !found {
-		samStack.Log("Client pipework for %s not found: Creating.", request)
+		Log("Client pipework for %s not found: Creating.", request)
 		samStack.createClient(request)
 		for index, client := range samStack.listOfClients {
 			log.Println("Checking client requests", index+1)
 			log.Println("of", len(samStack.listOfClients))
 			if client.hostCheck(request) {
-				samStack.Log("Client pipework for %s found.", request)
+				Log("Client pipework for %s found.", request)
 				c = client
 			}
 		}
@@ -196,7 +164,7 @@ func (samStack *samList) copyRequest(request *http.Request, response *http.Respo
 }
 
 func (samStack *samList) readRequest() {
-	samStack.Log("Reading requests:")
+	Log("Reading requests:")
 	for samStack.sendScan.Scan() {
 		if samStack.sendScan.Text() != "" {
 			go samStack.sendClientRequest(samStack.sendScan.Text())
@@ -205,7 +173,7 @@ func (samStack *samList) readRequest() {
 }
 
 func (samStack *samList) writeResponses() {
-	samStack.Log("Writing responses:")
+	Log("Writing responses:")
 	for i, client := range samStack.listOfClients {
 		log.Println("Checking for responses: %s", i+1)
 		log.Println("of: ", len(samStack.listOfClients))
@@ -217,14 +185,14 @@ func (samStack *samList) writeResponses() {
 
 func (samStack *samList) responsify(input string) io.Reader {
 	tmp := strings.NewReader(input)
-	samStack.Log("Responsifying string:")
+	Log("Responsifying string:")
 	return tmp
 }
 
 func (samStack *samList) writeRecieved(response string) bool {
 	b := false
 	if response != "" {
-		samStack.Log("Got response:")
+		Log("Got response:")
 		io.Copy(samStack.recvPipe, samStack.responsify(response))
 		b = true
 	}
@@ -232,7 +200,7 @@ func (samStack *samList) writeRecieved(response string) bool {
 }
 
 func (samStack *samList) readDelete() bool {
-	samStack.Log("Managing pipes:")
+	Log("Managing pipes:")
 	for samStack.delScan.Scan() {
 		if samStack.delScan.Text() == "y" || samStack.delScan.Text() == "Y" {
 			defer samStack.cleanupClient()
@@ -251,36 +219,12 @@ func (samStack *samList) cleanupClient() {
 		client.cleanupClient()
 	}
 	samStack.delPipe.Close()
-	os.RemoveAll(filepath.Join(connectionDirectory, "parent"))
-}
-
-func (samStack *samList) Log(msg ...string) {
-	if verbose {
-		log.Println("LOG: ", msg)
-	}
-}
-
-func (samStack *samList) Warn(err error, errmsg string, msg ...string) bool {
-	log.Println(msg)
-	if err != nil {
-		log.Println("WARN: ", err)
-		return false
-	}
-	samStack.err = nil
-	return true
-}
-
-func (samStack *samList) Fatal(err error, errmsg string, msg ...string) {
-	log.Println(msg)
-	if err != nil {
-		defer samStack.cleanupClient()
-		log.Fatal("FATAL: ", err)
-		samStack.err = err
-	}
+	os.RemoveAll(filepath.Join(connectionDirectory, samStack.dir))
 }
 
 func createSamList(samAddr string, samPort string, initAddress string) *samList {
 	var samStack samList
+	samStack.dir = "parent"
 	log.Println("Generating parent proxy structure.")
 	samStack.up = false
 	log.Println("Parent proxy set to down.")

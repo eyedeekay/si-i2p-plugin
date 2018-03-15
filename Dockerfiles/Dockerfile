@@ -9,4 +9,4 @@ RUN go get github.com/eyedeekay/gosam
 RUN make release
 RUN apk del go go-tools go-doc git make musl-dev musl musl-utils
 USER sii2pplugin
-CMD /opt/bin/si-i2p-plugin
+CMD /opt/bin/si-i2p-plugin -proxy-addr=0.0.0.0 -bridge-addr=thirdeye-host

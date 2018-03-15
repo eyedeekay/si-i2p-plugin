@@ -134,21 +134,27 @@ docker:
 
 docker-run:
 	docker run \
-		--cap-drop all \
+		-d \
 		--name si-i2p-plugin \
 		--user sii2pplugin \
-		-p 44443:4443 \
+		-p 127.0.0.1:4443:4443 \
+		--restart always \
 		-t eyedeekay/si-i2p-plugin
+
+docker-clean:
+	docker rm -f si-i2p-plugin thirdeye-proxy; true
 
 docker-run-thirdeye:
 	docker run \
+		-d \
 		--name thirdeye-proxy \
 		--network thirdeye \
 		--network-alias thirdeye-proxy \
 		--hostname thirdeye-proxy \
 		--cap-drop all \
 		--user sii2pplugin \
-		-p 44443:4443 \
+		-p 4443:4443 \
+		--restart always \
 		-t eyedeekay/si-i2p-plugin
 
 mps:

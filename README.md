@@ -33,6 +33,10 @@ observers may find it fun to start testing things now. Funnily enough, it would
 have crashed under vanilla firefox last week because the captive portal shit.
 Failed closed though, and now it's handled more gracefully.
 
+I found a new way to crash it. Certain addresshelper URL's, when clicked, will
+break the pipes. Adding addresshelper support will fix this. I'm not going to
+do that until I get the existing code cleaned up.
+
 #### Examples
 
 ##### curl
