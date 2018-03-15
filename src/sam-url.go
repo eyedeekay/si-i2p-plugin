@@ -138,26 +138,30 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
 	body, err := ioutil.ReadAll(response.Body)
-	if subUrl.c, subUrl.err = Warn(err, "Response Read Error", "Reading response from proxy"); subUrl.c {
+	if subUrl.c, subUrl.err = Warn(err, "Response read rrror", "Reading response from proxy"); subUrl.c {
 		Log("Writing files.")
-		subUrl.recvFile.Write(body)
-		r := &http.Response{
-			Status:        status,
-			StatusCode:    statusCode,
-			Proto:         proto,
-			ProtoMajor:    protoMajor,
-			ProtoMinor:    protoMinor,
-			Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
-			ContentLength: int64(len(body)),
-			Request:       request,
-			Header:        header,
-			Trailer:       trailer,
-		}
-		Log("Retrieval time: ", time.Now().String())
-		subUrl.timeFile.WriteString(time.Now().String())
-		return r
+		_, e := subUrl.recvFile.Write(body)
+        if subUrl.c, subUrl.err = Warn(e, "File writing error", "Wrote response to file" ); subUrl.c {
+            r := &http.Response{
+                Status:        status,
+                StatusCode:    statusCode,
+                Proto:         proto,
+                ProtoMajor:    protoMajor,
+                ProtoMinor:    protoMinor,
+                Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
+                ContentLength: int64(len(body)),
+                Request:       request,
+                Header:        header,
+                Trailer:       trailer,
+            }
+            Log("Retrieval time: ", time.Now().String())
+            subUrl.timeFile.WriteString(time.Now().String())
+            return r
+        }else{
+            return nil
+        }
 	}
-	return response
+	return nil
 }
 
 func (subUrl *samUrl) cleanupDirectory() {

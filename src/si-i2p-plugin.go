@@ -38,7 +38,7 @@ func main() {
 	flag.Parse()
 
 	log.SetOutput(os.Stdout)
-	log.SetFlags(log.Lshortfile)
+	//log.SetFlags(log.Lshortfile)
 
 	log.Println("Sam Address:", *samAddrString)
 	log.Println("Sam Port:", *samPortString)

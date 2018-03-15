@@ -132,14 +132,20 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 				proxy.copyHeader(rW.Header(), r.Header)
 
-				log.Println("Response status:", r.StatusCode)
 
-				rW.WriteHeader(r.StatusCode)
-				read, err := ioutil.ReadAll(r.Body)
-
-				if proxy.c, proxy.err = Warn(err, "Response body error:", "Read response body"); proxy.c {
-					io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
-				}
+                if r.StatusCode >= 200 {
+                    if r.StatusCode < 300 {
+                        rW.WriteHeader(r.StatusCode)
+                        read, err := ioutil.ReadAll(r.Body)
+                        if proxy.c, proxy.err = Warn(err, "Response body error:", "Read response body"); proxy.c {
+                            io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
+                        }
+                    }else{
+                        log.Println("Response status:", r.StatusCode)
+                    }
+                }else{
+                    log.Println("Response status:", r.StatusCode)
+                }
 			}
 		}
 	} else {
