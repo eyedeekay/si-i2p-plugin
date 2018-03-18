@@ -104,8 +104,14 @@ func Log(msg ...string) {
 	}
 }
 
+func LogA(msg []string) {
+	if verbose {
+		log.Println("LOG: ", msg)
+	}
+}
+
 func Warn(err error, errmsg string, msg ...string) (bool, error) {
-	Log(msg)
+	LogA(msg)
 	if err != nil {
 		log.Println("WARN: ", err)
 		return false, nil
@@ -114,7 +120,7 @@ func Warn(err error, errmsg string, msg ...string) (bool, error) {
 }
 
 func Fatal(err error, errmsg string, msg ...string) (bool, error) {
-	Log(msg)
+	LogA(msg)
 	if err != nil {
 		log.Fatal("FATAL: ", errmsg, err)
 		return false, err
