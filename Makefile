@@ -50,8 +50,6 @@ native:
 	go get -u github.com/eyedeekay/gosam
 	go build \
 		-a \
-		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
 		-buildmode=pie \
 		-o bin/si-i2p-plugin \
 		./src

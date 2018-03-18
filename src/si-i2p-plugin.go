@@ -105,7 +105,7 @@ func Log(msg ...string) {
 }
 
 func Warn(err error, errmsg string, msg ...string) (bool, error) {
-	log.Println(msg)
+	Log(msg)
 	if err != nil {
 		log.Println("WARN: ", err)
 		return false, nil
@@ -114,7 +114,7 @@ func Warn(err error, errmsg string, msg ...string) (bool, error) {
 }
 
 func Fatal(err error, errmsg string, msg ...string) (bool, error) {
-	log.Println(msg)
+	Log(msg)
 	if err != nil {
 		log.Fatal("FATAL: ", errmsg, err)
 		return false, err
