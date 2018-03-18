@@ -141,9 +141,11 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
                             io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
                         }
                     }else{
+                        rW.WriteHeader(r.StatusCode)
                         log.Println("Response status:", r.StatusCode)
                     }
                 }else{
+                    rW.WriteHeader(r.StatusCode)
                     log.Println("Response status:", r.StatusCode)
                 }
 			}

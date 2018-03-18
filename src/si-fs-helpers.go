@@ -60,6 +60,31 @@ func checkFolder(directory string) bool {
 	}
 }
 
+func setupFile(directory, path string) (string, *os.File, error) {
+	mkPath := filepath.Join(connectionDirectory, directory, truncatePath(path))
+	pathExists, pathErr := exists(mkPath)
+	if e, c := Fatal(pathErr, "File Check Error", "File Check", mkPath); e {
+		if !pathExists {
+			Log("Preparing to create File:", mkPath)
+            file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
+            if f, d := Fatal(err, "File Check Error", "File Check", mkPath); f {
+                return mkPath, file, d
+            }
+		} else {
+            g := os.Remove(mkPath)
+            if f, d := Fatal(g, "File Check Error", "File Check", mkPath); !f {
+                return mkPath, nil, d
+            }
+            file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
+            if h, i := Fatal(err, "File Check Error", "File Check", mkPath); h {
+                return mkPath, file, i
+            }
+            return mkPath, nil, err
+		}
+	} else { return mkPath, nil, c }
+    return mkPath, nil, pathErr
+}
+
 func setupFiFo(directory, path string) (string, *os.File, error) {
 	mkPath := filepath.Join(connectionDirectory, directory, truncatePath(path))
 	pathExists, pathErr := exists(mkPath)

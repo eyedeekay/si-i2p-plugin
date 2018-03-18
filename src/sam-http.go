@@ -63,17 +63,17 @@ func (samConn *samHttp) initPipes() {
         }
     }
 
-    samConn.namePath, samConn.nameFile, samConn.err = setupFiFo(filepath.Join(connectionDirectory, samConn.host), "name")
+    samConn.namePath, samConn.nameFile, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "name")
     if samConn.c, samConn.err = Fatal(samConn.err, "Pipe setup error", "Pipe setup"); samConn.c {
         samConn.nameFile.WriteString("")
     }
 
-    samConn.idPath, samConn.idFile, samConn.err = setupFiFo(filepath.Join(connectionDirectory, samConn.host), "id")
+    samConn.idPath, samConn.idFile, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "id")
     if samConn.c, samConn.err = Fatal(samConn.err, "Pipe setup error", "Pipe setup"); samConn.c {
         samConn.idFile.WriteString("")
     }
 
-    samConn.base64Path, samConn.base64File, samConn.err = setupFiFo(filepath.Join(connectionDirectory, samConn.host), "id")
+    samConn.base64Path, samConn.base64File, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "id")
     if samConn.c, samConn.err = Fatal(samConn.err, "Pipe setup error", "Pipe setup"); samConn.c {
         samConn.idFile.WriteString("")
     }
@@ -86,8 +86,10 @@ func (samConn *samHttp) Dial(network, addr string) (net.Conn, error) {
 	if samConn.c, samConn.err = Warn(samConn.err, "SAM connection error", "Initializing SAM connection"); samConn.c {
 		if samConn.name != "" {
 			if samConn.id != 0 {
-				samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
-				Warn(samConn.err, "Stream connection error", "Connecting SAM streams")
+                if samConn.samBridgeClient != nil {
+                    samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
+                    Warn(samConn.err, "Stream connection error", "Connecting SAM streams")
+                }
 			}
 		}
 	}
@@ -210,11 +212,15 @@ func (samConn *samHttp) getURL(request string) (string, string) {
 func (samConn *samHttp) sendRequest(request string) (*http.Response, error) {
 	r, dir := samConn.getURL(request)
 	Log("Getting resource", request)
-	resp, err := samConn.subClient.Get(r)
-	Warn(err, "Response Error", "Getting Response")
-	Log("Pumping result to top of parent pipe")
-	samConn.copyRequest(resp, dir)
-	return resp, err
+    if samConn.subClient != nil {
+        resp, err := samConn.subClient.Get(r)
+        Warn(err, "Response Error", "Getting Response")
+        Log("Pumping result to top of parent pipe")
+        samConn.copyRequest(resp, dir)
+        return resp, err
+    }else{
+        return nil, nil
+    }
 }
 
 func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, string) {

@@ -46,6 +46,17 @@ release:
 		./src
 	@echo 'built release'
 
+native:
+	go get -u github.com/eyedeekay/gosam
+	go build \
+		-a \
+		-tags netgo \
+		-ldflags '-w -extldflags "-static"' \
+		-buildmode=pie \
+		-o bin/si-i2p-plugin \
+		./src
+	@echo 'built release'
+
 android: bin/si-i2p-plugin-arm-droid
 
 bin/si-i2p-plugin-arm-droid:

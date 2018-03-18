@@ -32,7 +32,7 @@ type samUrl struct {
 func (subUrl *samUrl) initPipes() {
     checkFolder(filepath.Join(connectionDirectory, subUrl.subDirectory))
 
-    subUrl.recvPath, subUrl.recvFile, subUrl.err = setupFiFo(filepath.Join(connectionDirectory, subUrl.subDirectory), "recv")
+    subUrl.recvPath, subUrl.recvFile, subUrl.err = setupFile(filepath.Join(connectionDirectory, subUrl.subDirectory), "recv")
     if subUrl.c, subUrl.err = Fatal(subUrl.err, "Pipe setup error", "Pipe setup"); subUrl.c {
         subUrl.recvFile.WriteString("")
     }
