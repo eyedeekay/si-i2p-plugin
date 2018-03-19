@@ -130,4 +130,4 @@ test-browser-diff:
 	http_proxy=http://127.0.0.1:4443 surf http://i2p-projekt.i2p
 
 firefox:
-	iceweasel http://4pvyyb3phqznc6e6fjewty2fpbb4p3ub2q27ojheitcg4nai6p5q.b32.i2p
+	iceweasel http://i2p-projekt.i2p

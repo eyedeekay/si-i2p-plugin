@@ -40,15 +40,15 @@ func main() {
 	log.SetOutput(os.Stdout)
 	//log.SetFlags(log.Lshortfile)
 
-	log.Println("Sam Address:", *samAddrString)
-	log.Println("Sam Port:", *samPortString)
-	log.Println("Proxy Address:", *proxAddrString)
-	log.Println("Proxy Port:", *proxPortString)
-	log.Println("Working Directory:", *workDirectory)
-	log.Println("Debug mode:", *debugConnection)
-	log.Println("Verbose mode:", *verboseLogging)
-	log.Println("Using HTTP proxy:", *useHttpProxy)
-	log.Println("Initial URL:", *address)
+	Log("si-i2p-plugin.go Sam Address:", *samAddrString)
+	Log("si-i2p-plugin.go Sam Port:", *samPortString)
+	Log("si-i2p-plugin.go Proxy Address:", *proxAddrString)
+	Log("si-i2p-plugin.go Proxy Port:", *proxPortString)
+	Log("si-i2p-plugin.go Working Directory:", *workDirectory)
+	log.Println("si-i2p-plugin.go Debug mode:", *debugConnection)
+	log.Println("si-i2p-plugin.go Verbose mode:", *verboseLogging)
+	log.Println("si-i2p-plugin.go Using HTTP proxy:", *useHttpProxy)
+	Log("si-i2p-plugin.go Initial URL:", *address)
 
 	verbose = *verboseLogging
 
@@ -76,12 +76,12 @@ func main() {
 	if *useHttpProxy {
 		if !httpUp {
 			samProxy := createHttpProxy(*proxAddrString, *proxPortString, samProxies, *address)
-			log.Println("HTTP Proxy Started:" + samProxy.host)
+			Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.host)
 			httpUp = true
 		}
 	}
 
-	log.Println("Created client, starting loop...")
+	Log("si-i2p-plugin.go Created client, starting loop...")
 
 	for exit != true {
 		go closeProxy(samProxies)

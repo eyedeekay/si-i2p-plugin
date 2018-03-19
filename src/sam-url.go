@@ -33,19 +33,19 @@ func (subUrl *samUrl) initPipes() {
     checkFolder(filepath.Join(connectionDirectory, subUrl.subDirectory))
 
     subUrl.recvPath, subUrl.recvFile, subUrl.err = setupFile(filepath.Join(connectionDirectory, subUrl.subDirectory), "recv")
-    if subUrl.c, subUrl.err = Fatal(subUrl.err, "Pipe setup error", "Pipe setup"); subUrl.c {
+    if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
         subUrl.recvFile.WriteString("")
     }
 
     subUrl.timePath, subUrl.timeFile, subUrl.err = setupFiFo(filepath.Join(connectionDirectory, subUrl.subDirectory), "time")
-    if subUrl.c, subUrl.err = Fatal(subUrl.err, "Pipe setup error", "Pipe setup"); subUrl.c {
+    if subUrl.c, subUrl.err = Fatal(subUrl.err, "Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
         subUrl.timeFile.WriteString("")
     }
 
     subUrl.delPath, subUrl.delPipe, subUrl.err = setupFiFo(filepath.Join(connectionDirectory, subUrl.subDirectory), "del")
-    if subUrl.c, subUrl.err = Fatal(subUrl.err, "Pipe setup error", "Pipe setup"); subUrl.c {
+    if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
         subUrl.delScan, subUrl.err = setupScanner(filepath.Join(connectionDirectory, subUrl.subDirectory), "del", subUrl.delPipe)
-        if subUrl.c, subUrl.err = Fatal(subUrl.err, "Scanner setup Error:", "Scanner set up successfully."); !subUrl.c {
+        if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subUrl.c {
             subUrl.cleanupDirectory()
         }
     }
@@ -59,19 +59,19 @@ func (subUrl *samUrl) createDirectory(requestdir string) {
 
 func (subUrl *samUrl) scannerText() (string, error) {
 	d, err := ioutil.ReadFile(subUrl.recvPath)
-	if subUrl.c, subUrl.err = Fatal(err, "Scanner error", "Scanning recv"); subUrl.c {
+	if subUrl.c, subUrl.err = Fatal(err, "sam-url.go Scanner error", "sam-url.go Scanning recv"); subUrl.c {
         return "", subUrl.err
     }
 	s := string(d)
 	if s != "" {
-		Log("Read file", s)
+		Log("sam-url.go Read file", s)
 		return s, err
 	}
 	return "", err
 }
 
 func (subUrl *samUrl) dirSet(requestdir string) string {
-	Log("Requesting directory: ", requestdir+"/")
+	Log("sam-url.go Requesting directory: ", requestdir+"/")
 	d1 := requestdir
 	d2 := strings.Replace(d1, "//", "/", -1)
 	return d2
@@ -80,10 +80,10 @@ func (subUrl *samUrl) dirSet(requestdir string) string {
 func (subUrl *samUrl) checkDirectory(directory string) bool {
 	b := false
 	if directory == subUrl.subDirectory {
-		Log("Directory / ", directory+" : equals : "+subUrl.subDirectory)
+		Log("sam-url.go Directory / ", directory+" : equals : "+subUrl.subDirectory)
 		b = true
 	} else {
-		Log("Directory / ", directory+" : does not equal : "+subUrl.subDirectory)
+		Log("sam-url.go Directory / ", directory+" : does not equal : "+subUrl.subDirectory)
 	}
 	return b
 }
@@ -92,9 +92,9 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 	b := false
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
-			log.Println("Response Status ", response.StatusCode)
+			log.Println("sam-url.go Response Status ", response.StatusCode)
 			if response.StatusCode == http.StatusOK {
-				Log("Setting file in cache")
+				Log("sam-url.go Setting file in cache")
 				subUrl.dealResponse(response)
 			}
 		}
@@ -106,9 +106,9 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) *http.Response {
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
-			log.Println("Response Status ", response.StatusCode)
+			log.Println("sam-url.go Response Status ", response.StatusCode)
 			if response.StatusCode == http.StatusOK {
-				Log("Setting file in cache")
+				Log("sam-url.go Setting file in cache")
 				resp := subUrl.dealResponseHttp(request, response)
 				return resp
 			}
@@ -120,10 +120,10 @@ func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Re
 func (subUrl *samUrl) dealResponse(response *http.Response) {
 	defer response.Body.Close()
 	body, err := ioutil.ReadAll(response.Body)
-	if subUrl.c, subUrl.err = Warn(err, "Response Write Error", "Writing responses"); subUrl.c {
-		Log("Writing files.")
+	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response Write Error", "sam-url.go Writing responses"); subUrl.c {
+		Log("sam-url.go Writing files.")
 		subUrl.recvFile.Write(body)
-		Log("Retrieval time: ", time.Now().String())
+		Log("sam-url.go Retrieval time: ", time.Now().String())
 		subUrl.timeFile.WriteString(time.Now().String())
 	}
 }
@@ -138,10 +138,10 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
 	body, err := ioutil.ReadAll(response.Body)
-	if subUrl.c, subUrl.err = Warn(err, "Response read rrror", "Reading response from proxy"); subUrl.c {
-		Log("Writing files.")
+	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read rrror", "sam-url.go Reading response from proxy"); subUrl.c {
+		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)
-        if subUrl.c, subUrl.err = Warn(e, "File writing error", "Wrote response to file" ); subUrl.c {
+        if subUrl.c, subUrl.err = Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file" ); subUrl.c {
             r := &http.Response{
                 Status:        status,
                 StatusCode:    statusCode,
@@ -154,7 +154,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
                 Header:        header,
                 Trailer:       trailer,
             }
-            Log("Retrieval time: ", time.Now().String())
+            Log("sam-url.go Retrieval time: ", time.Now().String())
             subUrl.timeFile.WriteString(time.Now().String())
             return r
         }else{
@@ -172,7 +172,7 @@ func (subUrl *samUrl) cleanupDirectory() {
 }
 
 func (subUrl *samUrl) readDelete() bool {
-	Log("Managing pipes:")
+	Log("sam-url.go Managing pipes:")
 	for subUrl.delScan.Scan() {
 		if subUrl.delScan.Text() == "y" || subUrl.delScan.Text() == "Y" {
 			defer subUrl.cleanupDirectory()
@@ -185,14 +185,14 @@ func (subUrl *samUrl) readDelete() bool {
 }
 
 func newSamUrl(requestdir string) samUrl {
-	log.Println("Creating a new cache directory.")
+	log.Println("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	subUrl.createDirectory(requestdir)
 	return subUrl
 }
 
 func newSamUrlHttp(request *http.Request) samUrl {
-	log.Println("Creating a new cache directory.")
+	log.Println("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	log.Println(subUrl.subDirectory)
 	subUrl.createDirectory(request.Host + request.URL.Path)
