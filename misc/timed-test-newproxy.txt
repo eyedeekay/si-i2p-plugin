@@ -1,60 +1,60 @@
 timing request to http://i2p-projekt.i2p/en/download via curl
 time_namelookup:  0.000070
-time_connect:  0.002810
+time_connect:  0.008222
 time_appconnect:  0.000000
-time_pretransfer:  0.002924
+time_pretransfer:  0.008591
 time_redirect:  0.000000
-time_starttransfer:  59.839568
+time_starttransfer:  45.061617
 ----------
-time_total:  59.839787
+time_total:  45.062021
 
 timing request to http://i2p-projekt.i2p/ via curl
-time_namelookup:  0.000072
-time_connect:  0.002822
+time_namelookup:  0.000074
+time_connect:  0.001762
 time_appconnect:  0.000000
-time_pretransfer:  0.004140
+time_pretransfer:  0.001865
 time_redirect:  0.000000
-time_starttransfer:  5.642085
+time_starttransfer:  7.841808
 ----------
-time_total:  5.642512
+time_total:  7.842104
 
 timing request to i2p-projekt.i2p/ via curl
-time_namelookup:  0.000066
-time_connect:  0.001395
+time_namelookup:  0.000075
+time_connect:  0.001081
 time_appconnect:  0.000000
-time_pretransfer:  0.002697
+time_pretransfer:  0.002007
 time_redirect:  0.000000
-time_starttransfer:  32.985047
+time_starttransfer:  5.595241
 ----------
-time_total:  32.985500
+time_total:  5.595614
 
 timing request to inr.i2p/ via curl
-time_namelookup:  0.000077
-time_connect:  0.006098
+time_namelookup:  0.000072
+time_connect:  0.009765
 time_appconnect:  0.000000
-time_pretransfer:  0.006170
+time_pretransfer:  0.009885
 time_redirect:  0.000000
-time_starttransfer:  25.847864
+time_starttransfer:  24.849664
 ----------
-time_total:  25.848204
+time_total:  24.849895
 
 timing request to http://inr.i2p/ via curl
-time_namelookup:  0.000064
-time_connect:  0.004593
+time_namelookup:  0.000065
+time_connect:  0.000569
 time_appconnect:  0.000000
-time_pretransfer:  0.004667
+time_pretransfer:  0.002206
 time_redirect:  0.000000
-time_starttransfer:  2.114238
+time_starttransfer:  1.464256
 ----------
-time_total:  2.114585
+time_total:  1.464346
 
 timing request to http://inr.i2p/latest via curl
-time_namelookup:  0.000074
-time_connect:  0.002032
+time_namelookup:  0.000072
+time_connect:  0.001262
 time_appconnect:  0.000000
-time_pretransfer:  0.003495
+time_pretransfer:  0.002112
 time_redirect:  0.000000
-time_starttransfer:  4.049209
+time_starttransfer:  9.901265
 ----------
-time_total:  4.049541
+time_total:  9.901580
 

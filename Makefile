@@ -123,7 +123,7 @@ tidy:
 
 clobber: clean
 	rm -rf ../si-i2p-plugin_$(VERSION)*-1_amd64.deb
-	docker rmi -f si-i2p-plugin-static si-i2p-plugin; true
+	docker rmi -f si-i2p-plugin-static si-i2p-plugin eyedeekay/si-i2p-plugin; true
 	docker rm -f si-i2p-plugin-static si-i2p-plugin; true
 
 cat:
@@ -162,7 +162,7 @@ docker-run-thirdeye:
 		--hostname thirdeye-proxy \
 		--cap-drop all \
 		--user sii2pplugin \
-		-p 4443:4443 \
+		-p 127.0.0.1:4443:4443 \
 		--restart always \
 		-t eyedeekay/si-i2p-plugin
 
