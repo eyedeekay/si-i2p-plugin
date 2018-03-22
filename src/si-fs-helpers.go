@@ -34,16 +34,19 @@ func truncatePaths(str string) string {
     for _, i := range temp {
         if i != "" {
             fixedpath += truncatePath(i) + "/"
+            if fixedpath != "" {
+                Log("si-fs-helpers.go ", truncatePath(i))
+            }
         }
     }
-    if fixedpath != "" {
-        Log("si-fs-helpers.go ", fixedpath)
+    if strings.HasSuffix(fixedpath, "/") {
+        fixedpath = fixedpath[:len(fixedpath)-len("/")]
     }
     return fixedpath
 }
 
 func setupFolder(directory string) bool {
-	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory)))
+	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory, directory)))
 	if e, _ := Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
 			Log("si-fs-helpers.go Creating a connection:", directory)
@@ -61,7 +64,7 @@ func setupFolder(directory string) bool {
 }
 
 func checkFolder(directory string) bool {
-	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory)))
+	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory, directory)))
 	if e, _ := Fatal(err, "si-fs-helpers.go Child Directory Error", "si-fs-helpers.go Child Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
 			Log("si-fs-helpers.go Creating a child directory folder:", directory)
@@ -76,7 +79,7 @@ func checkFolder(directory string) bool {
 }
 
 func setupFile(directory, path string) (string, *os.File, error) {
-	mkPath := filepath.Join(connectionDirectory, directory, truncatePaths(path))
+	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
@@ -101,7 +104,7 @@ func setupFile(directory, path string) (string, *os.File, error) {
 }
 
 func setupFiFo(directory, path string) (string, *os.File, error) {
-	mkPath := filepath.Join(connectionDirectory, directory, truncatePaths(path))
+	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
@@ -123,7 +126,7 @@ func setupFiFo(directory, path string) (string, *os.File, error) {
 }
 
 func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
-	mkPath := filepath.Join(connectionDirectory, directory, truncatePaths(path))
+	mkPath :=  truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	_, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		Log("si-fs-helpers.go Opening the Named Pipe as a Scanner...")
