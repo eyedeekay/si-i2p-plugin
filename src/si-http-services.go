@@ -164,6 +164,10 @@ func (samServiceStack *samServices) cleanupServices() {
 	os.RemoveAll(filepath.Join(connectionDirectory, "service"))
 }
 
+func (samServiceStack *samServices) run(){
+
+}
+
 func createSamServiceList(samAddr string, samPort string) *samServices {
 	var samServiceList samServices
     samServiceList.dir = "services"

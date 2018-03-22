@@ -109,7 +109,7 @@ try: build
 
 clean:
 	killall si-i2p-plugin; \
-	rm -rf parent ./.*.i2p*/ ./*.i2p*/ \
+	rm -rf parent services ./.*.i2p*/ ./*.i2p*/ \
 		*.html *-pak *err *log \
 		static-include static-exclude \
 		bin/si-i2p-plugin bin/si-i2p-plugin-arm

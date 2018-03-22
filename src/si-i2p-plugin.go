@@ -55,10 +55,11 @@ func main() {
 	goSam.ConnDebug = *debugConnection
 
 	var samProxies *samList
-	samProxies = createSamList(*samAddrString, *samPortString, *address)
+    var samService *samServices
 
-	//    var samServices *samServices
-	//    samServices = createSamServiceList(*samAddrString, *samPortString)
+	samProxies = createSamList(*samAddrString, *samPortString, *address)
+    samService = createSamServiceList(*samAddrString, *samPortString)
+    samService.run()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
