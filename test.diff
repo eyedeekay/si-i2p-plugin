@@ -1,55 +1,60 @@
-/usr/bin/curl -x '127.0.0.1:4444' -L lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p     |	/usr/bin/curl -x '127.0.0.1:4443' -L lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p
-<!DOCTYPE html>												<!DOCTYPE html>
-<html>													<html>
-<head>													<head>
-  <title> What is my Base64? </title>									  <title> What is my Base64? </title>
-</head>													</head>
-  <body>												  <body>
-    <pre><code>												    <pre><code>
-Header: User-Agent, Value: [MYOB/6.66 (AN/ON)]								Header: User-Agent, Value: [MYOB/6.66 (AN/ON)]
-Header: Connection, Value: [close]								      |	Header: Accept-Encoding, Value: [gzip]
-Header: X-I2p-Destb32, Value: [7ze6imoq72tsaaqtpv2cnzjucwe4wgslxkrqqkjk7xeiifel5okq.b32.i2p]	      |	Header: X-I2p-Destb32, Value: [hlu5tme2dvtkthh5qweqjmfqjnmoeo4uolm37p5xeholfdmvpv7q.b32.i2p]
-Header: X-I2p-Desthash, Value: [~knkMdD-pyACE310JuU0FYnLGku6owgpKv3IhBSL65U=]			      |	Header: X-I2p-Desthash, Value: [OunZsJodZqmc~YWJBLCwS1jiO5Ry2b-~tyHcso2VfX8=]
-Header: X-I2p-Destb64, Value: [OIfvupXdTzJiyDM~Dp9aEyVKGB1LSUMr9tzqqHgXf4ipr6b08Q5kVkRy3sYzyOWAi-u-i7 |	Header: X-I2p-Destb64, Value: [7sWPpCWlg9o8c6uYZR3jaFKKzRDfYEqlTMYy~-Tu~fHPcUhmvnEFwc4XKGLu-AtyDGzzyR
-    </pre></code>											    </pre></code>
-  </body>												  </body>
-</html>													</html>
-/usr/bin/curl -x '127.0.0.1:4444' -L zcofypupen75rdv5zihviweyw5emk2l34idq423kbhj7n3owoe5a.b32.i2p     |	/usr/bin/curl -x '127.0.0.1:4443' -L zcofypupen75rdv5zihviweyw5emk2l34idq423kbhj7n3owoe5a.b32.i2p
-<!DOCTYPE html>												<!DOCTYPE html>
-<html>													<html>
-<head>													<head>
-  <title> What is my Base64? </title>									  <title> What is my Base64? </title>
-</head>													</head>
-  <body>												  <body>
-    <pre><code>												    <pre><code>
-[32m												      >	Header: Accept-Encoding, Value: [gzip]
-[0m[32m												      >	Header: X-I2p-Destb32, Value: [66fvj5rfyrebiaotchb2elywp4rk5kvb77r63dfafubepct23ura.b32.i2p]
-[0m[32m												      >	Header: X-I2p-Desthash, Value: [94tU9iXESBQB0xHDoi8WfyKuqqH~4-2MoC0CR4p63SI=]
-[0m[32m												      >	Header: X-I2p-Destb64, Value: [~ihlfVPQLM50DalvEY9yNJjOghxk9kuyxHni4fVxMf1MY9NYRorygib8YILmy2uTyBcbo-
-[0mHeader: User-Agent, Value: [MYOB/6.66 (AN/ON)]								Header: User-Agent, Value: [MYOB/6.66 (AN/ON)]
-[31mHeader: Connection, Value: [close]								      <
-[0m[31mHeader: X-I2p-Destb32, Value: [7ze6imoq72tsaaqtpv2cnzjucwe4wgslxkrqqkjk7xeiifel5okq.b32.i2p]	      <
-[0m[31mHeader: X-I2p-Desthash, Value: [~knkMdD-pyACE310JuU0FYnLGku6owgpKv3IhBSL65U=]			      <
-[0m[31mHeader: X-I2p-Destb64, Value: [OIfvupXdTzJiyDM~Dp9aEyVKGB1LSUMr9tzqqHgXf4ipr6b08Q5kVkRy3sYzyOWAi-u-i7 <
-[0m    </pre></code>											    </pre></code>
-  </body>												  </body>
-</html>													</html>
-/usr/bin/curl -x '127.0.0.1:4444' -L zjjjd756aucwz3pa2fl4mb3po2wtf752aefpod4gvedwreeox52q.b32.i2p     |	/usr/bin/curl -x '127.0.0.1:4443' -L zjjjd756aucwz3pa2fl4mb3po2wtf752aefpod4gvedwreeox52q.b32.i2p
-<!DOCTYPE html>												<!DOCTYPE html>
-<html>													<html>
-<head>													<head>
-  <title> What is my Base64? </title>									  <title> What is my Base64? </title>
-</head>													</head>
-  <body>												  <body>
-    <pre><code>												    <pre><code>
-[31mHeader: X-I2p-Destb32, Value: [7ze6imoq72tsaaqtpv2cnzjucwe4wgslxkrqqkjk7xeiifel5okq.b32.i2p]	      <
-[0m[31mHeader: X-I2p-Desthash, Value: [~knkMdD-pyACE310JuU0FYnLGku6owgpKv3IhBSL65U=]			      <
-[0m[31mHeader: X-I2p-Destb64, Value: [OIfvupXdTzJiyDM~Dp9aEyVKGB1LSUMr9tzqqHgXf4ipr6b08Q5kVkRy3sYzyOWAi-u-i7 <
-[0mHeader: User-Agent, Value: [MYOB/6.66 (AN/ON)]								Header: User-Agent, Value: [MYOB/6.66 (AN/ON)]
-Header: Connection, Value: [close]								      |	Header: Accept-Encoding, Value: [gzip]
-[32m												      >	Header: X-I2p-Destb32, Value: [ilx5ncydolriq4cbtxtktjagrhujtc52z5qh6fl5i4fvhnzz52yq.b32.i2p]
-[0m[32m												      >	Header: X-I2p-Desthash, Value: [Qu~WiwNy4ohwQZ3mqaQGieiZi7rPYH8VfUcLU7c57rE=]
-[0m[32m												      >	Header: X-I2p-Destb64, Value: [jJggw7sOou48MxN-j2pxID9uCZwHMKA4TANKUNufsL2QmMSYbvDE9E9IAYF9F7zzboGyLN
-[0m    </pre></code>											    </pre></code>
-  </body>												  </body>
-</html>													</html>
+timing request to http://i2p-projekt.i2p/en/download via curl						timing request to http://i2p-projekt.i2p/en/download via curl
+time_namelookup:  0.000070									   |	time_namelookup:  0.000194
+time_connect:  0.008222										   |	time_connect:  0.013366
+time_appconnect:  0.000000										time_appconnect:  0.000000
+time_pretransfer:  0.008591									   |	time_pretransfer:  0.013603
+time_redirect:  0.000000										time_redirect:  0.000000
+time_starttransfer:  45.061617									   |	time_starttransfer:  4.592206
+----------												----------
+time_total:  45.062021										   |	time_total:  8.007725
+
+timing request to http://i2p-projekt.i2p/ via curl							timing request to http://i2p-projekt.i2p/ via curl
+time_namelookup:  0.000074									   |	time_namelookup:  0.000183
+time_connect:  0.001762										   |	time_connect:  0.001600
+time_appconnect:  0.000000										time_appconnect:  0.000000
+time_pretransfer:  0.001865									   |	time_pretransfer:  0.002663
+time_redirect:  0.000000										time_redirect:  0.000000
+time_starttransfer:  7.841808									   |	time_starttransfer:  1.896898
+----------												----------
+time_total:  7.842104										   |	time_total:  1.897522
+
+timing request to i2p-projekt.i2p/ via curl								timing request to i2p-projekt.i2p/ via curl
+time_namelookup:  0.000075									   |	time_namelookup:  0.000214
+time_connect:  0.001081										   |	time_connect:  0.005884
+time_appconnect:  0.000000										time_appconnect:  0.000000
+time_pretransfer:  0.002007									   |	time_pretransfer:  0.007819
+time_redirect:  0.000000										time_redirect:  0.000000
+time_starttransfer:  5.595241									   |	time_starttransfer:  1.919057
+----------												----------
+time_total:  5.595614										   |	time_total:  1.919669
+
+timing request to inr.i2p/ via curl									timing request to inr.i2p/ via curl
+time_namelookup:  0.000072									   |	time_namelookup:  0.000287
+time_connect:  0.009765										   |	time_connect:  0.009290
+time_appconnect:  0.000000										time_appconnect:  0.000000
+time_pretransfer:  0.009885									   |	time_pretransfer:  0.016429
+time_redirect:  0.000000										time_redirect:  0.000000
+time_starttransfer:  24.849664									   |	time_starttransfer:  8.089527
+----------												----------
+time_total:  24.849895										   |	time_total:  8.462928
+
+timing request to http://inr.i2p/ via curl								timing request to http://inr.i2p/ via curl
+time_namelookup:  0.000065									   |	time_namelookup:  0.000192
+time_connect:  0.000569										   |	time_connect:  0.018556
+time_appconnect:  0.000000										time_appconnect:  0.000000
+time_pretransfer:  0.002206									   |	time_pretransfer:  0.018761
+time_redirect:  0.000000										time_redirect:  0.000000
+time_starttransfer:  1.464256									   |	time_starttransfer:  2.753568
+----------												----------
+time_total:  1.464346										   |	time_total:  3.133815
+
+timing request to http://inr.i2p/latest via curl							timing request to http://inr.i2p/latest via curl
+time_namelookup:  0.000072									   |	time_namelookup:  0.000165
+time_connect:  0.001262										   |	time_connect:  0.002614
+time_appconnect:  0.000000										time_appconnect:  0.000000
+time_pretransfer:  0.002112									   |	time_pretransfer:  0.003586
+time_redirect:  0.000000										time_redirect:  0.000000
+time_starttransfer:  9.901265									   |	time_starttransfer:  2.666253
+----------												----------
+time_total:  9.901580										   |	time_total:  2.666719
+
