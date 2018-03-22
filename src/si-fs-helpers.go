@@ -20,10 +20,10 @@ func exists(path string) (bool, error) {
 }
 
 func truncatePath(str string) string {
-    num := 254
+    num := 90
 	bnoden := str
 	if len(str) > num {
-		bnoden = str[0:num] + "..."
+		bnoden = str[0:num]
 	}
 	return bnoden
 }
@@ -36,7 +36,9 @@ func truncatePaths(str string) string {
             fixedpath += truncatePath(i) + "/"
         }
     }
-    Log("si-fs-helpers.go", fixedpath)
+    if fixedpath != "" {
+        Log("si-fs-helpers.go ", fixedpath)
+    }
     return fixedpath
 }
 

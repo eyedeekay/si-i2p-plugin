@@ -225,11 +225,11 @@ func (samStack *samList) cleanupClient() {
 func createSamList(samAddr string, samPort string, initAddress string) *samList {
 	var samStack samList
 	samStack.dir = "parent"
-	log.Println("sam-list.go Generating parent proxy structure.")
+	Log("sam-list.go Generating parent proxy structure.")
 	samStack.up = false
-	log.Println("sam-list.go Parent proxy set to down.")
+	Log("sam-list.go Parent proxy set to down.")
 	samStack.createSamList(samAddr, samPort)
-	log.Println("sam-list.go SAM list created")
+	Log("sam-list.go SAM list created")
 	if initAddress != "" {
 		samStack.sendPipe.WriteString(initAddress + "\n")
 	}

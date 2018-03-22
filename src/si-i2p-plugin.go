@@ -59,7 +59,7 @@ func main() {
 
 	samProxies = createSamList(*samAddrString, *samPortString, *address)
     samService = createSamServiceList(*samAddrString, *samPortString)
-    samService.run()
+//    samService.run()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -86,6 +86,8 @@ func main() {
 
 	for exit != true {
 		go closeProxy(samProxies)
+        go closeServices(samService)
+
 		go samProxies.writeResponses()
 		samProxies.readRequest()
 
@@ -97,6 +99,10 @@ func main() {
 
 func closeProxy(samProxies *samList) {
 	exit = samProxies.readDelete()
+}
+
+func closeServices(samServiceList *samServices) {
+	exit = samServiceList.readDelete()
 }
 
 func Log(msg ...string) {

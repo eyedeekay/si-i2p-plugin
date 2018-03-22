@@ -373,9 +373,9 @@ func newSamHttp(samAddrString string, samPortString string, request string) samH
 }
 
 func newSamHttpHttp(samAddrString string, samPortString string, request *http.Request) samHttp {
-	log.Println("sam-http.go Creating a new SAMv3 Client.")
+	Log("sam-http.go Creating a new SAMv3 Client.")
 	var samConn samHttp
-	log.Println(request.Host + request.URL.Path)
+	Log(request.Host + request.URL.Path)
 	samConn.createClientHttp(request, samAddrString, samPortString)
 	return samConn
 }
