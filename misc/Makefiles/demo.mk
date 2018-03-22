@@ -5,6 +5,8 @@ misc/log/headers.vuln.log:
 	mkdir -p misc/log
 	docker logs demoservice | tee misc/log/headers.vuln.log
 
+demo: demo-p1-fix demo-p2-fix demo-p3-fix
+
 demo-p1-fix:
 	@echo lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p | tee parent/send
 

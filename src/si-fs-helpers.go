@@ -4,6 +4,7 @@ import (
     "bufio"
 	"os"
 	"path/filepath"
+    "strings"
 	"syscall"
 )
 
@@ -27,17 +28,29 @@ func truncatePath(str string) string {
 	return bnoden
 }
 
+func truncatePaths(str string) string {
+    temp := strings.SplitN(str, "/", -1)
+    var fixedpath string
+    for _, i := range temp {
+        if i != "" {
+            fixedpath += truncatePath(i) + "/"
+        }
+    }
+    Log("si-fs-helpers.go", fixedpath)
+    return fixedpath
+}
+
 func setupFolder(directory string) bool {
-	pathConnectionExists, err := exists(truncatePath(filepath.Join(connectionDirectory)))
-	if e, _ := Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePath(filepath.Join(connectionDirectory))); e {
+	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory)))
+	if e, _ := Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
 			Log("si-fs-helpers.go Creating a connection:", directory)
-			os.Mkdir(truncatePath(filepath.Join(connectionDirectory, directory)), 0755)
+			os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
 		} else {
-			os.RemoveAll(truncatePath(filepath.Join(connectionDirectory, directory)))
+			os.RemoveAll(truncatePaths(filepath.Join(connectionDirectory, directory)))
 			Log("si-fs-helpers.go Creating a connection:", directory)
-			os.Mkdir(truncatePath(filepath.Join(connectionDirectory, directory)), 0755)
+			os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
 		}
 	} else {
@@ -46,11 +59,11 @@ func setupFolder(directory string) bool {
 }
 
 func checkFolder(directory string) bool {
-	pathConnectionExists, err := exists(truncatePath(filepath.Join(connectionDirectory)))
-	if e, _ := Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePath(filepath.Join(connectionDirectory))); e {
+	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory)))
+	if e, _ := Fatal(err, "si-fs-helpers.go Child Directory Error", "si-fs-helpers.go Child Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
-			Log("si-fs-helpers.go Creating a connection:", directory)
-			os.MkdirAll(truncatePath(filepath.Join(connectionDirectory, directory)), 0755)
+			Log("si-fs-helpers.go Creating a child directory folder:", directory)
+			os.MkdirAll(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
 		}else{
             return false
@@ -61,7 +74,7 @@ func checkFolder(directory string) bool {
 }
 
 func setupFile(directory, path string) (string, *os.File, error) {
-	mkPath := filepath.Join(connectionDirectory, directory, truncatePath(path))
+	mkPath := filepath.Join(connectionDirectory, directory, truncatePaths(path))
 	pathExists, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
@@ -86,7 +99,7 @@ func setupFile(directory, path string) (string, *os.File, error) {
 }
 
 func setupFiFo(directory, path string) (string, *os.File, error) {
-	mkPath := filepath.Join(connectionDirectory, directory, truncatePath(path))
+	mkPath := filepath.Join(connectionDirectory, directory, truncatePaths(path))
 	pathExists, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
@@ -108,7 +121,7 @@ func setupFiFo(directory, path string) (string, *os.File, error) {
 }
 
 func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
-	mkPath := filepath.Join(connectionDirectory, directory, truncatePath(path))
+	mkPath := filepath.Join(connectionDirectory, directory, truncatePaths(path))
 	_, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		Log("si-fs-helpers.go Opening the Named Pipe as a Scanner...")
