@@ -55,11 +55,11 @@ func main() {
 	goSam.ConnDebug = *debugConnection
 
 	var samProxies *samList
-    var samService *samServices
+	var samService *samServices
 
 	samProxies = createSamList(*samAddrString, *samPortString, *address)
-    samService = createSamServiceList(*samAddrString, *samPortString)
-//    samService.run()
+	samService = createSamServiceList(*samAddrString, *samPortString)
+	//    samService.run()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -86,7 +86,7 @@ func main() {
 
 	for exit != true {
 		go closeProxy(samProxies)
-        go closeServices(samService)
+		go closeServices(samService)
 
 		go samProxies.writeResponses()
 		samProxies.readRequest()

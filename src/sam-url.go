@@ -30,25 +30,25 @@ type samUrl struct {
 }
 
 func (subUrl *samUrl) initPipes() {
-    checkFolder(filepath.Join(connectionDirectory, subUrl.subDirectory))
+	checkFolder(filepath.Join(connectionDirectory, subUrl.subDirectory))
 
-    subUrl.recvPath, subUrl.recvFile, subUrl.err = setupFile(filepath.Join(connectionDirectory, subUrl.subDirectory), "recv")
-    if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
-        subUrl.recvFile.WriteString("")
-    }
+	subUrl.recvPath, subUrl.recvFile, subUrl.err = setupFile(filepath.Join(connectionDirectory, subUrl.subDirectory), "recv")
+	if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
+		subUrl.recvFile.WriteString("")
+	}
 
-    subUrl.timePath, subUrl.timeFile, subUrl.err = setupFiFo(filepath.Join(connectionDirectory, subUrl.subDirectory), "time")
-    if subUrl.c, subUrl.err = Fatal(subUrl.err, "Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
-        subUrl.timeFile.WriteString("")
-    }
+	subUrl.timePath, subUrl.timeFile, subUrl.err = setupFiFo(filepath.Join(connectionDirectory, subUrl.subDirectory), "time")
+	if subUrl.c, subUrl.err = Fatal(subUrl.err, "Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
+		subUrl.timeFile.WriteString("")
+	}
 
-    subUrl.delPath, subUrl.delPipe, subUrl.err = setupFiFo(filepath.Join(connectionDirectory, subUrl.subDirectory), "del")
-    if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
-        subUrl.delScan, subUrl.err = setupScanner(filepath.Join(connectionDirectory, subUrl.subDirectory), "del", subUrl.delPipe)
-        if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subUrl.c {
-            subUrl.cleanupDirectory()
-        }
-    }
+	subUrl.delPath, subUrl.delPipe, subUrl.err = setupFiFo(filepath.Join(connectionDirectory, subUrl.subDirectory), "del")
+	if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subUrl.c {
+		subUrl.delScan, subUrl.err = setupScanner(filepath.Join(connectionDirectory, subUrl.subDirectory), "del", subUrl.delPipe)
+		if subUrl.c, subUrl.err = Fatal(subUrl.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subUrl.c {
+			subUrl.cleanupDirectory()
+		}
+	}
 
 }
 
@@ -60,8 +60,8 @@ func (subUrl *samUrl) createDirectory(requestdir string) {
 func (subUrl *samUrl) scannerText() (string, error) {
 	d, err := ioutil.ReadFile(subUrl.recvPath)
 	if subUrl.c, subUrl.err = Fatal(err, "sam-url.go Scanner error", "sam-url.go Scanning recv"); subUrl.c {
-        return "", subUrl.err
-    }
+		return "", subUrl.err
+	}
 	s := string(d)
 	if s != "" {
 		Log("sam-url.go Read file", s)
@@ -141,25 +141,25 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read rrror", "sam-url.go Reading response from proxy"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)
-        if subUrl.c, subUrl.err = Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file" ); subUrl.c {
-            r := &http.Response{
-                Status:        status,
-                StatusCode:    statusCode,
-                Proto:         proto,
-                ProtoMajor:    protoMajor,
-                ProtoMinor:    protoMinor,
-                Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
-                ContentLength: int64(len(body)),
-                Request:       request,
-                Header:        header,
-                Trailer:       trailer,
-            }
-            Log("sam-url.go Retrieval time: ", time.Now().String())
-            subUrl.timeFile.WriteString(time.Now().String())
-            return r
-        }else{
-            return nil
-        }
+		if subUrl.c, subUrl.err = Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file"); subUrl.c {
+			r := &http.Response{
+				Status:        status,
+				StatusCode:    statusCode,
+				Proto:         proto,
+				ProtoMajor:    protoMajor,
+				ProtoMinor:    protoMinor,
+				Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
+				ContentLength: int64(len(body)),
+				Request:       request,
+				Header:        header,
+				Trailer:       trailer,
+			}
+			Log("sam-url.go Retrieval time: ", time.Now().String())
+			subUrl.timeFile.WriteString(time.Now().String())
+			return r
+		} else {
+			return nil
+		}
 	}
 	return nil
 }

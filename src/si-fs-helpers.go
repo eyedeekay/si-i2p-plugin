@@ -1,10 +1,10 @@
 package main
 
 import (
-    "bufio"
+	"bufio"
 	"os"
 	"path/filepath"
-    "strings"
+	"strings"
 	"syscall"
 )
 
@@ -20,7 +20,7 @@ func exists(path string) (bool, error) {
 }
 
 func truncatePath(str string) string {
-    num := 90
+	num := 90
 	bnoden := str
 	if len(str) > num {
 		bnoden = str[0:num]
@@ -29,20 +29,20 @@ func truncatePath(str string) string {
 }
 
 func truncatePaths(str string) string {
-    temp := strings.SplitN(str, "/", -1)
-    var fixedpath string
-    for _, i := range temp {
-        if i != "" {
-            fixedpath += truncatePath(i) + "/"
-            if fixedpath != "" {
-                Log("si-fs-helpers.go ", truncatePath(i))
-            }
-        }
-    }
-    if strings.HasSuffix(fixedpath, "/") {
-        fixedpath = fixedpath[:len(fixedpath)-len("/")]
-    }
-    return fixedpath
+	temp := strings.SplitN(str, "/", -1)
+	var fixedpath string
+	for _, i := range temp {
+		if i != "" {
+			fixedpath += truncatePath(i) + "/"
+			if fixedpath != "" {
+				Log("si-fs-helpers.go ", truncatePath(i))
+			}
+		}
+	}
+	if strings.HasSuffix(fixedpath, "/") {
+		fixedpath = fixedpath[:len(fixedpath)-len("/")]
+	}
+	return fixedpath
 }
 
 func setupFolder(directory string) bool {
@@ -70,9 +70,9 @@ func checkFolder(directory string) bool {
 			Log("si-fs-helpers.go Creating a child directory folder:", directory)
 			os.MkdirAll(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
-		}else{
-            return false
-        }
+		} else {
+			return false
+		}
 	} else {
 		return false
 	}
@@ -84,23 +84,25 @@ func setupFile(directory, path string) (string, *os.File, error) {
 	if e, c := Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
 			Log("si-fs-helpers.go Preparing to create File:", mkPath)
-            file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
-            if f, d := Fatal(err, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); f {
-                return mkPath, file, d
-            }
+			file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
+			if f, d := Fatal(err, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); f {
+				return mkPath, file, d
+			}
 		} else {
-            g := os.Remove(mkPath)
-            if f, d := Fatal(g, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); !f {
-                return mkPath, nil, d
-            }
-            file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
-            if h, i := Fatal(err, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); h {
-                return mkPath, file, i
-            }
-            return mkPath, nil, err
+			g := os.Remove(mkPath)
+			if f, d := Fatal(g, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); !f {
+				return mkPath, nil, d
+			}
+			file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
+			if h, i := Fatal(err, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); h {
+				return mkPath, file, i
+			}
+			return mkPath, nil, err
 		}
-	} else { return mkPath, nil, c }
-    return mkPath, nil, pathErr
+	} else {
+		return mkPath, nil, c
+	}
+	return mkPath, nil, pathErr
 }
 
 func setupFiFo(directory, path string) (string, *os.File, error) {
@@ -111,13 +113,13 @@ func setupFiFo(directory, path string) (string, *os.File, error) {
 			mkErr := syscall.Mkfifo(mkPath, 0755)
 			Log("si-fs-helpers.go Preparing to create Pipe:", mkPath)
 			if f, d := Fatal(mkErr, "si-fs-helpers.go Pipe Creation Error", "si-fs-helpers.go Creating Pipe", mkPath); f {
-                file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
+				file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 				return mkPath, file, err
 			} else {
 				return mkPath, nil, d
 			}
 		} else {
-            file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
+			file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 			return mkPath, file, err
 		}
 	} else {
@@ -126,16 +128,15 @@ func setupFiFo(directory, path string) (string, *os.File, error) {
 }
 
 func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
-	mkPath :=  truncatePaths(filepath.Join(connectionDirectory, directory, path))
+	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	_, pathErr := exists(mkPath)
 	if e, c := Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		Log("si-fs-helpers.go Opening the Named Pipe as a Scanner...")
-        retScanner := bufio.NewScanner(pipe)
-        retScanner.Split(bufio.ScanLines)
-        Log("si-fs-helpers.go Created a named Pipe for sending requests:", mkPath)
+		retScanner := bufio.NewScanner(pipe)
+		retScanner.Split(bufio.ScanLines)
+		Log("si-fs-helpers.go Created a named Pipe for sending requests:", mkPath)
 		return retScanner, nil
-	}else{
-        return nil, c
-    }
+	} else {
+		return nil, c
+	}
 }
-

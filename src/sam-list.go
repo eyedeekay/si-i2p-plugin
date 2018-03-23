@@ -15,7 +15,7 @@ type samList struct {
 	samAddrString string
 	samPortString string
 	err           error
-    c             bool
+	c             bool
 	up            bool
 	dir           string
 
@@ -32,28 +32,28 @@ type samList struct {
 }
 
 func (samStack *samList) initPipes() {
-    setupFolder(samStack.dir)
+	setupFolder(samStack.dir)
 
-    samStack.sendPath, samStack.sendPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "send")
-    if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
-        samStack.sendScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "send", samStack.sendPipe)
-        if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
-            samStack.cleanupClient()
-        }
-    }
+	samStack.sendPath, samStack.sendPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "send")
+	if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
+		samStack.sendScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "send", samStack.sendPipe)
+		if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
+			samStack.cleanupClient()
+		}
+	}
 
-    samStack.recvPath, samStack.recvPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "recv")
-    if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
-        samStack.recvPipe.WriteString("")
-    }
+	samStack.recvPath, samStack.recvPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "recv")
+	if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
+		samStack.recvPipe.WriteString("")
+	}
 
-    samStack.delPath, samStack.delPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "del")
-    if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
-        samStack.delScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "del", samStack.delPipe)
-        if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
-            samStack.cleanupClient()
-        }
-    }
+	samStack.delPath, samStack.delPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "del")
+	if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
+		samStack.delScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "del", samStack.delPipe)
+		if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
+			samStack.cleanupClient()
+		}
+	}
 
 	samStack.up = true
 }

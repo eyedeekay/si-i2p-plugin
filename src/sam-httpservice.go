@@ -9,13 +9,13 @@ import (
 	"path/filepath"
 
 	"github.com/eyedeekay/gosam"
-    //"github.com/cryptix/goSam"
+	//"github.com/cryptix/goSam"
 )
 
 type samHttpService struct {
 	subCache []samUrl
 	err      error
-    c        bool
+	c        bool
 
 	samBridgeClient *goSam.Client
 	samAddrString   string
@@ -45,20 +45,20 @@ type samHttpService struct {
 }
 
 func (samService *samHttpService) initPipes() {
-    checkFolder(filepath.Join(connectionDirectory,samService.host))
+	checkFolder(filepath.Join(connectionDirectory, samService.host))
 
-    samService.servPath, samService.servPipe, samService.err = setupFiFo(filepath.Join(connectionDirectory, samService.host), "send")
-    if samService.c, samService.err = Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
-        samService.servScan, samService.err = setupScanner(filepath.Join(connectionDirectory, samService.host), "send", samService.servPipe)
-        if samService.c, samService.err = Fatal(samService.err, "Scanner setup Error:", "Scanner set up successfully."); !samService.c {
-            samService.cleanupService()
-        }
-    }
+	samService.servPath, samService.servPipe, samService.err = setupFiFo(filepath.Join(connectionDirectory, samService.host), "send")
+	if samService.c, samService.err = Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
+		samService.servScan, samService.err = setupScanner(filepath.Join(connectionDirectory, samService.host), "send", samService.servPipe)
+		if samService.c, samService.err = Fatal(samService.err, "Scanner setup Error:", "Scanner set up successfully."); !samService.c {
+			samService.cleanupService()
+		}
+	}
 
-    samService.namePath, samService.nameFile, samService.err = setupFiFo(filepath.Join(connectionDirectory, samService.host), "name")
-    if samService.c, samService.err = Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
-        samService.nameFile.WriteString("")
-    }
+	samService.namePath, samService.nameFile, samService.err = setupFiFo(filepath.Join(connectionDirectory, samService.host), "name")
+	if samService.c, samService.err = Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
+		samService.nameFile.WriteString("")
+	}
 
 }
 

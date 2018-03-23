@@ -166,6 +166,9 @@ docker-run-thirdeye:
 		--restart always \
 		-t eyedeekay/si-i2p-plugin
 
+gofmt:
+	gofmt -w src/*.go
+
 mps:
 	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep | grep -v https" 2> /dev/null
 

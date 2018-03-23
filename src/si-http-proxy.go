@@ -10,12 +10,13 @@ import (
 )
 
 type samHttpProxy struct {
-	host      string
-	client    *samList
-	transport *http.Transport
-	handle    *samHttpProxy
-	err       error
-	c         bool
+	host        string
+	client      *samList
+	transport   *http.Transport
+	handle      *samHttpProxy
+	addressbook *addressHelper
+	err         error
+	c           bool
 }
 
 var hopHeaders = []string{
@@ -108,48 +109,63 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	Log(rq.URL.String())
 
 	rq.RequestURI = ""
-	proxy.delHopHeaders(rq.Header)
 
-	client, dir := proxy.client.sendClientRequestHttp(rq)
+	req := proxy.addressbook.checkAddressHelper(rq)
+
+	proxy.delHopHeaders(req.Header)
+
+	client, dir := proxy.client.sendClientRequestHttp(req)
 
 	Log("si-http-proxy.go Retrieving client")
 
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
 
-		resp, err := client.Do(rq)
+		resp, err := client.Do(req)
+
 		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
+
 			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+
 		} else {
 
-			r := proxy.client.copyRequest(rq, resp, dir)
+			r := proxy.client.copyRequest(req, resp, dir)
 
 			if r != nil {
-				Log("si-http-proxy.go SAM-Provided Tunnel Address:", rq.RemoteAddr)
+
+				Log("si-http-proxy.go SAM-Provided Tunnel Address:", req.RemoteAddr)
 				Log("si-http-proxy.go Response Status:", r.Status)
 
 				proxy.delHopHeaders(r.Header)
 
 				proxy.copyHeader(rW.Header(), r.Header)
 
+				if r.StatusCode >= 200 {
+					if r.StatusCode == 301 {
 
-                if r.StatusCode >= 200 {
-                    if r.StatusCode == 301 {
-                        Log("si-http-proxy.go Detected redirect.")
-                    }else if r.StatusCode < 301 {
-                        rW.WriteHeader(r.StatusCode)
-                        read, err := ioutil.ReadAll(r.Body)
-                        if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-                            io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
-                        }
-                    }else{
-                        rW.WriteHeader(r.StatusCode)
-                        log.Println("si-http-proxy.go Response status:", r.StatusCode)
-                    }
-                }else{
-                    rW.WriteHeader(r.StatusCode)
-                    log.Println("si-http-proxy.go Response status:", r.StatusCode)
-                }
+						Log("si-http-proxy.go Detected redirect.")
+
+					} else if r.StatusCode < 301 {
+
+						rW.WriteHeader(r.StatusCode)
+						read, err := ioutil.ReadAll(r.Body)
+
+						if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+							io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
+						}
+
+					} else {
+
+						rW.WriteHeader(r.StatusCode)
+						log.Println("si-http-proxy.go Response status:", r.StatusCode)
+
+					}
+				} else {
+
+					rW.WriteHeader(r.StatusCode)
+					log.Println("si-http-proxy.go Response status:", r.StatusCode)
+
+				}
 			}
 		}
 	} else {
@@ -160,6 +176,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) *samHttpProxy {
 	var samProxy samHttpProxy
 	samProxy.host = proxAddr + ":" + proxPort
+	samProxy.addressbook = newAddressHelper()
 	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.host)
 	samProxy.client = samStack
 	samProxy.handle = &samProxy

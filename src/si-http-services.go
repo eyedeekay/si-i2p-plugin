@@ -15,9 +15,9 @@ type samServices struct {
 	samAddrString  string
 	samPortString  string
 	err            error
-    c              bool
+	c              bool
 	up             bool
-    dir            string
+	dir            string
 
 	genrPath string
 	genrPipe *os.File
@@ -34,26 +34,26 @@ type samServices struct {
 func (samServiceStack *samServices) initPipes() {
 	setupFolder(samServiceStack.dir)
 
-    samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "genr")
-    if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
-        samServiceStack.genrScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "genr", samServiceStack.genrPipe)
-        if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
-            samServiceStack.cleanupServices()
-        }
-    }
+	samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "genr")
+	if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
+		samServiceStack.genrScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "genr", samServiceStack.genrPipe)
+		if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
+			samServiceStack.cleanupServices()
+		}
+	}
 
-    samServiceStack.lsPath, samServiceStack.lsPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "ls")
-    if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
-        samServiceStack.lsPipe.WriteString("")
-    }
+	samServiceStack.lsPath, samServiceStack.lsPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "ls")
+	if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
+		samServiceStack.lsPipe.WriteString("")
+	}
 
 	samServiceStack.delPath, samServiceStack.delPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "del")
-    if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
-        samServiceStack.delScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "del", samServiceStack.delPipe)
-        if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
-            samServiceStack.cleanupServices()
-        }
-    }
+	if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
+		samServiceStack.delScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "del", samServiceStack.delPipe)
+		if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
+			samServiceStack.cleanupServices()
+		}
+	}
 	samServiceStack.up = true
 }
 
@@ -166,7 +166,7 @@ func (samServiceStack *samServices) cleanupServices() {
 
 func createSamServiceList(samAddr string, samPort string) *samServices {
 	var samServiceList samServices
-    samServiceList.dir = "services"
+	samServiceList.dir = "services"
 	samServiceList.createServiceList(samAddr, samPort)
 	return &samServiceList
 }
