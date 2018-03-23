@@ -106,65 +106,47 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 		return
 	}
 
-	Log(rq.URL.String())
-
+	Log("si-http-proxy.go ", rq.URL.String())
 	rq.RequestURI = ""
 
 	req := proxy.addressbook.checkAddressHelper(rq)
 
-	proxy.delHopHeaders(req.Header)
+	if req == nil{
+        return
+	}
+	proxy.delHopHeaders(rq.Header)
 
-	client, dir := proxy.client.sendClientRequestHttp(req)
-
+	client, dir := proxy.client.sendClientRequestHttp(rq)
 	Log("si-http-proxy.go Retrieving client")
 
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
-
-		resp, err := client.Do(req)
-
+		resp, err := client.Do(rq)
 		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
-
 			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-
 		} else {
-
-			r := proxy.client.copyRequest(req, resp, dir)
-
+			r := proxy.client.copyRequest(rq, resp, dir)
 			if r != nil {
-
-				Log("si-http-proxy.go SAM-Provided Tunnel Address:", req.RemoteAddr)
+				Log("si-http-proxy.go SAM-Provided Tunnel Address:", rq.RemoteAddr)
 				Log("si-http-proxy.go Response Status:", r.Status)
-
 				proxy.delHopHeaders(r.Header)
-
 				proxy.copyHeader(rW.Header(), r.Header)
-
 				if r.StatusCode >= 200 {
 					if r.StatusCode == 301 {
-
 						Log("si-http-proxy.go Detected redirect.")
-
 					} else if r.StatusCode < 301 {
-
 						rW.WriteHeader(r.StatusCode)
 						read, err := ioutil.ReadAll(r.Body)
-
 						if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 							io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
 						}
-
 					} else {
-
 						rW.WriteHeader(r.StatusCode)
 						log.Println("si-http-proxy.go Response status:", r.StatusCode)
-
 					}
 				} else {
-
 					rW.WriteHeader(r.StatusCode)
 					log.Println("si-http-proxy.go Response status:", r.StatusCode)
-
 				}
 			}
 		}
