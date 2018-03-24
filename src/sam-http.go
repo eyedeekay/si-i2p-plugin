@@ -229,6 +229,12 @@ func (samConn *samHttp) sendRequestHttp(request *http.Request) (*http.Client, st
 	return samConn.subClient, dir
 }
 
+func (samConn *samHttp) sendRequestBase64Http(request *http.Request, base64helper string) (*http.Client, string) {
+	r, dir := samConn.getURL(request.URL.String())
+	Log("sam-http.go Getting resource", r, "In ", dir)
+	return samConn.subClient, dir
+}
+
 func (samConn *samHttp) findSubCache(response *http.Response, directory string) *samUrl {
 	b := false
 	var u samUrl

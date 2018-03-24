@@ -2,7 +2,7 @@ package main
 
 import (
 	"net/http"
-    "net/url"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,34 +25,31 @@ func (addressBook *addressHelper) initFiles() {
 	}
 }
 
-func (addressBook *addressHelper) checkAddressHelper(url *http.Request) *http.Request {
-	if url != nil {
-		if strings.Contains(url.URL.String(), "?i2paddresshelper=") {
-			addressBook.addPair(url.URL)
-			Log("si-http-proxy.go ?i2paddresshelper detected")
-			temp := strings.Split(url.URL.Path, "/")
-			var newpath string
-			for _, s := range temp {
-				if !strings.Contains(url.URL.String(), "?i2paddresshelper=") {
-					newpath += s
-				}
+func (addressBook *addressHelper) checkAddressHelper(url http.Request) (*http.Request, bool) {
+	if strings.Contains(url.URL.String(), "?i2paddresshelper=") {
+		addressBook.addPair(url.URL)
+		Log("si-http-proxy.go ?i2paddresshelper detected")
+		temp := strings.Split(url.URL.Path, "/")
+		var newpath string
+		for _, s := range temp {
+			if !strings.Contains(url.URL.String(), "?i2paddresshelper=") {
+				newpath += s
 			}
-			if strings.HasSuffix(newpath, "/") {
-				newpath = newpath[:len(newpath)-len("/")]
-			}
-			addressBook.rq, addressBook.err = http.NewRequest(url.Method, url.URL.Scheme+"://"+url.URL.Host+newpath, url.Body)
-			if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go ", "addresshelper.go "); addressBook.c {
-				Log("addresshelper.go rewrote request")
-			}
-			return addressBook.rq
-		} else {
-			Log("addresshelper.go no rewrite required")
-            addressBook.rq, addressBook.err = http.NewRequest(url.Method, url.URL.String(), url.Body)
-			return addressBook.rq
 		}
+		if strings.HasSuffix(newpath, "/") {
+			newpath = newpath[:len(newpath)-len("/")]
+		}
+		addressBook.rq, addressBook.err = http.NewRequest(url.Method, url.URL.Scheme+"://"+url.URL.Host+newpath, url.Body)
+		if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go ", "addresshelper.go "); addressBook.c {
+			Log("addresshelper.go rewrote request")
+		}
+		return addressBook.rq, true
 	} else {
 		addressBook.rq, addressBook.err = http.NewRequest(url.Method, url.URL.String(), url.Body)
-        return addressBook.rq
+		if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go ", "addresshelper.go "); addressBook.c {
+			Log("addresshelper.go no rewrite required")
+		}
+		return addressBook.rq, false
 	}
 }
 
@@ -62,8 +59,8 @@ func (addressBook *addressHelper) checkAddPair(arg string) bool {
 		if kvPair != nil {
 			if len(kvPair) == 2 {
 				if kvPair[0] == arg {
-                    return false
-                }
+					return false
+				}
 			}
 		}
 	}
@@ -72,16 +69,30 @@ func (addressBook *addressHelper) checkAddPair(arg string) bool {
 
 func (addressBook *addressHelper) addPair(url *url.URL) {
 	segments := strings.Split(url.String(), "/")
-    host := url.Host
+	host := url.Host
 	for _, s := range segments {
 		if strings.Contains(s, "?i2paddresshelper=") {
 			if addressBook.checkAddPair(host) {
-                base64 := strings.Replace(strings.Split(s, "/")[0], "?i2paddresshelper=", "", -1)
-				addressBook.pairs = append(addressBook.pairs, host + "=" + base64)
+				base64 := strings.Replace(strings.Split(s, "/")[0], "?i2paddresshelper=", "", -1)
+				addressBook.pairs = append(addressBook.pairs, host+"="+base64)
 			}
 		}
 	}
 	addressBook.updateAh()
+}
+
+func (addressBook *addressHelper) getPair(url *url.URL) (string, string) {
+	for _, p := range addressBook.pairs {
+		kv := strings.SplitN(p, "=", 2)
+		if kv != nil {
+			if len(kv) == 2 {
+				if kv[0] == url.Host {
+					return kv[0], kv[1]
+				}
+			}
+		}
+	}
+	return "", ""
 }
 
 func (addressBook *addressHelper) updateAh() {

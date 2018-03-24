@@ -94,6 +94,15 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
 	}
 }
 
+func (samStack *samList) sendClientRequestBase64Http(request *http.Request, base64helper string) (*http.Client, string) {
+	client := samStack.findClient(request.URL.String())
+	if client != nil {
+		return client.sendRequestBase64Http(request, base64helper)
+	} else {
+		return nil, "nil client"
+	}
+}
+
 func (samStack *samList) checkURLType(request string) bool {
 
 	Log(request)

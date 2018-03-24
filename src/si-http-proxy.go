@@ -109,25 +109,33 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	Log("si-http-proxy.go ", rq.URL.String())
 	rq.RequestURI = ""
 
-	req := proxy.addressbook.checkAddressHelper(rq)
+	req, need := proxy.addressbook.checkAddressHelper(*rq)
 
-	if req == nil{
-        return
+	if req == nil {
+		return
 	}
-	proxy.delHopHeaders(rq.Header)
+	proxy.delHopHeaders(req.Header)
 
-	client, dir := proxy.client.sendClientRequestHttp(rq)
+	var client *http.Client
+	var dir string
+
 	Log("si-http-proxy.go Retrieving client")
+	if need {
+		_, base64 := proxy.addressbook.getPair(req.URL)
+		client, dir = proxy.client.sendClientRequestBase64Http(req, base64)
+	} else {
+		client, dir = proxy.client.sendClientRequestHttp(req)
+	}
 
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
-		resp, err := client.Do(rq)
+		resp, err := client.Do(req)
 		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
 			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
 		} else {
-			r := proxy.client.copyRequest(rq, resp, dir)
+			r := proxy.client.copyRequest(req, resp, dir)
 			if r != nil {
-				Log("si-http-proxy.go SAM-Provided Tunnel Address:", rq.RemoteAddr)
+				Log("si-http-proxy.go SAM-Provided Tunnel Address:", req.RemoteAddr)
 				Log("si-http-proxy.go Response Status:", r.Status)
 				proxy.delHopHeaders(r.Header)
 				proxy.copyHeader(rW.Header(), r.Header)
