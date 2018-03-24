@@ -117,11 +117,11 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	proxy.delHopHeaders(req.Header)
 
 	var client *http.Client
-	var dir string
+	var dir, base64 string
 
 	Log("si-http-proxy.go Retrieving client")
 	if need {
-		_, base64 := proxy.addressbook.getPair(req.URL)
+		_, base64 = proxy.addressbook.getPair(req.URL)
 		client, dir = proxy.client.sendClientRequestBase64Http(req, base64)
 	} else {
 		client, dir = proxy.client.sendClientRequestHttp(req)
@@ -133,7 +133,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
 			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
 		} else {
-			r := proxy.client.copyRequest(req, resp, dir)
+			r := proxy.client.copyRequest(req, resp, dir, base64)
 			if r != nil {
 				Log("si-http-proxy.go SAM-Provided Tunnel Address:", req.RemoteAddr)
 				Log("si-http-proxy.go Response Status:", r.Status)

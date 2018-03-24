@@ -1,7 +1,7 @@
 Destination-Isolating i2p HTTP Proxy(SAM Application)
 =====================================================
 
-*one eepSite, one tunnel.*
+*one eepSite, one destination.*
 
 This is an i2p SAM application which presents an HTTP proxy(on port 4443 by
 default) that acts as an intermediate between your browser and the i2p network.
@@ -21,11 +21,11 @@ What works so far:
 
 ### The http proxy
 
-Again, *slightly less experimental*, but currently it is possible to set
+Again, *still pretty experimental*, but currently it is possible to set
 your web browser's HTTP proxy to localhost:4443 and use it to browse eepSites.
-I've mostly managed to stop all the bugs and hangs that would keep someone from
-using it successfully and I'm even pretty sure it's mostly safe at this point.
-It should at least fail early if something bad happens.
+I haven't been able to crash it or attack it by adapting known attacks on
+browsers and HTTP proxies to this environment. It should at least fail early if
+something bad happens.
 
 I am now fairly certain that it can't be forced to retrieve URL's outside the
 i2p network under normal circumstances in properly configured browsers. Intrepid
@@ -33,9 +33,9 @@ observers may find it fun to start testing things now. Funnily enough, it would
 have crashed under vanilla firefox last week because the captive portal shit.
 Failed closed though, and now it's handled more gracefully.
 
-I found a new way to crash it. Certain addresshelper URL's, when clicked, will
-break the pipes. Adding addresshelper support will fix this. I'm not going to
-do that until I get the existing code cleaned up.
+OK so addresshelpers are partly implemented, but not fully. In order to complete
+it I'll have to change how failed lookups are handled. This should be
+straightforward.
 
 #### Examples
 

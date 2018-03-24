@@ -79,14 +79,14 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
 }
 
 func (samStack *samList) sendClientRequest(request string) {
-	client := samStack.findClient(request)
+	client := samStack.findClient(request, "")
 	if client != nil {
 		client.sendRequest(request)
 	}
 }
 
 func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
-	client := samStack.findClient(request.URL.String())
+	client := samStack.findClient(request.URL.String(), "")
 	if client != nil {
 		return client.sendRequestHttp(request)
 	} else {
@@ -95,7 +95,7 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
 }
 
 func (samStack *samList) sendClientRequestBase64Http(request *http.Request, base64helper string) (*http.Client, string) {
-	client := samStack.findClient(request.URL.String())
+	client := samStack.findClient(request.URL.String(), base64helper)
 	if client != nil {
 		return client.sendRequestBase64Http(request, base64helper)
 	} else {
@@ -137,7 +137,7 @@ func (samStack *samList) checkURLType(request string) bool {
 	}
 }
 
-func (samStack *samList) findClient(request string) *samHttp {
+func (samStack *samList) findClient(request, base64helper string) *samHttp {
 	found := false
 	var c samHttp
 	if !samStack.checkURLType(request) {
@@ -168,8 +168,8 @@ func (samStack *samList) findClient(request string) *samHttp {
 	return &c
 }
 
-func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory string) *http.Response {
-	return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
+func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory, base64helper string) *http.Response {
+	return samStack.findClient(request.URL.String(), base64helper).copyRequestHttp(request, response, directory)
 }
 
 func (samStack *samList) readRequest() {
