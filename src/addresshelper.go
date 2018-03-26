@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-//	"path/filepath"
+	//	"path/filepath"
 	"strings"
 )
 
@@ -99,19 +99,19 @@ func (addressBook *addressHelper) fileCheck(line string) bool {
 }
 
 func (addressBook *addressHelper) updateAh() {
-    if addressBook.c, addressBook.err = exists(addressBook.bookPath); addressBook.c{
-        addressBook.bookFile, addressBook.err = os.OpenFile(addressBook.bookPath, os.O_APPEND|os.O_WRONLY, 0755)
-    }else{
-        addressBook.bookFile, addressBook.err = os.OpenFile(addressBook.bookPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0755)
-    }
+	if addressBook.c, addressBook.err = exists(addressBook.bookPath); addressBook.c {
+		addressBook.bookFile, addressBook.err = os.OpenFile(addressBook.bookPath, os.O_APPEND|os.O_WRONLY, 0755)
+	} else {
+		addressBook.bookFile, addressBook.err = os.OpenFile(addressBook.bookPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0755)
+	}
 	if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go File I/O errors"); addressBook.c {
 		defer addressBook.bookFile.Close()
 		line := addressBook.pairs[len(addressBook.pairs)-1] + "\n"
 		if addressBook.fileCheck(line) {
 			addressBook.bookFile.WriteString(line)
-		}else{
-            Log("addresshelper.go Address already in Address Book")
-        }
+		} else {
+			Log("addresshelper.go Address already in Address Book")
+		}
 	}
 }
 

@@ -43,13 +43,19 @@ func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
 }
 
 func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
-	for k, vv := range src {
-		for _, v := range vv {
-			Log("si-http-proxy.go Copying headers: " + k + "," + v)
-			if dst.Get(k) != "" {
-				dst.Set(k, v)
-			} else {
-				dst.Add(k, v)
+	if dst != nil && src != nil {
+		for k, vv := range src {
+			if vv != nil {
+				for _, v := range vv {
+					if v != "" {
+						Log("si-http-proxy.go Copying headers: " + k + "," + v)
+						if dst.Get(k) != "" {
+							dst.Set(k, v)
+						} else {
+							dst.Add(k, v)
+						}
+					}
+				}
 			}
 		}
 	}
@@ -143,7 +149,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 					if r.StatusCode == 301 {
 						Log("si-http-proxy.go Detected redirect.")
 					}
-                    if r.StatusCode < 301 {
+					if r.StatusCode < 301 {
 						rW.WriteHeader(r.StatusCode)
 						read, err := ioutil.ReadAll(r.Body)
 						if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {

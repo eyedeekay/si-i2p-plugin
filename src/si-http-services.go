@@ -114,7 +114,7 @@ func (samServiceStack *samServices) responsify(input string) io.Reader {
 func (samServiceStack *samServices) readRequest() {
 	Log("Reading requests:")
 	for samServiceStack.genrScan.Scan() {
-		if samServiceStack.genrScan.Text() != "" {
+		if samServiceStack.genrScan.Text() == "y" || samServiceStack.genrScan.Text() == "Y" || samServiceStack.genrScan.Text() == "g" || samServiceStack.genrScan.Text() == "G" || samServiceStack.genrScan.Text() == "n" || samServiceStack.genrScan.Text() == "N" || samServiceStack.genrScan.Text() == "new" {
 			go samServiceStack.sendServiceRequest(samServiceStack.genrScan.Text())
 		}
 	}

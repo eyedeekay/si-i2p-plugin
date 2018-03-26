@@ -23,11 +23,11 @@ func main() {
 		"host: of the HTTP proxy")
 	proxPortString := flag.String("proxy-port", "4443",
 		":port of the HTTP proxy")
-	debugConnection := flag.Bool("conn-debug", true,
+	debugConnection := flag.Bool("conn-debug", false,
 		"Print connection debug info")
 	useHttpProxy := flag.Bool("http-proxy", true,
 		"run the HTTP proxy")
-	verboseLogging := flag.Bool("verbose", true,
+	verboseLogging := flag.Bool("verbose", false,
 		"Print connection debug info")
 	Defwd, _ := os.Getwd()
 	workDirectory := flag.String("directory", Defwd,
@@ -59,7 +59,6 @@ func main() {
 
 	samProxies = createSamList(*samAddrString, *samPortString, *address)
 	samService = createSamServiceList(*samAddrString, *samPortString)
-	//    samService.run()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -87,11 +86,12 @@ func main() {
 	for exit != true {
 		go closeProxy(samProxies)
 		go closeServices(samService)
-
 		go samProxies.writeResponses()
+		//go samServiceList.writeResponses()
+		//go samServiceList.readRequest()
 		samProxies.readRequest()
 
-		time.Sleep(300 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 	}
 
 	samProxies.cleanupClient()
