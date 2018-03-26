@@ -142,7 +142,8 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 				if r.StatusCode >= 200 {
 					if r.StatusCode == 301 {
 						Log("si-http-proxy.go Detected redirect.")
-					} else if r.StatusCode < 301 {
+					}
+                    if r.StatusCode < 301 {
 						rW.WriteHeader(r.StatusCode)
 						read, err := ioutil.ReadAll(r.Body)
 						if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {

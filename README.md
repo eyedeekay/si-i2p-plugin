@@ -39,6 +39,10 @@ straightforward.
 
 #### Examples
 
+##### firefox
+
+![Firefox Configuration](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/firefox.png)
+
 ##### curl
 
         curl -x 127.0.0.1:4443 http://i2p-projekt.i2p
@@ -118,3 +122,15 @@ Installation and Usage:
 =======================
 
 Moved to [misc/docs/INSTALL.md](https://github.com/eyedeekay/si-i2p-plugin/tree/master/misc/docs/INSTALL.md)
+
+Screenshots:
+------------
+
+![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-browser.png)
+![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-classic.png)
+![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-browser-samesite.png)
+![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-1.png)
+![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-2.png)
+![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-3.png)
+![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-multivisit.png)
+![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-pipes.png)

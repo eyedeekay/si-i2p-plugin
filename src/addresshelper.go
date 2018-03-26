@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
+//	"path/filepath"
 	"strings"
 )
 
@@ -17,13 +17,6 @@ type addressHelper struct {
 
 	err error
 	c   bool
-}
-
-func (addressBook *addressHelper) initFiles() {
-	addressBook.bookPath, addressBook.bookFile, addressBook.err = setupFile(filepath.Join(connectionDirectory), addressBook.bookPath)
-	if addressBook.c, addressBook.err = Fatal(addressBook.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); addressBook.c {
-		addressBook.bookFile.WriteString("")
-	}
 }
 
 func (addressBook *addressHelper) checkAddressHelper(url http.Request) (*http.Request, bool) {
@@ -129,6 +122,5 @@ func newAddressHelper() *addressHelper {
 	a.err = nil
 	a.c = false
 	a.bookPath = "addressbook.txt"
-	//a.initFiles()
 	return &a
 }
