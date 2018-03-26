@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -95,18 +96,29 @@ func (addressBook *addressHelper) getPair(url *url.URL) (string, string) {
 	return "", ""
 }
 
-func (addressBook *addressHelper) updateAh() {
-	exist, _ := exists(addressBook.bookPath)
-	if exist {
-		os.Remove(addressBook.bookPath)
+func (addressBook *addressHelper) fileCheck(line string) bool {
+	temp, err := ioutil.ReadFile(addressBook.bookPath)
+	if addressBook.c, addressBook.err = Warn(err, "File check error, handling:", "Checking Addressbook file", addressBook.bookPath); addressBook.c {
+		return !strings.Contains(string(temp), line)
+	} else {
+		return true
 	}
-	addressBook.bookFile, addressBook.err = os.Create(addressBook.bookPath)
-	if addressBook.c, addressBook.err = Fatal(addressBook.err, "File I/O errors"); addressBook.c {
+}
+
+func (addressBook *addressHelper) updateAh() {
+    if addressBook.c, addressBook.err = exists(addressBook.bookPath); addressBook.c{
+        addressBook.bookFile, addressBook.err = os.OpenFile(addressBook.bookPath, os.O_APPEND|os.O_WRONLY, 0755)
+    }else{
+        addressBook.bookFile, addressBook.err = os.OpenFile(addressBook.bookPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0755)
+    }
+	if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go File I/O errors"); addressBook.c {
 		defer addressBook.bookFile.Close()
-		for _, t := range addressBook.pairs {
-			line := t + "\n"
+		line := addressBook.pairs[len(addressBook.pairs)-1] + "\n"
+		if addressBook.fileCheck(line) {
 			addressBook.bookFile.WriteString(line)
-		}
+		}else{
+            Log("addresshelper.go Address already in Address Book")
+        }
 	}
 }
 
@@ -117,6 +129,6 @@ func newAddressHelper() *addressHelper {
 	a.err = nil
 	a.c = false
 	a.bookPath = "addressbook.txt"
-	a.initFiles()
+	//a.initFiles()
 	return &a
 }

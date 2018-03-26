@@ -69,6 +69,7 @@ bin/si-i2p-plugin-arm-droid:
 	@echo 'built'
 
 debug: rebuild
+	#$(HOME)/.go/bin/dlv exec ./bin/si-i2p-plugin
 	gdb ./bin/si-i2p-plugin
 
 all:

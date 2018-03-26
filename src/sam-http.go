@@ -84,16 +84,62 @@ func (samConn *samHttp) Dial(network, addr string) (net.Conn, error) {
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
-		if samConn.name != "" {
-			if samConn.id != 0 {
-				if samConn.samBridgeClient != nil {
-					samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
-					Warn(samConn.err, "sam-http.go Stream connection error", "sam-http.go Connecting SAM streams")
-				}
-			}
-		}
+		return samConn.subDial(network, addr)
 	}
 	return samConn.samBridgeClient.SamConn, nil
+}
+
+func (samConn *samHttp) subDial(network, addr string) (net.Conn, error) {
+	if samConn.name != "" {
+		if samConn.id != 0 {
+			return samConn.Connect()
+		}
+	}
+	return nil, nil
+}
+
+func (samConn *samHttp) Connect() (net.Conn, error) {
+	if samConn.samBridgeClient != nil {
+		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
+		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
+			Log("sam-http.go Stream Connection established")
+			return samConn.samBridgeClient.SamConn, nil
+		} else {
+			return samConn.reConnect()
+		}
+		return samConn.samBridgeClient.SamConn, samConn.err
+	} else {
+		return samConn.reConnect()
+	}
+}
+
+func (samConn *samHttp) reConnect() (net.Conn, error) {
+	samCombined := samConn.samAddrString + ":" + samConn.samPortString
+	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
+	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
+		Log("sam-http.go SAM Connection established")
+		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
+		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
+			Log("sam-http.go Stream Connection established")
+			return samConn.samBridgeClient.SamConn, nil
+		}
+		return samConn.samBridgeClient.SamConn, nil
+	}
+	return samConn.samBridgeClient.SamConn, samConn.err
+}
+
+func (samConn *samHttp) setupTransport(samCombined string) {
+	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
+		Log("sam-http.go Setting Transport")
+		Log("sam-http.go Setting Dial function")
+		samConn.transport = &http.Transport{
+			Dial: samConn.Dial,
+		}
+		Log("sam-http.go Initializing sub-client")
+		samConn.subClient = &http.Client{
+			Transport: samConn.transport,
+		}
+	}
 }
 
 func (samConn *samHttp) createClient(request string, samAddrString string, samPortString string) {
@@ -109,14 +155,13 @@ func (samConn *samHttp) createClient(request string, samAddrString string, samPo
 		}
 		Log("sam-http.go Initializing sub-client")
 		samConn.subClient = &http.Client{
-			//Timeout: client.Timeout,
-			Transport: samConn.transport}
-
+			Transport: samConn.transport,
+		}
 		if samConn.host == "" {
 			samConn.host, samConn.directory = samConn.hostSet(request)
 			samConn.initPipes()
 		}
-		samConn.writeName(request)
+		samConn.setName(request)
 		samConn.subCache = append(samConn.subCache, newSamUrl(samConn.directory))
 	}
 }
@@ -142,7 +187,7 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 			samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
 			samConn.initPipes()
 		}
-		samConn.writeName(request.URL.String()) //, samConn.samBridgeClient)
+		samConn.setName(request.URL.String()) //, samConn.samBridgeClient)
 		samConn.subCache = append(samConn.subCache, newSamUrlHttp(request))
 	}
 }
@@ -289,7 +334,10 @@ func (samConn *samHttp) responsify(input string) io.Reader {
 func (samConn *samHttp) printResponse() string {
 	s, e := samConn.scannerText()
 	if samConn.c, samConn.err = Fatal(e, "sam-http.go Response Retrieval Error", "sam-http.go Retrieving Responses"); !samConn.c {
+		Log("sam-http.go Response Panic")
 		samConn.cleanupClient()
+	} else {
+		Log("sam-http.go Response Retrieved")
 	}
 	return s
 }
@@ -316,36 +364,36 @@ func (samConn *samHttp) readDelete() bool {
 	return b
 }
 */
-func (samConn *samHttp) writeName(request string) {
+
+func (samConn *samHttp) writeName() {
+	Log("sam-http.go Looking up hostname:", samConn.host)
+	samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
+	samConn.nameFile.WriteString(samConn.name)
+}
+
+func (samConn *samHttp) writeSession(request string) {
+	Log("sam-http.go Caching base64 address of:", samConn.host+" "+samConn.name)
+	samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
+	samConn.idFile.WriteString(fmt.Sprint(samConn.id))
+	Warn(samConn.err, "sam-http.go Local Base64 Caching error", "sam-http.go Cachine Base64 Address of:", request)
+	log.Println("sam-http.go Tunnel id: ", samConn.id)
+	Log("sam-http.go Tunnel dest: ", samConn.base64)
+	samConn.base64File.WriteString(samConn.base64)
+	Log("sam-http.go New Connection Name: ", samConn.base64)
+}
+
+func (samConn *samHttp) setName(request string) {
 	if samConn.checkName() {
 		samConn.host, samConn.directory = samConn.hostSet(request)
 		Log("sam-http.go Setting hostname:", samConn.host)
-		Log("sam-http.go Looking up hostname:", samConn.host)
-		samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
-		samConn.nameFile.WriteString(samConn.name)
-		Log("sam-http.go Caching base64 address of:", samConn.host+" "+samConn.name)
-		samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
-		samConn.idFile.WriteString(fmt.Sprint(samConn.id))
-		Warn(samConn.err, "sam-http.go Local Base64 Caching error", "sam-http.go Cachine Base64 Address of:", request)
-		log.Println("sam-http.go Tunnel id: ", samConn.id)
-		Log("sam-http.go Tunnel dest: ", samConn.base64)
-		samConn.base64File.WriteString(samConn.base64)
-		Log("sam-http.go New Connection Name: ", samConn.base64)
+		samConn.writeName()
+		samConn.writeSession(request)
 	} else {
 		samConn.host, samConn.directory = samConn.hostSet(request)
 		Log("sam-http.go Setting hostname:", samConn.host)
 		samConn.initPipes()
-		Log("sam-http.go Looking up hostname:", samConn.host)
-		samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
-		Log("sam-http.go Caching base64 address of:", samConn.host+" "+samConn.name)
-		samConn.nameFile.WriteString(samConn.name)
-		samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
-		samConn.idFile.WriteString(fmt.Sprint(samConn.id))
-		Warn(samConn.err, "sam-http.go Local Base64 Caching error", "sam-http.go Cachine Base64 Address of:", request)
-		log.Println("sam-http.go Tunnel id: ", samConn.id)
-		Log("sam-http.go Tunnel dest: ", samConn.base64)
-		samConn.base64File.WriteString(samConn.base64)
-		Log("sam-http.go New Connection Name: ", samConn.base64)
+		samConn.writeName()
+		samConn.writeSession(request)
 	}
 }
 
