@@ -126,11 +126,11 @@ Moved to [misc/docs/INSTALL.md](https://github.com/eyedeekay/si-i2p-plugin/tree/
 Screenshots:
 ------------
 
-![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-browser.png)
-![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-classic.png)
-![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-browser-samesite.png)
-![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-1.png)
-![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-2.png)
-![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-3.png)
-![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-multivisit.png)
-![Proof-of-Concept](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-pipes.png)
+![Proof-of-Concept using surf with classic proxy against 3 test sites.](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-classic.png)
+![Proof-of-Concept using surf against 3 test sites.](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-browser.png)
+![Proof-of-Concept using the new proxy against the same site twice.](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-browser-samesite.png)
+![Proof-of-Concept using Firefox against test site 1.](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-1.png)
+![Proof-of-Concept using Firefox against test site 2.](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-2.png)
+![Proof-of-Concept using Firefox against test site 3.](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-firefox-3.png)
+![Proof-of-Concept using multiple visits to all test sites.](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-multivisit.png)
+![Proof-of-Concept screenshot of it in development, with the pipes.](https://github.com/eyedeekay/si-i2p-plugin/raw/master/misc/screenshot-pipes.png)
