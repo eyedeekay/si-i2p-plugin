@@ -38,16 +38,21 @@ func main() {
 	flag.Parse()
 
 	log.SetOutput(os.Stdout)
-	//log.SetFlags(log.Lshortfile)
 
 	Log("si-i2p-plugin.go Sam Address:", *samAddrString)
 	Log("si-i2p-plugin.go Sam Port:", *samPortString)
 	Log("si-i2p-plugin.go Proxy Address:", *proxAddrString)
 	Log("si-i2p-plugin.go Proxy Port:", *proxPortString)
 	Log("si-i2p-plugin.go Working Directory:", *workDirectory)
-	log.Println("si-i2p-plugin.go Debug mode:", *debugConnection)
-	log.Println("si-i2p-plugin.go Verbose mode:", *verboseLogging)
-	log.Println("si-i2p-plugin.go Using HTTP proxy:", *useHttpProxy)
+	if *debugConnection {
+		Log("si-i2p-plugin.go Debug mode: true")
+	}
+	if *verboseLogging {
+		Log("si-i2p-plugin.go Verbose mode: true")
+	}
+	if *useHttpProxy {
+		Log("si-i2p-plugin.go Using HTTP proxy: true")
+	}
 	Log("si-i2p-plugin.go Initial URL:", *address)
 
 	verbose = *verboseLogging
@@ -120,7 +125,7 @@ func LogA(msg []string) {
 func Warn(err error, errmsg string, msg ...string) (bool, error) {
 	LogA(msg)
 	if err != nil {
-		log.Println("WARN: ", err)
+		log.Println("WARN: ", errmsg, err)
 		return false, nil
 	}
 	return true, nil

@@ -70,7 +70,7 @@ func (proxy *samHttpProxy) prepare() {
 
 func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request) bool {
 
-	log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
+	Log("si-http-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
 
 	test := strings.Split(rq.URL.String(), ".i2p")
 
@@ -106,7 +106,7 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 }
 
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
-	log.Println(rq.RemoteAddr, " ", rq.Method, " ", rq.URL)
+	Log("si-http-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
 
 	if !proxy.checkURLType(rW, rq) {
 		return
@@ -138,6 +138,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 		resp, err := client.Do(req)
 		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
 			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
+			return
 		} else {
 			r := proxy.client.copyRequest(req, resp, dir, base64)
 			if r != nil {
@@ -155,13 +156,14 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 						if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 							io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
 						}
-					} else {
-						rW.WriteHeader(r.StatusCode)
-						log.Println("si-http-proxy.go Response status:", r.StatusCode)
+                        return
 					}
+					rW.WriteHeader(r.StatusCode)
+					log.Println("si-http-proxy.go Response status:", r.StatusCode)
 				} else {
 					rW.WriteHeader(r.StatusCode)
 					log.Println("si-http-proxy.go Response status:", r.StatusCode)
+                    return
 				}
 			}
 		}

@@ -107,7 +107,6 @@ func (samConn *samHttp) Connect() (net.Conn, error) {
 		} else {
 			return samConn.reConnect()
 		}
-		return samConn.samBridgeClient.SamConn, samConn.err
 	} else {
 		return samConn.reConnect()
 	}
@@ -122,10 +121,12 @@ func (samConn *samHttp) reConnect() (net.Conn, error) {
 		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
 			Log("sam-http.go Stream Connection established")
 			return samConn.samBridgeClient.SamConn, nil
+		} else {
+			return samConn.reConnect()
 		}
-		return samConn.samBridgeClient.SamConn, nil
+	} else {
+		return samConn.reConnect()
 	}
-	return samConn.samBridgeClient.SamConn, samConn.err
 }
 
 func (samConn *samHttp) setupTransport(samCombined string) {
