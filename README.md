@@ -85,7 +85,7 @@ correlate it with longitudinal testing.
 
 ### The pipes
 
-Moved to [misc/docs/PIPES.md](tree/master/misc/docs/PIPES.md)
+Moved to [misc/docs/PIPES.md](misc/docs/PIPES.md)
 
 What I'm doing right now:
 -------------------------
@@ -121,7 +121,7 @@ the two.
 Installation and Usage:
 =======================
 
-Moved to [misc/docs/INSTALL.md](tree/master/misc/docs/INSTALL.md)
+Moved to [misc/docs/INSTALL.md](misc/docs/INSTALL.md)
 
 Screenshots:
 ------------
