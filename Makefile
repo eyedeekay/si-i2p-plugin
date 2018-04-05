@@ -22,6 +22,26 @@ bin/si-i2p-plugin:
 		./src
 	@echo 'built'
 
+bin/si-i2p-plugin.bin:
+	go get -u github.com/eyedeekay/gosam
+	GOOS=darwin GOARCH=amd64 go build \
+		-a \
+		-tags netgo \
+		-ldflags '-w -extldflags "-static"' \
+		-o bin/si-i2p-plugin \
+		./src
+	@echo 'built'
+
+bin/si-i2p-plugin.exe:
+	go get -u github.com/eyedeekay/gosam
+	GOOS=windows GOARCH=amd64 go build \
+		-a \
+		-tags netgo \
+		-ldflags '-w -extldflags "-static"' \
+		-o bin/si-i2p-plugin \
+		./src
+	@echo 'built'
+
 build-arm: bin/si-i2p-plugin-arm
 
 bin/si-i2p-plugin-arm:
