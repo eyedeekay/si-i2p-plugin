@@ -137,14 +137,12 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
 		resp, err := client.Do(req)
 		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
-			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
 			return
 		} else {
 			r := proxy.client.copyRequest(req, resp, dir, base64)
 			if r != nil {
 				Log("si-http-proxy.go SAM-Provided Tunnel Address:", req.RemoteAddr)
 				Log("si-http-proxy.go Response Status:", r.Status)
-				//proxy.delHopHeaders(r.Header)
 				proxy.copyHeader(rW.Header(), r.Header)
 				if r.StatusCode >= 200 {
 					//if r.StatusCode == 301 {
