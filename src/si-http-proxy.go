@@ -157,6 +157,9 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 					log.Println("si-http-proxy.go Response status:", r.StatusCode)
 					return
 				}
+                rW.WriteHeader(r.StatusCode)
+				log.Println("si-http-proxy.go Response status:", r.StatusCode)
+				return
 			}
 		}
 	} else {

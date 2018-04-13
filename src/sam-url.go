@@ -170,6 +170,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 				Trailer:       trailer,
                 TransferEncoding: transferEncoding,
                 Uncompressed: unCompressed,
+                Close: false,
 			}
             subUrl.printHeader(header)
 			Log("sam-url.go Retrieval time: ", time.Now().String())
