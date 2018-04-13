@@ -20,17 +20,9 @@ type samHttpProxy struct {
 }
 
 var hopHeaders = []string{
-	"Accept",
-	"Accept-Encoding",
-	//"Connection",
-	"Keep-Alive",
 	"Proxy-Authenticate",
 	"Proxy-Authorization",
 	"Proxy-Connection",
-	"Te", // canonicalized version of "TE"
-	"Trailers",
-	"Transfer-Encoding",
-	"Upgrade",
 	"X-Forwarded-For",
 }
 

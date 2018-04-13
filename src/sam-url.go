@@ -143,6 +143,8 @@ func (subUrl *samUrl) printHeader(src http.Header) {
 
 func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
 	defer response.Body.Close()
+    transferEncoding := response.TransferEncoding
+    unCompressed := response.Uncompressed
 	header := response.Header
 	trailer := response.Trailer
 	status := response.Status
@@ -151,7 +153,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
 	body, err := ioutil.ReadAll(response.Body)
-	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read rrror", "sam-url.go Reading response from proxy"); subUrl.c {
+	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)
 		if subUrl.c, subUrl.err = Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file"); subUrl.c {
@@ -162,10 +164,12 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 				ProtoMajor:    protoMajor,
 				ProtoMinor:    protoMinor,
 				Body:          ioutil.NopCloser(bytes.NewBuffer(body)),
-				ContentLength: int64(len(body)),
+                ContentLength: int64(len(body)),
 				Request:       request,
 				Header:        header,
 				Trailer:       trailer,
+                TransferEncoding: transferEncoding,
+                Uncompressed: unCompressed,
 			}
             subUrl.printHeader(header)
 			Log("sam-url.go Retrieval time: ", time.Now().String())
