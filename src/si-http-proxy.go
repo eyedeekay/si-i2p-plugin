@@ -106,6 +106,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	Log("si-http-proxy.go ", rq.URL.String())
 	rq.RequestURI = ""
+    rq.Close = true
 
 	req, need := proxy.addressbook.checkAddressHelper(*rq)
 
