@@ -3,3 +3,6 @@ parent/
 demo.b32.i2p
 misc/i2pd_demo_data
 src/android
+test.diff
+*.log
+*.err

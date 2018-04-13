@@ -28,7 +28,7 @@ bin/si-i2p-plugin.bin:
 		-a \
 		-tags netgo \
 		-ldflags '-w -extldflags "-static"' \
-		-o bin/si-i2p-plugin \
+		-o bin/si-i2p-plugin.bin \
 		./src
 	@echo 'built'
 
@@ -38,9 +38,11 @@ bin/si-i2p-plugin.exe:
 		-a \
 		-tags netgo \
 		-ldflags '-w -extldflags "-static"' \
-		-o bin/si-i2p-plugin \
+		-o bin/si-i2p-plugin.exe \
 		./src
 	@echo 'built'
+
+bin: bin/si-i2p-plugin bin/si-i2p-plugin.bin bin/si-i2p-plugin.exe
 
 build-arm: bin/si-i2p-plugin-arm
 
@@ -87,9 +89,10 @@ bin/si-i2p-plugin-arm-droid:
 		-o bin/si-i2p-plugin-droid \
 		./src/android
 	@echo 'built'
+#
 
 debug: rebuild
-	gdb ./bin/si-i2p-plugin
+	$(HOME)/.go/bin/dlv exec ./bin/si-i2p-plugin
 
 dlv: rebuild
 	$(HOME)/.go/bin/dlv debug ./src/

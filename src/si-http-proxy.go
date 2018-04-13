@@ -144,7 +144,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 			if r != nil {
 				Log("si-http-proxy.go SAM-Provided Tunnel Address:", req.RemoteAddr)
 				Log("si-http-proxy.go Response Status:", r.Status)
-				proxy.delHopHeaders(r.Header)
+				//proxy.delHopHeaders(r.Header)
 				proxy.copyHeader(rW.Header(), r.Header)
 				if r.StatusCode >= 200 {
 					//if r.StatusCode == 301 {
@@ -161,7 +161,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 					}
 					rW.WriteHeader(r.StatusCode)
 					log.Println("si-http-proxy.go Response status:", r.StatusCode)
-                    //return
+                    return
 				} else {
 					rW.WriteHeader(r.StatusCode)
 					log.Println("si-http-proxy.go Response status:", r.StatusCode)

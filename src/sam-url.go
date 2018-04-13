@@ -25,7 +25,6 @@ type samUrl struct {
 
 	delPath string
 	delPipe *os.File
-	//delBuff bufio.Reader
 	delScan *bufio.Scanner
 }
 
@@ -128,6 +127,20 @@ func (subUrl *samUrl) dealResponse(response *http.Response) {
 	}
 }
 
+func (subUrl *samUrl) printHeader(src http.Header) {
+	if src != nil {
+		for k, vv := range src {
+			if vv != nil {
+				for _, v := range vv {
+					if v != "" {
+						Log("sam-url.go Copying headers: " + k + "," + v)
+					}
+				}
+			}
+		}
+	}
+}
+
 func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
 	defer response.Body.Close()
 	header := response.Header
@@ -154,6 +167,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 				Header:        header,
 				Trailer:       trailer,
 			}
+            subUrl.printHeader(header)
 			Log("sam-url.go Retrieval time: ", time.Now().String())
 			subUrl.timeFile.WriteString(time.Now().String())
 			return r
