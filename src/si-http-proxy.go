@@ -142,7 +142,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 					resp.Body.Close()
 					io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
 				}
-                rW.WriteHeader(resp.StatusCode)
+				rW.WriteHeader(resp.StatusCode)
 			}
 			return
 		} else {

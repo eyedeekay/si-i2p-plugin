@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
 	"fmt"
 	"io"
 	"log"
@@ -138,6 +139,7 @@ func (samConn *samHttp) setupTransport() {
 		MaxIdleConnsPerHost: 1,
 		DisableKeepAlives:   false,
 		IdleConnTimeout:     time.Duration(90 * time.Second),
+		TLSNextProto:        make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
 	}
 	Log("sam-http.go Initializing sub-client")
 	samConn.subClient = &http.Client{
