@@ -78,11 +78,6 @@ proxy. Almost everything will be improved by the availability of this.
 I haven't implemented addresshelpers/jump host interaction yet, but I have a
 good idea how to now.
 
-It would appear that, since it doesn't have to do lookups for sites that it has
-already created a tunnel for, this proxy can sometimes be faster than the
-standard http proxy. I'm not sure how to confirm this but will attempt to
-correlate it with longitudinal testing.
-
 ### The pipes
 
 Moved to [misc/docs/PIPES.md](misc/docs/PIPES.md)

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+    "strconv"
 	"strings"
 )
 
@@ -144,8 +145,8 @@ func (samStack *samList) findClient(request, base64helper string) *samHttp {
 		return nil
 	}
 	for index, client := range samStack.listOfClients {
-		log.Println("sam-list.go Checking client requests", index+1)
-		log.Println("sam-list.go of", len(samStack.listOfClients))
+		Log("sam-list.go Checking client requests", strconv.Itoa(index+1))
+		Log("sam-list.go of", strconv.Itoa(len(samStack.listOfClients)))
 		if client.hostCheck(request) {
 			Log("sam-list.go Client pipework for %s found.", request)
 			Log("sam-list.go Request sent")

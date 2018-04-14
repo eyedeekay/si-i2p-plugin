@@ -129,17 +129,21 @@ func (samConn *samHttp) reConnect() (net.Conn, error) {
 	}
 }
 
-func (samConn *samHttp) setupTransport(samCombined string) {
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
-		Log("sam-http.go Setting Transport")
-		Log("sam-http.go Setting Dial function")
-		samConn.transport = &http.Transport{
-			Dial: samConn.Dial,
-		}
-		Log("sam-http.go Initializing sub-client")
-		samConn.subClient = &http.Client{
-			Transport: samConn.transport,
-		}
+func (samConn *samHttp) setupTransport() {
+	Log("sam-http.go Setting Transport")
+	Log("sam-http.go Setting Dial function")
+	samConn.transport = &http.Transport{
+		Dial: samConn.Dial,
+        MaxIdleConns: 0,
+        MaxIdleConnsPerHost: 1,
+        DisableKeepAlives: false,
+        IdleConnTimeout: time.Duration(90 * time.Second),
+	}
+	Log("sam-http.go Initializing sub-client")
+	samConn.subClient = &http.Client{
+        Timeout:   time.Duration(300 * time.Second),
+		Transport: samConn.transport,
+        Jar: nil,
 	}
 }
 
@@ -151,13 +155,7 @@ func (samConn *samHttp) createClient(request string, samAddrString string, samPo
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
-		samConn.transport = &http.Transport{
-			Dial: samConn.Dial,
-		}
-		Log("sam-http.go Initializing sub-client")
-		samConn.subClient = &http.Client{
-			Transport: samConn.transport,
-		}
+        samConn.setupTransport()
 		if samConn.host == "" {
 			samConn.host, samConn.directory = samConn.hostSet(request)
 			samConn.initPipes()
@@ -175,15 +173,7 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
-		samConn.transport = &http.Transport{
-			Dial: samConn.Dial,
-		}
-		Log("sam-http.go Initializing sub-client")
-		samConn.subClient = &http.Client{
-			//Timeout: client.Timeout,
-			Timeout:   time.Duration(600 * time.Second),
-			Transport: samConn.transport}
-
+        samConn.setupTransport()
 		if samConn.host == "" {
 			samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
 			samConn.initPipes()

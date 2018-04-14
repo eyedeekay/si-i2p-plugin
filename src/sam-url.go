@@ -117,8 +117,9 @@ func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Re
 }
 
 func (subUrl *samUrl) dealResponse(response *http.Response) {
-	defer response.Body.Close()
+	//defer
 	body, err := ioutil.ReadAll(response.Body)
+    response.Body.Close()
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response Write Error", "sam-url.go Writing responses"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		subUrl.recvFile.Write(body)
@@ -142,8 +143,9 @@ func (subUrl *samUrl) printHeader(src http.Header) {
 }
 
 func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
-	defer response.Body.Close()
+	//defer
     transferEncoding := response.TransferEncoding
+    //contentLength := response.ContentLength
     unCompressed := response.Uncompressed
 	header := response.Header
 	trailer := response.Trailer
@@ -153,9 +155,11 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
 	body, err := ioutil.ReadAll(response.Body)
+    response.Body.Close()
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)
+        //ContentLength: contentLength,
 		if subUrl.c, subUrl.err = Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file"); subUrl.c {
 			r := &http.Response{
 				Status:        status,
