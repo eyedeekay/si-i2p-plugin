@@ -180,10 +180,10 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	}
 }
 
-func createHttpProxy(proxAddr string, proxPort string, samStack *samList, initAddress string) *samHttpProxy {
+func createHttpProxy(proxAddr, proxPort string, samStack *samList, addressHelperUrl, initAddress string) *samHttpProxy {
 	var samProxy samHttpProxy
 	samProxy.host = proxAddr + ":" + proxPort
-	samProxy.addressbook = newAddressHelper()
+	samProxy.addressbook = newAddressHelper(addressHelperUrl)
 	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.host)
 	samProxy.client = samStack
 	samProxy.newHandle = &http.Server{

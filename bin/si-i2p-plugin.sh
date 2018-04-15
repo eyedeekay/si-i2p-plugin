@@ -13,7 +13,8 @@ if [ -f /etc/si-i2p-plugin/settings.cfg ]; then
             -proxy-port=$proxy_port \
             -http-proxy=$use_proxy \
             -conn-debug=$debug_info \
-            -url=$testing_url"
+            -url=$testing_url \
+            -addresshelper=$jump_urls"
 fi
 
 if [ ! -d "$working_dir" ]; then

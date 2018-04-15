@@ -6,10 +6,13 @@ import (
 	"net/url"
 	"os"
 	//	"path/filepath"
+    "strconv"
 	"strings"
 )
 
 type addressHelper struct {
+    helperUrls []string
+
 	rq       *http.Request
 	bookPath string
 	bookFile *os.File
@@ -91,7 +94,7 @@ func (addressBook *addressHelper) getPair(url *url.URL) (string, string) {
 
 func (addressBook *addressHelper) fileCheck(line string) bool {
 	temp, err := ioutil.ReadFile(addressBook.bookPath)
-	if addressBook.c, addressBook.err = Warn(err, "File check error, handling:", "Checking Addressbook file", addressBook.bookPath); addressBook.c {
+	if addressBook.c, addressBook.err = Warn(err, "addresshelper.go File check error, handling:", "addresshelper.go Checking Addressbook file", addressBook.bookPath); addressBook.c {
 		return !strings.Contains(string(temp), line)
 	} else {
 		return true
@@ -115,8 +118,13 @@ func (addressBook *addressHelper) updateAh() {
 	}
 }
 
-func newAddressHelper() *addressHelper {
+func newAddressHelper(addressHelperUrl string) *addressHelper {
 	var a addressHelper
+    a.helperUrls = make([]string, 0)
+    a.helperUrls = append(a.helperUrls, strings.SplitN(addressHelperUrl, ",", -1)...)
+    for index, address := range a.helperUrls {
+        Log("addresshelper.go address:", address, "index:", strconv.Itoa(index) )
+    }
 	a.pairs = []string{}
 	a.rq = &http.Request{}
 	a.err = nil

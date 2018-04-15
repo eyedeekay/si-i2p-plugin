@@ -91,6 +91,8 @@ bin/si-i2p-plugin-arm-droid:
 	@echo 'built'
 #
 
+xpi2p:
+
 debug: rebuild
 	$(HOME)/.go/bin/dlv exec ./bin/si-i2p-plugin
 
@@ -122,8 +124,8 @@ remove:
 		$(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
-run: build
-	./bin/si-i2p-plugin >run.log 2>run.err &
+run: rebuild
+	./bin/si-i2p-plugin -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
 
 follow:
 	tail -f run.log run.err | nl
