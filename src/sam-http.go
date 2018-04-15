@@ -136,7 +136,7 @@ func (samConn *samHttp) setupTransport() {
 	samConn.transport = &http.Transport{
 		Dial:                samConn.Dial,
 		MaxIdleConns:        0,
-		MaxIdleConnsPerHost: 1,
+		MaxIdleConnsPerHost: 3,
 		DisableKeepAlives:   false,
 		IdleConnTimeout:     time.Duration(90 * time.Second),
 		TLSNextProto:        make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),

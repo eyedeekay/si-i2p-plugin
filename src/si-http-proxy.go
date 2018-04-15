@@ -162,6 +162,11 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 					return
 				} else {
 					rW.WriteHeader(r.StatusCode)
+                    read, err := ioutil.ReadAll(r.Body)
+					if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+						r.Body.Close()
+						io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
+					}
 					log.Println("si-http-proxy.go Response status:", r.StatusCode)
 					return
 				}
