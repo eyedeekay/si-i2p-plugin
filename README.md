@@ -79,7 +79,8 @@ I haven't implemented addresshelpers/jump host interaction yet, but I have a
 good idea how to now.
 
 I'm pretty sure I need to make the individual sub-proxies handle their own
-cookie jars.
+cookie jars. I think this is as just setting the jar variable in the http
+client.
 
 ### The pipes
 

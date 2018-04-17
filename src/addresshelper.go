@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	//	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/eyedeekay/i2pasta/addresshelper"
@@ -17,9 +15,6 @@ type addressHelper struct {
 	assistant *i2paddresshelper.I2paddresshelper
 	converter i2pconv.I2pconv
 
-	helperUrls []string
-
-	rq       *http.Request
 	bookPath string
 	bookFile *os.File
 	pairs    []string
@@ -48,18 +43,18 @@ func (addressBook *addressHelper) checkAddressHelper(url http.Request) (*http.Re
 			newBody := strings.Replace(string(body), url.Host, b32, -1)
 			Log("addresshelper.go request body", url.Host, url.URL.Scheme+"://"+b32+newpath, string(newBody))
 
-			addressBook.rq, addressBook.err = http.NewRequest(url.Method, url.URL.Scheme+"://"+b32+newpath, strings.NewReader(newBody))
-			if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go New request formation error", "addresshelper.go New request generated"); addressBook.c {
+			rq, err := http.NewRequest(url.Method, url.URL.Scheme+"://"+b32+newpath, strings.NewReader(newBody))
+			if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go New request formation error", "addresshelper.go New request generated"); addressBook.c {
 				Log("addresshelper.go rewrote request")
 			}
-			return addressBook.rq, true
+			return rq, true
 		}
 	} else {
-		addressBook.rq, addressBook.err = http.NewRequest(url.Method, url.URL.String(), url.Body)
-		if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
+		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
+		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
 			Log("addresshelper.go no rewrite required")
 		}
-		return addressBook.rq, false
+		return rq, false
 	}
 	return &url, false
 }
@@ -152,14 +147,8 @@ func (addressBook *addressHelper) updateAh() {
 
 func newAddressHelper(addressHelperUrl string, samHost, samPort string) *addressHelper {
 	var a addressHelper
-	a.helperUrls = make([]string, 0)
-	a.helperUrls = append(a.helperUrls, strings.SplitN(addressHelperUrl, ",", -1)...)
-	for index, address := range a.helperUrls {
-		Log("addresshelper.go address:", address, "index:", strconv.Itoa(index))
-	}
     a.assistant = i2paddresshelper.NewI2pAddressHelper(addressHelperUrl, samHost, samPort)
 	a.pairs = []string{}
-	a.rq = &http.Request{}
 	a.err = nil
 	a.c = false
 	a.bookPath = "addressbook.txt"

@@ -12,8 +12,12 @@ rebuild: clean build
 
 build: bin/si-i2p-plugin
 
-bin/si-i2p-plugin:
+deps:
+	go get -u github.com/eyedeekay/i2pasta/addresshelper
+	go get -u github.com/eyedeekay/i2pasta/convert
 	go get -u github.com/eyedeekay/gosam
+
+bin/si-i2p-plugin: deps
 	GOOS=linux GOARCH=amd64 go build \
 		-a \
 		-tags netgo \
@@ -22,8 +26,7 @@ bin/si-i2p-plugin:
 		./src
 	@echo 'built'
 
-bin/si-i2p-plugin.bin:
-	go get -u github.com/eyedeekay/gosam
+bin/si-i2p-plugin.bin: deps
 	GOOS=darwin GOARCH=amd64 go build \
 		-a \
 		-tags netgo \
@@ -32,8 +35,7 @@ bin/si-i2p-plugin.bin:
 		./src
 	@echo 'built'
 
-bin/si-i2p-plugin.exe:
-	go get -u github.com/eyedeekay/gosam
+bin/si-i2p-plugin.exe: deps
 	GOOS=windows GOARCH=amd64 go build \
 		-a \
 		-tags netgo \
@@ -46,8 +48,7 @@ bin: bin/si-i2p-plugin bin/si-i2p-plugin.bin bin/si-i2p-plugin.exe
 
 build-arm: bin/si-i2p-plugin-arm
 
-bin/si-i2p-plugin-arm:
-	go get -u github.com/eyedeekay/gosam
+bin/si-i2p-plugin-arm: deps
 	GOARCH=arm GOARM=7 go build \
 		-a \
 		-tags netgo \
@@ -57,8 +58,7 @@ bin/si-i2p-plugin-arm:
 		./src
 	@echo 'built'
 
-release:
-	go get -u github.com/eyedeekay/gosam
+release: deps
 	GOOS=linux GOARCH=amd64 go build \
 		-a \
 		-tags netgo \
@@ -68,8 +68,7 @@ release:
 		./src
 	@echo 'built release'
 
-native:
-	go get -u github.com/eyedeekay/gosam
+native: deps
 	go build \
 		-a \
 		-buildmode=pie \
@@ -79,8 +78,7 @@ native:
 
 android: bin/si-i2p-plugin-arm-droid
 
-bin/si-i2p-plugin-arm-droid:
-	go get -u github.com/eyedeekay/gosam
+bin/si-i2p-plugin-arm-droid: deps
 	gomobile build \
 		-target=android \
 		-a \
