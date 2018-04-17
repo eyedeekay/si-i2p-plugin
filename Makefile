@@ -6,7 +6,7 @@ LOG := log/
 ETC := etc/
 USR := usr/
 LOCAL := local/
-VERSION := 0.19
+VERSION := 0.20
 
 rebuild: clean build
 

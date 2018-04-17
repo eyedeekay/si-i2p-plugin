@@ -14,7 +14,6 @@ type samHttpProxy struct {
 	host      string
 	client    *samList
 	transport *http.Transport
-	//handle      *samHttpProxy
 	newHandle   *http.Server
 	addressbook *addressHelper
 	err         error
