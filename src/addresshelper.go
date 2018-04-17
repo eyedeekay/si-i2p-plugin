@@ -9,12 +9,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/eyedeekay/i2pasta/addresshelper"
 	"github.com/eyedeekay/i2pasta/convert"
 )
 
 type addressHelper struct {
-	assistant i2paddresshelper.I2paddresshelper
 	converter i2pconv.I2pconv
 
 	helperUrls []string

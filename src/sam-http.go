@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/eyedeekay/gosam"
-	//"github.com/cryptix/goSam"
+	"github.com/eyedeekay/i2pasta/addresshelper"
 )
 
 type samHttp struct {
@@ -24,6 +24,7 @@ type samHttp struct {
 	c        bool
 
 	samBridgeClient *goSam.Client
+    assistant i2paddresshelper.I2paddresshelper
 	samAddrString   string
 	samPortString   string
 
@@ -150,6 +151,7 @@ func (samConn *samHttp) setupTransport() {
 	samConn.subClient = &http.Client{
 		Timeout:   time.Duration(300 * time.Second),
 		Transport: samConn.transport,
+        CheckRedirect: samConn.checkRedirect,
 		Jar:       nil,
 	}
 }
