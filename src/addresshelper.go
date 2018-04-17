@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+    "log"
 	"net/http"
 	"net/url"
 	"os"
@@ -23,33 +24,42 @@ type addressHelper struct {
 	c   bool
 }
 
+
+func (addressBook *addressHelper) base32ify(url http.Request) (*http.Request, bool) {
+    _, b32 := addressBook.getBase32(url.URL)
+	temp := strings.Split(url.URL.Path, "/")
+	var newpath string
+	for _, s := range temp {
+		if !strings.Contains(url.URL.String(), "?i2paddresshelper=") {
+			newpath += s
+		}
+	}
+	if strings.HasSuffix(newpath, "/") {
+		newpath = newpath[:len(newpath)-len("/")]
+	}
+	body, err := ioutil.ReadAll(url.Body)
+	if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Body rewrite error", "addresshelper.go Body rewriting"); addressBook.c {
+		newBody := strings.Replace(string(body), url.Host, b32, -1)
+		Log("addresshelper.go request body", url.Host, url.URL.Scheme+"://"+b32+newpath, string(newBody))
+
+		rq, err := http.NewRequest(url.Method, url.URL.Scheme+"://"+b32+newpath, strings.NewReader(newBody))
+		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go New request formation error", "addresshelper.go New request generated"); addressBook.c {
+			Log("addresshelper.go rewrote request")
+		}
+		return rq, true
+	}
+    return &url, false
+}
+
 func (addressBook *addressHelper) checkAddressHelper(url http.Request) (*http.Request, bool) {
 	if strings.Contains(url.URL.String(), "?i2paddresshelper=") {
+        Log("addresshelper.go ?i2paddresshelper detected")
 		addressBook.addPair(url.URL)
-		_, b32 := addressBook.getBase32(url.URL)
-		Log("addresshelper.go ?i2paddresshelper detected")
-		temp := strings.Split(url.URL.Path, "/")
-		var newpath string
-		for _, s := range temp {
-			if !strings.Contains(url.URL.String(), "?i2paddresshelper=") {
-				newpath += s
-			}
-		}
-		if strings.HasSuffix(newpath, "/") {
-			newpath = newpath[:len(newpath)-len("/")]
-		}
-		body, err := ioutil.ReadAll(url.Body)
-		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Body rewrite error", "addresshelper.go Body rewriting"); addressBook.c {
-			newBody := strings.Replace(string(body), url.Host, b32, -1)
-			Log("addresshelper.go request body", url.Host, url.URL.Scheme+"://"+b32+newpath, string(newBody))
-
-			rq, err := http.NewRequest(url.Method, url.URL.Scheme+"://"+b32+newpath, strings.NewReader(newBody))
-			if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go New request formation error", "addresshelper.go New request generated"); addressBook.c {
-				Log("addresshelper.go rewrote request")
-			}
-			return rq, true
-		}
-	} else {
+		return addressBook.base32ify(url)
+	} else if ! addressBook.checkAddPair(url.URL.Host) {
+		log.Println("addresshelper.go addressBook URL detected")
+		return addressBook.base32ify(url)
+    } else {
 		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
 			Log("addresshelper.go no rewrite required")
@@ -71,6 +81,30 @@ func (addressBook *addressHelper) checkAddPair(arg string) bool {
 		}
 	}
 	return true
+}
+
+func (addressBook *addressHelper) Lookup(req string) {
+    rv, jerr := addressBook.assistant.QueryHelper(req)
+    if jerr != "jumperror" {
+        addressBook.addPairString(rv)
+    }else{
+        log.Println("addressbook.go Jump URL not found")
+    }
+    //return
+}
+
+func (addressBook *addressHelper) addPairString(url string) {
+	segments := strings.Split(strings.Replace(url, "http://", "", -1), "/")
+	host := segments[0]
+	for _, s := range segments {
+		if strings.Contains(s, "?i2paddresshelper=") {
+			if addressBook.checkAddPair(host) {
+				base64 := strings.Replace(strings.Split(s, "/")[0], "?i2paddresshelper=", "", -1)
+				addressBook.pairs = append(addressBook.pairs, host+"="+base64)
+			}
+		}
+	}
+	addressBook.updateAh()
 }
 
 func (addressBook *addressHelper) addPair(url *url.URL) {
@@ -147,7 +181,7 @@ func (addressBook *addressHelper) updateAh() {
 
 func newAddressHelper(addressHelperUrl string, samHost, samPort string) *addressHelper {
 	var a addressHelper
-    a.assistant = i2paddresshelper.NewI2pAddressHelper(addressHelperUrl, samHost, samPort)
+	a.assistant = i2paddresshelper.NewI2pAddressHelper(addressHelperUrl, samHost, samPort)
 	a.pairs = []string{}
 	a.err = nil
 	a.c = false

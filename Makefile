@@ -12,6 +12,15 @@ rebuild: clean build
 
 build: bin/si-i2p-plugin
 
+nodeps: clean
+	GOOS=linux GOARCH=amd64 go build \
+		-a \
+		-tags netgo \
+		-ldflags '-w -extldflags "-static"' \
+		-o bin/si-i2p-plugin \
+		./src
+	@echo 'built'
+
 deps:
 	go get -u github.com/eyedeekay/i2pasta/addresshelper
 	go get -u github.com/eyedeekay/i2pasta/convert
@@ -123,7 +132,8 @@ remove:
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
 run: rebuild
-	./bin/si-i2p-plugin -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+	./bin/si-i2p-plugin -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+	#./bin/si-i2p-plugin -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
 
 follow:
 	tail -f run.log run.err | nl

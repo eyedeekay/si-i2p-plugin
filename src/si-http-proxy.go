@@ -11,9 +11,9 @@ import (
 )
 
 type samHttpProxy struct {
-	host      string
-	client    *samList
-	transport *http.Transport
+	host        string
+	client      *samList
+	transport   *http.Transport
 	newHandle   *http.Server
 	addressbook *addressHelper
 	err         error
@@ -133,15 +133,22 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
 		resp, err := client.Do(req)
+        if err != nil {
+            if strings.Contains(err.Error(), "Hostname error"){
+                proxy.addressbook.Lookup(req.Host)
+                err = nil
+            }
+        }
 		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
+            log.Println("si-http-proxy.go error:", err.Error())
 			if resp != nil {
+				rW.WriteHeader(resp.StatusCode)
 				proxy.copyHeader(rW.Header(), resp.Header)
 				read, err := ioutil.ReadAll(resp.Body)
 				if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 					resp.Body.Close()
 					io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
 				}
-				rW.WriteHeader(resp.StatusCode)
 			}
 			return
 		} else {
@@ -157,7 +164,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 						r.Body.Close()
 						io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
 					}
-					log.Println("si-http-proxy.go Response status:", r.StatusCode)
+					Log("si-http-proxy.go Response status:", r.Status)
 					return
 				} else {
 					rW.WriteHeader(r.StatusCode)
@@ -166,11 +173,11 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 						r.Body.Close()
 						io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
 					}
-					log.Println("si-http-proxy.go Response status:", r.StatusCode)
+					Log("si-http-proxy.go Response status:", r.Status)
 					return
 				}
 				rW.WriteHeader(r.StatusCode)
-				log.Println("si-http-proxy.go Response status:", r.StatusCode)
+				Log("si-http-proxy.go Response status:", r.Status)
 				return
 			}
 		}
@@ -188,8 +195,8 @@ func createHttpProxy(proxAddr, proxPort string, samStack *samList, addressHelper
 	samProxy.newHandle = &http.Server{
 		Addr:         samProxy.host,
 		Handler:      &samProxy,
-		ReadTimeout:  time.Duration(10 * time.Second),
-		WriteTimeout: time.Duration(10 * time.Second),
+		ReadTimeout:  time.Duration(180 * time.Second),
+		WriteTimeout: time.Duration(180 * time.Second),
 	}
 	log.Println("si-http-proxy.go Connected SAM isolation stack to the HTTP proxy server")
 	go samProxy.prepare()

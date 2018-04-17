@@ -91,7 +91,7 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 	b := false
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
-			log.Println("sam-url.go Response Status ", response.StatusCode)
+			Log("sam-url.go Response Status ", response.Status)
 			if response.StatusCode == http.StatusOK {
 				Log("sam-url.go Setting file in cache")
 				subUrl.dealResponse(response)
@@ -105,7 +105,7 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) *http.Response {
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
-			log.Println("sam-url.go Response Status ", response.StatusCode)
+			Log("sam-url.go Response Status ", response.Status)
 			if response.StatusCode == http.StatusOK {
 				Log("sam-url.go Setting file in cache")
 				resp := subUrl.dealResponseHttp(request, response)

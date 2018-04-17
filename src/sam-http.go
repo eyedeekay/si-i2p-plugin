@@ -84,22 +84,33 @@ func (samConn *samHttp) initPipes() {
 
 }
 
+type errorString struct {
+    s string
+}
+
+func (e *errorString) Error() string {
+    return e.s
+}
+
 func (samConn *samHttp) Dial(network, addr string) (net.Conn, error) {
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
 		return samConn.subDial(network, addr)
 	}
-	return samConn.samBridgeClient.SamConn, nil
+	return samConn.samBridgeClient.SamConn, &errorString{"SAM connection error"}
 }
 
 func (samConn *samHttp) subDial(network, addr string) (net.Conn, error) {
 	if samConn.name != "" {
 		if samConn.id != 0 {
 			return samConn.Connect()
+		} else {
+			return nil, &errorString{"ID error"}
 		}
+	} else {
+		return nil, &errorString{"Hostname error"}
 	}
-	return nil, nil
 }
 
 func (samConn *samHttp) Connect() (net.Conn, error) {
@@ -107,7 +118,7 @@ func (samConn *samHttp) Connect() (net.Conn, error) {
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
 		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
 			Log("sam-http.go Stream Connection established")
-			return samConn.samBridgeClient.SamConn, nil
+			return samConn.samBridgeClient.SamConn, samConn.err
 		} else {
 			return samConn.reConnect()
 		}
@@ -124,7 +135,7 @@ func (samConn *samHttp) reConnect() (net.Conn, error) {
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
 		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
 			Log("sam-http.go Stream Connection established")
-			return samConn.samBridgeClient.SamConn, nil
+			return samConn.samBridgeClient.SamConn, samConn.err
 		} else {
 			return samConn.reConnect()
 		}
@@ -135,7 +146,7 @@ func (samConn *samHttp) reConnect() (net.Conn, error) {
 
 func (samConn *samHttp) checkRedirect(req *http.Request, via []*http.Request) error {
 	//var err error
-    return http.ErrUseLastResponse
+	return http.ErrUseLastResponse
 	//return err
 }
 
@@ -152,7 +163,7 @@ func (samConn *samHttp) setupTransport() {
 	}
 	Log("sam-http.go Initializing sub-client")
 	samConn.subClient = &http.Client{
-		Timeout:       time.Duration(300 * time.Second),
+		Timeout:       time.Duration(360 * time.Second),
 		Transport:     samConn.transport,
 		CheckRedirect: samConn.checkRedirect,
 		Jar:           samConn.jar,
