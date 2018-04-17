@@ -9,10 +9,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/eyedeekay/i2pasta/addresshelper"
 	"github.com/eyedeekay/i2pasta/convert"
 )
 
 type addressHelper struct {
+	assistant *i2paddresshelper.I2paddresshelper
 	converter i2pconv.I2pconv
 
 	helperUrls []string
@@ -112,7 +114,7 @@ func (addressBook *addressHelper) getBase32(url *url.URL) (string, string) {
 				if kv[0] == url.Host {
 					b32, err := addressBook.converter.I2p64to32(kv[1])
 					if addressBook.c, addressBook.err = Warn(err, "addresshelper.go Base32 conversion failure", "Base32 converted"); addressBook.c {
-                        Log("addresshelper.go b32:", b32)
+						Log("addresshelper.go b32:", b32)
 						return kv[0], b32
 					}
 				}
@@ -148,13 +150,14 @@ func (addressBook *addressHelper) updateAh() {
 	}
 }
 
-func newAddressHelper(addressHelperUrl string) *addressHelper {
+func newAddressHelper(addressHelperUrl string, samHost, samPort string) *addressHelper {
 	var a addressHelper
 	a.helperUrls = make([]string, 0)
 	a.helperUrls = append(a.helperUrls, strings.SplitN(addressHelperUrl, ",", -1)...)
 	for index, address := range a.helperUrls {
 		Log("addresshelper.go address:", address, "index:", strconv.Itoa(index))
 	}
+    a.assistant = i2paddresshelper.NewI2pAddressHelper(addressHelperUrl, samHost, samPort)
 	a.pairs = []string{}
 	a.rq = &http.Request{}
 	a.err = nil

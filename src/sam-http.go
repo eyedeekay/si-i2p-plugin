@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -24,7 +25,8 @@ type samHttp struct {
 	c        bool
 
 	samBridgeClient *goSam.Client
-    assistant i2paddresshelper.I2paddresshelper
+	assistant       i2paddresshelper.I2paddresshelper
+	jar             *cookiejar.Jar
 	samAddrString   string
 	samPortString   string
 
@@ -132,8 +134,9 @@ func (samConn *samHttp) reConnect() (net.Conn, error) {
 }
 
 func (samConn *samHttp) checkRedirect(req *http.Request, via []*http.Request) error {
-	var err error
-	return err
+	//var err error
+    return http.ErrUseLastResponse
+	//return err
 }
 
 func (samConn *samHttp) setupTransport() {
@@ -149,10 +152,10 @@ func (samConn *samHttp) setupTransport() {
 	}
 	Log("sam-http.go Initializing sub-client")
 	samConn.subClient = &http.Client{
-		Timeout:   time.Duration(300 * time.Second),
-		Transport: samConn.transport,
-        CheckRedirect: samConn.checkRedirect,
-		Jar:       nil,
+		Timeout:       time.Duration(300 * time.Second),
+		Transport:     samConn.transport,
+		CheckRedirect: samConn.checkRedirect,
+		Jar:           samConn.jar,
 	}
 }
 
@@ -160,6 +163,13 @@ func (samConn *samHttp) createClient(request string, samAddrString string, samPo
 	samConn.samAddrString = samAddrString
 	samConn.samPortString = samPortString
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
+	/**/
+	//samConn.jar = cookiejar.New( &cookiejar.Options{PublicSuffixList: publicsuffix.List} )
+	/**/
+	samConn.jar, samConn.err = cookiejar.New(nil)
+	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samCombined); samConn.c {
+		Log("sam-http.go Cookie Jar created")
+	}
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")

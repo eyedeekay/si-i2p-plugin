@@ -140,3 +140,5 @@ func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error)
 		return nil, c
 	}
 }
+
+//func setupCookieJar()
