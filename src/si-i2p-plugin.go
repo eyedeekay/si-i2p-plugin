@@ -34,7 +34,7 @@ func main() {
 		"The working directory you want to use, defaults to current directory")
 	address := flag.String("url", "",
 		"i2p URL you want to retrieve")
-    addressHelper := flag.String("addresshelper", "http://inr.i2p",
+	addressHelper := flag.String("addresshelper", "http://inr.i2p",
 		"Jump/Addresshelper service you want to use")
 
 	flag.Parse()
@@ -46,7 +46,7 @@ func main() {
 	Log("si-i2p-plugin.go Proxy Address:", *proxAddrString)
 	Log("si-i2p-plugin.go Proxy Port:", *proxPortString)
 	Log("si-i2p-plugin.go Working Directory:", *workDirectory)
-    Log("si-i2p-plugin.go Addresshelper Service:", *addressHelper)
+	Log("si-i2p-plugin.go Addresshelper Service:", *addressHelper)
 
 	if *debugConnection {
 		Log("si-i2p-plugin.go Debug mode: true")

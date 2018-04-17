@@ -130,6 +130,11 @@ func (samConn *samHttp) reConnect() (net.Conn, error) {
 	}
 }
 
+func (samConn *samHttp) checkRedirect(req *http.Request, via []*http.Request) error {
+	var err error
+	return err
+}
+
 func (samConn *samHttp) setupTransport() {
 	Log("sam-http.go Setting Transport")
 	Log("sam-http.go Setting Dial function")

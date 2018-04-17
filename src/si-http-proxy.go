@@ -111,13 +111,13 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	Log("si-http-proxy.go ", rq.URL.String())
 	rq.RequestURI = ""
-	//rq.Close = true
 
 	req, need := proxy.addressbook.checkAddressHelper(*rq)
 
 	if req == nil {
 		return
 	}
+
 	proxy.delHopHeaders(req.Header)
 
 	var client *http.Client
@@ -162,7 +162,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 					return
 				} else {
 					rW.WriteHeader(r.StatusCode)
-                    read, err := ioutil.ReadAll(r.Body)
+					read, err := ioutil.ReadAll(r.Body)
 					if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 						r.Body.Close()
 						io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
