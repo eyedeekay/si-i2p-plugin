@@ -129,5 +129,11 @@ test-browser:
 test-browser-diff:
 	http_proxy=http://127.0.0.1:4443 surf http://i2p-projekt.i2p
 
+thirdeye:
+	http_proxy=http://127.0.0.1:4443 surf http://lxik2bjgdl7462opwmkzkxsx5gvvptjbtl35rawytkndf2z7okqq.b32.i2p/index.html
+
+surf:
+	http_proxy=http://127.0.0.1:4443 surf http://i2p-projekt.i2p
+
 firefox:
 	iceweasel http://i2p-projekt.i2p > firefox.log 2> firefox.err &

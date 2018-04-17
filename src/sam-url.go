@@ -157,8 +157,8 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	protoMinor := response.ProtoMinor
 	//body, err := ioutil.ReadAll(response.Body)
 	//response.Body.Close()
-    var err error
-    err = nil
+	var err error
+	err = nil
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)

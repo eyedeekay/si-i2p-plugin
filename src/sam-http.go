@@ -116,7 +116,7 @@ func (samConn *samHttp) subDial(network, addr string) (net.Conn, error) {
 func (samConn *samHttp) Connect() (net.Conn, error) {
 	if samConn.samBridgeClient != nil {
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
-		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
+		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Error connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
 			Log("sam-http.go Stream Connection established")
 			return samConn.samBridgeClient.SamConn, samConn.err
 		} else {
@@ -130,7 +130,7 @@ func (samConn *samHttp) Connect() (net.Conn, error) {
 func (samConn *samHttp) reConnect() (net.Conn, error) {
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
-	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
+	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go 133 SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
 		Log("sam-http.go SAM Connection established")
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
 		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
@@ -154,19 +154,21 @@ func (samConn *samHttp) setupTransport() {
 	Log("sam-http.go Setting Transport")
 	Log("sam-http.go Setting Dial function")
 	samConn.transport = &http.Transport{
-		Dial:                samConn.Dial,
-		MaxIdleConns:        0,
-		MaxIdleConnsPerHost: 20,
-		DisableKeepAlives:   false,
-		IdleConnTimeout:     time.Duration(90 * time.Second),
-		TLSNextProto:        make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
+		Dial:                  samConn.Dial,
+		MaxIdleConns:          0,
+		MaxIdleConnsPerHost:   10,
+		DisableKeepAlives:     false,
+		IdleConnTimeout:       time.Duration(90 * time.Second),
+		ResponseHeaderTimeout: time.Duration(85 * time.Second),
+		ExpectContinueTimeout: time.Duration(360 * time.Second),
+		TLSNextProto:          make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
 	}
 	Log("sam-http.go Initializing sub-client")
+	//CheckRedirect: samConn.checkRedirect,
 	samConn.subClient = &http.Client{
-		Timeout:       time.Duration(360 * time.Second),
-		Transport:     samConn.transport,
-		CheckRedirect: samConn.checkRedirect,
-		Jar:           samConn.jar,
+		Timeout:   time.Duration(360 * time.Second),
+		Transport: samConn.transport,
+		Jar:       samConn.jar,
 	}
 }
 
@@ -200,7 +202,7 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 	samConn.samPortString = samPortString
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
+	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go 205 SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
 		samConn.setupTransport()

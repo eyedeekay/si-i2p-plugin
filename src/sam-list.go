@@ -95,14 +95,14 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
 	}
 }
 
-func (samStack *samList) sendClientRequestBase64Http(request *http.Request, base64helper string) (*http.Client, string) {
-	client := samStack.findClient(request.URL.String(), base64helper)
+/*func (samStack *samList) ssendClientRequestHttp(request *http.Request) (http.Client, string) {
+	client := *samStack.findClient(request.URL.String(), "")
 	if client != nil {
-		return client.sendRequestBase64Http(request, base64helper)
+		return client.sendRequestHttp(request)
 	} else {
-		return nil, "nil client"
+		return client, "nil client"
 	}
-}
+}*/
 
 func (samStack *samList) checkURLType(request string) bool {
 
@@ -151,7 +151,8 @@ func (samStack *samList) findClient(request, base64helper string) *samHttp {
 			Log("sam-list.go Client pipework for %s found.", request)
 			Log("sam-list.go Request sent")
 			found = true
-			return &client
+			c = client
+			//return &client
 		}
 	}
 	if !found {
@@ -188,7 +189,7 @@ func (samStack *samList) writeResponses() {
 		log.Println("sam-list.go Checking for responses: %s", i+1)
 		log.Println("sam-list.go of: ", len(samStack.listOfClients))
 		if client.printResponse() != "" {
-			go samStack.writeRecieved(client.printResponse())
+			samStack.writeRecieved(client.printResponse())
 		}
 	}
 }
