@@ -136,7 +136,6 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
         if err != nil {
             if strings.Contains(err.Error(), "Hostname error"){
                 proxy.addressbook.Lookup(req.Host)
-                err = nil
             }
         }
 		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
