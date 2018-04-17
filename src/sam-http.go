@@ -85,11 +85,11 @@ func (samConn *samHttp) initPipes() {
 }
 
 type errorString struct {
-    s string
+	s string
 }
 
 func (e *errorString) Error() string {
-    return e.s
+	return e.s
 }
 
 func (samConn *samHttp) Dial(network, addr string) (net.Conn, error) {

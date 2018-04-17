@@ -2,7 +2,7 @@ package main
 
 import (
 	"io/ioutil"
-    "log"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -24,9 +24,8 @@ type addressHelper struct {
 	c   bool
 }
 
-
 func (addressBook *addressHelper) base32ify(url http.Request) (*http.Request, bool) {
-    _, b32 := addressBook.getBase32(url.URL)
+	_, b32 := addressBook.getBase32(url.URL)
 	temp := strings.Split(url.URL.Path, "/")
 	var newpath string
 	for _, s := range temp {
@@ -48,18 +47,18 @@ func (addressBook *addressHelper) base32ify(url http.Request) (*http.Request, bo
 		}
 		return rq, true
 	}
-    return &url, false
+	return &url, false
 }
 
 func (addressBook *addressHelper) checkAddressHelper(url http.Request) (*http.Request, bool) {
 	if strings.Contains(url.URL.String(), "?i2paddresshelper=") {
-        Log("addresshelper.go ?i2paddresshelper detected")
+		Log("addresshelper.go ?i2paddresshelper detected")
 		addressBook.addPair(url.URL)
 		return addressBook.base32ify(url)
-	} else if ! addressBook.checkAddPair(url.URL.Host) {
+	} else if !addressBook.checkAddPair(url.URL.Host) {
 		log.Println("addresshelper.go addressBook URL detected")
 		return addressBook.base32ify(url)
-    } else {
+	} else {
 		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
 			Log("addresshelper.go no rewrite required")
@@ -84,13 +83,13 @@ func (addressBook *addressHelper) checkAddPair(arg string) bool {
 }
 
 func (addressBook *addressHelper) Lookup(req string) {
-    rv, jerr := addressBook.assistant.QueryHelper(req)
-    if jerr != "jumperror" {
-        addressBook.addPairString(rv)
-    }else{
-        log.Println("addressbook.go Jump URL not found")
-    }
-    //return
+	rv, jerr := addressBook.assistant.QueryHelper(req)
+	if jerr != "jumperror" {
+		addressBook.addPairString(rv)
+	} else {
+		log.Println("addressbook.go Jump URL not found")
+	}
+	//return
 }
 
 func (addressBook *addressHelper) addPairString(url string) {

@@ -132,53 +132,43 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
-		resp, err := client.Do(req)
-        if err != nil {
-            if strings.Contains(err.Error(), "Hostname error"){
-                proxy.addressbook.Lookup(req.Host)
-            }
-        }
-		if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
-            log.Println("si-http-proxy.go error:", err.Error())
+		resp, doerr := client.Do(req)
+		if doerr != nil {
+			if strings.Contains(doerr.Error(), "Hostname error") {
+				proxy.addressbook.Lookup(req.Host)
+			}
+		}
+		var readstring []byte
+		var readerr error
+		if resp != nil {
+			readstring, readerr = ioutil.ReadAll(resp.Body)
+			if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+				resp.Body.Close()
+			}
+		}
+		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
+			log.Println("si-http-proxy.go error:", doerr.Error())
 			if resp != nil {
-				rW.WriteHeader(resp.StatusCode)
-				proxy.copyHeader(rW.Header(), resp.Header)
-				read, err := ioutil.ReadAll(resp.Body)
-				if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-					resp.Body.Close()
-					io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
+				proxy.copyHeader(rW.Header(), r.Header)
+                rW.WriteHeader(r.StatusCode)
+				if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+					io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
 				}
+				Log("si-http-proxy.go Response status:", r.Status)
 			}
 			return
 		} else {
 			r := proxy.client.copyRequest(req, resp, dir, base64)
 			if r != nil {
-				Log("si-http-proxy.go SAM-Provided Tunnel Address:", req.RemoteAddr)
-				Log("si-http-proxy.go Response Status:", r.Status)
 				proxy.copyHeader(rW.Header(), r.Header)
-				if r.StatusCode == 200 {
-					rW.WriteHeader(r.StatusCode)
-					read, err := ioutil.ReadAll(r.Body)
-					if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-						r.Body.Close()
-						io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
-					}
-					Log("si-http-proxy.go Response status:", r.Status)
-					return
-				} else {
-					rW.WriteHeader(r.StatusCode)
-					read, err := ioutil.ReadAll(r.Body)
-					if proxy.c, proxy.err = Warn(err, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-						r.Body.Close()
-						io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(read)))
-					}
-					Log("si-http-proxy.go Response status:", r.Status)
-					return
+                rW.WriteHeader(r.StatusCode)
+				if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+					io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
 				}
-				rW.WriteHeader(r.StatusCode)
 				Log("si-http-proxy.go Response status:", r.Status)
 				return
 			}
+			return
 		}
 	} else {
 		Log(dir)
