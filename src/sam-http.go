@@ -156,7 +156,7 @@ func (samConn *samHttp) setupTransport() {
 	samConn.transport = &http.Transport{
 		Dial:                samConn.Dial,
 		MaxIdleConns:        0,
-		MaxIdleConnsPerHost: 3,
+		MaxIdleConnsPerHost: 20,
 		DisableKeepAlives:   false,
 		IdleConnTimeout:     time.Duration(90 * time.Second),
 		TLSNextProto:        make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
@@ -328,8 +328,8 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string) {
 	samConn.findSubCache(response, directory).copyDirectory(response, directory)
 }
 
-func (samConn *samHttp) copyRequestHttp(request *http.Request, response *http.Response, directory string) *http.Response {
-	return samConn.findSubCache(response, directory).copyDirectoryHttp(request, response, directory)
+func (samConn *samHttp) copyRequestHttp(request *http.Request, response *http.Response, body []byte, directory string) *http.Response {
+	return samConn.findSubCache(response, directory).copyDirectoryHttp(request, response, body, directory)
 }
 
 func (samConn *samHttp) scannerText() (string, error) {

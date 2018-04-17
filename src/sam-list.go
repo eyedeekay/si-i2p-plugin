@@ -169,8 +169,8 @@ func (samStack *samList) findClient(request, base64helper string) *samHttp {
 	return &c
 }
 
-func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory, base64helper string) *http.Response {
-	return samStack.findClient(request.URL.String(), base64helper).copyRequestHttp(request, response, directory)
+func (samStack *samList) copyRequest(request *http.Request, response *http.Response, body []byte, directory, base64helper string) *http.Response {
+	return samStack.findClient(request.URL.String(), base64helper).copyRequestHttp(request, response, body, directory)
 }
 
 func (samStack *samList) readRequest() {

@@ -102,13 +102,13 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 	return b
 }
 
-func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) *http.Response {
+func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, body []byte, directory string) *http.Response {
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
 			Log("sam-url.go Response Status ", response.Status)
 			if response.StatusCode == http.StatusOK {
 				Log("sam-url.go Setting file in cache")
-				resp := subUrl.dealResponseHttp(request, response)
+				resp := subUrl.dealResponseHttp(request, response, body)
 				return resp
 			}
 		}
@@ -142,7 +142,8 @@ func (subUrl *samUrl) printHeader(src http.Header) {
 	}
 }
 
-func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
+//func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
+func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response, body []byte) *http.Response {
 	//defer
 	transferEncoding := response.TransferEncoding
 	//contentLength := response.ContentLength
@@ -154,8 +155,10 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	proto := response.Proto
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
-	body, err := ioutil.ReadAll(response.Body)
-	response.Body.Close()
+	//body, err := ioutil.ReadAll(response.Body)
+	//response.Body.Close()
+    var err error
+    err = nil
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)
@@ -208,14 +211,14 @@ func (subUrl *samUrl) readDelete() bool {
 }
 
 func newSamUrl(requestdir string) samUrl {
-	log.Println("sam-url.go Creating a new cache directory.")
+	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	subUrl.createDirectory(requestdir)
 	return subUrl
 }
 
 func newSamUrlHttp(request *http.Request) samUrl {
-	log.Println("sam-url.go Creating a new cache directory.")
+	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	log.Println(subUrl.subDirectory)
 	subUrl.createDirectory(request.Host + request.URL.Path)

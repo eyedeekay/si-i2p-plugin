@@ -112,8 +112,8 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	rq.RequestURI = ""
 
 	req, need := proxy.addressbook.checkAddressHelper(*rq)
-
-	if req == nil {
+    //req.Close = true
+	if &req == nil {
 		return
 	}
 
@@ -125,14 +125,13 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	Log("si-http-proxy.go Retrieving client")
 	if need {
 		_, base64 = proxy.addressbook.getPair(req.URL)
-		client, dir = proxy.client.sendClientRequestBase64Http(req, base64)
+		client, dir = proxy.client.sendClientRequestBase64Http(&req, base64)
 	} else {
-		client, dir = proxy.client.sendClientRequestHttp(req)
+		client, dir = proxy.client.sendClientRequestHttp(&req)
 	}
-
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
-		resp, doerr := client.Do(req)
+		resp, doerr := client.Do(&req)
 		if doerr != nil {
 			if strings.Contains(doerr.Error(), "Hostname error") {
 				proxy.addressbook.Lookup(req.Host)
@@ -147,32 +146,30 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 			}
 		}
 		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
-			log.Println("si-http-proxy.go error:", doerr.Error())
-			if resp != nil {
-				proxy.copyHeader(rW.Header(), r.Header)
-                rW.WriteHeader(r.StatusCode)
-				if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-					io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
-				}
-				Log("si-http-proxy.go Response status:", r.Status)
-			}
+            if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
+                proxy.printResponse(rW, resp, readstring, readerr)
+            }
 			return
 		} else {
-			r := proxy.client.copyRequest(req, resp, dir, base64)
-			if r != nil {
-				proxy.copyHeader(rW.Header(), r.Header)
-                rW.WriteHeader(r.StatusCode)
-				if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-					io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
-				}
-				Log("si-http-proxy.go Response status:", r.Status)
-				return
-			}
+			r := proxy.client.copyRequest(&req, resp, readstring, dir, base64)
+            proxy.printResponse(rW, r, readstring, readerr)
 			return
 		}
 	} else {
 		Log(dir)
 	}
+}
+
+func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Response, readstring []byte, readerr error){
+    if r != nil {
+        proxy.copyHeader(rW.Header(), r.Header)
+        rW.WriteHeader(r.StatusCode)
+        if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+            io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
+        }
+        Log("si-http-proxy.go Response status:", r.Status)
+        return
+    }
 }
 
 func createHttpProxy(proxAddr, proxPort string, samStack *samList, addressHelperUrl, initAddress string) *samHttpProxy {
