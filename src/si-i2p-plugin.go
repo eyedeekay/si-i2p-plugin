@@ -36,10 +36,11 @@ func main() {
 		"i2p URL you want to retrieve")
 	addressHelper := flag.String("addresshelper", "http://inr.i2p",
 		"Jump/Addresshelper service you want to use")
-    timeoutTime := flag.Int("timeout", 6,
+	timeoutTime := flag.Int("timeout", 6,
 		"Timeout duration in minutes(default six)")
-    /*keepAlives := flag.Bool("keepalives", true,
-		"Enable keepalives(default true)")*/
+	/*keepAlives := flag.Bool("keepalives", true,
+        "Enable keepalives(default true)")*/
+
 	flag.Parse()
 
 	log.SetOutput(os.Stdout)
@@ -49,7 +50,8 @@ func main() {
 	Log("si-i2p-plugin.go Proxy Address:", *proxAddrString)
 	Log("si-i2p-plugin.go Proxy Port:", *proxPortString)
 	Log("si-i2p-plugin.go Working Directory:", *workDirectory)
-	Log("si-i2p-plugin.go Addresshelper Service:", *addressHelper)
+	Log("si-i2p-plugin.go Addresshelper Services:", *addressHelper)
+    log.Println("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
 
 	if *debugConnection {
 		Log("si-i2p-plugin.go Debug mode: true")

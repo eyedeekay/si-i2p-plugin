@@ -19,7 +19,7 @@ type samList struct {
 	c             bool
 	up            bool
 	dir           string
-    timeoutTime   int
+	timeoutTime   int
 
 	sendPath string
 	sendPipe *os.File
@@ -226,7 +226,7 @@ func (samStack *samList) cleanupClient() {
 
 func createSamList(samAddr string, samPort string, initAddress string, timeoutTime int) *samList {
 	var samStack samList
-    samStack.timeoutTime = timeoutTime
+	samStack.timeoutTime = timeoutTime
 	samStack.dir = "parent"
 	Log("sam-list.go Generating parent proxy structure.")
 	samStack.up = false

@@ -119,7 +119,7 @@ func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Re
 func (subUrl *samUrl) dealResponse(response *http.Response) {
 	//defer
 	body, err := ioutil.ReadAll(response.Body)
-	response.Body.Close()
+	//response.Body.Close()
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response Write Error", "sam-url.go Writing responses"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		subUrl.recvFile.Write(body)
@@ -156,10 +156,10 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	body, err := ioutil.ReadAll(response.Body)
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {
 		//response.Body.Close()
-        //defer response.Body.Close()
+		//defer response.Body.Close()
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)
-		//contentLength := int64(len(body))
+		contentLength := int64(len(body))
 		if subUrl.c, subUrl.err = Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file"); subUrl.c {
 			r := &http.Response{
 				Status:           status,
@@ -168,7 +168,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 				ProtoMajor:       protoMajor,
 				ProtoMinor:       protoMinor,
 				Body:             ioutil.NopCloser(bytes.NewBuffer(body)),
-				ContentLength:    int64(len(body)),
+				ContentLength:    contentLength,
 				Request:          request,
 				Header:           header,
 				Trailer:          trailer,

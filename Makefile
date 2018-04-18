@@ -132,18 +132,16 @@ remove:
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
 run: rebuild
-	./bin/si-i2p-plugin -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+	./bin/si-i2p-plugin -proxy-port="4443" -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
 
 verbose: rebuild
-	./bin/si-i2p-plugin -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+	./bin/si-i2p-plugin -proxy-port="4443" -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
 
 try: rebuild
-	./bin/si-i2p-plugin -conn-debug=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+	./bin/si-i2p-plugin -proxy-port="4443" -conn-debug=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
 
 follow:
-	tail -f run.log run.err | nl
-
-
+	docker logs -f si-proxy
 
 clean:
 	killall si-i2p-plugin; \
@@ -176,33 +174,50 @@ noexit:
 user:
 	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
 
+docker-setup: docker docker-network
+	#make docker-host docker-run
+
 docker:
 	docker build --force-rm -f Dockerfiles/Dockerfile -t eyedeekay/si-i2p-plugin .
+	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
 
-docker-run:
+docker-network:
+	docker network create si; true
+
+docker-host:
 	docker run \
 		-d \
-		--name si-i2p-plugin \
+		--name sam-host \
+		--network si \
+		--network-alias sam-host \
+		--hostname sam-host \
+		--link si-proxy \
+		--restart always \
+		-p :4567 \
+		-p 127.0.0.1:7073:7073 \
+		-t eyedeekay/sam-host
+
+docker-run: docker-clean
+	docker run \
+		-d \
+		--name si-proxy \
+		--network si \
+		--network-alias si-proxy \
+		--hostname si-proxy \
+		--link sam-host \
 		--user sii2pplugin \
-		-p 127.0.0.1:4443:4443 \
+		-p 127.0.0.1:44443:44443 \
 		--restart always \
 		-t eyedeekay/si-i2p-plugin
+
+docker-follow:
+	docker logs -f si-proxy
 
 docker-clean:
-	docker rm -f si-i2p-plugin thirdeye-proxy; true
+	docker rm -f si-proxy; true
 
-docker-run-thirdeye:
-	docker run \
-		-d \
-		--name thirdeye-proxy \
-		--network thirdeye \
-		--network-alias thirdeye-proxy \
-		--hostname thirdeye-proxy \
-		--cap-drop all \
-		--user sii2pplugin \
-		-p 127.0.0.1:4443:4443 \
-		--restart always \
-		-t eyedeekay/si-i2p-plugin
+docker-clobber: docker-clean
+	docker rm -f sam-host; true
 
 gofmt:
 	gofmt -w src/*.go

@@ -62,9 +62,9 @@ func (addressBook *addressHelper) checkAddressHelper(url *http.Request) (*http.R
 		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
 			Log("addresshelper.go no rewrite required")
-            return rq, false
+			return rq, false
 		}
-        return url, false
+		return url, false
 	}
 }
 

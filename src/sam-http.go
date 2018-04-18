@@ -33,9 +33,9 @@ type samHttp struct {
 	transport *http.Transport
 	subClient *http.Client
 
-	timeoutTime time.Duration
-    otherTimeoutTime time.Duration
-    keepAlives bool
+	timeoutTime      time.Duration
+	otherTimeoutTime time.Duration
+	keepAlives       bool
 
 	host      string
 	directory string
@@ -143,7 +143,7 @@ func (samConn *samHttp) reConnect() (net.Conn, error) {
 			return samConn.reConnect()
 		}
 	} else {
-        //samConn.samBridgeClient.Close()
+		//samConn.samBridgeClient.Close()
 		return samConn.reConnect()
 	}
 }
@@ -160,14 +160,14 @@ func (samConn *samHttp) setupTransport() {
 		MaxIdleConns:          0,
 		MaxIdleConnsPerHost:   4,
 		DisableKeepAlives:     samConn.keepAlives,
-		IdleConnTimeout:       samConn.otherTimeoutTime,
-        ResponseHeaderTimeout: samConn.otherTimeoutTime,
-		ExpectContinueTimeout: samConn.timeoutTime,
+		ResponseHeaderTimeout: samConn.otherTimeoutTime,
+		ExpectContinueTimeout: samConn.otherTimeoutTime,
+		IdleConnTimeout:       samConn.timeoutTime,
 		TLSNextProto:          make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
 	}
 	Log("sam-http.go Initializing sub-client")
 	samConn.subClient = &http.Client{
-		Timeout:       time.Duration(360 * time.Second),
+		Timeout:       samConn.timeoutTime,
 		Transport:     samConn.transport,
 		CheckRedirect: samConn.checkRedirect,
 		Jar:           samConn.jar,
@@ -205,7 +205,7 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
 		//samConn.setupTransport(false)
-        samConn.setupTransport()
+		samConn.setupTransport()
 		if samConn.host == "" {
 			samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
 			samConn.initPipes()
@@ -446,10 +446,10 @@ func (samConn *samHttp) cleanupClient() {
 func newSamHttp(samAddrString, samPortString, request string, timeoutTime int) samHttp {
 	Log("sam-http.go Creating a new SAMv3 Client: ", request)
 	var samConn samHttp
-    samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
-    samConn.otherTimeoutTime = time.Duration(timeoutTime / 5) * time.Minute
-    samConn.keepAlives = false
-    Log(request)
+	samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
+	samConn.otherTimeoutTime = time.Duration(timeoutTime/5) * time.Minute
+	samConn.keepAlives = false
+	Log(request)
 	samConn.createClient(request, samAddrString, samPortString)
 	return samConn
 }
@@ -457,9 +457,9 @@ func newSamHttp(samAddrString, samPortString, request string, timeoutTime int) s
 func newSamHttpHttp(samAddrString, samPortString string, request *http.Request, timeoutTime int) samHttp {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	var samConn samHttp
-    samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
-    samConn.otherTimeoutTime = time.Duration(timeoutTime / 3) * time.Minute
-    samConn.keepAlives = false
+	samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
+	samConn.otherTimeoutTime = time.Duration(timeoutTime/3) * time.Minute
+	samConn.keepAlives = false
 	Log(request.Host + request.URL.Path)
 	samConn.createClientHttp(request, samAddrString, samPortString)
 	return samConn
