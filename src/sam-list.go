@@ -19,6 +19,7 @@ type samList struct {
 	c             bool
 	up            bool
 	dir           string
+    timeoutTime   int
 
 	sendPath string
 	sendPipe *os.File
@@ -61,12 +62,12 @@ func (samStack *samList) initPipes() {
 
 func (samStack *samList) createClient(request string) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request))
+	samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime))
 }
 
 func (samStack *samList) createClientHttp(request *http.Request) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request))
+	samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime))
 }
 
 func (samStack *samList) createSamList(samAddrString string, samPortString string) {
@@ -80,29 +81,20 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
 }
 
 func (samStack *samList) sendClientRequest(request string) {
-	client := samStack.findClient(request, "")
+	client := samStack.findClient(request)
 	if client != nil {
 		client.sendRequest(request)
 	}
 }
 
 func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
-	client := samStack.findClient(request.URL.String(), "")
+	client := samStack.findClient(request.URL.String())
 	if client != nil {
 		return client.sendRequestHttp(request)
 	} else {
 		return nil, "nil client"
 	}
 }
-
-/*func (samStack *samList) ssendClientRequestHttp(request *http.Request) (http.Client, string) {
-	client := *samStack.findClient(request.URL.String(), "")
-	if client != nil {
-		return client.sendRequestHttp(request)
-	} else {
-		return client, "nil client"
-	}
-}*/
 
 func (samStack *samList) checkURLType(request string) bool {
 
@@ -138,7 +130,7 @@ func (samStack *samList) checkURLType(request string) bool {
 	}
 }
 
-func (samStack *samList) findClient(request, base64helper string) *samHttp {
+func (samStack *samList) findClient(request string) *samHttp {
 	found := false
 	var c samHttp
 	if !samStack.checkURLType(request) {
@@ -152,7 +144,6 @@ func (samStack *samList) findClient(request, base64helper string) *samHttp {
 			Log("sam-list.go Request sent")
 			found = true
 			c = client
-			//return &client
 		}
 	}
 	if !found {
@@ -170,8 +161,8 @@ func (samStack *samList) findClient(request, base64helper string) *samHttp {
 	return &c
 }
 
-func (samStack *samList) copyRequest(request *http.Request, response *http.Response, body []byte, directory, base64helper string) *http.Response {
-	return samStack.findClient(request.URL.String(), base64helper).copyRequestHttp(request, response, body, directory)
+func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory string) *http.Response {
+	return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
 }
 
 func (samStack *samList) readRequest() {
@@ -189,7 +180,7 @@ func (samStack *samList) writeResponses() {
 		log.Println("sam-list.go Checking for responses: %s", i+1)
 		log.Println("sam-list.go of: ", len(samStack.listOfClients))
 		if client.printResponse() != "" {
-			samStack.writeRecieved(client.printResponse())
+			go samStack.writeRecieved(client.printResponse())
 		}
 	}
 }
@@ -233,8 +224,9 @@ func (samStack *samList) cleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samStack.dir))
 }
 
-func createSamList(samAddr string, samPort string, initAddress string) *samList {
+func createSamList(samAddr string, samPort string, initAddress string, timeoutTime int) *samList {
 	var samStack samList
+    samStack.timeoutTime = timeoutTime
 	samStack.dir = "parent"
 	Log("sam-list.go Generating parent proxy structure.")
 	samStack.up = false

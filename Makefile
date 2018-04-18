@@ -134,11 +134,16 @@ remove:
 run: rebuild
 	./bin/si-i2p-plugin -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
 
-follow:
-	tail -f run.log run.err | nl
+verbose: rebuild
+	./bin/si-i2p-plugin -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
 
 try: rebuild
 	./bin/si-i2p-plugin -conn-debug=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+
+follow:
+	tail -f run.log run.err | nl
+
+
 
 clean:
 	killall si-i2p-plugin; \

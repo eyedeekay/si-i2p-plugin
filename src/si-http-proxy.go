@@ -16,6 +16,7 @@ type samHttpProxy struct {
 	transport   *http.Transport
 	newHandle   *http.Server
 	addressbook *addressHelper
+    timeoutTime time.Duration
 	err         error
 	c           bool
 }
@@ -111,14 +112,13 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	Log("si-http-proxy.go ", rq.URL.String())
 	rq.RequestURI = ""
 
-	//req, need := proxy.addressbook.checkAddressHelper(*rq)
-	req, _ := proxy.addressbook.checkAddressHelper(*rq)
-	//proxy.checkResponse(rW, req)
+	req, _ := proxy.addressbook.checkAddressHelper(rq)
+
 	proxy.checkResponse(rW, req)
 
 }
 
-func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, req http.Request) {
+func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, req *http.Request) {
 	if &req == nil {
 		return
 	}
@@ -126,73 +126,71 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, req http.Reques
 	proxy.delHopHeaders(req.Header)
 
 	var client *http.Client
-	var dir, base64 string
+	var dir string
 
 	Log("si-http-proxy.go Retrieving client")
-	client, dir = proxy.client.sendClientRequestHttp(&req)
+	client, dir = proxy.client.sendClientRequestHttp(req)
+	req.RequestURI = ""
+
+	//req.Close = false
+
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
-		readstring, resp, readerr, doerr := proxy.Do(&req, client, 0)
-		if readstring == nil {
-			readstring, resp, readerr, doerr = proxy.Do(&req, client, 0)
-		}
+		resp, doerr := proxy.Do(req, client, 0)
 		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); !proxy.c {
 			if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
-				proxy.printResponse(rW, resp, readstring, readerr)
+				proxy.printResponse(rW, resp)
 			}
 			return
 		} else {
-			r := proxy.client.copyRequest(&req, resp, readstring, dir, base64)
-			//defer r.Body.Close()
-			r.Body.Close()
-			proxy.printResponse(rW, r, readstring, readerr)
+			r := proxy.client.copyRequest(req, resp, dir)
+			proxy.printResponse(rW, r)
 			return
 		}
 	} else {
 		log.Println("si-http-proxy.go client retrieval error")
+
 	}
 }
 
-func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) ([]byte, *http.Response, error, error) {
+func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*http.Response, error) {
 	resp, doerr := client.Do(req)
-
+    if req.Close {
+        log.Println("request must be closed")
+    }
 	if doerr != nil {
 		if strings.Contains(doerr.Error(), "Hostname error") {
 			proxy.addressbook.Lookup(req.Host)
-			return proxy.reDo(req, client, x+1)
-		} else {
-			return proxy.reDo(req, client, x+1)
+            return proxy.reDo(req, client, x)
 		}
 	}
 
 	if resp != nil {
-		readstring, readerr := ioutil.ReadAll(resp.Body)
-
-		if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-			Log(string(readstring))
-			resp.Body.Close()
-			return readstring, resp, readerr, doerr
-		} else {
-			return proxy.reDo(req, client, x+1)
+		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+			return resp, doerr
 		}
+        return proxy.reDo(req, client, x+1)
+        //return resp, doerr
 	} else {
-		return proxy.reDo(req, client, x+1)
+        return proxy.reDo(req, client, x+1)
+        //return resp, doerr
 	}
 }
 
-func (proxy *samHttpProxy) reDo(req *http.Request, client *http.Client, x int) ([]byte, *http.Response, error, error) {
-	y := time.Duration(x * 120)
-	time.Sleep(y * time.Second)
+func (proxy *samHttpProxy) reDo(req *http.Request, client *http.Client, x int) (*http.Response, error) {
+	y := x * 1
+	time.Sleep(time.Duration(y) * time.Second)
 	log.Println("si-http-proxy.go retrying attempt:", x, "for", req.URL.String(), "after", y, "seconds")
 	return proxy.Do(req, client, x)
 }
 
-func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Response, readstring []byte, readerr error) {
+func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
 	if r != nil {
 		rW.WriteHeader(r.StatusCode)
+		readstring, readerr := ioutil.ReadAll(r.Body)
 		if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 			proxy.copyHeader(rW.Header(), r.Header)
-			//rW.WriteHeader(r.StatusCode)
+            defer r.Body.Close()
 			io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
 		}
 		Log("si-http-proxy.go Response status:", r.Status)
@@ -200,17 +198,18 @@ func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 	}
 }
 
-func createHttpProxy(proxAddr, proxPort string, samStack *samList, addressHelperUrl, initAddress string) *samHttpProxy {
+func createHttpProxy(proxAddr, proxPort string, samStack *samList, addressHelperUrl, initAddress string, timeoutTime int) *samHttpProxy {
 	var samProxy samHttpProxy
 	samProxy.host = proxAddr + ":" + proxPort
 	samProxy.addressbook = newAddressHelper(addressHelperUrl, samStack.samAddrString, samStack.samPortString)
 	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.host)
 	samProxy.client = samStack
+    samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute
 	samProxy.newHandle = &http.Server{
 		Addr:         samProxy.host,
 		Handler:      &samProxy,
-		ReadTimeout:  time.Duration(55 * time.Second),
-		WriteTimeout: time.Duration(55 * time.Second),
+		ReadTimeout:  samProxy.timeoutTime,
+		WriteTimeout: samProxy.timeoutTime,
 	}
 	log.Println("si-http-proxy.go Connected SAM isolation stack to the HTTP proxy server")
 	go samProxy.prepare()

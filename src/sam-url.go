@@ -102,13 +102,13 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 	return b
 }
 
-func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, body []byte, directory string) *http.Response {
+func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) *http.Response {
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
 			Log("sam-url.go Response Status ", response.Status)
 			if response.StatusCode == http.StatusOK {
 				Log("sam-url.go Setting file in cache")
-				resp := subUrl.dealResponseHttp(request, response, body)
+				resp := subUrl.dealResponseHttp(request, response)
 				return resp
 			}
 		}
@@ -143,10 +143,8 @@ func (subUrl *samUrl) printHeader(src http.Header) {
 }
 
 //func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
-func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response, body []byte) *http.Response {
-	//defer
+func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
 	transferEncoding := response.TransferEncoding
-	//contentLength := response.ContentLength
 	unCompressed := response.Uncompressed
 	header := response.Header
 	trailer := response.Trailer
@@ -155,14 +153,13 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	proto := response.Proto
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
-	//body, err := ioutil.ReadAll(response.Body)
-	//response.Body.Close()
-	var err error
-	err = nil
+	body, err := ioutil.ReadAll(response.Body)
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {
+		//response.Body.Close()
+        //defer response.Body.Close()
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)
-		//ContentLength: contentLength,
+		//contentLength := int64(len(body))
 		if subUrl.c, subUrl.err = Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file"); subUrl.c {
 			r := &http.Response{
 				Status:           status,

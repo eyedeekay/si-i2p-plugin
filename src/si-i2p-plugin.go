@@ -26,7 +26,7 @@ func main() {
 	debugConnection := flag.Bool("conn-debug", false,
 		"Print connection debug info")
 	useHttpProxy := flag.Bool("http-proxy", true,
-		"run the HTTP proxy")
+		"run the HTTP proxy(default true)")
 	verboseLogging := flag.Bool("verbose", false,
 		"Print connection debug info")
 	Defwd, _ := os.Getwd()
@@ -36,7 +36,10 @@ func main() {
 		"i2p URL you want to retrieve")
 	addressHelper := flag.String("addresshelper", "http://inr.i2p",
 		"Jump/Addresshelper service you want to use")
-
+    timeoutTime := flag.Int("timeout", 6,
+		"Timeout duration in minutes(default six)")
+    /*keepAlives := flag.Bool("keepalives", true,
+		"Enable keepalives(default true)")*/
 	flag.Parse()
 
 	log.SetOutput(os.Stdout)
@@ -66,7 +69,7 @@ func main() {
 	var samProxies *samList
 	var samService *samServices
 
-	samProxies = createSamList(*samAddrString, *samPortString, *address)
+	samProxies = createSamList(*samAddrString, *samPortString, *address, *timeoutTime)
 	samService = createSamServiceList(*samAddrString, *samPortString)
 
 	c := make(chan os.Signal, 1)
@@ -84,7 +87,7 @@ func main() {
 
 	if *useHttpProxy {
 		if !httpUp {
-			samProxy := createHttpProxy(*proxAddrString, *proxPortString, samProxies, *addressHelper, *address)
+			samProxy := createHttpProxy(*proxAddrString, *proxPortString, samProxies, *addressHelper, *address, *timeoutTime)
 			Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.host)
 			httpUp = true
 		}

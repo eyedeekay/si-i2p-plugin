@@ -33,7 +33,10 @@ type samHttp struct {
 	transport *http.Transport
 	subClient *http.Client
 
-	//Timeout time.Duration
+	timeoutTime time.Duration
+    otherTimeoutTime time.Duration
+    keepAlives bool
+
 	host      string
 	directory string
 
@@ -140,14 +143,13 @@ func (samConn *samHttp) reConnect() (net.Conn, error) {
 			return samConn.reConnect()
 		}
 	} else {
+        //samConn.samBridgeClient.Close()
 		return samConn.reConnect()
 	}
 }
 
 func (samConn *samHttp) checkRedirect(req *http.Request, via []*http.Request) error {
-	//var err error
-	return http.ErrUseLastResponse
-	//return err
+	return nil
 }
 
 func (samConn *samHttp) setupTransport() {
@@ -156,19 +158,19 @@ func (samConn *samHttp) setupTransport() {
 	samConn.transport = &http.Transport{
 		Dial:                  samConn.Dial,
 		MaxIdleConns:          0,
-		MaxIdleConnsPerHost:   10,
-		DisableKeepAlives:     false,
-		IdleConnTimeout:       time.Duration(90 * time.Second),
-		ResponseHeaderTimeout: time.Duration(85 * time.Second),
-		ExpectContinueTimeout: time.Duration(360 * time.Second),
+		MaxIdleConnsPerHost:   4,
+		DisableKeepAlives:     samConn.keepAlives,
+		IdleConnTimeout:       samConn.otherTimeoutTime,
+        ResponseHeaderTimeout: samConn.otherTimeoutTime,
+		ExpectContinueTimeout: samConn.timeoutTime,
 		TLSNextProto:          make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
 	}
 	Log("sam-http.go Initializing sub-client")
-	//CheckRedirect: samConn.checkRedirect,
 	samConn.subClient = &http.Client{
-		Timeout:   time.Duration(360 * time.Second),
-		Transport: samConn.transport,
-		Jar:       samConn.jar,
+		Timeout:       time.Duration(360 * time.Second),
+		Transport:     samConn.transport,
+		CheckRedirect: samConn.checkRedirect,
+		Jar:           samConn.jar,
 	}
 }
 
@@ -176,9 +178,6 @@ func (samConn *samHttp) createClient(request string, samAddrString string, samPo
 	samConn.samAddrString = samAddrString
 	samConn.samPortString = samPortString
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
-	/**/
-	//samConn.jar = cookiejar.New( &cookiejar.Options{PublicSuffixList: publicsuffix.List} )
-	/**/
 	samConn.jar, samConn.err = cookiejar.New(nil)
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samCombined); samConn.c {
 		Log("sam-http.go Cookie Jar created")
@@ -205,7 +204,8 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go 205 SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
-		samConn.setupTransport()
+		//samConn.setupTransport(false)
+        samConn.setupTransport()
 		if samConn.host == "" {
 			samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
 			samConn.initPipes()
@@ -330,8 +330,8 @@ func (samConn *samHttp) copyRequest(response *http.Response, directory string) {
 	samConn.findSubCache(response, directory).copyDirectory(response, directory)
 }
 
-func (samConn *samHttp) copyRequestHttp(request *http.Request, response *http.Response, body []byte, directory string) *http.Response {
-	return samConn.findSubCache(response, directory).copyDirectoryHttp(request, response, body, directory)
+func (samConn *samHttp) copyRequestHttp(request *http.Request, response *http.Response, directory string) *http.Response {
+	return samConn.findSubCache(response, directory).copyDirectoryHttp(request, response, directory)
 }
 
 func (samConn *samHttp) scannerText() (string, error) {
@@ -443,16 +443,23 @@ func (samConn *samHttp) cleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
-func newSamHttp(samAddrString string, samPortString string, request string) samHttp {
-	log.Println("sam-http.go Creating a new SAMv3 Client: ", request)
+func newSamHttp(samAddrString, samPortString, request string, timeoutTime int) samHttp {
+	Log("sam-http.go Creating a new SAMv3 Client: ", request)
 	var samConn samHttp
+    samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
+    samConn.otherTimeoutTime = time.Duration(timeoutTime / 5) * time.Minute
+    samConn.keepAlives = false
+    Log(request)
 	samConn.createClient(request, samAddrString, samPortString)
 	return samConn
 }
 
-func newSamHttpHttp(samAddrString string, samPortString string, request *http.Request) samHttp {
+func newSamHttpHttp(samAddrString, samPortString string, request *http.Request, timeoutTime int) samHttp {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	var samConn samHttp
+    samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
+    samConn.otherTimeoutTime = time.Duration(timeoutTime / 3) * time.Minute
+    samConn.keepAlives = false
 	Log(request.Host + request.URL.Path)
 	samConn.createClientHttp(request, samAddrString, samPortString)
 	return samConn

@@ -132,6 +132,12 @@ test-browser-diff:
 thirdeye:
 	http_proxy=http://127.0.0.1:4443 surf http://lxik2bjgdl7462opwmkzkxsx5gvvptjbtl35rawytkndf2z7okqq.b32.i2p/index.html
 
+jump:
+	http_proxy=http://127.0.0.1:4443 surf http://lxik2bjgdl7462opwmkzkxsx5gvvptjbtl35rawytkndf2z7okqq.b32.i2p/jump/i2pforum.i2p
+
+curljump:
+	/usr/bin/curl -X 127.0.0.1:4443 lxik2bjgdl7462opwmkzkxsx5gvvptjbtl35rawytkndf2z7okqq.b32.i2p/jump/i2pforum.i2p
+
 surf:
 	http_proxy=http://127.0.0.1:4443 surf http://i2p-projekt.i2p
 

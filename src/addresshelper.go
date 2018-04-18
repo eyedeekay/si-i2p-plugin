@@ -24,7 +24,7 @@ type addressHelper struct {
 	c   bool
 }
 
-func (addressBook *addressHelper) base32ify(url http.Request) (http.Request, bool) {
+func (addressBook *addressHelper) base32ify(url *http.Request) (*http.Request, bool) {
 	_, b32 := addressBook.getBase32(url.URL)
 	temp := strings.Split(url.URL.Path, "/")
 	var newpath string
@@ -45,13 +45,12 @@ func (addressBook *addressHelper) base32ify(url http.Request) (http.Request, boo
 		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go New request formation error", "addresshelper.go New request generated"); addressBook.c {
 			Log("addresshelper.go rewrote request")
 		}
-		return *rq, true
+		return rq, true
 	}
 	return url, false
 }
 
-//func (addressBook *addressHelper) checkAddressHelper(url http.Request) (*http.Request, bool) {
-func (addressBook *addressHelper) checkAddressHelper(url http.Request) (http.Request, bool) {
+func (addressBook *addressHelper) checkAddressHelper(url *http.Request) (*http.Request, bool) {
 	if strings.Contains(url.URL.String(), "?i2paddresshelper=") {
 		Log("addresshelper.go ?i2paddresshelper detected")
 		addressBook.addPair(url.URL)
@@ -63,10 +62,10 @@ func (addressBook *addressHelper) checkAddressHelper(url http.Request) (http.Req
 		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
 			Log("addresshelper.go no rewrite required")
+            return rq, false
 		}
-		return *rq, false
+        return url, false
 	}
-	return url, false
 }
 
 func (addressBook *addressHelper) checkAddPair(arg string) bool {
