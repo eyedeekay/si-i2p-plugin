@@ -119,7 +119,7 @@ func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Re
 func (subUrl *samUrl) dealResponse(response *http.Response) {
 	//defer
 	body, err := ioutil.ReadAll(response.Body)
-	//response.Body.Close()
+	//defer response.Body.Close()
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response Write Error", "sam-url.go Writing responses"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		subUrl.recvFile.Write(body)
@@ -144,6 +144,7 @@ func (subUrl *samUrl) printHeader(src http.Header) {
 
 //func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
 func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
+    defer response.Body.Close()
 	transferEncoding := response.TransferEncoding
 	unCompressed := response.Uncompressed
 	header := response.Header
@@ -153,10 +154,10 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	proto := response.Proto
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
+	//doClose := response.Close
+    doClose := false
 	body, err := ioutil.ReadAll(response.Body)
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {
-		//response.Body.Close()
-		//defer response.Body.Close()
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)
 		contentLength := int64(len(body))
@@ -174,7 +175,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 				Trailer:          trailer,
 				TransferEncoding: transferEncoding,
 				Uncompressed:     unCompressed,
-				Close:            false,
+				Close:            doClose,
 			}
 			subUrl.printHeader(header)
 			Log("sam-url.go Retrieval time: ", time.Now().String())

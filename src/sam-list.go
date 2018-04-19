@@ -15,6 +15,7 @@ type samList struct {
 	listOfClients []samHttp
 	samAddrString string
 	samPortString string
+	keepAlives    bool
 	err           error
 	c             bool
 	up            bool
@@ -62,12 +63,12 @@ func (samStack *samList) initPipes() {
 
 func (samStack *samList) createClient(request string) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime))
+	samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
 func (samStack *samList) createClientHttp(request *http.Request) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime))
+	samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
 func (samStack *samList) createSamList(samAddrString string, samPortString string) {
@@ -96,40 +97,6 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
 	}
 }
 
-func (samStack *samList) checkURLType(request string) bool {
-
-	Log(request)
-
-	test := strings.Split(request, ".i2p")
-
-	if len(test) < 2 {
-		msg := "Non i2p domain detected. Skipping."
-		Log(msg) //Outproxy support? Might be cool.
-		return false
-	} else {
-		n := strings.Split(strings.Replace(strings.Replace(test[0], "https://", "", -1), "http://", "", -1), "/")
-		if len(n) > 1 {
-			msg := "Non i2p domain detected, possible attempt to impersonate i2p domain in path. Skipping."
-			Log(msg) //Outproxy support? Might be cool. Riskier here.
-			return false
-		}
-	}
-	strings.Contains(request, "http")
-	if !strings.Contains(request, "http") {
-		if strings.Contains(request, "https") {
-			msg := "Dropping https request for now, assumed attempt to get clearnet resource."
-			Log(msg)
-			return false
-		} else {
-			msg := "unsupported protocal scheme " + request
-			Log(msg)
-			return false
-		}
-	} else {
-		return true
-	}
-}
-
 func (samStack *samList) findClient(request string) *samHttp {
 	found := false
 	var c samHttp
@@ -137,24 +104,25 @@ func (samStack *samList) findClient(request string) *samHttp {
 		return nil
 	}
 	for index, client := range samStack.listOfClients {
-		Log("sam-list.go Checking client requests", strconv.Itoa(index+1))
+		Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)
 		Log("sam-list.go of", strconv.Itoa(len(samStack.listOfClients)))
 		if client.hostCheck(request) {
-			Log("sam-list.go Client pipework for %s found.", request)
-			Log("sam-list.go Request sent")
+			Log("sam-list.go Client pipework for", request, "found.", client.host, "at", strconv.Itoa(index+1))
 			found = true
 			c = client
+			return &c
 		}
 	}
 	if !found {
-		Log("sam-list.go Client pipework for %s not found: Creating.", request)
+		log.Println("sam-list.go Client pipework for %s not found: Creating.", request)
 		samStack.createClient(request)
 		for index, client := range samStack.listOfClients {
-			log.Println("sam-list.go Checking client requests", index+1)
-			log.Println("sam-list.go of", len(samStack.listOfClients))
+			Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)
+			Log("sam-list.go of", strconv.Itoa(len(samStack.listOfClients)))
 			if client.hostCheck(request) {
-				Log("sam-list.go Client pipework for %s found.", request)
+				Log("sam-list.go Client pipework for", request, "found.", client.host, "at", strconv.Itoa(index+1))
 				c = client
+				return &c
 			}
 		}
 	}
@@ -180,7 +148,7 @@ func (samStack *samList) writeResponses() {
 		log.Println("sam-list.go Checking for responses: %s", i+1)
 		log.Println("sam-list.go of: ", len(samStack.listOfClients))
 		if client.printResponse() != "" {
-			go samStack.writeRecieved(client.printResponse())
+			samStack.writeRecieved(client.printResponse())
 		}
 	}
 }
@@ -224,12 +192,47 @@ func (samStack *samList) cleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samStack.dir))
 }
 
-func createSamList(samAddr string, samPort string, initAddress string, timeoutTime int) *samList {
+func (samStack *samList) checkURLType(request string) bool {
+
+	Log(request)
+
+	test := strings.Split(request, ".i2p")
+
+	if len(test) < 2 {
+		msg := "Non i2p domain detected. Skipping."
+		Log(msg) //Outproxy support? Might be cool.
+		return false
+	} else {
+		n := strings.Split(strings.Replace(strings.Replace(test[0], "https://", "", -1), "http://", "", -1), "/")
+		if len(n) > 1 {
+			msg := "Non i2p domain detected, possible attempt to impersonate i2p domain in path. Skipping."
+			Log(msg) //Outproxy support? Might be cool. Riskier here.
+			return false
+		}
+	}
+	strings.Contains(request, "http")
+	if !strings.Contains(request, "http") {
+		if strings.Contains(request, "https") {
+			msg := "Dropping https request for now, assumed attempt to get clearnet resource."
+			Log(msg)
+			return false
+		} else {
+			msg := "unsupported protocal scheme " + request
+			Log(msg)
+			return false
+		}
+	} else {
+		return true
+	}
+}
+
+func createSamList(samAddr, samPort, initAddress string, timeoutTime int, keepAlives bool) *samList {
 	var samStack samList
 	samStack.timeoutTime = timeoutTime
 	samStack.dir = "parent"
 	Log("sam-list.go Generating parent proxy structure.")
 	samStack.up = false
+	samStack.keepAlives = keepAlives
 	Log("sam-list.go Parent proxy set to down.")
 	samStack.createSamList(samAddr, samPort)
 	Log("sam-list.go SAM list created")

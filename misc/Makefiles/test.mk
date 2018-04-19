@@ -75,6 +75,9 @@ test-curl:
 	@echo "Test the http proxy in as simple a way as possible"
 	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 i2p-projekt.i2p
 
+test-curl-css:
+	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 i2p-projekt.i2p/_static/styles/duck/syntax.css
+
 test-http:
 	@echo "Test the http proxy in as simple a way as possible"
 	/usr/bin/curl -w "@misc/curl-format.txt" -x 127.0.0.1:4443 http://i2p-projekt.i2p

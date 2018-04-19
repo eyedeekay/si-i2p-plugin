@@ -131,14 +131,14 @@ remove:
 		$(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
-run: rebuild
-	./bin/si-i2p-plugin -proxy-port="4443" -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+run: nodeps
+	./bin/si-i2p-plugin -proxy-port="4443" -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
 
-verbose: rebuild
-	./bin/si-i2p-plugin -proxy-port="4443" -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+verbose: nodeps
+	./bin/si-i2p-plugin -proxy-port="4443" -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
 
-try: rebuild
-	./bin/si-i2p-plugin -proxy-port="4443" -conn-debug=true -addresshelper='http://inr.i2p,http://stats.i2p' | tee run.log 2>run.err
+try: nodeps
+	./bin/si-i2p-plugin -proxy-port="4443" -conn-debug=true -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
 
 follow:
 	docker logs -f si-proxy
@@ -174,12 +174,12 @@ noexit:
 user:
 	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
 
-docker-setup: docker docker-network
-	#make docker-host docker-run
+docker-setup: docker docker-network docker-host docker-run
 
 docker:
-	docker build --force-rm -f Dockerfiles/Dockerfile -t eyedeekay/si-i2p-plugin .
 	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
+	docker build --force-rm -f Dockerfiles/Dockerfile -t eyedeekay/si-i2p-plugin .
+
 
 docker-network:
 	docker network create si; true
@@ -195,9 +195,9 @@ docker-host:
 		--restart always \
 		-p :4567 \
 		-p 127.0.0.1:7073:7073 \
-		-t eyedeekay/sam-host
+		-t eyedeekay/sam-host; true
 
-docker-run: docker-clean
+docker-run: docker-setup docker-clean
 	docker run \
 		-d \
 		--name si-proxy \
@@ -236,6 +236,11 @@ ls:
 
 ps:
 	while true; do make -s mps 2>/dev/null; sleep 2; clear; done
+
+continuously:
+	while true; do make docker-setup docker-run; sleep 10m; done
+
+c: continuously
 
 include misc/Makefiles/demo.mk
 include misc/Makefiles/test.mk

@@ -38,8 +38,8 @@ func main() {
 		"Jump/Addresshelper service you want to use")
 	timeoutTime := flag.Int("timeout", 6,
 		"Timeout duration in minutes(default six)")
-	/*keepAlives := flag.Bool("keepalives", true,
-        "Enable keepalives(default true)")*/
+	keepAlives := flag.Bool("disable-keepalives", false,
+		"Disable keepalives(default false)")
 
 	flag.Parse()
 
@@ -51,7 +51,13 @@ func main() {
 	Log("si-i2p-plugin.go Proxy Port:", *proxPortString)
 	Log("si-i2p-plugin.go Working Directory:", *workDirectory)
 	Log("si-i2p-plugin.go Addresshelper Services:", *addressHelper)
-    log.Println("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
+	log.Println("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
+
+	if !*keepAlives {
+		Log("si-i2p-plugin.go Keepalives Enabled")
+	} else {
+		Log("si-i2p-plugin.go Keepalives Disabled")
+	}
 
 	if *debugConnection {
 		Log("si-i2p-plugin.go Debug mode: true")
@@ -71,7 +77,7 @@ func main() {
 	var samProxies *samList
 	var samService *samServices
 
-	samProxies = createSamList(*samAddrString, *samPortString, *address, *timeoutTime)
+	samProxies = createSamList(*samAddrString, *samPortString, *address, *timeoutTime, *keepAlives)
 	samService = createSamServiceList(*samAddrString, *samPortString)
 
 	c := make(chan os.Signal, 1)
@@ -89,7 +95,7 @@ func main() {
 
 	if *useHttpProxy {
 		if !httpUp {
-			samProxy := createHttpProxy(*proxAddrString, *proxPortString, samProxies, *addressHelper, *address, *timeoutTime)
+			samProxy := createHttpProxy(*proxAddrString, *proxPortString, *address, *addressHelper, samProxies, *timeoutTime, *keepAlives)
 			Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.host)
 			httpUp = true
 		}

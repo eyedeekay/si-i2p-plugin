@@ -158,7 +158,7 @@ func (samConn *samHttp) setupTransport() {
 	samConn.transport = &http.Transport{
 		Dial:                  samConn.Dial,
 		MaxIdleConns:          0,
-		MaxIdleConnsPerHost:   4,
+		MaxIdleConnsPerHost:   3,
 		DisableKeepAlives:     samConn.keepAlives,
 		ResponseHeaderTimeout: samConn.otherTimeoutTime,
 		ExpectContinueTimeout: samConn.otherTimeoutTime,
@@ -204,7 +204,6 @@ func (samConn *samHttp) createClientHttp(request *http.Request, samAddrString st
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go 205 SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
-		//samConn.setupTransport(false)
 		samConn.setupTransport()
 		if samConn.host == "" {
 			samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
@@ -242,22 +241,20 @@ func (samConn *samHttp) hostCheck(request string) bool {
 	_, err := url.ParseRequestURI(host)
 	if err == nil {
 		if samConn.host == host {
-			Log("sam-http.go Request host ", host)
-			Log("sam-http.go Is equal to client host", samConn.host)
+			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
+            //log.Println("sam-http.go Request host ", host, "sam-http.go Is equal to client host", samConn.host)
 			return true
 		} else {
-			Log("sam-http.go Request host ", host)
-			Log("sam-http.go Is not equal to client host", samConn.host)
+			Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
 			return false
 		}
 	} else {
 		if samConn.host == host {
-			Log("sam-http.go Request host ", host)
-			Log("sam-http.go Is equal to client host", samConn.host)
+			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
+            //log.Println("sam-http.go Request host ", host, "sam-http.go Is equal to client host", samConn.host)
 			return true
 		} else {
-			Log("sam-http.go Request host ", host)
-			Log("sam-http.go Is not equal to client host", samConn.host)
+			Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
 			return false
 		}
 	}
@@ -443,23 +440,23 @@ func (samConn *samHttp) cleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
-func newSamHttp(samAddrString, samPortString, request string, timeoutTime int) samHttp {
+func newSamHttp(samAddrString, samPortString, request string, timeoutTime int, keepAlives bool) samHttp {
 	Log("sam-http.go Creating a new SAMv3 Client: ", request)
 	var samConn samHttp
 	samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
-	samConn.otherTimeoutTime = time.Duration(timeoutTime/5) * time.Minute
-	samConn.keepAlives = false
+	samConn.otherTimeoutTime = time.Duration(timeoutTime/3) * time.Minute
+	samConn.keepAlives = keepAlives
 	Log(request)
 	samConn.createClient(request, samAddrString, samPortString)
 	return samConn
 }
 
-func newSamHttpHttp(samAddrString, samPortString string, request *http.Request, timeoutTime int) samHttp {
+func newSamHttpHttp(samAddrString, samPortString string, request *http.Request, timeoutTime int, keepAlives bool) samHttp {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	var samConn samHttp
 	samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
 	samConn.otherTimeoutTime = time.Duration(timeoutTime/3) * time.Minute
-	samConn.keepAlives = false
+	samConn.keepAlives = keepAlives
 	Log(request.Host + request.URL.Path)
 	samConn.createClientHttp(request, samAddrString, samPortString)
 	return samConn
