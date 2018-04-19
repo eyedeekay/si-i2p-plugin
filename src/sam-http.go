@@ -220,7 +220,13 @@ func (samConn *samHttp) cleanURL(request string) (string, string) {
 	url := strings.Replace(request, "http://", "", -1)
 	Log("sam-http.go cleanURL Request URL " + url)
 	//i2p-projekt.i2p/en/downloads
-	host := strings.SplitAfter(url, ".i2p")[0]
+    if strings.HasSuffix(url, ".i2p") {
+        url = url + "/"
+    }
+	host := strings.SplitAfter(url, ".i2p/")[0]
+    if strings.HasSuffix(url, ".i2p/") {
+        url = url[:len(url)-len("/")]
+    }
 	Log("sam-http.go cleanURL Trim 2 " + host)
 	return host, url
 }
