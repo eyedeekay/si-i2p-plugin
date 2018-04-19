@@ -169,9 +169,9 @@ func (samConn *samHttp) setupTransport() {
 	samConn.subClient = &http.Client{
 		Timeout:       samConn.timeoutTime,
 		Transport:     samConn.transport,
-		CheckRedirect: samConn.checkRedirect,
 		Jar:           samConn.jar,
 	}
+    //		CheckRedirect: nil,
 }
 
 func (samConn *samHttp) createClient(request string, samAddrString string, samPortString string) {

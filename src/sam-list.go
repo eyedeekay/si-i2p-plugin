@@ -114,7 +114,7 @@ func (samStack *samList) findClient(request string) *samHttp {
 		}
 	}
 	if !found {
-		log.Println("sam-list.go Client pipework for %s not found: Creating.", request)
+		Log("sam-list.go Client pipework for %s not found: Creating.", request)
 		samStack.createClient(request)
 		for index, client := range samStack.listOfClients {
 			Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)

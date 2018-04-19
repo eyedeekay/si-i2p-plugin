@@ -121,7 +121,7 @@ install:
 	install -D bin/si-i2p-plugin.sh $(PREFIX)$(USR)$(LOCAL)/bin/
 	install -D init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
 	install -D systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
-	install -D si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/
+	install -D $(ETC)si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/
 
 remove:
 	rm -f $(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin \
@@ -196,7 +196,7 @@ docker-host:
 		-p 127.0.0.1:7073:7073 \
 		-t eyedeekay/sam-host; true
 
-docker-run: docker-clean
+docker-run: docker-clean docker-host
 	docker run \
 		-d \
 		--name si-proxy \

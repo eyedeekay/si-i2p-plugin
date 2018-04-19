@@ -151,6 +151,7 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 			if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
 				//r := proxy.client.copyRequest(req, resp, dir)
                 if resp != nil {
+                    //r := proxy.client.copyRequest(req, resp, dir)
                     rW.WriteHeader(resp.StatusCode)
                     resp.Body.Close()
                 }
@@ -177,9 +178,11 @@ func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*h
 		return resp, doerr
 	} else {
 		if strings.Contains(doerr.Error(), "Hostname error") {
+            log.Println("Unknown Hostname")
 			proxy.addressbook.Lookup(req.Host)
 			requ, stage2 := proxy.addressbook.checkAddressHelper(req)
 			if stage2 {
+                log.Println("Redirecting", req.Host, "to", requ.Host)
 				requ.RequestURI = ""
 				return client.Do(requ)
 			}
