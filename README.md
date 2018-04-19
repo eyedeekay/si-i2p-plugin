@@ -76,6 +76,10 @@ I'm pretty sure I need to make the individual sub-proxies handle their own
 cookie jars. I think this is as just setting the jar variable in the http
 client. Currently working this out.
 
+Still a little unreliable when it has to download a bunch of stuff from a single
+site. If it times out, refreshing the page usually works. This is happening much
+less often now. It helps to have a well-integrated router.
+
 ### The pipes
 
 Moved to [misc/docs/PIPES.md](misc/docs/PIPES.md)

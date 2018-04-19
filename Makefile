@@ -119,8 +119,8 @@ install:
 	mkdir -p $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 	install -D bin/si-i2p-plugin $(PREFIX)$(USR)$(LOCAL)/bin/
 	install -D bin/si-i2p-plugin.sh $(PREFIX)$(USR)$(LOCAL)/bin/
-	install -D init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
-	install -D systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
+	install -D $(ETC)init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
+	install -D $(ETC)systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
 	install -D $(ETC)si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/
 
 remove:
