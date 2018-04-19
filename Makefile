@@ -197,7 +197,7 @@ docker-host:
 		-p 127.0.0.1:7073:7073 \
 		-t eyedeekay/sam-host; true
 
-docker-run: docker-setup docker-clean
+docker-run: docker-clean
 	docker run \
 		-d \
 		--name si-proxy \
@@ -215,6 +215,7 @@ docker-follow:
 
 docker-clean:
 	docker rm -f si-proxy; true
+	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 docker-clobber: docker-clean
 	docker rm -f sam-host; true

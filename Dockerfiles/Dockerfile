@@ -2,8 +2,8 @@ FROM alpine:edge
 RUN apk update -U
 RUN apk add go go-tools go-doc git make musl-dev musl musl-utils
 RUN adduser -s /opt/bin/si-i2p-plugin -S -H -D sii2pplugin sii2pplugin
-RUN git clone https://github.com/eyedeekay/si-i2p-plugin /opt
 #COPY . /opt/
+RUN git clone https://github.com/eyedeekay/si-i2p-plugin /opt
 RUN chown -R sii2pplugin /opt/
 WORKDIR /opt/
 RUN make release
