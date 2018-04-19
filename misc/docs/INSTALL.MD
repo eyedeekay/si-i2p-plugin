@@ -28,6 +28,9 @@ after, it will install into /usr/local/bin/ by default and more importantly, it
 can be started as a system service running as it's own user(For now, initscripts
 exist and untested systemd units exist).
 
+From this point on, all the executables are statically-linked and
+position-independent.
+
 On Debian or Ubuntu
 -------------------
 
@@ -52,51 +55,9 @@ a statically-linked version of the plugin in one container, extract it, and
 generate a second container containing only the statically linked version of the
 plugin itself.
 
-Building a static version:
---------------------------
-
-For now, building a static version of the plugin requires using Docker to build
-it in an alpine container. To do this, run,
-
-        make static
-
-which will automatically build the Dockerfiles/Dockerfile.static with the
-default settings, compile the statically-linked variant of the program, and
-copy it from the container to the host.
-
 Building the runtime image:
 ---------------------------
 
-Once you have a static binary to use, you can create the minimal docker image
-you'll want to use to run the program. To build this container based on the
-docker Scratch image, run
+No more complicated shit. It's all packaged. just do:
 
-        make docker
-
-which will copy the statically-linked variant into a base container, along with
-a minimal user and a statically compiled bash shell so that the process can run
-unprivileged in the /opt directory of the scratch container.
-
-Running the docker image:
--------------------------
-
-Finally, to actually run the docker image, you can either run it manually or
-use
-
-        make docker-run
-
-to start the container. All in all, the whole thing weigh's in at just under 10
-mb. Which is at least much lighter than it would be if I had a whole Ubuntu
-container in here.
-
-Building a .deb containing the statically-linked variant:
----------------------------------------------------------
-
-It's also possible to use the statically-linked variant as the basis for a
-package by running the command
-
-        checkinstall-static
-
-which you can then install with
-
-        sudo dpkg -i ../si-i2p-plugin*-static.deb
+        make docker-setup
