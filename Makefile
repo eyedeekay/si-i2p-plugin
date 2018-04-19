@@ -144,7 +144,6 @@ follow:
 	docker logs -f si-proxy
 
 clean:
-	killall si-i2p-plugin; \
 	rm -rf parent services ./.*.i2p*/ ./*.i2p*/ \
 		*.html *-pak *err *log \
 		static-include static-exclude \
@@ -215,10 +214,10 @@ docker-follow:
 
 docker-clean:
 	docker rm -f si-proxy; true
-	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 docker-clobber: docker-clean
 	docker rm -f sam-host; true
+	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 gofmt:
 	gofmt -w src/*.go

@@ -57,9 +57,6 @@ If it wasn't super, super obvious to everyone, it's really, really easy to tell
 the difference between this proxy and the default i2p/i2pd http proxies and I
 don't think there's anything I can do about that.
 
-It checks to see if it's getting an i2p url by splitting it at the first ".i2p"
-which unfortunately means that I can't use it to visit trac.i2p2.i2p.
-
 I am currently attacking this proxy while using various browsers. It seems more
 complicated browsers are easier to attack. They might even do something
 ridiculous, like presume you're using a captive portal and attempt to direct
@@ -75,12 +72,9 @@ Before version 0.21, a framework for generating service tunnels ad-hoc will also
 be in place. This will be used for fuzz-testing the http proxy and the pipe
 proxy. Almost everything will be improved by the availability of this.
 
-I haven't implemented addresshelpers/jump host interaction yet, but I have a
-good idea how to now.
-
 I'm pretty sure I need to make the individual sub-proxies handle their own
 cookie jars. I think this is as just setting the jar variable in the http
-client.
+client. Currently working this out.
 
 ### The pipes
 
