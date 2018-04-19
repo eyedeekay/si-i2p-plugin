@@ -150,7 +150,7 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 		} else {
 			if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
 				//r := proxy.client.copyRequest(req, resp, dir)
-                if resp != nil
+                if resp != nil {
                     rW.WriteHeader(resp.StatusCode)
                     resp.Body.Close()
                 }
