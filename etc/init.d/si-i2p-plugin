@@ -80,7 +80,6 @@ case "$1" in
     uninstall
     ;;
   restart)
-    rm -fv "$LOGFILE"; echo "rm -fv $LOGFILE"
     stop
     start
     ;;
