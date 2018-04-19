@@ -155,6 +155,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
 	//doClose := response.Close
+    //responseBody := response.Body
     doClose := false
 	body, err := ioutil.ReadAll(response.Body)
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {

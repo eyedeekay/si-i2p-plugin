@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bytes"
+	//"bytes"
 	"io"
-	"io/ioutil"
+//	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -186,25 +186,23 @@ func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*h
 				requ.RequestURI = ""
 				return client.Do(requ)
 			}
-		}/*else{
-            return client.Do(req)
-        }*/
+		}
 	}
-    //return client.Do(req)
 	return resp, doerr
 }
 
 func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
 	if r != nil {
-		readstring, readerr := ioutil.ReadAll(r.Body)
+        defer r.Body.Close()
+		//readstring,
+        //_, readerr := ioutil.ReadAll(r.Body)
         proxy.copyHeader(rW.Header(), r.Header)
         rW.WriteHeader(r.StatusCode)
-		if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-			r.Body.Close()
-			io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
-		}
+		//if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+			//io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
+            io.Copy(rW, r.Body)
+		//}
 		Log("si-http-proxy.go Response status:", r.Status)
-		return
 	}
 }
 
