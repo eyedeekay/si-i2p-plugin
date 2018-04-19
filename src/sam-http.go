@@ -224,6 +224,9 @@ func (samConn *samHttp) cleanURL(request string) (string, string) {
         url = url + "/"
     }
 	host := strings.SplitAfter(url, ".i2p/")[0]
+    if strings.HasSuffix(host, ".i2p/") {
+        host = host[:len(host)-len("/")]
+    }
     if strings.HasSuffix(url, ".i2p/") {
         url = url[:len(url)-len("/")]
     }
