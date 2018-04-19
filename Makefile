@@ -126,7 +126,7 @@ install:
 remove:
 	rm -f $(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin \
 		$(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin.sh \
-		$(PREFIX)$(ETC)init.d/si-i2p-plugin $(PREFIX)\
+		$(PREFIX)$(ETC)init.d/si-i2p-plugin \
 		$(ETC)systemd/system/sii2pplugin.service \
 		$(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
