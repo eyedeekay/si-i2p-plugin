@@ -6,7 +6,6 @@ RUN git clone https://github.com/eyedeekay/si-i2p-plugin /opt
 #COPY . /opt/
 RUN chown -R sii2pplugin /opt/
 WORKDIR /opt/
-RUN go get github.com/eyedeekay/gosam
 RUN make release
 RUN apk del go go-tools go-doc git make musl-dev musl musl-utils
 USER sii2pplugin
