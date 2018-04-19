@@ -7,7 +7,8 @@ checkinstall: release postinstall-pak postremove-pak description-pak
 		--pkgversion="$(VERSION)" \
 		--pkglicense=gpl \
 		--pkggroup=net \
-		--pkgsource=./src/ \
+		--pkgsource=./ \
+		--pkgaltsource="https://github.com/eyedeekay/si-i2p-plugin" \
 		--deldoc=yes \
 		--deldesc=yes \
 		--delspec=yes \
@@ -23,7 +24,8 @@ checkinstall-arm: build-arm postinstall-pak postremove-pak description-pak stati
 		--pkgversion="$(VERSION)-arm" \
 		--pkglicense=gpl \
 		--pkggroup=net \
-		--pkgsource=./src/ \
+		--pkgsource=./ \
+		--pkgaltsource="https://github.com/eyedeekay/si-i2p-plugin" \
 		--deldoc=yes \
 		--deldesc=yes \
 		--delspec=yes \
