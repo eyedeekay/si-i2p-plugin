@@ -208,6 +208,7 @@ func (subUrl *samUrl) readDelete() bool {
 			return false
 		}
 	}
+	clearFile(filepath.Join(connectionDirectory, subUrl.subDirectory), "del")
 	return false
 }
 

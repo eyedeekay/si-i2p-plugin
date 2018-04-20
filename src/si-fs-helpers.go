@@ -144,3 +144,9 @@ func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error)
 }
 
 //func setupCookieJar()
+
+//This function does nothing on Unix-like platforms. It is only here to clear
+//the contents of files that would normally be named pipes on Windows.
+func clearFile(directory, path string) {
+
+}

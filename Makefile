@@ -66,7 +66,7 @@ bin/si-i2p-plugin.exe: deps
 
 windows: bin/si-i2p-plugin.exe
 
-bin: bin/si-i2p-plugin bin/si-i2p-plugin.bin bin/si-i2p-plugin.exe bin/si-i2p-plugin-arm
+bin: bin/si-i2p-plugin bin/si-i2p-plugin.bin bin/si-i2p-plugin.exe
 
 build-arm: bin/si-i2p-plugin-arm
 

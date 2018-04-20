@@ -375,6 +375,7 @@ func (samConn *samHttp) readRequest() string {
 	for samConn.sendScan.Scan() {
 		samConn.sendRequest(text)
 	}
+	clearFile(filepath.Join(connectionDirectory, samConn.directory), "send")
 	return text
 }
 

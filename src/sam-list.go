@@ -140,6 +140,7 @@ func (samStack *samList) readRequest() {
 			go samStack.sendClientRequest(samStack.sendScan.Text())
 		}
 	}
+	clearFile(filepath.Join(connectionDirectory, samStack.dir), "send")
 }
 
 func (samStack *samList) writeResponses() {
@@ -179,6 +180,7 @@ func (samStack *samList) readDelete() bool {
 			return false
 		}
 	}
+	clearFile(filepath.Join(connectionDirectory, samStack.dir), "del")
 	return false
 }
 
