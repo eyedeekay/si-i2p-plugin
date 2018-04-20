@@ -2,6 +2,8 @@
 UNAME ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 UARCH ?= $(shell uname -m | tr '[:upper:]' '[:lower:]' | sed 's|x86_64|amd64|g')
 
+i2pd_dat?=$(PWD)/i2pd_dat
+
 PREFIX := /
 VAR := var/
 RUN := run/
@@ -199,6 +201,7 @@ docker-host:
 		--restart always \
 		-p :4567 \
 		-p 127.0.0.1:7073:7073 \
+		--volume $(i2pd_dat):/var/lib/i2pd:rw \
 		-t eyedeekay/sam-host; true
 
 docker-run: docker-clean docker-host

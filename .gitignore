@@ -6,3 +6,4 @@ src/android
 test.diff
 *.log
 *.err
+i2pd_dat
