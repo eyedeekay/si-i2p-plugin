@@ -47,17 +47,11 @@ service and keep your system aware of the package.
 On Docker
 ---------
 
-I do the building of the Docker image in two stages to make sure that the image
-is as tiny as possible. And I mean tiny. And unprivileged and incapable too. It
-can run on Scratch, as it can be statically linked(More on that in a moment) but
-I can't get it to statically link on Debian with gccgo yet. What we do is build
-a statically-linked version of the plugin in one container, extract it, and
-generate a second container containing only the statically linked version of the
-plugin itself.
-
 Building the runtime image:
 ---------------------------
 
 No more complicated shit. It's all packaged. just do:
 
         make docker-setup
+
+Note that the Docker container will use 44443 instead of 4443.
