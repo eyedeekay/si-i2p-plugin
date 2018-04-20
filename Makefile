@@ -101,7 +101,6 @@ bin/si-i2p-plugin-arm-droid: deps
 		-o bin/si-i2p-plugin-droid \
 		./src/android
 	@echo 'built'
-#
 
 xpi2p:
 

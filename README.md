@@ -27,15 +27,24 @@ I haven't been able to crash it or attack it by adapting known attacks on
 browsers and HTTP proxies to this environment. It should at least fail early if
 something bad happens.
 
-I am now fairly certain that it can't be forced to retrieve URL's outside the
-i2p network under normal circumstances in properly configured browsers. Intrepid
-observers may find it fun to start testing things now. Funnily enough, it would
-have crashed under vanilla firefox last week because the captive portal shit.
-Failed closed though, and now it's handled more gracefully.
+Less straightforward.
 
-OK so addresshelpers are partly implemented, but not fully. In order to complete
-it I'll have to change how failed lookups are handled. This should be
-straightforward.
+#### User-Defined Jump Hosts
+
+Addresshelper/Jump hosts work a little bit differently in this proxy than they
+do in the regular http proxy. The first thing is that they only partially work.
+Adding URL's to a local(Managed by the proxy itself) addressbook from valid
+redirect URL's works, and following redirects for unknown hosts works. Following
+redirects for known hosts works only if they are in the local, proxy-managed
+addressbook. But redirects recieved by visiting
+service\_url.i2p/jump/target\_url.i2p don't work. Not sure how big a deal that
+is but I'm going to figure it out regardless.
+
+I took the opinion that the person running the application should be able to
+decide at runtime whether to use a jump service or now. If a jump service is
+optionally specified(it can be used without jump service at all) then it is
+implicitly trusted as a source of all unknown addresses. Eventually this
+behavior will be configurable. I'm almost ready to do that.
 
 #### Examples
 
@@ -56,12 +65,6 @@ straightforward.
 If it wasn't super, super obvious to everyone, it's really, really easy to tell
 the difference between this proxy and the default i2p/i2pd http proxies and I
 don't think there's anything I can do about that.
-
-I am currently attacking this proxy while using various browsers. It seems more
-complicated browsers are easier to attack. They might even do something
-ridiculous, like presume you're using a captive portal and attempt to direct
-you to a captive portal login assistance page. God captive portals are fucking
-stupid. Who knew? Seriously, stay off my clearly labeled sites.
 
 I am now fairly certain that it can't be forced to retrieve URL's outside the
 i2p network in properly configured browsers under normal circumstances. Remember
