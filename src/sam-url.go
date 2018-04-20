@@ -144,7 +144,7 @@ func (subUrl *samUrl) printHeader(src http.Header) {
 
 //func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
 func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
-    defer response.Body.Close()
+	defer response.Body.Close()
 	transferEncoding := response.TransferEncoding
 	unCompressed := response.Uncompressed
 	header := response.Header
@@ -154,10 +154,12 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 	proto := response.Proto
 	protoMajor := response.ProtoMajor
 	protoMinor := response.ProtoMinor
-	//doClose := response.Close
-    //responseBody := response.Body
-    doClose := false
+	doClose := response.Close
+	//responseBody := response.Body
+	//contentLength := response.ContentLength
+	//doClose := false
 	body, err := ioutil.ReadAll(response.Body)
+	//response.Body.Close()
 	if subUrl.c, subUrl.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subUrl.c {
 		Log("sam-url.go Writing files.")
 		_, e := subUrl.recvFile.Write(body)

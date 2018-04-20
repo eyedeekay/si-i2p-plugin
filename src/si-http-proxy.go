@@ -1,9 +1,7 @@
 package main
 
 import (
-	//"bytes"
 	"io"
-//	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -117,6 +115,8 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	proxy.checkResponse(rW, rq)
 
+	return
+	//
 }
 
 func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Request) {
@@ -139,25 +139,28 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	client, dir := proxy.client.sendClientRequestHttp(req)
 
+	time.Sleep(1 * time.Second)
+
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
 		resp, doerr := proxy.Do(req, client, 0)
 		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); proxy.c {
-			r := proxy.client.copyRequest(req, resp, dir)
-			proxy.printResponse(rW, r)
+			resp := proxy.client.copyRequest(req, resp, dir)
+			proxy.printResponse(rW, resp)
 			Log("si-http-proxy.go responded")
 			return
 		} else {
 			if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
-				//r := proxy.client.copyRequest(req, resp, dir)
-                if resp != nil {
-                    //r := proxy.client.copyRequest(req, resp, dir)
-                    rW.WriteHeader(resp.StatusCode)
-                    resp.Body.Close()
-                }
+				if resp != nil {
+					resp := proxy.client.copyRequest(req, resp, dir)
+					//rW.WriteHeader(resp.StatusCode)
+					proxy.printResponse(rW, resp)
+				}
 				Log("si-http-proxy.go status error", doerr.Error())
 				return
 			}
+			Log("si-http-proxy.go status error", doerr.Error())
+			return
 		}
 	} else {
 		log.Println("si-http-proxy.go client retrieval error")
@@ -166,7 +169,7 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 }
 
 func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*http.Response, error) {
-    req.RequestURI = ""
+	req.RequestURI = ""
 
 	resp, doerr := client.Do(req)
 
@@ -178,14 +181,16 @@ func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*h
 		return resp, doerr
 	} else {
 		if strings.Contains(doerr.Error(), "Hostname error") {
-            log.Println("Unknown Hostname")
+			log.Println("Unknown Hostname")
 			proxy.addressbook.Lookup(req.Host)
 			requ, stage2 := proxy.addressbook.checkAddressHelper(req)
 			if stage2 {
-                log.Println("Redirecting", req.Host, "to", requ.Host)
+				log.Println("Redirecting", req.Host, "to", requ.Host)
 				requ.RequestURI = ""
 				return client.Do(requ)
 			}
+		} else {
+			return client.Do(req)
 		}
 	}
 	return resp, doerr
@@ -193,15 +198,11 @@ func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*h
 
 func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
 	if r != nil {
-        defer r.Body.Close()
-		//readstring,
-        //_, readerr := ioutil.ReadAll(r.Body)
-        proxy.copyHeader(rW.Header(), r.Header)
-        rW.WriteHeader(r.StatusCode)
-		//if proxy.c, proxy.err = Warn(readerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
-			//io.Copy(rW, ioutil.NopCloser(bytes.NewBuffer(readstring)))
-            io.Copy(rW, r.Body)
-		//}
+		defer r.Body.Close()
+		proxy.copyHeader(rW.Header(), r.Header)
+		rW.WriteHeader(r.StatusCode)
+		io.Copy(rW, r.Body)
+		//r.Body.Close()
 		Log("si-http-proxy.go Response status:", r.Status)
 	}
 }
@@ -217,8 +218,8 @@ func createHttpProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, s
 	samProxy.newHandle = &http.Server{
 		Addr:         samProxy.host,
 		Handler:      &samProxy,
-		ReadTimeout:  time.Duration(timeoutTime*6) * time.Second,
-		WriteTimeout: time.Duration(timeoutTime*6) * time.Second,
+		ReadTimeout:  time.Duration(timeoutTime*1) * time.Second,
+		WriteTimeout: time.Duration(timeoutTime*1) * time.Second,
 	}
 	log.Println("si-http-proxy.go Connected SAM isolation stack to the HTTP proxy server")
 	go samProxy.prepare()

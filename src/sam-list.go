@@ -148,7 +148,7 @@ func (samStack *samList) writeResponses() {
 		log.Println("sam-list.go Checking for responses: %s", i+1)
 		log.Println("sam-list.go of: ", len(samStack.listOfClients))
 		if client.printResponse() != "" {
-			samStack.writeRecieved(client.printResponse())
+			go samStack.writeRecieved(client.printResponse())
 		}
 	}
 }

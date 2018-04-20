@@ -170,8 +170,9 @@ func (samConn *samHttp) setupTransport() {
 		Timeout:       samConn.timeoutTime,
 		Transport:     samConn.transport,
 		Jar:           samConn.jar,
+		CheckRedirect: nil,
 	}
-    //		CheckRedirect: nil,
+	//
 }
 
 func (samConn *samHttp) createClient(request string, samAddrString string, samPortString string) {
@@ -220,16 +221,16 @@ func (samConn *samHttp) cleanURL(request string) (string, string) {
 	url := strings.Replace(request, "http://", "", -1)
 	Log("sam-http.go cleanURL Request URL " + url)
 	//i2p-projekt.i2p/en/downloads
-    if strings.HasSuffix(url, ".i2p") {
-        url = url + "/"
-    }
+	if strings.HasSuffix(url, ".i2p") {
+		url = url + "/"
+	}
 	host := strings.SplitAfter(url, ".i2p/")[0]
-    if strings.HasSuffix(host, ".i2p/") {
-        host = host[:len(host)-len("/")]
-    }
-    if strings.HasSuffix(url, ".i2p/") {
-        url = url[:len(url)-len("/")]
-    }
+	if strings.HasSuffix(host, ".i2p/") {
+		host = host[:len(host)-len("/")]
+	}
+	if strings.HasSuffix(url, ".i2p/") {
+		url = url[:len(url)-len("/")]
+	}
 	Log("sam-http.go cleanURL Trim 2 " + host)
 	return host, url
 }
@@ -251,7 +252,6 @@ func (samConn *samHttp) hostCheck(request string) bool {
 	if err == nil {
 		if samConn.host == host {
 			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
-            //log.Println("sam-http.go Request host ", host, "sam-http.go Is equal to client host", samConn.host)
 			return true
 		} else {
 			Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
@@ -260,7 +260,6 @@ func (samConn *samHttp) hostCheck(request string) bool {
 	} else {
 		if samConn.host == host {
 			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
-            //log.Println("sam-http.go Request host ", host, "sam-http.go Is equal to client host", samConn.host)
 			return true
 		} else {
 			Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
