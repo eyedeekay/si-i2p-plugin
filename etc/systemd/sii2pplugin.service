@@ -5,9 +5,12 @@ After=network.target
 [Service]
 Type=simple
 User=sii2pplugin
-WorkingDirectory=/var/si-i2p-plugin
+Group=sii2pplugin
+WorkingDirectory=/var/run/si-i2p-plugin
 ExecStart=/usr/local/bin/si-i2p-plugin.sh
-Restart=on-abort
+Restart=on-failure
+ExecReload=/bin/kill -HUP $MAINPID
+PIDFile=/var/run/si-i2p-plugin/si-i2p-plugin.pid
 
 [Install]
 WantedBy=multi-user.target
