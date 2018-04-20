@@ -83,6 +83,15 @@ Still a little unreliable when it has to download a bunch of stuff from a single
 site. If it times out, refreshing the page usually works. This is happening much
 less often now. It helps to have a well-integrated router.
 
+Elephant in the room #1, it's kind of unfortunately named. I really have a knack
+for that shit.
+
+Elephant in the room #2, it runs excellent on anything that can work with the
+named pipe implementation in regular Go. Which makes Windows a real bitch. I
+could take shortcuts that would limit the functionality available to Windows
+people, or figure out some way to implement that functionality on a per-platform
+basis without losing functionality. Not sure I can do it.
+
 ### The pipes
 
 Moved to [misc/docs/PIPES.md](misc/docs/PIPES.md)
