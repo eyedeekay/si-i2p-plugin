@@ -4,8 +4,6 @@ package main
 
 import (
 	"bufio"
-	//"byte"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -153,8 +151,7 @@ func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error)
 
 func clearFile(directory, path string) {
 	mkPath := filepath.Join(connectionDirectory, directory, path)
-	info := []byte{0}
-	clearErr := ioutil.WriteFile(mkPath, info, 0755)
+	clearErr := os.Truncate(mkPath, 0)
 	if e, c := Fatal(clearErr, "si-fs-helpers-windows.go File Clear Error", "si-fs-helpers-windows.go File Cleared", mkPath); e {
 		Log("si-fs-helpers-windows.go Input file cleared.")
 	}else{
