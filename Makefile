@@ -179,7 +179,7 @@ docker-setup: docker docker-network docker-host docker-run
 
 docker:
 	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
-	docker build --force-rm -f Dockerfiles/Dockerfile -t eyedeekay/si-i2p-plugin .
+	docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
 
 
 docker-network:
