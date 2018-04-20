@@ -90,7 +90,10 @@ Elephant in the room #2, it runs excellent on anything that can work with the
 named pipe implementation in regular Go. Which makes Windows a real bitch. I
 could take shortcuts that would limit the functionality available to Windows
 people, or figure out some way to implement that functionality on a per-platform
-basis without losing functionality. Not sure I can do it.
+basis without losing functionality. Oh shit conditional compilation in go is
+super easy! An early Windows version is available, but everything that's a named
+pipe in a Unix is a real file in Windows. So only use the HTTP proxy. Ever. At
+least until I find a way to ensure that sent requests are cleared from the file.
 
 ### The pipes
 

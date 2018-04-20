@@ -13,6 +13,10 @@ USR := usr/
 LOCAL := local/
 VERSION := 0.20
 
+info:
+	@echo "Version $(VERSION)"
+	@echo "$(UNAME), $(UARCH)"
+
 rebuild: clean build
 
 build: bin/si-i2p-plugin
@@ -49,6 +53,8 @@ bin/si-i2p-plugin.bin: deps
 		./src
 	@echo 'built'
 
+osx: bin/si-i2p-plugin.bin
+
 bin/si-i2p-plugin.exe: deps
 	GOOS=windows GOARCH=amd64 go build \
 		-a \
@@ -58,12 +64,17 @@ bin/si-i2p-plugin.exe: deps
 		./src
 	@echo 'built'
 
-bin: bin/si-i2p-plugin bin/si-i2p-plugin.bin bin/si-i2p-plugin.exe
+windows: bin/si-i2p-plugin.exe
+
+bin: bin/si-i2p-plugin bin/si-i2p-plugin.bin bin/si-i2p-plugin.exe bin/si-i2p-plugin-arm
 
 build-arm: bin/si-i2p-plugin-arm
 
-bin/si-i2p-plugin-arm: deps
-	GOARCH=arm GOARM=7 go build \
+bin/si-i2p-plugin-arm: deps arm
+
+arm:
+	ARCH=arm GOARCH=arm GOARM=7 go build \
+		-compiler gc \
 		-a \
 		-tags netgo \
 		-ldflags '-w -extldflags "-static"' \
@@ -228,6 +239,9 @@ docker-clobber: docker-clean
 
 gofmt:
 	gofmt -w src/*.go
+
+golist:
+	go list -f '{{.GoFiles}}' ./src
 
 mps:
 	bash -c "ps aux | grep si-i2p-plugin | grep -v gdb |  grep -v grep | grep -v https" 2> /dev/null
