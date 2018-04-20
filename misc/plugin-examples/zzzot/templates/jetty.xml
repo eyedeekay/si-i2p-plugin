@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<!-- ========================================================================= -->
+<!-- This file configures the Jetty server.                                    -->
+<!-- All changes require a restart of I2P.                                     -->
+<!--                                                                           -->
+<!-- Commonly changed settings:                                                -->
+<!--   * host: Change 127.0.0.1 to 0.0.0.0 in the addListener section          -->
+<!--           to access the server directly (bypassing i2p)                   -->
+<!--           from other computers.                                           -->
+<!--   * port: Default 7662 in the addConnector section                         -->
+<!--   * docroot: Change the ResourceBase in the contexts/base-context.xml file -->
+<!--           to serve files from a different location.                       -->
+<!--   * threads: Raise maximumPoolSize in the ThreadPool section              -->
+<!--           if you have a high-traffic site and get a lot of warnings.      -->
+<!--                                                                           -->
+<!-- I2P uses Jetty 9. If you need web server features not found               -->
+<!-- in I2P's Jetty 9, you may install and run Jetty 9 in a different JVM      -->
+<!-- or run any other web server such as Apache. If you do run another web     -->
+<!-- server instead, be sure and disable the Jetty 9 server for your           -->
+<!-- eepsite on http://127.0.0.1:7657/configclients.jsp .                      -->
+<!--                                                                           -->
+<!-- Jetty now uses the I2P logging system rather than wrapper.log.            -->
+<!-- Use the log override org.eclipse.jetty.server.Server to adjust the log level.  -->
+<!--                                                                           -->
+<!-- Note that the XML encoding for this file is UTF-8.                        -->
+<!--                                                                           -->
+<!-- ========================================================================= -->
+
+<!-- =============================================================== -->
+<!-- Configure the Jetty Server                                      -->
+<!--                                                                 -->
+<!-- Documentation of this file format can be found at:              -->
+<!-- http://docs.codehaus.org/display/JETTY/jetty.xml                -->
+<!--                                                                 -->
+<!-- =============================================================== -->
+
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+    <!-- =========================================================== -->
+    <!-- Server Thread Pool                                          -->
+    <!-- =========================================================== -->
+    <Arg>
+
+      <!--
+           Requests above the maxThreads + queue_size will be rejected and logged.
+           ref:
+           https://wiki.eclipse.org/Jetty/Howto/High_Load
+           http://trac.i2p2.i2p/ticket/1395
+       -->
+      <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+        <Arg type="int">20</Arg>     <!-- maxThreads, overridden below -->
+        <Arg type="int">3</Arg>      <!-- minThreads, overridden below -->
+        <Arg type="int">60000</Arg>  <!-- maxIdleTimeMs, overridden below -->
+        <Arg>
+           <New class="java.util.concurrent.LinkedBlockingQueue">
+              <Arg type="int">50</Arg>
+           </New>
+        </Arg>
+        <Set name="minThreads">4</Set>
+        <Set name="maxThreads">20</Set>
+        <Set name="idleTimeout">60000</Set>
+        <Set name="daemon">true</Set>
+        <Set name="name">Zzzot Jetty</Set>
+      </New>
+    </Arg>
+
+
+
+    <!-- =========================================================== -->
+    <!-- Set connectors                                              -->
+    <!-- =========================================================== -->
+    <!-- One of each type!                                           -->
+    <!-- =========================================================== -->
+
+    <!-- Use this connector for many frequently idle connections
+         and for threadless continuations.
+         Not recommended on Java 5 - comment this out, and uncomment the
+         SocketConnector below.
+         Do not use for gij or JamVM - comment this out, and uncomment the
+         SocketConnector below.
+    -->    
+    <Call name="addConnector">
+      <Arg>
+          <New class="org.eclipse.jetty.server.ServerConnector">
+            <Arg><Ref id="Server" /></Arg>
+            <Arg type="int">1</Arg>     <!-- number of acceptors -->
+            <Arg type="int">0</Arg>     <!-- default number of selectors -->
+            <Arg>
+              <Array type="org.eclipse.jetty.server.ConnectionFactory">    <!-- varargs so we need an array -->
+                <Item>
+                  <New class="org.eclipse.jetty.server.HttpConnectionFactory">
+                    <Arg>
+                      <New class="org.eclipse.jetty.server.HttpConfiguration">
+                        <Set name="sendServerVersion">false</Set>
+                        <Set name="sendDateHeader">true</Set>
+                      </New>
+                    </Arg>
+                  </New>
+                </Item>
+              </Array>
+            </Arg>
+            <Set name="host">127.0.0.1</Set>
+            <Set name="port">7662</Set>
+            <Set name="idleTimeout">600000</Set>
+          </New>
+      </Arg>
+    </Call>
+
+    <!-- =========================================================== -->
+    <!-- Set up global session ID manager                            -->
+    <!-- =========================================================== -->
+    <!--
+    <Set name="sessionIdManager">
+      <New class="org.eclipse.jetty.server.session.HashSessionIdManager">
+        <Set name="workerName">node1</Set>
+      </New>
+    </Set>
+    -->
+
+    <!-- =========================================================== -->
+    <!-- Set handler Collection Structure                            --> 
+    <!--                                                             --> 
+    <!-- We use a RewriteHandler at the top level so that we may     --> 
+    <!-- convert any top-level URLs for the tracker down into the    --> 
+    <!-- tracker servlet, without interfering with anything else     --> 
+    <!-- that is hosted on the same eepsite.                         --> 
+    <!-- =========================================================== -->
+    <Set name="handler">
+      <New id="Rewrite" class="org.eclipse.jetty.rewrite.handler.RewriteHandler">
+        <Set name="rewriteRequestURI">true</Set>
+        <Set name="rewritePathInfo">false</Set>
+        <Set name="originalPathAttribute">requestedPath</Set>
+        <Set name="rules">
+          <Array type="org.eclipse.jetty.rewrite.handler.Rule">
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/a</Set>
+                <Set name="replacement">/tracker/announce.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/announce</Set>
+                <Set name="replacement">/tracker/announce.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/announce.jsp</Set>
+                <Set name="replacement">/tracker/announce.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/announce.php</Set>
+                <Set name="replacement">/tracker/announce.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/scrape</Set>
+                <Set name="replacement">/tracker/scrape.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/scrape.jsp</Set>
+                <Set name="replacement">/tracker/scrape.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/scrape.php</Set>
+                <Set name="replacement">/tracker/scrape.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/Seedless</Set>
+                <Set name="replacement">/tracker/seedless.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/Seedless/</Set>
+                <Set name="replacement">/tracker/seedless.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/Seedless/index.jsp</Set>
+                <Set name="replacement">/tracker/seedless.jsp</Set>
+              </New>
+            </Item>
+            <Item>
+              <New class="org.eclipse.jetty.rewrite.handler.RewritePatternRule">
+                <Set name="pattern">/Seedless/seedless</Set>
+                <Set name="replacement">/tracker/seedless.jsp</Set>
+              </New>
+            </Item>
+          </Array>
+        </Set>
+        <Set name="handler">
+          <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+            <Set name="handlers">
+             <Array type="org.eclipse.jetty.server.Handler">
+               <Item>
+                 <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
+               </Item>
+               <Item>
+                 <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
+               </Item>
+               <Item>
+                 <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler"/>
+               </Item>
+             </Array>
+            </Set>
+          </New>
+        </Set>
+      </New>
+    </Set>
+
+    <!-- =============================================================== -->
+    <!-- Create the deployment manager                                   -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- The deplyment manager handles the lifecycle of deploying web    -->
+    <!-- applications. Apps are provided by instances of the             -->
+    <!-- AppProvider interface.  Typically these are provided by         -->
+    <!-- one or more of:                                                 -->
+    <!--   jetty-webapps.xml       - monitors webapps for wars and dirs  -->
+    <!--   jetty-contexts.xml      - monitors contexts for context xml   -->
+    <!--   jetty-templates.xml     - monitors contexts and templates     -->
+    <!-- =============================================================== -->
+    <Call name="addBean">
+      <Arg>
+        <New id="DeploymentManager" class="org.eclipse.jetty.deploy.DeploymentManager">
+          <Set name="contexts">
+            <Ref id="Contexts" />
+          </Set>
+          <Call name="setContextAttribute">
+            <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
+            <Arg>.*/.*jsp-api-[^/]*\.jar$|.*/.*jsp-[^/]*\.jar$|.*/.*taglibs[^/]*\.jar$</Arg>
+          </Call>
+        </New>
+      </Arg>
+    </Call>
+
+    <!-- =========================================================== -->
+    <!-- Configure the context deployer                              -->
+    <!-- A context deployer will deploy contexts described in        -->
+    <!-- configuration files discovered in a directory.              -->
+    <!-- The configuration directory can be scanned for hot          -->
+    <!-- deployments at the configured scanInterval.                 -->
+    <!--                                                             -->
+    <!-- This deployer is configured to deploy contexts configured   -->
+    <!-- in the $JETTY_HOME/contexts directory                       -->
+    <!--                                                             -->
+    <!-- =========================================================== -->
+    <Ref id="DeploymentManager">
+      <Call name="addAppProvider">
+        <Arg>
+          <New class="org.eclipse.jetty.deploy.providers.WebAppProvider">
+            <Set name="monitoredDirName">$PLUGIN/contexts</Set>
+            <Set name="scanInterval">120</Set>
+          </New>
+        </Arg>
+      </Call>
+    </Ref>
+
+    <!-- =========================================================== -->
+    <!-- Configure the webapp deployer.                              -->
+    <!-- A webapp  deployer will deploy standard webapps discovered  -->
+    <!-- in a directory at startup, without the need for additional  -->
+    <!-- configuration files.    It does not support hot deploy or   -->
+    <!-- non standard contexts (see ContextDeployer above).          -->
+    <!--                                                             -->
+    <!-- This deployer is configured to deploy webapps from the      -->
+    <!-- $JETTY_HOME/webapps directory                               -->
+    <!--                                                             -->
+    <!-- Normally only one type of deployer need be used.            -->
+    <!--                                                             -->
+    <!-- =========================================================== -->
+    <Ref id="DeploymentManager">
+      <Call id="webappprovider" name="addAppProvider">
+        <Arg>
+          <New class="org.eclipse.jetty.deploy.providers.WebAppProvider">
+            <Set name="monitoredDirName">$PLUGIN/eepsite/webapps</Set>
+            <Set name="parentLoaderPriority">false</Set>
+            <Set name="extractWars">false</Set>
+            <Set name="defaultsDescriptor">$PLUGIN/etc/webdefault.xml</Set>
+          </New>
+        </Arg>
+      </Call>
+    </Ref>
+
+    <!-- =========================================================== -->
+    <!-- Configure Authentication Realms                             -->
+    <!-- Realms may be configured for the entire server here, or     -->
+    <!-- they can be configured for a specific web app in a context  -->
+    <!-- configuration (see $(jetty.home)/contexts/test.xml for an   -->
+    <!-- example).                                                   -->
+    <!-- =========================================================== -->
+  <!-- UNCOMMENT TO ACTIVATE
+    <Set name="UserRealms">
+      <Array type="org.eclipse.jetty.security.LoginService">
+        <Item>
+          <New class="org.eclipse.jetty.security.HashLoginService">
+            <Set name="name">Test Realm</Set>
+            <Set name="config">$PLUGIN/etc/realm.properties</Set>
+            <Set name="refreshInterval">0</Set>
+          </New>
+        </Item>
+      </Array>
+    </Set>
+  -->
+
+    <!-- =========================================================== -->
+    <!-- Configure Request Log                                       -->
+    <!-- Request logs  may be configured for the entire server here, -->
+    <!-- or they can be configured for a specific web app in a       -->
+    <!-- contexts configuration (see $(jetty.home)/contexts/test.xml -->
+    <!-- for an example).                                            -->
+    <!-- =========================================================== -->
+    <Ref id="RequestLog">
+      <Set name="requestLog">
+        <New id="RequestLogImpl" class="net.i2p.jetty.I2PRequestLog">
+          <Set name="filename">$PLUGIN/eepsite/logs/yyyy_mm_dd.request.log</Set>
+          <Set name="filenameDateFormat">yyyy_MM_dd</Set>
+          <Set name="retainDays">90</Set>
+          <Set name="append">true</Set>
+          <Set name="extended">false</Set>
+          <Set name="logCookies">false</Set>
+          <Set name="LogTimeZone">GMT</Set>
+        </New>
+      </Set>
+    </Ref>
+
+    <!-- =========================================================== -->
+    <!-- extra options                                               -->
+    <!-- =========================================================== -->
+    <Set name="stopAtShutdown">true</Set>
+    <Set name="stopTimeout">1000</Set>
+
+</Configure>

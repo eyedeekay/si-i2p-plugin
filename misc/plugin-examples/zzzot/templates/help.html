@@ -1,0 +1,57 @@
+<html><head><title>ZzzOT Plugin Help</title></head>
+<body style="background-color: #ddd; color: #a30;">
+<h2>Welcome to the ZzzOT I2P Plugin!</h2>
+
+A new eepsite tunnel and Jetty server have been started for your open tracker.
+
+<p><a href="/tracker/index.jsp">Click here to see the current stats</a>.
+This link is also at the top of your router console when ZzzOT is running.
+
+<p>Report bugs or add comments on
+<a href="http://zzz.i2p//forums/16">the plugin forum on zzz.i2p</a>.
+
+<p><b>This help file is $PLUGIN/eepsite/docroot/help.html, you should probably move it
+    outside of the document root before you announce your eepsite as it may contain your user name.</b>
+
+<h3>Eepsite Key and Helpful Hints for I2P</h3>
+
+<p>Your Base 32 address is <a href="http://$B32/">$B32</a>.
+    Others may access your eepsite using this address, even if you do not publish a hostname.
+<p>Once you decide on a host name, you may
+   <a href="http://127.0.0.1:7657/susidns/addressbook.jsp?book=private&destination=$B64">add the key to your local addressbook here</a>.
+<p>Your Base 64 key is: &nbsp;&nbsp;&nbsp;<textarea rows="1" style="height: 3em;" cols="40" readonly="readonly" wrap="off">$B64</textarea>
+    <br>You will need this key to register a hostname at <a href="http://stats.i2p/i2p/addkey.html">stats.i2p</a>.
+<p>Your private key file is $PLUGIN/eepPriv.dat - back it up!!!
+<p>Your eepsite document root is $PLUGIN/eepsite/docroot,
+   you may put other files there if you wish to have additional content on your eepsite.
+<p>The supported announce URLs are:
+   <ul>
+   <li><a href="http://$B32/a">http://$B32/a</a>
+   <li><a href="http://$B32/announce">http://$B32/announce</a>
+   <li><a href="http://$B32/announce.jsp">http://$B32/announce.jsp</a>
+   <li><a href="http://$B32/announce.php">http://$B32/announce.php</a>
+   <li><a href="http://$B32/tracker/a">http://$B32/tracker/a</a>
+   <li><a href="http://$B32/tracker/announce">http://$B32/tracker/announce</a>
+   <li><a href="http://$B32/tracker/announce.jsp">http://$B32/tracker/announce.jsp</a>
+   <li><a href="http://$B32/tracker/announce.php">http://$B32/tracker/announce.php</a>
+   </ul>
+<p>The supported scrape URLs are:
+   <ul>
+   <li><a href="http://$B32/scrape">http://$B32/scrape</a>
+   <li><a href="http://$B32/scrape.jsp">http://$B32/scrape.jsp</a>
+   <li><a href="http://$B32/scrape.php">http://$B32/scrape.php</a>
+   <li><a href="http://$B32/tracker/scrape">http://$B32/tracker/scrape</a>
+   <li><a href="http://$B32/tracker/scrape.jsp">http://$B32/tracker/scrape.jsp</a>
+   <li><a href="http://$B32/tracker/scrape.php">http://$B32/tracker/scrape.php</a>
+   </ul>
+<p>Your eepsite tunnel is configured for 2 inbound and 2 outbound tunnels, 3 hops each.
+   You may change tunnel settings by editing $PLUGIN/i2ptunnel.config and restarting the plugin.
+   The tunnel will not appear in <a href="http://127.0.0.1:7657/i2ptunnel/index.jsp">i2ptunnel</a>.
+   If your tracker gets over 1000 peers, you will probably want to increase the number of tunnels.
+<p>The Jetty webserver port is 7662. If you must change it, edit jetty.xml, i2ptunnel.config, and plugins.config
+    in the directory $PLUGIN. Then stop and restart the plugin.
+<p>As you probably know, an open tracker does not require torrents to be registered,
+   and it does not host torrent files. You can, however, host torrent files elsewhere on
+   the eepsite, for example at <a href="http://$B32/torrents/">/torrents</a>.
+
+</body></html>
