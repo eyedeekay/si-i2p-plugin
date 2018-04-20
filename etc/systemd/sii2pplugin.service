@@ -3,7 +3,7 @@ Description=Destination-Isolating Proxy
 After=network.target
 
 [Service]
-Type=simple
+Type=forking
 User=sii2pplugin
 Group=sii2pplugin
 WorkingDirectory=/var/run/si-i2p-plugin
