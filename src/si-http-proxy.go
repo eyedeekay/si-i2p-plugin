@@ -115,7 +115,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	proxy.checkResponse(rW, rq)
 
-	return
+	//return
 	//
 }
 
@@ -218,8 +218,8 @@ func createHttpProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, s
 	samProxy.newHandle = &http.Server{
 		Addr:         samProxy.host,
 		Handler:      &samProxy,
-		ReadTimeout:  time.Duration(timeoutTime*1) * time.Second,
-		WriteTimeout: time.Duration(timeoutTime*1) * time.Second,
+		ReadTimeout:  samProxy.timeoutTime,
+		WriteTimeout: samProxy.timeoutTime,
 	}
 	log.Println("si-http-proxy.go Connected SAM isolation stack to the HTTP proxy server")
 	go samProxy.prepare()
