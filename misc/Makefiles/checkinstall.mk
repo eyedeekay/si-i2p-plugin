@@ -1,10 +1,11 @@
 checkinstall: release postinstall-pak postremove-pak description-pak
-	checkinstall --default \
+	fakeroot-ng checkinstall --default \
 		--install=no \
 		--fstrans=yes \
 		--maintainer=problemsolver@openmailbox.org \
 		--pkgname="si-i2p-plugin" \
 		--pkgversion="$(VERSION)" \
+		--arch "$(UARCH)" \
 		--pkglicense=gpl \
 		--pkggroup=net \
 		--pkgsource=./ \
@@ -16,12 +17,13 @@ checkinstall: release postinstall-pak postremove-pak description-pak
 		--pakdir=../
 
 checkinstall-arm: build-arm postinstall-pak postremove-pak description-pak static-include static-exclude
-	checkinstall --default \
+	fakeroot-ng checkinstall --default \
 		--install=no \
 		--fstrans=yes \
 		--maintainer=problemsolver@openmailbox.org \
 		--pkgname="si-i2p-plugin" \
 		--pkgversion="$(VERSION)-arm" \
+		--arch=arm \
 		--pkglicense=gpl \
 		--pkggroup=net \
 		--pkgsource=./ \

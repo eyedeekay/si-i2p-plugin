@@ -1,4 +1,7 @@
 
+UNAME ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
+UARCH ?= $(shell uname -m | tr '[:upper:]' '[:lower:]' | sed 's|x86_64|amd64|g')
+
 PREFIX := /
 VAR := var/
 RUN := run/
@@ -68,7 +71,7 @@ bin/si-i2p-plugin-arm: deps
 	@echo 'built'
 
 release: deps
-	GOOS=linux GOARCH=amd64 go build \
+	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
 		-a \
 		-tags netgo \
 		-ldflags '-w -extldflags "-static"' \
