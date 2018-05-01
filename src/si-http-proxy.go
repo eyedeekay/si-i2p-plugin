@@ -1,4 +1,4 @@
-package main
+package dii2p
 
 import (
 	"io"
@@ -9,8 +9,8 @@ import (
 )
 
 type samHttpProxy struct {
-	host        string
-	client      *samList
+	Host        string
+	client      *SamList
 	transport   *http.Transport
 	newHandle   *http.Server
 	addressbook *addressHelper
@@ -207,16 +207,16 @@ func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 	}
 }
 
-func createHttpProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, samStack *samList, timeoutTime int, keepAlives bool) *samHttpProxy {
+func CreateHttpProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, samStack *SamList, timeoutTime int, keepAlives bool) *samHttpProxy {
 	var samProxy samHttpProxy
-	samProxy.host = proxAddr + ":" + proxPort
+	samProxy.Host = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
 	samProxy.addressbook = newAddressHelper(addressHelperUrl, samStack.samAddrString, samStack.samPortString)
-	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.host)
+	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.Host)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute
 	samProxy.newHandle = &http.Server{
-		Addr:         samProxy.host,
+		Addr:         samProxy.Host,
 		Handler:      &samProxy,
 		ReadTimeout:  samProxy.timeoutTime,
 		WriteTimeout: samProxy.timeoutTime,

@@ -1,4 +1,4 @@
-package main
+package dii2p
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-type samServices struct {
+type SamServices struct {
 	listOfServices []samHttpService
 	samAddrString  string
 	samPortString  string
@@ -31,7 +31,7 @@ type samServices struct {
 	delScan *bufio.Scanner
 }
 
-func (samServiceStack *samServices) initPipes() {
+func (samServiceStack *SamServices) initPipes() {
 	setupFolder(samServiceStack.dir)
 
 	samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "genr")
@@ -57,12 +57,12 @@ func (samServiceStack *samServices) initPipes() {
 	samServiceStack.up = true
 }
 
-func (samServiceStack *samServices) createService(alias string) {
+func (samServiceStack *SamServices) createService(alias string) {
 	Log("Appending service to SAM service stack.")
 	samServiceStack.listOfServices = append(samServiceStack.listOfServices, createSamHttpService(samServiceStack.samAddrString, samServiceStack.samPortString, alias))
 }
 
-func (samServiceStack *samServices) findService(request string) *samHttpService {
+func (samServiceStack *SamServices) findService(request string) *samHttpService {
 	found := false
 	var s samHttpService
 	for index, service := range samServiceStack.listOfServices {
@@ -90,7 +90,7 @@ func (samServiceStack *samServices) findService(request string) *samHttpService 
 	return &s
 }
 
-func (samServiceStack *samServices) createServiceList(samAddr string, samPort string) {
+func (samServiceStack *SamServices) createServiceList(samAddr string, samPort string) {
 	samServiceStack.samAddrString = samAddr
 	samServiceStack.samPortString = samPort
 	//samServiceStack.
@@ -101,17 +101,17 @@ func (samServiceStack *samServices) createServiceList(samAddr string, samPort st
 	}
 }
 
-func (samServiceStack *samServices) sendServiceRequest(index string) {
+func (samServiceStack *SamServices) sendServiceRequest(index string) {
 	samServiceStack.findService(index).sendContent(index)
 }
 
-func (samServiceStack *samServices) responsify(input string) io.Reader {
+func (samServiceStack *SamServices) responsify(input string) io.Reader {
 	tmp := strings.NewReader(input)
 	Log("Responsifying string:")
 	return tmp
 }
 
-func (samServiceStack *samServices) readRequest() {
+func (samServiceStack *SamServices) readRequest() {
 	Log("Reading requests:")
 	for samServiceStack.genrScan.Scan() {
 		if samServiceStack.genrScan.Text() == "y" || samServiceStack.genrScan.Text() == "Y" || samServiceStack.genrScan.Text() == "g" || samServiceStack.genrScan.Text() == "G" || samServiceStack.genrScan.Text() == "n" || samServiceStack.genrScan.Text() == "N" || samServiceStack.genrScan.Text() == "new" {
@@ -120,7 +120,7 @@ func (samServiceStack *samServices) readRequest() {
 	}
 }
 
-func (samServiceStack *samServices) writeDetails(details string) bool {
+func (samServiceStack *SamServices) writeDetails(details string) bool {
 	b := false
 	if details != "" {
 		Log("Got response:")
@@ -130,7 +130,7 @@ func (samServiceStack *samServices) writeDetails(details string) bool {
 	return b
 }
 
-func (samServiceStack *samServices) writeResponses() {
+func (samServiceStack *SamServices) writeResponses() {
 	Log("Writing responses:")
 	for i, service := range samServiceStack.listOfServices {
 		log.Println("Checking for responses: %s", i+1)
@@ -141,7 +141,7 @@ func (samServiceStack *samServices) writeResponses() {
 	}
 }
 
-func (samServiceStack *samServices) readDelete() bool {
+func (samServiceStack *SamServices) ReadDelete() bool {
 	Log("Managing pipes:")
 	for samServiceStack.delScan.Scan() {
 		if samServiceStack.delScan.Text() == "y" || samServiceStack.delScan.Text() == "Y" {
@@ -154,7 +154,7 @@ func (samServiceStack *samServices) readDelete() bool {
 	return false
 }
 
-func (samServiceStack *samServices) cleanupServices() {
+func (samServiceStack *SamServices) cleanupServices() {
 	samServiceStack.genrPipe.Close()
 	samServiceStack.lsPipe.Close()
 	for _, service := range samServiceStack.listOfServices {
@@ -164,8 +164,8 @@ func (samServiceStack *samServices) cleanupServices() {
 	os.RemoveAll(filepath.Join(connectionDirectory, "service"))
 }
 
-func createSamServiceList(samAddr string, samPort string) *samServices {
-	var samServiceList samServices
+func CreateSamServiceList(samAddr string, samPort string) *SamServices {
+	var samServiceList SamServices
 	samServiceList.dir = "services"
 	samServiceList.createServiceList(samAddr, samPort)
 	return &samServiceList

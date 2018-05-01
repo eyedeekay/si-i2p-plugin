@@ -1,4 +1,4 @@
-package main
+package dii2p
 
 import (
 	"bufio"
@@ -11,8 +11,8 @@ import (
 	"strings"
 )
 
-type samList struct {
-	listOfClients []samHttp
+type SamList struct {
+	listOfClients []SamHttp
 	samAddrString string
 	samPortString string
 	keepAlives    bool
@@ -34,14 +34,14 @@ type samList struct {
 	delScan *bufio.Scanner
 }
 
-func (samStack *samList) initPipes() {
+func (samStack *SamList) initPipes() {
 	setupFolder(samStack.dir)
 
 	samStack.sendPath, samStack.sendPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "send")
 	if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
 		samStack.sendScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "send", samStack.sendPipe)
 		if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
-			samStack.cleanupClient()
+			samStack.CleanupClient()
 		}
 	}
 
@@ -54,24 +54,24 @@ func (samStack *samList) initPipes() {
 	if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
 		samStack.delScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "del", samStack.delPipe)
 		if samStack.c, samStack.err = Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
-			samStack.cleanupClient()
+			samStack.CleanupClient()
 		}
 	}
 
 	samStack.up = true
 }
 
-func (samStack *samList) createClient(request string) {
+func (samStack *SamList) createClient(request string) {
 	Log("sam-list.go Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
-func (samStack *samList) createClientHttp(request *http.Request) {
+func (samStack *SamList) createClientHttp(request *http.Request) {
 	Log("sam-list.go Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
-func (samStack *samList) createSamList(samAddrString string, samPortString string) {
+func (samStack *SamList) createSamList(samAddrString string, samPortString string) {
 	samStack.samAddrString = samAddrString
 	samStack.samPortString = samPortString
 	Log("sam-list.go Established SAM connection")
@@ -81,14 +81,14 @@ func (samStack *samList) createSamList(samAddrString string, samPortString strin
 	}
 }
 
-func (samStack *samList) sendClientRequest(request string) {
+func (samStack *SamList) sendClientRequest(request string) {
 	client := samStack.findClient(request)
 	if client != nil {
 		client.sendRequest(request)
 	}
 }
 
-func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
+func (samStack *SamList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
 	client := samStack.findClient(request.URL.String())
 	if client != nil {
 		return client.sendRequestHttp(request)
@@ -97,9 +97,9 @@ func (samStack *samList) sendClientRequestHttp(request *http.Request) (*http.Cli
 	}
 }
 
-func (samStack *samList) findClient(request string) *samHttp {
+func (samStack *SamList) findClient(request string) *SamHttp {
 	found := false
-	var c samHttp
+	var c SamHttp
 	if !samStack.checkURLType(request) {
 		return nil
 	}
@@ -129,11 +129,11 @@ func (samStack *samList) findClient(request string) *samHttp {
 	return &c
 }
 
-func (samStack *samList) copyRequest(request *http.Request, response *http.Response, directory string) *http.Response {
+func (samStack *SamList) copyRequest(request *http.Request, response *http.Response, directory string) *http.Response {
 	return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
 }
 
-func (samStack *samList) readRequest() {
+func (samStack *SamList) ReadRequest() {
 	Log("sam-list.go Reading requests:")
 	for samStack.sendScan.Scan() {
 		if samStack.sendScan.Text() != "" {
@@ -143,7 +143,7 @@ func (samStack *samList) readRequest() {
 	clearFile(filepath.Join(connectionDirectory, samStack.dir), "send")
 }
 
-func (samStack *samList) writeResponses() {
+func (samStack *SamList) WriteResponses() {
 	Log("sam-list.go Writing responses:")
 	for i, client := range samStack.listOfClients {
 		log.Println("sam-list.go Checking for responses: %s", i+1)
@@ -154,13 +154,13 @@ func (samStack *samList) writeResponses() {
 	}
 }
 
-func (samStack *samList) responsify(input string) io.Reader {
+func (samStack *SamList) responsify(input string) io.Reader {
 	tmp := strings.NewReader(input)
 	Log("sam-list.go Responsifying string:")
 	return tmp
 }
 
-func (samStack *samList) writeRecieved(response string) bool {
+func (samStack *SamList) writeRecieved(response string) bool {
 	b := false
 	if response != "" {
 		Log("sam-list.go Got response:")
@@ -170,11 +170,11 @@ func (samStack *samList) writeRecieved(response string) bool {
 	return b
 }
 
-func (samStack *samList) readDelete() bool {
+func (samStack *SamList) ReadDelete() bool {
 	Log("sam-list.go Managing pipes:")
 	for samStack.delScan.Scan() {
 		if samStack.delScan.Text() == "y" || samStack.delScan.Text() == "Y" {
-			defer samStack.cleanupClient()
+			defer samStack.CleanupClient()
 			return true
 		} else {
 			return false
@@ -184,17 +184,17 @@ func (samStack *samList) readDelete() bool {
 	return false
 }
 
-func (samStack *samList) cleanupClient() {
+func (samStack *SamList) CleanupClient() {
 	samStack.sendPipe.Close()
 	samStack.recvPipe.Close()
 	for _, client := range samStack.listOfClients {
-		client.cleanupClient()
+		client.CleanupClient()
 	}
 	samStack.delPipe.Close()
 	os.RemoveAll(filepath.Join(connectionDirectory, samStack.dir))
 }
 
-func (samStack *samList) checkURLType(request string) bool {
+func (samStack *SamList) checkURLType(request string) bool {
 
 	Log(request)
 
@@ -228,8 +228,8 @@ func (samStack *samList) checkURLType(request string) bool {
 	}
 }
 
-func createSamList(samAddr, samPort, initAddress string, timeoutTime int, keepAlives bool) *samList {
-	var samStack samList
+func CreateSamList(samAddr, samPort, initAddress string, timeoutTime int, keepAlives bool) *SamList {
+	var samStack SamList
 	samStack.timeoutTime = timeoutTime
 	samStack.dir = "parent"
 	Log("sam-list.go Generating parent proxy structure.")

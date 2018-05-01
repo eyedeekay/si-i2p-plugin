@@ -13,6 +13,9 @@ USR := usr/
 LOCAL := local/
 VERSION := 0.20
 
+
+GO_COMPILER_OPTS = -a -tags netgo -ldflags '-w -extldflags "-static"'
+
 info:
 	@echo "Version $(VERSION)"
 	@echo "$(UNAME), $(UARCH)"
@@ -23,11 +26,8 @@ build: bin/si-i2p-plugin
 
 nodeps: clean
 	GOOS=linux GOARCH=amd64 go build \
-		-a \
-		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
-		-o bin/si-i2p-plugin \
-		./src
+		$(GO_COMPILER_OPTS) \
+		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
 deps:
@@ -37,18 +37,14 @@ deps:
 
 bin/si-i2p-plugin: deps
 	GOOS=linux GOARCH=amd64 go build \
-		-a \
-		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
+		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin \
 		./src
 	@echo 'built'
 
 bin/si-i2p-plugin.bin: deps
 	GOOS=darwin GOARCH=amd64 go build \
-		-a \
-		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
+		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin.bin \
 		./src
 	@echo 'built'
@@ -57,9 +53,7 @@ osx: bin/si-i2p-plugin.bin
 
 bin/si-i2p-plugin.exe: deps
 	GOOS=windows GOARCH=amd64 go build \
-		-a \
-		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
+		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin.exe \
 		./src
 	@echo 'built'
@@ -75,9 +69,7 @@ bin/si-i2p-plugin-arm: deps arm
 arm:
 	ARCH=arm GOARCH=arm GOARM=7 go build \
 		-compiler gc \
-		-a \
-		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
+		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \
 		-o bin/si-i2p-plugin-arm \
 		./src
@@ -85,9 +77,7 @@ arm:
 
 release: deps
 	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
-		-a \
-		-tags netgo \
-		-ldflags '-w -extldflags "-static"' \
+		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \
 		-o bin/si-i2p-plugin \
 		./src
@@ -106,9 +96,7 @@ android: bin/si-i2p-plugin-arm-droid
 bin/si-i2p-plugin-arm-droid: deps
 	gomobile build \
 		-target=android \
-		-a \
-		-tags netgo \
-		-ldflags '-w -extldflags "-llog -static"' \
+		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin-droid \
 		./src/android
 	@echo 'built'

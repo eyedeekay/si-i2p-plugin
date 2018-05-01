@@ -122,6 +122,10 @@ Version Roadmap:
    ~~requests for resources embedded in the retrieved web pages Addresshelper.~~
   * 0.21 - Should be able to generate services on the fly by talking to the SAM
   bridge. First worthwhile release for people who aren't shell enthusiasts.
+  * 0.22 - Library-fication should be finished by here. Turning the underlying
+  code into a library will mostly be a matter of identifying which features need
+  to be exposed for it to be useful in that way. I'll update the number when
+  I've written go-based tests for it.
 
 Silly Questions I'm asking myself about how I want it to work:
 --------------------------------------------------------------
