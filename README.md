@@ -16,6 +16,8 @@ have to this, I've finally made it work. I am successfully using this proxy to
 browse eepSites pretty normally. There are still a few bugs to chase down, but
 if somebody else wanted to try it out, I might not *totally* embarass myself.
 
+[**i2p link** A reference to this issue found on zzz.i2p, that I should have put in the readme sooner.](http://zzz.i2p/topics/217)
+
 What works so far:
 ------------------
 
@@ -94,6 +96,9 @@ basis without losing functionality. Oh shit conditional compilation in go is
 super easy! An early Windows version is available, but everything that's a named
 pipe in a Unix is a real file in Windows. So only use the HTTP proxy. Ever. At
 least until I find a way to ensure that sent requests are cleared from the file.
+Preliminary Windows support is enabled by turning the FIFO's into files and
+specifying their behavior in a windows-only version of si-fs-helpers.go. If this
+turns out to be good enough then this is how I'll keep doing it.
 
 ### The pipes
 
