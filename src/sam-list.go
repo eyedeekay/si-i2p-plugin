@@ -133,6 +133,7 @@ func (samStack *SamList) copyRequest(request *http.Request, response *http.Respo
 	return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
 }
 
+//export ReadRequest
 func (samStack *SamList) ReadRequest() {
 	Log("sam-list.go Reading requests:")
 	for samStack.sendScan.Scan() {
@@ -143,6 +144,7 @@ func (samStack *SamList) ReadRequest() {
 	clearFile(filepath.Join(connectionDirectory, samStack.dir), "send")
 }
 
+//export WriteResponses
 func (samStack *SamList) WriteResponses() {
 	Log("sam-list.go Writing responses:")
 	for i, client := range samStack.listOfClients {
@@ -170,6 +172,7 @@ func (samStack *SamList) writeRecieved(response string) bool {
 	return b
 }
 
+//export ReadDelete
 func (samStack *SamList) ReadDelete() bool {
 	Log("sam-list.go Managing pipes:")
 	for samStack.delScan.Scan() {
@@ -184,6 +187,7 @@ func (samStack *SamList) ReadDelete() bool {
 	return false
 }
 
+//export CleanupClient
 func (samStack *SamList) CleanupClient() {
 	samStack.sendPipe.Close()
 	samStack.recvPipe.Close()
@@ -228,6 +232,7 @@ func (samStack *SamList) checkURLType(request string) bool {
 	}
 }
 
+//export CreateSamList
 func CreateSamList(samAddr, samPort, initAddress string, timeoutTime int, keepAlives bool) *SamList {
 	var samStack SamList
 	samStack.timeoutTime = timeoutTime

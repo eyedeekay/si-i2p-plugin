@@ -93,6 +93,7 @@ func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request
 	}
 }
 
+//export ServeHTTP
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	if &rq == nil {
 		return
@@ -159,6 +160,7 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 	}
 }
 
+//export Do
 func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*http.Response, error) {
 	req.RequestURI = ""
 
@@ -193,11 +195,11 @@ func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 		proxy.copyHeader(rW.Header(), r.Header)
 		rW.WriteHeader(r.StatusCode)
 		io.Copy(rW, r.Body)
-		//r.Body.Close()
 		Log("si-http-proxy.go Response status:", r.Status)
 	}
 }
 
+//export CreateHttpProxy
 func CreateHttpProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, samStack *SamList, timeoutTime int, keepAlives bool) *samHttpProxy {
 	var samProxy samHttpProxy
 	samProxy.Host = proxAddr + ":" + proxPort

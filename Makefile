@@ -54,6 +54,7 @@ osx: bin/si-i2p-plugin.bin
 bin/si-i2p-plugin.exe: deps
 	GOOS=windows GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
+		-buildmode=exe \
 		-o bin/si-i2p-plugin.exe \
 		./src/main/si-i2p-plugin.go
 	@echo 'built'
@@ -100,6 +101,29 @@ bin/si-i2p-plugin-arm-droid: deps
 		-o bin/si-i2p-plugin-droid \
 		./src/android/si-i2p-plugin.go
 	@echo 'built'
+
+lib/si-i2p-plugin.a:
+	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
+		$(GO_COMPILER_OPTS) \
+		-buildmode=pie \
+		-buildmode=archive \
+		-o lib/si-i2p-plugin.a \
+		./src/
+	file lib/si-i2p-plugin.a
+
+slib: lib/si-i2p-plugin.a
+
+lib/si-i2p-plugin.so:
+	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
+		-buildmode=pie \
+		-buildmode=c-shared \
+		-o lib/si-i2p-plugin.so \
+		./src/main/si-i2p-plugin.go
+	file lib/si-i2p-plugin.so
+
+dylib: lib/si-i2p-plugin.so
+
+lib: slib dylib
 
 xpi2p:
 
@@ -152,7 +176,7 @@ clean:
 	rm -rf parent services ./.*.i2p*/ ./*.i2p*/ \
 		*.html *-pak *err *log \
 		static-include static-exclude \
-		bin/si-i2p-plugin bin/si-i2p-plugin-arm
+		bin/si-i2p-plugin bin/si-i2p-plugin-arm lib/*
 
 kill:
 	killall si-i2p-plugin; \

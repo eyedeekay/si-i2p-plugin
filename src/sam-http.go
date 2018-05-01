@@ -436,6 +436,7 @@ func (samConn *SamHttp) checkName() bool {
 	}
 }
 
+//export CleanupClient
 func (samConn *SamHttp) CleanupClient() {
 	samConn.sendPipe.Close()
 	samConn.nameFile.Close()
