@@ -39,14 +39,14 @@ bin/si-i2p-plugin: deps
 	GOOS=linux GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin \
-		./src
+		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
 bin/si-i2p-plugin.bin: deps
 	GOOS=darwin GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin.bin \
-		./src
+		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
 osx: bin/si-i2p-plugin.bin
@@ -55,7 +55,7 @@ bin/si-i2p-plugin.exe: deps
 	GOOS=windows GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin.exe \
-		./src
+		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
 windows: bin/si-i2p-plugin.exe
@@ -72,7 +72,7 @@ arm:
 		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \
 		-o bin/si-i2p-plugin-arm \
-		./src
+		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
 release: deps
@@ -80,7 +80,7 @@ release: deps
 		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \
 		-o bin/si-i2p-plugin \
-		./src
+		./src/main/si-i2p-plugin.go
 	@echo 'built release'
 
 native: deps
@@ -88,7 +88,7 @@ native: deps
 		-a \
 		-buildmode=pie \
 		-o bin/si-i2p-plugin \
-		./src
+		./src/main/si-i2p-plugin.go
 	@echo 'built release'
 
 android: bin/si-i2p-plugin-arm-droid
@@ -98,7 +98,7 @@ bin/si-i2p-plugin-arm-droid: deps
 		-target=android \
 		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin-droid \
-		./src/android
+		./src/android/si-i2p-plugin.go
 	@echo 'built'
 
 xpi2p:
@@ -107,7 +107,7 @@ debug: rebuild
 	$(HOME)/.go/bin/dlv exec ./bin/si-i2p-plugin
 
 dlv: rebuild
-	$(HOME)/.go/bin/dlv debug ./src/
+	$(HOME)/.go/bin/dlv debug ./src/main
 
 all:
 	make clobber; \
