@@ -20,13 +20,6 @@ type samHttpProxy struct {
 	c           bool
 }
 
-var hopHeaders = []string{
-	"Proxy-Authenticate",
-	"Proxy-Authorization",
-	"Proxy-Connection",
-	"X-Forwarded-For",
-}
-
 func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
 	for _, h := range hopHeaders {
 		Log("si-http-proxy.go Sanitizing headers: ", h, header.Get(h))
@@ -115,8 +108,6 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	proxy.checkResponse(rW, rq)
 
-	//return
-	//
 }
 
 func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Request) {

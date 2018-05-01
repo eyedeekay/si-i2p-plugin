@@ -100,6 +100,9 @@ Preliminary Windows support is enabled by turning the FIFO's into files and
 specifying their behavior in a windows-only version of si-fs-helpers.go. If this
 turns out to be good enough then this is how I'll keep doing it.
 
+Elephant in the room #3, absolutely ZERO outproxy support. But that's not really
+what it's for. It's probably 90% unhelpful for outproxies anyway.
+
 ### The pipes
 
 Moved to [misc/docs/PIPES.md](misc/docs/PIPES.md)

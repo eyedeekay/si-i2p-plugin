@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"time"
 
+	".."
 	"github.com/eyedeekay/gosam"
-    ".."
 	//"github.com/cryptix/goSam"
 )
 
@@ -124,5 +124,3 @@ func closeProxy(samProxies *dii2p.SamList) {
 func closeServices(samServiceList *dii2p.SamServices) {
 	exit = samServiceList.ReadDelete()
 }
-
-

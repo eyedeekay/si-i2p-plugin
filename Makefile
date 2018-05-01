@@ -226,7 +226,7 @@ docker-clobber: docker-clean
 	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 gofmt:
-	gofmt -w src/*.go
+	gofmt -w ./src/*.go ./src/*/*.go
 
 golist:
 	go list -f '{{.GoFiles}}' ./src

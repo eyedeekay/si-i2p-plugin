@@ -154,7 +154,7 @@ func clearFile(directory, path string) {
 	clearErr := os.Truncate(mkPath, 0)
 	if e, c := Fatal(clearErr, "si-fs-helpers-windows.go File Clear Error", "si-fs-helpers-windows.go File Cleared", mkPath); e {
 		Log("si-fs-helpers-windows.go Input file cleared.")
-	}else{
-        Log("si-fs-helpers-windows.go Input file cleared.", c.Error())
-    }
+	} else {
+		Log("si-fs-helpers-windows.go Input file cleared.", c.Error())
+	}
 }

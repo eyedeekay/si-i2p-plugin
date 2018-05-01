@@ -1,7 +1,7 @@
 package dii2p
 
 import (
-    "log"
+	"log"
 )
 
 var Verbose bool = false
