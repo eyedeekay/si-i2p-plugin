@@ -7,4 +7,6 @@ test.diff
 *.log
 *.err
 i2pd_dat
+browser
 src/si-socks-proxy.go
+

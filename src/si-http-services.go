@@ -111,7 +111,7 @@ func (samServiceStack *SamServices) responsify(input string) io.Reader {
 	return tmp
 }
 
-func (samServiceStack *SamServices) readRequest() {
+func (samServiceStack *SamServices) ServiceRequest() {
 	Log("Reading requests:")
 	for samServiceStack.genrScan.Scan() {
 		if samServiceStack.genrScan.Text() == "y" || samServiceStack.genrScan.Text() == "Y" || samServiceStack.genrScan.Text() == "g" || samServiceStack.genrScan.Text() == "G" || samServiceStack.genrScan.Text() == "n" || samServiceStack.genrScan.Text() == "N" || samServiceStack.genrScan.Text() == "new" {

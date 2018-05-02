@@ -3,6 +3,10 @@ UNAME ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 UARCH ?= $(shell uname -m | tr '[:upper:]' '[:lower:]' | sed 's|x86_64|amd64|g')
 
 i2pd_dat?=$(PWD)/i2pd_dat
+browser=$(PWD)/browser
+BROWSER_VERSION ?= $(shell curl https://www.torproject.org/projects/torbrowser.html.en 2>&1 | grep '<th>GNU/Linux<br>' | sed 's|<th>GNU/Linux<br><em>(||g' | sed 's|)</em></th>||g' | tr -d ' ')
+
+DISPLAY = :0
 
 PREFIX := /
 VAR := var/
@@ -19,6 +23,7 @@ GO_COMPILER_OPTS = -a -tags netgo -ldflags '-w -extldflags "-static"'
 info:
 	@echo "Version $(VERSION)"
 	@echo "$(UNAME), $(UARCH)"
+	@echo "$(BROWSER_VERSION)"
 
 rebuild: clean build
 
@@ -185,10 +190,8 @@ kill:
 tidy:
 	rm -rf parent *.i2p *.html *-pak *err *log static-include static-exclude
 
-clobber: clean
+clobber: clean docker-clean
 	rm -rf ../si-i2p-plugin_$(VERSION)*-1_amd64.deb
-	docker rmi -f si-i2p-plugin-static si-i2p-plugin eyedeekay/si-i2p-plugin; true
-	docker rm -f si-i2p-plugin-static si-i2p-plugin; true
 
 cat:
 	cat parent/recv
@@ -201,53 +204,6 @@ noexit:
 
 user:
 	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
-
-docker-setup: docker docker-network docker-host docker-run
-
-docker:
-	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
-	docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
-
-
-docker-network:
-	docker network create si; true
-
-docker-host:
-	docker run \
-		-d \
-		--name sam-host \
-		--network si \
-		--network-alias sam-host \
-		--hostname sam-host \
-		--link si-proxy \
-		--restart always \
-		-p :4567 \
-		-p 127.0.0.1:7073:7073 \
-		--volume $(i2pd_dat):/var/lib/i2pd:rw \
-		-t eyedeekay/sam-host; true
-
-docker-run: docker-clean docker-host
-	docker run \
-		-d \
-		--name si-proxy \
-		--network si \
-		--network-alias si-proxy \
-		--hostname si-proxy \
-		--link sam-host \
-		--user sii2pplugin \
-		-p 127.0.0.1:44443:44443 \
-		--restart always \
-		-t eyedeekay/si-i2p-plugin
-
-docker-follow:
-	docker logs -f si-proxy
-
-docker-clean:
-	docker rm -f si-proxy; true
-
-docker-clobber: docker-clean
-	docker rm -f sam-host; true
-	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 gofmt:
 	gofmt -w ./src/*.go ./src/*/*.go
@@ -276,5 +232,11 @@ continuously:
 c: continuously
 
 include misc/Makefiles/demo.mk
+include misc/Makefiles/docker.mk
 include misc/Makefiles/test.mk
 include misc/Makefiles/checkinstall.mk
+
+search:
+	surf https://trac.torproject.org/projects/tor/ticket/25564
+
+

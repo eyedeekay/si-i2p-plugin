@@ -21,6 +21,8 @@ if somebody else wanted to try it out, I might not *totally* embarass myself.
 What works so far:
 ------------------
 
+### It seems to do exactly what it says on the package.
+
 ### The http proxy
 
 Again, *still pretty experimental*, but currently it is possible to set
@@ -28,8 +30,6 @@ your web browser's HTTP proxy to localhost:4443 and use it to browse eepSites.
 I haven't been able to crash it or attack it by adapting known attacks on
 browsers and HTTP proxies to this environment. It should at least fail early if
 something bad happens.
-
-Less straightforward.
 
 #### User-Defined Jump Hosts
 
@@ -43,7 +43,7 @@ service\_url.i2p/jump/target\_url.i2p don't work. Not sure how big a deal that
 is but I'm going to figure it out regardless.
 
 I took the opinion that the person running the application should be able to
-decide at runtime whether to use a jump service or now. If a jump service is
+decide at runtime whether to use a jump service or not. If a jump service is
 optionally specified(it can be used without jump service at all) then it is
 implicitly trusted as a source of all unknown addresses. Eventually this
 behavior will be configurable. I'm almost ready to do that.
@@ -84,6 +84,8 @@ client. Currently working this out.
 Still a little unreliable when it has to download a bunch of stuff from a single
 site. If it times out, refreshing the page usually works. This is happening much
 less often now. It helps to have a well-integrated router.
+
+I wonder if I could make it talk to TorButton?
 
 Elephant in the room #1, it's kind of unfortunately named. I really have a knack
 for that shit.

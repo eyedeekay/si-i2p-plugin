@@ -107,8 +107,8 @@ func main() {
 		go closeProxy(samProxies)
 		go closeServices(samService)
 		go samProxies.WriteResponses()
-		//go samServiceList.writeResponses()
-		//go samServiceList.readRequest()
+		//go samService.writeContents()
+		go samService.ServiceRequest()
 		samProxies.ReadRequest()
 
 		time.Sleep(1 * time.Second)
