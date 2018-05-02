@@ -14,7 +14,7 @@ docker-browser:
 		-f Dockerfiles/Dockerfile.browser -t eyedeekay/sam-browser .
 
 browse: docker-browser
-	docker run --rm -i -t \
+	docker run --rm -i -t -d \
 		-e DISPLAY=$(DISPLAY) \
 		-e VERSION="$(BROWSER_VERSION)" \
 		--name sam-browser \
