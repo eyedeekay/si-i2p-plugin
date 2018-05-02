@@ -48,7 +48,7 @@ docker-host:
 		--volume $(i2pd_dat):/var/lib/i2pd:rw \
 		-t eyedeekay/sam-host; true
 
-docker-run: docker-clean docker-host
+docker-run: docker-tidy docker-host
 	docker run \
 		-d \
 		--name si-proxy \
