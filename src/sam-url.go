@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -16,6 +17,7 @@ type samUrl struct {
 	err          error
 	c            bool
 	subDirectory string
+	mutex        *sync.Mutex
 
 	recvPath string
 	recvFile *os.File
@@ -89,6 +91,7 @@ func (subUrl *samUrl) checkDirectory(directory string) bool {
 
 func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) bool {
 	b := false
+	subUrl.mutex.Lock()
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
 			Log("sam-url.go Response Status ", response.Status)
@@ -99,10 +102,12 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 		}
 		b = true
 	}
+	subUrl.mutex.Unlock()
 	return b
 }
 
 func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) *http.Response {
+	subUrl.mutex.Lock()
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
 			Log("sam-url.go Response Status ", response.Status)
@@ -113,6 +118,7 @@ func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Re
 			}
 		}
 	}
+	subUrl.mutex.Unlock()
 	return response
 }
 
@@ -216,6 +222,7 @@ func newSamUrl(requestdir string) samUrl {
 	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	subUrl.createDirectory(requestdir)
+	subUrl.mutex = &sync.Mutex{}
 	return subUrl
 }
 
@@ -224,5 +231,6 @@ func newSamUrlHttp(request *http.Request) samUrl {
 	var subUrl samUrl
 	log.Println(subUrl.subDirectory)
 	subUrl.createDirectory(request.Host + request.URL.Path)
+	subUrl.mutex = &sync.Mutex{}
 	return subUrl
 }

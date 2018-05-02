@@ -148,6 +148,7 @@ all:
 	make tidy
 
 install:
+	mkdir -p $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/
 	install -d -g sii2pplugin -o sii2pplugin -m744 $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 	install -d -g sii2pplugin -o sii2pplugin -m700 $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/
 	install -D -m755 bin/si-i2p-plugin $(PREFIX)$(USR)$(LOCAL)/bin/

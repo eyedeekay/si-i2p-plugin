@@ -17,7 +17,7 @@ checkinstall: release postinstall-pak postremove-pak description-pak
 		--pakdir=../
 
 checkinstall-arm: build-arm postinstall-pak postremove-pak description-pak static-include static-exclude
-	fakeroot-ng checkinstall --default \
+	fakeroot-ng UARCH="arm" checkinstall --default \
 		--install=no \
 		--fstrans=yes \
 		--maintainer=problemsolver@openmailbox.org \

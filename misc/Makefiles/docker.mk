@@ -14,7 +14,7 @@ docker-browser:
 		-f Dockerfiles/Dockerfile.browser -t eyedeekay/sam-browser .
 
 browse: docker-browser
-	docker run --rm -i -t -d  \
+	docker run --rm -i -t \
 		-e DISPLAY=$(DISPLAY) \
 		-e VERSION="$(BROWSER_VERSION)" \
 		--name sam-browser \
@@ -65,7 +65,7 @@ docker-run: docker-clean docker-host
 docker-follow:
 	docker logs -f si-proxy
 
-docker-clean:
+docker-clobber:
 	docker rm -f si-proxy; true
 
 docker-clobber: docker-clean
@@ -73,4 +73,4 @@ docker-clobber: docker-clean
 	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 docker-copy:
-	docker cp sam-browser:/home/anon/i2p-browser.tar.gz ../i2p-browser.tar.gz
+	docker cp sam-browser:/home/anon/i2p-browser.tar.gz ../di-i2p-browser.tar.gz
