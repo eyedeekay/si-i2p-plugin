@@ -65,7 +65,7 @@ docker-run: docker-clean docker-host
 docker-follow:
 	docker logs -f si-proxy
 
-docker-clobber:
+docker-tidy:
 	docker rm -f si-proxy; true
 
 docker-clobber: docker-clean
