@@ -75,8 +75,6 @@ func main() {
 	dii2p.Verbose = *verboseLogging
 
 	goSam.ConnDebug = *debugConnection
-    goSam.SamHostAddress = *samAddrString
-    goSam.SamHostPort = *samPortString
 
 	var samProxies *dii2p.SamList
 	var samService *dii2p.SamServices
