@@ -65,14 +65,18 @@ func main() {
 	if *verboseLogging {
 		dii2p.Log("si-i2p-plugin.go Verbose mode: true")
 	}
+
 	if *useHttpProxy {
 		dii2p.Log("si-i2p-plugin.go Using HTTP proxy: true")
 	}
+
 	dii2p.Log("si-i2p-plugin.go Initial URL:", *address)
 
 	dii2p.Verbose = *verboseLogging
 
 	goSam.ConnDebug = *debugConnection
+    goSam.SamHostAddress = *samAddrString
+    goSam.SamHostPort = *samPortString
 
 	var samProxies *dii2p.SamList
 	var samService *dii2p.SamServices
