@@ -169,12 +169,14 @@ func (addressBook *addressHelper) updateAh() {
 	}
 	if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go File I/O errors", "addresshelper.go Addressbook file written"); addressBook.c {
 		defer addressBook.bookFile.Close()
-		line := addressBook.pairs[len(addressBook.pairs)-1] + "\n"
-		if addressBook.fileCheck(line) {
-			addressBook.bookFile.WriteString(line)
-		} else {
-			Log("addresshelper.go Address already in Address Book")
-		}
+        if len(addressBook.pairs) > 0 {
+            line := addressBook.pairs[len(addressBook.pairs)-1] + "\n"
+            if addressBook.fileCheck(line) {
+                addressBook.bookFile.WriteString(line)
+            } else {
+                Log("addresshelper.go Address already in Address Book")
+            }
+        }
 	}
 }
 

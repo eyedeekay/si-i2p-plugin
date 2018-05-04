@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"time"
 
-	".."
-	"github.com/eyedeekay/gosam"
+    ".."
+	//"github.com/eyedeekay/gosam"
 	//"github.com/cryptix/goSam"
 )
 
@@ -74,7 +74,7 @@ func main() {
 
 	dii2p.Verbose = *verboseLogging
 
-	goSam.ConnDebug = *debugConnection
+	dii2p.DEBUG = *debugConnection
 
 	var samProxies *dii2p.SamList
 	var samService *dii2p.SamServices
