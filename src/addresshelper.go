@@ -169,7 +169,7 @@ func (addressBook *addressHelper) updateAh() {
 	}
 	if addressBook.c, addressBook.err = Fatal(addressBook.err, "addresshelper.go File I/O errors", "addresshelper.go Addressbook file written"); addressBook.c {
 		defer addressBook.bookFile.Close()
-        if len(addressBook.pairs) > 0 {
+        if len(addressBook.pairs) > 1 {
             line := addressBook.pairs[len(addressBook.pairs)-1] + "\n"
             if addressBook.fileCheck(line) {
                 addressBook.bookFile.WriteString(line)

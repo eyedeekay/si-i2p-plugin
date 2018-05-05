@@ -99,7 +99,7 @@ func (e *errorString) Error() string {
 }
 
 func (samConn *SamHttp) Dial(network, addr string) (net.Conn, error) {
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SamDebug(DEBUG))
+	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG))
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
 		return samConn.subDial(network, addr)
 	}
@@ -133,8 +133,7 @@ func (samConn *SamHttp) Connect() (net.Conn, error) {
 }
 
 func (samConn *SamHttp) reConnect() (net.Conn, error) {
-	samCombined := samConn.samAddrString + ":" + samConn.samPortString
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SamDebug(DEBUG))
+	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG))
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go 133 SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
 		Log("sam-http.go SAM Connection established")
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
@@ -185,8 +184,7 @@ func (samConn *SamHttp) createClient(request string, samAddrString string, samPo
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samCombined); samConn.c {
 		Log("sam-http.go Cookie Jar created")
 	}
-	//samConn.samBridgeClient, samConn.err = goSam.NewClient(samCombined)
-    samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SamDebug(DEBUG))
+    samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG))
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
@@ -204,7 +202,7 @@ func (samConn *SamHttp) createClientHttp(request *http.Request, samAddrString st
 	samConn.samAddrString = samAddrString
 	samConn.samPortString = samPortString
 	samCombined := samConn.samAddrString + ":" + samConn.samPortString
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SamDebug(DEBUG))
+	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG))
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go 205 SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")

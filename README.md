@@ -85,7 +85,7 @@ Still a little unreliable when it has to download a bunch of stuff from a single
 site. If it times out, refreshing the page usually works. This is happening much
 less often now. It helps to have a well-integrated router.
 
-I wonder if I could make it talk to TorButton?
+[I wonder if I could make it talk to TorButton?](https://www.torproject.org/docs/torbutton/en/design/index.html.en)
 
 Elephant in the room #1, it's kind of unfortunately named. I really have a knack
 for that shit.
