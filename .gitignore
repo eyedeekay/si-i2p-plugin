@@ -10,3 +10,4 @@ i2pd_dat
 browser
 src/si-socks-proxy.go
 src/generate-cert.go
+.go

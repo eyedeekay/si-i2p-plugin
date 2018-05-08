@@ -15,8 +15,7 @@ import (
 	"strings"
 	"time"
 
-	//"github.com/eyedeekay/gosam"
-	"../../gosam"
+	"github.com/eyedeekay/gosam"
 	"github.com/eyedeekay/i2pasta/addresshelper"
 )
 

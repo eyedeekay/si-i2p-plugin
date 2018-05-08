@@ -229,7 +229,7 @@ func (samStack *SamList) checkURLType(request string) bool {
 	}
 }
 
-//export BetterCreateSamList
+//export CreateSamList
 func CreateSamList(initAddress string, opts ...func(*SamList) error) (*SamList, error) {
 	var samStack SamList
 	samStack.dir = "parent"

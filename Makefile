@@ -17,6 +17,7 @@ USR := usr/
 LOCAL := local/
 VERSION := 0.20
 
+GOPATH = $(PWD)/.go
 
 GO_COMPILER_OPTS = -a -tags netgo -ldflags '-w -extldflags "-static"'
 
@@ -24,6 +25,7 @@ info:
 	@echo "Version $(VERSION)"
 	@echo "$(UNAME), $(UARCH)"
 	@echo "$(BROWSER_VERSION)"
+	@echo "$(GOPATH)"
 
 rebuild: clean build
 
@@ -32,6 +34,7 @@ build: bin/si-i2p-plugin
 nodeps: clean
 	GOOS=linux GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
+		-o bin/si-i2p-plugin \
 		./src/main/si-i2p-plugin.go
 	@echo 'built'
 

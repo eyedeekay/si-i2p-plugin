@@ -8,9 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	//"github.com/eyedeekay/gosam"
-	"../../gosam"
-	//"github.com/cryptix/goSam"
+	"github.com/eyedeekay/gosam"
 )
 
 type samHttpService struct {
