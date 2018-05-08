@@ -7,9 +7,8 @@ import (
 	"os/signal"
 	"time"
 
+    //"github.com/eyedeekay/si-i2p-plugin/src"
     ".."
-	//"github.com/eyedeekay/gosam"
-	//"github.com/cryptix/goSam"
 )
 
 var exit bool = false
@@ -79,7 +78,24 @@ func main() {
 	var samProxies *dii2p.SamList
 	var samService *dii2p.SamServices
 
-	samProxies = dii2p.CreateSamList(*samAddrString, *samPortString, *address, *timeoutTime, *keepAlives)
+    dii2p.SetHost(*samAddrString)
+    dii2p.SetPort(*samPortString)
+    dii2p.SetTimeout(*timeoutTime)
+    dii2p.SetKeepAlives(*keepAlives)
+
+	//samProxies = dii2p.CreateSamList(*samAddrString, *samPortString, *address, *timeoutTime, *keepAlives)
+    var err error
+    samProxies, err = dii2p.BetterCreateSamList(
+        *address,
+        dii2p.SetHost(*samAddrString),
+        dii2p.SetPort(*samPortString),
+        dii2p.SetTimeout(*timeoutTime),
+        dii2p.SetKeepAlives(*keepAlives),
+    )
+    if err != nil{
+        log.Fatal(err)
+    }
+
 	samService = dii2p.CreateSamServiceList(*samAddrString, *samPortString)
 
 	c := make(chan os.Signal, 1)

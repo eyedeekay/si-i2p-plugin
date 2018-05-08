@@ -218,7 +218,7 @@ func (subUrl *samUrl) readDelete() bool {
 	return false
 }
 
-func newSamUrl(requestdir string) samUrl {
+func NewSamUrl(requestdir string) samUrl {
 	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	subUrl.createDirectory(requestdir)
@@ -226,7 +226,8 @@ func newSamUrl(requestdir string) samUrl {
 	return subUrl
 }
 
-func newSamUrlHttp(request *http.Request) samUrl {
+
+func NewSamUrlHttp(request *http.Request) samUrl {
 	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	log.Println(subUrl.subDirectory)
@@ -234,3 +235,4 @@ func newSamUrlHttp(request *http.Request) samUrl {
 	subUrl.mutex = &sync.Mutex{}
 	return subUrl
 }
+

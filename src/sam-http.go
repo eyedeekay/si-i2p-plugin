@@ -15,7 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eyedeekay/gosam"
+	//"github.com/eyedeekay/gosam"
+	"../../gosam"
 	"github.com/eyedeekay/i2pasta/addresshelper"
 )
 
@@ -184,7 +185,7 @@ func (samConn *SamHttp) createClient(request string, samAddrString string, samPo
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samCombined); samConn.c {
 		Log("sam-http.go Cookie Jar created")
 	}
-    samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG))
+	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetAddr(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG))
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samCombined); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
@@ -194,7 +195,7 @@ func (samConn *SamHttp) createClient(request string, samAddrString string, samPo
 			samConn.initPipes()
 		}
 		samConn.setName(request)
-		samConn.subCache = append(samConn.subCache, newSamUrl(samConn.directory))
+		samConn.subCache = append(samConn.subCache, NewSamUrl(samConn.directory))
 	}
 }
 
@@ -212,7 +213,7 @@ func (samConn *SamHttp) createClientHttp(request *http.Request, samAddrString st
 			samConn.initPipes()
 		}
 		samConn.setName(request.URL.String()) //, samConn.samBridgeClient)
-		samConn.subCache = append(samConn.subCache, newSamUrlHttp(request))
+		samConn.subCache = append(samConn.subCache, NewSamUrlHttp(request))
 	}
 }
 
@@ -320,7 +321,7 @@ func (samConn *SamHttp) findSubCache(response *http.Response, directory string) 
 	}
 	if b == false {
 		Log("sam-http.go has not been retrieved yet. Setting up:", directory)
-		samConn.subCache = append(samConn.subCache, newSamUrl(directory))
+		samConn.subCache = append(samConn.subCache, NewSamUrl(directory))
 		for _, url := range samConn.subCache {
 			Log("sam-http.go Seeking Subdirectory", url.subDirectory)
 			if url.checkDirectory(directory) {
@@ -451,6 +452,7 @@ func (samConn *SamHttp) CleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
+
 func newSamHttp(samAddrString, samPortString, request string, timeoutTime int, keepAlives bool) SamHttp {
 	Log("sam-http.go Creating a new SAMv3 Client: ", request)
 	var samConn SamHttp
@@ -461,6 +463,7 @@ func newSamHttp(samAddrString, samPortString, request string, timeoutTime int, k
 	samConn.createClient(request, samAddrString, samPortString)
 	return samConn
 }
+
 
 func newSamHttpHttp(samAddrString, samPortString string, request *http.Request, timeoutTime int, keepAlives bool) SamHttp {
 	Log("sam-http.go Creating a new SAMv3 Client.")

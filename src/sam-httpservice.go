@@ -8,7 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/eyedeekay/gosam"
+	//"github.com/eyedeekay/gosam"
+	"../../gosam"
 	//"github.com/cryptix/goSam"
 )
 
