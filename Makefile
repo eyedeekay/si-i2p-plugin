@@ -39,7 +39,7 @@ deps:
 	go get -u github.com/eyedeekay/i2pasta/addresshelper
 	go get -u github.com/eyedeekay/i2pasta/convert
 	go get -u github.com/eyedeekay/gosam
-	go get -u github.com/eyedeekay/si-i2p-plugin/src
+	#go get -u github.com/eyedeekay/si-i2p-plugin/src
 
 bin/si-i2p-plugin: deps
 	GOOS=linux GOARCH=amd64 go build \

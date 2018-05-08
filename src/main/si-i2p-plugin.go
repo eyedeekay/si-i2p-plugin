@@ -8,7 +8,7 @@ import (
 	"time"
 
 	//"github.com/eyedeekay/si-i2p-plugin/src"
-    ".."
+	".."
 )
 
 var exit bool = false
@@ -70,8 +70,6 @@ func main() {
 	}
 	dii2p.Log("si-i2p-plugin.go Initial URL:", *address)
 
-	var samService *dii2p.SamServices
-
 	samProxies, err := dii2p.CreateSamList(
 		*address,
 		dii2p.SetHost(*samAddrString),
@@ -83,9 +81,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	samService, err := dii2p.BetterCreateSamServiceList(
+	samService, err := dii2p.CreateSamServiceList(
 		dii2p.SetServHost(*samAddrString),
-		dii2p.SetPortString(*samPortString),
+		dii2p.SetServPort(*samPortString),
 	)
 	if err != nil {
 		log.Fatal(err)

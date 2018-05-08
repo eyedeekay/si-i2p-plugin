@@ -6,19 +6,19 @@ import (
 
 var Verbose bool = false
 
-func Log(msg ...string) {
+func Log(msg ...interface{}) {
 	if Verbose {
 		log.Println("LOG: ", msg)
 	}
 }
 
-func LogA(msg []string) {
+func LogA(msg []interface{}) {
 	if Verbose {
 		log.Println("LOG: ", msg)
 	}
 }
 
-func Warn(err error, errmsg string, msg ...string) (bool, error) {
+func Warn(err error, errmsg interface{}, msg ...interface{}) (bool, error) {
 	LogA(msg)
 	if err != nil {
 		log.Println("WARN: ", errmsg, err)
@@ -27,7 +27,7 @@ func Warn(err error, errmsg string, msg ...string) (bool, error) {
 	return true, nil
 }
 
-func Fatal(err error, errmsg string, msg ...string) (bool, error) {
+func Fatal(err error, errmsg interface{}, msg ...interface{}) (bool, error) {
 	LogA(msg)
 	if err != nil {
 		log.Fatal("FATAL: ", errmsg, err)

@@ -2,11 +2,10 @@ package dii2p
 
 import (
 	"bufio"
-	"log"
-	"path/filepath"
-	//"net/http"
 	"io"
+	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -90,11 +89,7 @@ func (samServiceStack *SamServices) findService(request string) *samHttpService 
 	return &s
 }
 
-func (samServiceStack *SamServices) createServiceList(samAddr string, samPort string) {
-	samServiceStack.samAddrString = samAddr
-	samServiceStack.samPortString = samPort
-	//samServiceStack.
-	Log("Established SAM connection")
+func (samServiceStack *SamServices) createServiceList() {
 	if !samServiceStack.up {
 		samServiceStack.initPipes()
 		Log("Parent proxy pipes initialized. Parent proxy set to up.")
@@ -164,14 +159,7 @@ func (samServiceStack *SamServices) cleanupServices() {
 	os.RemoveAll(filepath.Join(connectionDirectory, "service"))
 }
 
-func CreateSamServiceList(samAddr string, samPort string) *SamServices {
-	var samServiceList SamServices
-	samServiceList.dir = "services"
-	samServiceList.createServiceList(samAddr, samPort)
-	return &samServiceList
-}
-
-func BetterCreateSamServiceList(opts ...func(*SamList) error) (*SamServices, error) {
+func CreateSamServiceList(opts ...func(*SamServices) error) (*SamServices, error) {
 	var samServiceList SamServices
 	samServiceList.dir = "services"
 	for _, o := range opts {
@@ -179,6 +167,6 @@ func BetterCreateSamServiceList(opts ...func(*SamList) error) (*SamServices, err
 			return nil, err
 		}
 	}
-	samServiceList.createServiceList(samServiceList.samAddrString, samServiceList.samPortString)
+	samServiceList.createServiceList()
 	return &samServiceList, nil
 }
