@@ -78,14 +78,9 @@ func main() {
 	var samProxies *dii2p.SamList
 	var samService *dii2p.SamServices
 
-    dii2p.SetHost(*samAddrString)
-    dii2p.SetPort(*samPortString)
-    dii2p.SetTimeout(*timeoutTime)
-    dii2p.SetKeepAlives(*keepAlives)
-
 	//samProxies = dii2p.CreateSamList(*samAddrString, *samPortString, *address, *timeoutTime, *keepAlives)
     var err error
-    samProxies, err = dii2p.BetterCreateSamList(
+    samProxies, err = dii2p.CreateSamList(
         *address,
         dii2p.SetHost(*samAddrString),
         dii2p.SetPort(*samPortString),

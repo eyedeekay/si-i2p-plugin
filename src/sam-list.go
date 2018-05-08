@@ -71,9 +71,7 @@ func (samStack *SamList) createClientHttp(request *http.Request) {
 	samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
-func (samStack *SamList) createSamList(samAddrString string, samPortString string) {
-	samStack.samAddrString = samAddrString
-	samStack.samPortString = samPortString
+func (samStack *SamList) createSamList() {
 	if !samStack.up {
 		samStack.initPipes()
 		Log("sam-list.go Parent proxy pipes initialized. Parent proxy set to up.")
@@ -230,26 +228,9 @@ func (samStack *SamList) checkURLType(request string) bool {
 		return true
 	}
 }
-/*
-//export CreateSamList
-func CreateSamList(samAddr, samPort, initAddress string, timeoutTime int, keepAlives bool) *SamList {
-	var samStack SamList
-	samStack.timeoutTime = timeoutTime
-	samStack.dir = "parent"
-	Log("sam-list.go Generating parent proxy structure.")
-	samStack.up = false
-	samStack.keepAlives = keepAlives
-	Log("sam-list.go Parent proxy set to down.")
-	samStack.createSamList(samAddr, samPort)
-	Log("sam-list.go SAM list created")
-	if initAddress != "" {
-		samStack.sendPipe.WriteString(initAddress + "\n")
-	}
-	return &samStack
-}*/
 
 //export BetterCreateSamList
-func BetterCreateSamList(initAddress string, opts ...func(*SamList) error) (*SamList, error) {
+func CreateSamList(initAddress string, opts ...func(*SamList) error) (*SamList, error) {
 	var samStack SamList
     samStack.dir = "parent"
 	Log("sam-list.go Generating parent proxy structure.")
@@ -260,7 +241,7 @@ func BetterCreateSamList(initAddress string, opts ...func(*SamList) error) (*Sam
 	}
 	samStack.up = false
 	Log("sam-list.go Parent proxy set to down.")
-	samStack.createSamList(samStack.samAddrString, samStack.samPortString)
+	samStack.createSamList()
 	Log("sam-list.go SAM list created")
 	if initAddress != "" {
 		samStack.sendPipe.WriteString(initAddress + "\n")
