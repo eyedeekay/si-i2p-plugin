@@ -452,7 +452,6 @@ func (samConn *SamHttp) CleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
-
 func newSamHttp(samAddrString, samPortString, request string, timeoutTime int, keepAlives bool) SamHttp {
 	Log("sam-http.go Creating a new SAMv3 Client: ", request)
 	var samConn SamHttp
@@ -463,7 +462,6 @@ func newSamHttp(samAddrString, samPortString, request string, timeoutTime int, k
 	samConn.createClient(request, samAddrString, samPortString)
 	return samConn
 }
-
 
 func newSamHttpHttp(samAddrString, samPortString string, request *http.Request, timeoutTime int, keepAlives bool) SamHttp {
 	Log("sam-http.go Creating a new SAMv3 Client.")

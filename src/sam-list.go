@@ -232,9 +232,9 @@ func (samStack *SamList) checkURLType(request string) bool {
 //export BetterCreateSamList
 func CreateSamList(initAddress string, opts ...func(*SamList) error) (*SamList, error) {
 	var samStack SamList
-    samStack.dir = "parent"
+	samStack.dir = "parent"
 	Log("sam-list.go Generating parent proxy structure.")
-    for _, o := range opts {
+	for _, o := range opts {
 		if err := o(&samStack); err != nil {
 			return nil, err
 		}

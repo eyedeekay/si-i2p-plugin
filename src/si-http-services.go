@@ -170,3 +170,15 @@ func CreateSamServiceList(samAddr string, samPort string) *SamServices {
 	samServiceList.createServiceList(samAddr, samPort)
 	return &samServiceList
 }
+
+func BetterCreateSamServiceList(opts ...func(*SamList) error) (*SamServices, error) {
+	var samServiceList SamServices
+	samServiceList.dir = "services"
+	for _, o := range opts {
+		if err := o(&samServiceList); err != nil {
+			return nil, err
+		}
+	}
+	samServiceList.createServiceList(samServiceList.samAddrString, samServiceList.samPortString)
+	return &samServiceList, nil
+}

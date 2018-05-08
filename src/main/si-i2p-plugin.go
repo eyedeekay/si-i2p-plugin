@@ -7,8 +7,7 @@ import (
 	"os/signal"
 	"time"
 
-    //"github.com/eyedeekay/si-i2p-plugin/src"
-    ".."
+	"github.com/eyedeekay/si-i2p-plugin/src"
 )
 
 var exit bool = false
@@ -57,41 +56,39 @@ func main() {
 	} else {
 		dii2p.Log("si-i2p-plugin.go Keepalives Disabled")
 	}
-
 	if *debugConnection {
+		dii2p.DEBUG = *debugConnection
 		dii2p.Log("si-i2p-plugin.go Debug mode: true")
 	}
 	if *verboseLogging {
+		dii2p.Verbose = *verboseLogging
 		dii2p.Log("si-i2p-plugin.go Verbose mode: true")
 	}
-
 	if *useHttpProxy {
 		dii2p.Log("si-i2p-plugin.go Using HTTP proxy: true")
 	}
-
 	dii2p.Log("si-i2p-plugin.go Initial URL:", *address)
 
-	dii2p.Verbose = *verboseLogging
-
-	dii2p.DEBUG = *debugConnection
-
-	var samProxies *dii2p.SamList
 	var samService *dii2p.SamServices
 
-	//samProxies = dii2p.CreateSamList(*samAddrString, *samPortString, *address, *timeoutTime, *keepAlives)
-    var err error
-    samProxies, err = dii2p.CreateSamList(
-        *address,
-        dii2p.SetHost(*samAddrString),
-        dii2p.SetPort(*samPortString),
-        dii2p.SetTimeout(*timeoutTime),
-        dii2p.SetKeepAlives(*keepAlives),
-    )
-    if err != nil{
-        log.Fatal(err)
-    }
+	samProxies, err := dii2p.CreateSamList(
+		*address,
+		dii2p.SetHost(*samAddrString),
+		dii2p.SetPort(*samPortString),
+		dii2p.SetTimeout(*timeoutTime),
+		dii2p.SetKeepAlives(*keepAlives),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	samService = dii2p.CreateSamServiceList(*samAddrString, *samPortString)
+	samService, err := dii2p.BetterCreateSamServiceList(
+		dii2p.SetServHost(*samAddrString),
+		dii2p.SetPortString(*samPortString),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)

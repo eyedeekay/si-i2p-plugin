@@ -5,17 +5,17 @@ import (
 	"strconv"
 )
 
-type ClientOption func(*SamList) error
+type ServiceOption func(*SamServices) error
 
-func SetHost(s string) func(*SamList) error {
-	return func(c *SamList) error {
+func SetServHost(s string) func(*SamServices) error {
+	return func(c *SamServices) error {
 		c.samAddrString = s
 		return nil
 	}
 }
 
-func SetPort(s interface{}) func(*SamList) error {
-	return func(c *SamList) error {
+func SetServPort(s interface{}) func(*SamServices) error {
+	return func(c *SamServices) error {
 		switch v := s.(type) {
 		case string:
 			port, err := strconv.Atoi(v)
@@ -38,19 +38,5 @@ func SetPort(s interface{}) func(*SamList) error {
 		default:
 			return fmt.Errorf("Invalid port")
 		}
-	}
-}
-
-func SetTimeout(s int) func(*SamList) error {
-	return func(c *SamList) error {
-		c.timeoutTime = s
-		return nil
-	}
-}
-
-func SetKeepAlives(s bool) func(*SamList) error {
-	return func(c *SamList) error {
-		c.keepAlives = s
-		return nil
 	}
 }

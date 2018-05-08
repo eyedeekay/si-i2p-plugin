@@ -226,7 +226,6 @@ func NewSamUrl(requestdir string) samUrl {
 	return subUrl
 }
 
-
 func NewSamUrlHttp(request *http.Request) samUrl {
 	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
@@ -235,4 +234,3 @@ func NewSamUrlHttp(request *http.Request) samUrl {
 	subUrl.mutex = &sync.Mutex{}
 	return subUrl
 }
-
