@@ -4,7 +4,6 @@ RUN apk add go go-tools go-doc git make musl-dev musl musl-utils
 RUN adduser -s /opt/bin/si-i2p-plugin -S -H -D sii2pplugin sii2pplugin
 COPY . /opt/
 RUN chown -R sii2pplugin /opt/
-RUN git clone https://github.com/eyedeekay/gosam -b leaseset /gosam
 WORKDIR /opt/
 RUN make release && chmod a+x /opt/bin/si-i2p-plugin
 RUN apk del go go-tools go-doc git make musl-dev musl musl-utils

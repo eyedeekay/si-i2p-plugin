@@ -233,14 +233,14 @@ func (samStack *SamList) checkURLType(request string) bool {
 func CreateSamList(initAddress string, opts ...func(*SamList) error) (*SamList, error) {
 	var samStack SamList
 	samStack.dir = "parent"
+    samStack.up = false
+	Log("sam-list.go Parent proxy set to down.")
 	Log("sam-list.go Generating parent proxy structure.")
 	for _, o := range opts {
 		if err := o(&samStack); err != nil {
 			return nil, err
 		}
 	}
-	samStack.up = false
-	Log("sam-list.go Parent proxy set to down.")
 	samStack.createSamList()
 	Log("sam-list.go SAM list created")
 	if initAddress != "" {

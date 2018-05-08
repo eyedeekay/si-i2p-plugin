@@ -49,6 +49,7 @@ docker-host:
 		-t eyedeekay/sam-host; true
 
 docker-run: docker-tidy docker-host
+	@sleep 1
 	docker run \
 		-d \
 		--name si-proxy \
