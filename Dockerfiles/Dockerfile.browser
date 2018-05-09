@@ -58,7 +58,8 @@ RUN grep -v torlauncher /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Bro
     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/extension-overrides.js && \
     rm /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/temp.js
 
-RUN rm -rf /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/extensions/tor-launcher*.xpi \
+RUN rm -rf /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/extensions/tor*.xpi \
+    /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/extensions/tor-launcher*.xpi \
     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/extensions/https*.xpi \
     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.meek-http-helper
 
