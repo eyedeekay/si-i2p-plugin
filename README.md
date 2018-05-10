@@ -66,7 +66,13 @@ behavior will be configurable. I'm almost ready to do that.
 
 If it wasn't super, super obvious to everyone, it's really, really easy to tell
 the difference between this proxy and the default i2p/i2pd http proxies and I
-don't think there's anything I can do about that.
+don't think there's anything I can do about that. Also *if you're the only*
+*person to visit a particular group of colluding eepSites* then it's *still*
+*possible to link your activities by timing*, but *I don't think it's possible*
+to "*prove*" that it the same person exactly(certainly not in a cryptographic
+sense), just that it's likely to be the same person. I can't do anything about
+a small anonymity set. By the way, as far as I know, using this will drastically
+reduce your anonymity set unless it's widely adopted. TESTING ONLY.
 
 I am now fairly certain that it can't be forced to retrieve URL's outside the
 i2p network in properly configured browsers under normal circumstances. Remember
