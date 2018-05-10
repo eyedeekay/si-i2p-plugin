@@ -159,7 +159,7 @@ func (samConn *SamHttp) setupTransport() {
 	samConn.transport = &http.Transport{
 		Dial:                  samConn.Dial,
 		MaxIdleConns:          0,
-		MaxIdleConnsPerHost:   10,
+		MaxIdleConnsPerHost:   4,
 		DisableKeepAlives:     samConn.keepAlives,
 		ResponseHeaderTimeout: samConn.otherTimeoutTime,
 		ExpectContinueTimeout: samConn.otherTimeoutTime,
