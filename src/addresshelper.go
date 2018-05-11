@@ -182,6 +182,7 @@ func (addressBook *addressHelper) updateAh() {
 
 func newAddressHelper(addressHelperUrl, samHost, samPort string) *addressHelper {
 	var a addressHelper
+	//a.assistant = i2paddresshelper.NewI2pAddressHelperFromOptions(i2paddresshelper.SetJump(addressHelperUrl), i2paddresshelper.SetAddr(samHost), i2paddresshelper.SetPort(samPort))
 	a.assistant = i2paddresshelper.NewI2pAddressHelper(addressHelperUrl, samHost, samPort)
 	log.Println("addresshelper.go connecting to SAM bridge on:", addressHelperUrl, samHost, ":", samPort)
 	a.pairs = []string{}
