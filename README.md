@@ -71,8 +71,12 @@ don't think there's anything I can do about that. Also *if you're the only*
 *possible to link your activities by timing*, but *I don't think it's possible*
 to "*prove*" that it the same person exactly(certainly not in a cryptographic
 sense), just that it's likely to be the same person. I can't do anything about
-a small anonymity set. By the way, as far as I know, using this will drastically
-reduce your anonymity set unless it's widely adopted. TESTING ONLY.
+a small anonymity set. That said, the tunnels created by this proxy are
+inherently short-lived and soon, will tear themselves after an inactivity
+timeout, requiring an attacker to request resources over and over to keep a
+tunnel alive long-term to be useful for tracking. By the way, as far as I know,
+using this will drastically reduce your anonymity set unless it's widely
+adopted. TESTING ONLY.
 
 I am now fairly certain that it can't be forced to retrieve URL's outside the
 i2p network in properly configured browsers under normal circumstances. Remember
@@ -135,13 +139,27 @@ Version Roadmap:
   * ~~0.19 - Expose an http proxy that hooks up to the existing infrastructure~~
    ~~for destination isolation~~
   * 0.20 - ~~Ready for more mainstream testing~~, ~~should successfully isolate~~
-   ~~requests for resources embedded in the retrieved web pages Addresshelper.~~
+   ~~requests for resources embedded in the retrieved web pages. Addresshelper.~~
   * 0.21 - Should be able to generate services on the fly by talking to the SAM
   bridge. First worthwhile release for people who aren't shell enthusiasts.
+  Tunnels should kill themselves after inactivity, and revive themselves with
+  new identities after. This will help minimize the impact of cross-site
+  resource-request timing attacks by making destinations more ephemeral,
+  requiring an attacker to keep tunnels alive to monitor an identity long-term.
   * 0.22 - Library-fication should be finished by here. Turning the underlying
   code into a library will mostly be a matter of identifying which features need
   to be exposed for it to be useful in that way. I'll update the number when
   I've written go-based tests for it.
+  * 0.23 - Enable additional configuration options, like tunnel lengths(always
+  symmetrical) tunnel quantities(not always symmetical) idle connections per
+  host, and backup tunnel quantity. If I'm being honest, this will probably be
+  done before 0.21 and 0.22, but it won't be incremented until they are done
+  too.
+  * 0.24 - Experiment with adding a SOCKS proxy. Create a version which contains
+  a SOCKS proxy for testing.Actually have a SOCKS proxy.
+  * 0.25 - Package.
+  * 0.26 -
+
 
 Silly Questions I'm asking myself about how I want it to work:
 --------------------------------------------------------------
