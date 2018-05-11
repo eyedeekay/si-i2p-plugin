@@ -296,8 +296,13 @@ func (samConn *SamHttp) sendRequest(request string) (*http.Response, error) {
 	}
 }
 
+func (samConn *SamHttp) getURLHttp(request *http.Request) (string, string) {
+	directory := strings.Replace(request.URL.String(), "http://", "", -1)
+	return request.URL.String(), directory
+}
+
 func (samConn *SamHttp) sendRequestHttp(request *http.Request) (*http.Client, string) {
-	r, dir := samConn.getURL(request.URL.String())
+	r, dir := samConn.getURLHttp(request)
 	Log("sam-http.go Getting resource", r, "In ", dir)
 	return samConn.subClient, dir
 }

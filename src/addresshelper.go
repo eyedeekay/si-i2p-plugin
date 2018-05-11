@@ -55,18 +55,18 @@ func (addressBook *addressHelper) checkAddressHelper(url *http.Request) (*http.R
 		Log("addresshelper.go ?i2paddresshelper detected")
 		addressBook.addPair(url.URL)
 		return addressBook.base32ify(url)
-	} else if strings.Contains(url.URL.String(), ".b32.i2p") {
-		log.Println("addresshelper.go base32 URL detected")
-		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
-		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
-			Log("addresshelper.go no rewrite required")
-			return rq, false
-		}
-        Log("addresshelper.go wierd base32 error you need to debug when you're not violently ill.")
-		return url, false
 	} else if !addressBook.checkAddPair(url.URL.Host) {
 		log.Println("addresshelper.go addressBook URL detected")
 		return addressBook.base32ify(url)
+	} else if strings.Contains(url.URL.String(), ".b32.i2p") {
+		rq, err := http.NewRequest(url.Method, strings.TrimRight(url.URL.String(), "/"), url.Body)
+		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
+            Log("addresshelper.go base32 URL detected")
+			Log("addresshelper.go no rewrite required")
+			return rq, false
+		}
+		Log("addresshelper.go wierd base32 error you need to debug when you're not violently ill.")
+		return url, false
 	} else {
 		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {

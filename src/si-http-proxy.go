@@ -131,30 +131,16 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	client, dir := proxy.client.sendClientRequestHttp(req)
 
-	time.Sleep(1 * time.Second)
-
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
-		resp, doerr := proxy.Do(req, client, 0)
+		resp, doerr := proxy.Do(req, client, 0, ah)
 		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); proxy.c {
 			resp := proxy.client.copyRequest(req, resp, dir)
 			proxy.printResponse(rW, resp)
 			Log("si-http-proxy.go responded")
 			return
 		} else {
-			if ah == true {
-				if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
-					if resp != nil {
-						resp := proxy.client.copyRequest(req, resp, dir)
-						proxy.printResponse(rW, resp)
-						return
-					}
-					Log("si-http-proxy.go status error", doerr.Error())
-					return
-				}
-				Log("si-http-proxy.go status error", doerr.Error())
-				return
-			} else {
+			if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
 				if resp != nil {
 					resp := proxy.client.copyRequest(req, resp, dir)
 					proxy.printResponse(rW, resp)
@@ -163,6 +149,8 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 				Log("si-http-proxy.go status error", doerr.Error())
 				return
 			}
+			Log("si-http-proxy.go status error", doerr.Error())
+			return
 		}
 	} else {
 		log.Println("si-http-proxy.go client retrieval error")
@@ -171,7 +159,7 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 }
 
 //export Do
-func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*http.Response, error) {
+func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int, useah bool) (*http.Response, error) {
 	req.RequestURI = ""
 
 	resp, doerr := client.Do(req)
@@ -183,18 +171,22 @@ func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int) (*h
 	if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 		return resp, doerr
 	} else {
-		if strings.Contains(doerr.Error(), "Hostname error") {
-			log.Println("Unknown Hostname")
-			proxy.addressbook.Lookup(req.Host)
-			requ, stage2 := proxy.addressbook.checkAddressHelper(req)
-			if stage2 {
-				log.Println("Redirecting", req.Host, "to", requ.Host)
-				requ.RequestURI = ""
-				return client.Do(requ)
-			}
-		} else {
-			return client.Do(req)
-		}
+        if useah {
+            if strings.Contains(doerr.Error(), "Hostname error") {
+                log.Println("Unknown Hostname")
+                proxy.addressbook.Lookup(req.Host)
+                requ, stage2 := proxy.addressbook.checkAddressHelper(req)
+                if stage2 {
+                    log.Println("Redirecting", req.Host, "to", requ.Host)
+                    requ.RequestURI = ""
+                    return client.Do(requ)
+                }
+            } else {
+                return client.Do(req)
+            }
+        }else{
+            return resp, nil
+        }
 	}
 	return resp, doerr
 }
