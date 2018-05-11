@@ -61,7 +61,7 @@ func (addressBook *addressHelper) checkAddressHelper(url *http.Request) (*http.R
 	} else if strings.Contains(url.URL.String(), ".b32.i2p") {
 		rq, err := http.NewRequest(url.Method, strings.TrimRight(url.URL.String(), "/"), url.Body)
 		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
-            Log("addresshelper.go base32 URL detected")
+			Log("addresshelper.go base32 URL detected")
 			Log("addresshelper.go no rewrite required")
 			return rq, false
 		}

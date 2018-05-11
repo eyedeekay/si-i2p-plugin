@@ -171,22 +171,22 @@ func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int, use
 	if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 		return resp, doerr
 	} else {
-        if useah {
-            if strings.Contains(doerr.Error(), "Hostname error") {
-                log.Println("Unknown Hostname")
-                proxy.addressbook.Lookup(req.Host)
-                requ, stage2 := proxy.addressbook.checkAddressHelper(req)
-                if stage2 {
-                    log.Println("Redirecting", req.Host, "to", requ.Host)
-                    requ.RequestURI = ""
-                    return client.Do(requ)
-                }
-            } else {
-                return client.Do(req)
-            }
-        }else
-            return client.Do(req)
-        }
+		if useah {
+			if strings.Contains(doerr.Error(), "Hostname error") {
+				log.Println("Unknown Hostname")
+				proxy.addressbook.Lookup(req.Host)
+				requ, stage2 := proxy.addressbook.checkAddressHelper(req)
+				if stage2 {
+					log.Println("Redirecting", req.Host, "to", requ.Host)
+					requ.RequestURI = ""
+					return client.Do(requ)
+				}
+			} else {
+				return client.Do(req)
+			}
+		} else {
+			return client.Do(req)
+		}
 	}
 	return resp, doerr
 }
