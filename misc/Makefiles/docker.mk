@@ -24,7 +24,8 @@ browse: docker-browser
 		--link si-proxy \
 		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
 		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
-		eyedeekay/sam-browser
+		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
+		$(browse_args)
 
 docker:
 	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .

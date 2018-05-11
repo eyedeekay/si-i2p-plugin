@@ -61,3 +61,6 @@ test-httpdiff-time-old:
 test-httpdiffsd-time-old:
 	@echo "timing request to http://inr.i2p/latest via curl" | tee -a misc/timed-test-oldproxy.txt
 	/usr/bin/curl -o /dev/null -w "@misc/curl-format.txt" -x 127.0.0.1:4444 http://inr.i2p/latest | tee -a misc/timed-test-oldproxy.txt
+
+browse-test:
+	browse_args="inr.i2p zjjjd756aucwz3pa2fl4mb3po2wtf752aefpod4gvedwreeox52q.b32.i2p zcofypupen75rdv5zihviweyw5emk2l34idq423kbhj7n3owoe5a.b32.i2p lqnwvwsgio6k53zq6d7r5bpaxuslc45vgsiqo6i3ebshkqpgrnma.b32.i2p" make browse

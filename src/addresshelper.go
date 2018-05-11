@@ -55,6 +55,15 @@ func (addressBook *addressHelper) checkAddressHelper(url *http.Request) (*http.R
 		Log("addresshelper.go ?i2paddresshelper detected")
 		addressBook.addPair(url.URL)
 		return addressBook.base32ify(url)
+	} else if strings.Contains(url.URL.String(), ".b32.i2p") {
+		log.Println("addresshelper.go base32 URL detected")
+		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
+		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
+			Log("addresshelper.go no rewrite required")
+			return rq, false
+		}
+        Log("addresshelper.go wierd base32 error you need to debug when you're not violently ill.")
+		return url, false
 	} else if !addressBook.checkAddPair(url.URL.Host) {
 		log.Println("addresshelper.go addressBook URL detected")
 		return addressBook.base32ify(url)
@@ -182,7 +191,7 @@ func (addressBook *addressHelper) updateAh() {
 
 func newAddressHelper(addressHelperUrl, samHost, samPort string) *addressHelper {
 	var a addressHelper
-	//a.assistant = i2paddresshelper.NewI2pAddressHelperFromOptions(i2paddresshelper.SetJump(addressHelperUrl), i2paddresshelper.SetAddr(samHost), i2paddresshelper.SetPort(samPort))
+	//a.assistant = i2paddresshelper.NewI2pAddressHelperFromOptions(i2paddresshelper.SetJump(addressHelperUrl), i2paddresshelper.SetHost(samHost), i2paddresshelper.SetPort(samPort))
 	a.assistant = i2paddresshelper.NewI2pAddressHelper(addressHelperUrl, samHost, samPort)
 	log.Println("addresshelper.go connecting to SAM bridge on:", addressHelperUrl, samHost, ":", samPort)
 	a.pairs = []string{}

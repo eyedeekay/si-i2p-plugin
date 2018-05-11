@@ -118,9 +118,9 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	rq.RequestURI = ""
 
-	req, _ := proxy.addressbook.checkAddressHelper(rq)
+	req, ah := proxy.addressbook.checkAddressHelper(rq)
 
-	req.RequestURI = ""
+	//req.RequestURI = ""
 	if proxy.keepAlives {
 		req.Close = proxy.keepAlives
 	}
@@ -142,17 +142,27 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 			Log("si-http-proxy.go responded")
 			return
 		} else {
-			if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
+			if ah == true {
+				if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
+					if resp != nil {
+						resp := proxy.client.copyRequest(req, resp, dir)
+						proxy.printResponse(rW, resp)
+						return
+					}
+					Log("si-http-proxy.go status error", doerr.Error())
+					return
+				}
+				Log("si-http-proxy.go status error", doerr.Error())
+				return
+			} else {
 				if resp != nil {
 					resp := proxy.client.copyRequest(req, resp, dir)
-					//rW.WriteHeader(resp.StatusCode)
 					proxy.printResponse(rW, resp)
+					return
 				}
 				Log("si-http-proxy.go status error", doerr.Error())
 				return
 			}
-			Log("si-http-proxy.go status error", doerr.Error())
-			return
 		}
 	} else {
 		log.Println("si-http-proxy.go client retrieval error")
