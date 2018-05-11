@@ -184,8 +184,8 @@ func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int, use
             } else {
                 return client.Do(req)
             }
-        }else{
-            return resp, nil
+        }else
+            return client.Do(req)
         }
 	}
 	return resp, doerr
