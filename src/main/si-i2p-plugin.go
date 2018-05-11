@@ -37,6 +37,14 @@ func main() {
 		"Jump/Addresshelper service you want to use")
 	timeoutTime := flag.Int("timeout", 6,
 		"Timeout duration in minutes(default six)")
+	/*
+		    tunnelLength := flag.Int("tunlength", 3,
+				"Tunnel Length(default 3)")
+		    inboundTunnels := flag.Int("in-tunnels", 16,
+				"Inbound Tunnel Count(default 16)")
+		    outboundTunnels := flag.Int("out-tunnels", 4,
+				"Inbound Tunnel Count(default 4)")
+	*/
 	keepAlives := flag.Bool("disable-keepalives", false,
 		"Disable keepalives(default false)")
 

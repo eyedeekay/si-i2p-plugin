@@ -44,7 +44,7 @@ docker-host:
 		--link si-proxy \
 		--restart always \
 		-p :4567 \
-		-p 127.0.0.1:7073:7073 \
+		-p 127.0.0.1:$(different_port):7073 \
 		--volume $(i2pd_dat):/var/lib/i2pd:rw \
 		-t eyedeekay/sam-host; true
 

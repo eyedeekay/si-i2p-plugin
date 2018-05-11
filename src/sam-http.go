@@ -158,6 +158,7 @@ func (samConn *SamHttp) setupTransport() {
 	Log("sam-http.go Setting Dial function")
 	samConn.transport = &http.Transport{
 		Dial:                  samConn.Dial,
+		//Dial:                  samConn.samBridgeClient.Dial,
 		MaxIdleConns:          0,
 		MaxIdleConnsPerHost:   4,
 		DisableKeepAlives:     samConn.keepAlives,
