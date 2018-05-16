@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:3.6
 RUN apk update -U
 RUN apk add go go-tools go-doc git make musl-dev musl musl-utils
 RUN adduser -s /opt/bin/si-i2p-plugin -S -H -D sii2pplugin sii2pplugin
