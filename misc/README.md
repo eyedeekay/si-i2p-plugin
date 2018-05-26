@@ -38,12 +38,11 @@ Attacking the Proxy:
 This proxy is trivially distinguishable from the default i2p http proxies in at
 least 2 ways, probably three, maybe more. I doubt I'm going to be able to do
 anything about *all* of them, but the same colluding adversary can identify
-*this proxy* by identifying which resources you *don't* request from their site,
-and which destinations request *only* those neglected resources from their site.
-This probably does not compromise anonymity because they can only link requests
-for resources they own, and those requests will not be similar for resources
-that they do not own.
+*this proxy* by identifying which resources you *don't* request from their site.
+In other words, if a site administrator knowingly requests off-site resources,
+it can identify destinations created by this proxy by identifying destinations
+that *never* request those third party resources.
 
 ### Timing Attacks:
 
-Open question, but I'm going to try and break it this way too.
+See issue #2

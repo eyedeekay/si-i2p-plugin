@@ -1,8 +1,5 @@
 ### The pipes
 
-It currently functions well as a file/pipe based interface to http services on
-the i2p network. It doesn't work as an http proxy yet.
-
 In the front, right now there are three "Parent" pipes which are used to
 delegate requests and order responses from the system which exists behind them
 and signal the interruption of the isolating proxy. It can't be hooked up to a
