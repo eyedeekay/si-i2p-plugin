@@ -79,7 +79,7 @@ func main() {
 	dii2p.Log("si-i2p-plugin.go Initial URL:", *address)
 
 	samProxies, err := dii2p.CreateSamList(
-		*address,
+		dii2p.SetInitAddress(*address),
 		dii2p.SetHost(*samAddrString),
 		dii2p.SetPort(*samPortString),
 		dii2p.SetTimeout(*timeoutTime),

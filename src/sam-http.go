@@ -83,7 +83,7 @@ func (samConn *SamHttp) initPipes() {
 		samConn.idFile.WriteString("")
 	}
 
-	samConn.base64Path, samConn.base64File, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "id")
+	samConn.base64Path, samConn.base64File, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "base64")
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.idFile.WriteString("")
 	}
@@ -270,7 +270,7 @@ func (samConn *SamHttp) hostCheck(request string) bool {
 
 func (samConn *SamHttp) getURL(request string) (string, string) {
 	r := request
-	directory := strings.Replace(request, "http://", "", -1)
+	directory := strings.Replace(safeUrlString(request), "http://", "", -1)
 	_, err := url.ParseRequestURI(r)
 	if err != nil {
 		r = "http://" + request
@@ -297,7 +297,7 @@ func (samConn *SamHttp) sendRequest(request string) (*http.Response, error) {
 }
 
 func (samConn *SamHttp) getURLHttp(request *http.Request) (string, string) {
-	directory := strings.Replace(request.URL.String(), "http://", "", -1)
+	directory := strings.Replace(safeUrlString(request.URL.String()), "http://", "", -1)
 	return request.URL.String(), directory
 }
 

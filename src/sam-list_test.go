@@ -8,7 +8,7 @@ func TestCreateSamList(t *testing.T) {
 	Verbose = true
 	DEBUG = true
 	samProxies, err := CreateSamList(
-		"http://i2p-projekt.i2p",
+		SetInitAddress("http://i2p-projekt.i2p"),
 		SetHost("localhost"),
 		SetPort("7656"),
 		SetTimeout(600),

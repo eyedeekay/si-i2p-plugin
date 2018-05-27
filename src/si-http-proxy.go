@@ -56,43 +56,6 @@ func (proxy *samHttpProxy) prepare() {
 	}
 }
 
-func (proxy *samHttpProxy) checkURLType(rW http.ResponseWriter, rq *http.Request) bool {
-
-	Log("si-http-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
-
-	test := strings.Split(rq.URL.String(), ".i2p")
-
-	if len(test) < 2 {
-		msg := "Non i2p domain detected. Skipping."
-		Log(msg) //Outproxy support? Might be cool.
-		http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-		return false
-	} else {
-		n := strings.Split(strings.Replace(strings.Replace(test[0], "https://", "", -1), "http://", "", -1), "/")
-		if len(n) > 1 {
-			msg := "Non i2p domain detected, possible attempt to impersonate i2p domain in path. Skipping."
-			Log(msg) //Outproxy support? Might be cool. Riskier here.
-			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-			return false
-		}
-	}
-	if rq.URL.Scheme != "http" {
-		if rq.URL.Scheme == "https" {
-			msg := "Dropping https request for now, assumed attempt to get clearnet resource." + rq.URL.Scheme
-			Log(msg)
-			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-			return false
-		} else {
-			msg := "unsupported protocal scheme " + rq.URL.Scheme
-			Log(msg)
-			http.Error(rW, "Http Proxy Server Error", http.StatusInternalServerError)
-			return false
-		}
-	} else {
-		return true
-	}
-}
-
 //export ServeHTTP
 func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	if &rq == nil {
@@ -101,7 +64,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	Log("si-http-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
 
-	if !proxy.checkURLType(rW, rq) {
+    if ! CheckURLType(rq.URL.String()) {
 		return
 	}
 

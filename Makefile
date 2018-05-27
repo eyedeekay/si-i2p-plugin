@@ -245,5 +245,4 @@ search:
 	surf https://trac.torproject.org/projects/tor/ticket/25564
 
 gotest:
-	go test ./src
-	ls src/
+	cd src && go test
