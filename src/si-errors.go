@@ -4,7 +4,8 @@ import (
 	"log"
 )
 
-var Verbose bool = false
+//Verbose determines the log verbosity
+var Verbose = false
 
 //Log wraps logging
 func Log(msg ...interface{}) {

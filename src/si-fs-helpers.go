@@ -143,16 +143,16 @@ func setupFiFo(directory, path string) (string, *os.File, error) {
 		if !pathExists {
 			mkErr := syscall.Mkfifo(mkPath, 0755)
 			Log("si-fs-helpers.go Preparing to create Pipe:", mkPath)
-			if f, d := Fatal(mkErr, "si-fs-helpers.go Pipe Creation Error", "si-fs-helpers.go Creating Pipe", mkPath); f {
+			if f, _ := Fatal(mkErr, "si-fs-helpers.go Pipe Creation Error", "si-fs-helpers.go Creating Pipe", mkPath); f {
 				file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 				return mkPath, file, err
 			}
-			return mkPath, nil, d
+			return mkPath, nil, c
 		}
 		file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 		return mkPath, file, err
 	}
-	return mkPath, nil, c
+	return mkPath, nil, nil
 }
 
 func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
@@ -163,9 +163,9 @@ func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error)
 		retScanner := bufio.NewScanner(pipe)
 		retScanner.Split(bufio.ScanLines)
 		Log("si-fs-helpers.go Created a named Pipe for sending requests:", mkPath)
-		return retScanner, nil
+		return retScanner, c
 	}
-	return nil, c
+	return nil, pathErr
 }
 
 //func setupCookieJar()
