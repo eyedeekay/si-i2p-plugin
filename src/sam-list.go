@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+//SamList is a manager which guarantee's unique destinations for websites
+//retrieved over the SAM bridge
 type SamList struct {
 	listOfClients []SamHTTP
 	samAddrString string
@@ -91,9 +93,8 @@ func (samStack *SamList) sendClientRequestHTTP(request *http.Request) (*http.Cli
 	client := samStack.findClient(request.URL.String())
 	if client != nil {
 		return client.sendRequestHTTP(request)
-	} else {
-		return nil, "nil client"
 	}
+		return nil, "nil client"
 }
 
 func (samStack *SamList) findClient(request string) *SamHTTP {
@@ -132,7 +133,7 @@ func (samStack *SamList) copyRequest(request *http.Request, response *http.Respo
 	return samStack.findClient(request.URL.String()).copyRequestHTTP(request, response, directory)
 }
 
-//export ReadRequest
+//ReadRequest checks the pipes for new URLs to request
 func (samStack *SamList) ReadRequest() {
 	Log("sam-list.go Reading requests:")
 	for samStack.sendScan.Scan() {
@@ -143,7 +144,7 @@ func (samStack *SamList) ReadRequest() {
 	clearFile(filepath.Join(connectionDirectory, samStack.dir), "send")
 }
 
-//export WriteResponses
+//WriteResponses writes the responses to the pipes
 func (samStack *SamList) WriteResponses() {
 	Log("sam-list.go Writing responses:")
 	for i, client := range samStack.listOfClients {
@@ -172,7 +173,7 @@ func (samStack *SamList) writeRecieved(response string) bool {
 	return b
 }
 
-//export ReadDelete
+//ReadDelete closes the SamList
 func (samStack *SamList) ReadDelete() bool {
 	Log("sam-list.go Managing pipes:")
 	for samStack.delScan.Scan() {
