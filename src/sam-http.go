@@ -21,6 +21,8 @@ import (
 // Remove this when you get the options laid in properly.
 var DEBUG bool
 
+//SamHTTP is an HTTP proxy which requests resources from the i2p network using
+//the same unique destination
 type SamHTTP struct {
 	subCache []samUrl
 	err      error
