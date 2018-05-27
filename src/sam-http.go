@@ -99,6 +99,8 @@ func (e *errorString) Error() string {
 	return e.s
 }
 
+//Dial is a custom Dialer function that allows us to keep the same i2p destination
+//on a per-eepSite basis
 func (samConn *SamHTTP) Dial(network, addr string) (net.Conn, error) {
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetHost(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG), goSam.SetUnpublished(true), goSam.SetInQuantity(15), goSam.SetOutQuantity(15))
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
@@ -110,27 +112,24 @@ func (samConn *SamHTTP) Dial(network, addr string) (net.Conn, error) {
 func (samConn *SamHTTP) subDial(network, addr string) (net.Conn, error) {
 	if samConn.name != "" {
 		if samConn.id != 0 {
-			return samConn.Connect()
-		} else {
-			return nil, &errorString{"ID error"}
+			return samConn.connect()
 		}
+        return nil, &errorString{"ID error"}
 	} else {
 		return nil, &errorString{"Hostname error"}
 	}
 }
 
-func (samConn *SamHTTP) Connect() (net.Conn, error) {
+func (samConn *SamHTTP) connect() (net.Conn, error) {
 	if samConn.samBridgeClient != nil {
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
 		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Error connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
 			Log("sam-http.go Stream Connection established")
 			return samConn.samBridgeClient.SamConn, samConn.err
-		} else {
-			return samConn.reConnect()
 		}
-	} else {
-		return samConn.reConnect()
+        return samConn.reConnect()
 	}
+    return samConn.reConnect()
 }
 
 func (samConn *SamHTTP) reConnect() (net.Conn, error) {
@@ -141,13 +140,11 @@ func (samConn *SamHTTP) reConnect() (net.Conn, error) {
 		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
 			Log("sam-http.go Stream Connection established")
 			return samConn.samBridgeClient.SamConn, samConn.err
-		} else {
-			return samConn.reConnect()
 		}
-	} else {
-		//samConn.samBridgeClient.Close()
-		return samConn.reConnect()
+        return samConn.reConnect()
 	}
+	//samConn.samBridgeClient.Close()
+	return samConn.reConnect()
 }
 
 func (samConn *SamHTTP) checkRedirect(req *http.Request, via []*http.Request) error {
@@ -199,7 +196,7 @@ func (samConn *SamHTTP) createClient(request string, samAddrString string, samPo
 	}
 }
 
-func (samConn *SamHTTP) createClientHttp(request *http.Request, samAddrString string, samPortString string) {
+func (samConn *SamHTTP) createClientHTTP(request *http.Request, samAddrString string, samPortString string) {
 	samConn.samAddrString = samAddrString
 	samConn.samPortString = samPortString
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetHost(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG), goSam.SetUnpublished(true), goSam.SetInQuantity(15), goSam.SetOutQuantity(15))
