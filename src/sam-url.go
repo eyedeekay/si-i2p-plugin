@@ -191,7 +191,7 @@ func (subURL *SamURL) dealResponseHTTP(request *http.Request, response *http.Res
 			subURL.timeFile.WriteString(time.Now().String())
 			return r
 		}
-        return nil
+		return nil
 	}
 	return nil
 }
@@ -210,7 +210,7 @@ func (subURL *SamURL) readDelete() bool {
 			defer subURL.cleanupDirectory()
 			return true
 		}
-			return false
+		return false
 	}
 	clearFile(filepath.Join(connectionDirectory, subURL.subDirectory), "del")
 	return false

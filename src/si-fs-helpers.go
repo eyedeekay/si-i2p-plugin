@@ -87,12 +87,11 @@ func setupFolder(directory string) bool {
 			Log("si-fs-helpers.go Creating a connection:", directory)
 			os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
-		} else {
-			os.RemoveAll(truncatePaths(filepath.Join(connectionDirectory, directory)))
-			Log("si-fs-helpers.go Creating a connection:", directory)
-			os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
-			return true
 		}
+		os.RemoveAll(truncatePaths(filepath.Join(connectionDirectory, directory)))
+		Log("si-fs-helpers.go Creating a connection:", directory)
+		os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
+		return true
 	} else {
 		return false
 	}
@@ -105,9 +104,8 @@ func checkFolder(directory string) bool {
 			Log("si-fs-helpers.go Creating a child directory folder:", directory)
 			os.MkdirAll(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
-		} else {
-			return false
 		}
+		return false
 	} else {
 		return false
 	}
