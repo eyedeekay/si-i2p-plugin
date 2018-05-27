@@ -6,18 +6,21 @@ import (
 
 var Verbose bool = false
 
+//Log wraps logging
 func Log(msg ...interface{}) {
 	if Verbose {
 		log.Println("LOG: ", msg)
 	}
 }
 
+//LogA wraps logging arrays
 func LogA(msg []interface{}) {
 	if Verbose {
 		log.Println("LOG: ", msg)
 	}
 }
 
+//Warn checks for non-fatal errors and re-sets them
 func Warn(err error, errmsg interface{}, msg ...interface{}) (bool, error) {
 	LogA(msg)
 	if err != nil {
@@ -27,6 +30,7 @@ func Warn(err error, errmsg interface{}, msg ...interface{}) (bool, error) {
 	return true, nil
 }
 
+//Fatal prints results of fatal errors and exits
 func Fatal(err error, errmsg interface{}, msg ...interface{}) (bool, error) {
 	LogA(msg)
 	if err != nil {
