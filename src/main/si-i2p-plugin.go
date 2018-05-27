@@ -24,7 +24,7 @@ func main() {
 		":port of the HTTP proxy")
 	debugConnection := flag.Bool("conn-debug", false,
 		"Print connection debug info")
-	useHttpProxy := flag.Bool("http-proxy", true,
+	useHTTPProxy := flag.Bool("http-proxy", true,
 		"run the HTTP proxy(default true)")
 	verboseLogging := flag.Bool("verbose", false,
 		"Print connection debug info")
@@ -73,7 +73,7 @@ func main() {
 		dii2p.Verbose = *verboseLogging
 		dii2p.Log("si-i2p-plugin.go Verbose mode: true")
 	}
-	if *useHttpProxy {
+	if *useHTTPProxy {
 		dii2p.Log("si-i2p-plugin.go Using HTTP proxy: true")
 	}
 	dii2p.Log("si-i2p-plugin.go Initial URL:", *address)
@@ -110,9 +110,9 @@ func main() {
 
 	httpUp := false
 
-	if *useHttpProxy {
+	if *useHTTPProxy {
 		if !httpUp {
-			samProxy := dii2p.CreateHttpProxy(*proxAddrString, *proxPortString, *address, *addressHelper, samProxies, *timeoutTime, *keepAlives)
+			samProxy := dii2p.CreateHTTPProxy(*proxAddrString, *proxPortString, *address, *addressHelper, samProxies, *timeoutTime, *keepAlives)
 			dii2p.Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.Host)
 			httpUp = true
 		}

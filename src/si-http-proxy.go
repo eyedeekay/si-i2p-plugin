@@ -164,8 +164,8 @@ func (proxy *samHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 	}
 }
 
-//export CreateHttpProxy
-func CreateHttpProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, samStack *SamList, timeoutTime int, keepAlives bool) *samHTTPProxy {
+//export CreateHTTPProxy
+func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, samStack *SamList, timeoutTime int, keepAlives bool) *samHTTPProxy {
 	var samProxy samHTTPProxy
 	samProxy.Host = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives

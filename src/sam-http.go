@@ -208,7 +208,7 @@ func (samConn *SamHTTP) createClientHTTP(request *http.Request, samAddrString st
 			samConn.initPipes()
 		}
 		samConn.setName(request.URL.String()) //, samConn.samBridgeClient)
-		samConn.subCache = append(samConn.subCache, NewSamURLHttp(request))
+		samConn.subCache = append(samConn.subCache, NewSamURLHTTP(request))
 	}
 }
 

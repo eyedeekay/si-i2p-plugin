@@ -11,7 +11,7 @@ import (
 	"github.com/eyedeekay/gosam"
 )
 
-type samHttpService struct {
+type samHTTPService struct {
 	subCache []samUrl
 	err      error
 	c        bool
@@ -43,7 +43,7 @@ type samHttpService struct {
 	base64     string
 }
 
-func (samService *samHttpService) initPipes() {
+func (samService *samHTTPService) initPipes() {
 	checkFolder(filepath.Join(connectionDirectory, samService.host))
 
 	samService.servPath, samService.servPipe, samService.err = setupFiFo(filepath.Join(connectionDirectory, samService.host), "send")
@@ -61,7 +61,7 @@ func (samService *samHttpService) initPipes() {
 
 }
 
-func (samService *samHttpService) sendContent(index string) (*http.Response, error) {
+func (samService *samHTTPService) sendContent(index string) (*http.Response, error) {
 	/*r, dir := samService.getURL(index)
 	Log("Getting resource", index)
 	resp, err := samService.subClient.Get(r)
@@ -72,11 +72,11 @@ func (samService *samHttpService) sendContent(index string) (*http.Response, err
 	return nil, nil
 }
 
-func (samService *samHttpService) serviceCheck(alias string) bool {
+func (samService *samHTTPService) serviceCheck(alias string) bool {
 	return false
 }
 
-func (samService *samHttpService) scannerText() (string, error) {
+func (samService *samHTTPService) scannerText() (string, error) {
 	text := ""
 	var err error
 	for _, url := range samService.subCache {
@@ -88,15 +88,15 @@ func (samService *samHttpService) scannerText() (string, error) {
 	return text, err
 }
 
-func (samService *samHttpService) hostSet(alias string) (string, string) {
+func (samService *samHTTPService) hostSet(alias string) (string, string) {
 	return "", ""
 }
 
-func (samService *samHttpService) checkName() bool {
+func (samService *samHTTPService) checkName() bool {
 	return false
 }
 
-func (samService *samHttpService) writeName(request string) {
+func (samService *samHTTPService) writeName(request string) {
 	if samService.checkName() {
 		samService.host, samService.directory = samService.hostSet(request)
 		Log("Setting hostname:", samService.host)
@@ -129,13 +129,13 @@ func (samService *samHttpService) writeName(request string) {
 	}
 }
 
-func (samService *samHttpService) printDetails() string {
+func (samService *samHTTPService) printDetails() string {
 	s, e := samService.scannerText()
 	Fatal(e, "Response Retrieval Error", "Retrieving Responses")
 	return s
 }
 
-func (samService *samHttpService) cleanupService() {
+func (samService *samHTTPService) cleanupService() {
 	samService.servPipe.Close()
 	samService.nameFile.Close()
 	for _, url := range samService.subCache {
@@ -146,7 +146,7 @@ func (samService *samHttpService) cleanupService() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samService.host))
 }
 
-func createSamHTTPService(samAddr string, samPort string, alias string) samHttpService {
-	var samService samHttpService
+func createSamHTTPService(samAddr string, samPort string, alias string) samHTTPService {
+	var samService samHTTPService
 	return samService
 }

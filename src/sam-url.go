@@ -225,7 +225,7 @@ func NewSamURL(requestdir string) samUrl {
 	return subUrl
 }
 
-func NewSamURLHttp(request *http.Request) samUrl {
+func NewSamURLHTTP(request *http.Request) samUrl {
 	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	log.Println(subUrl.subDirectory)

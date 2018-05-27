@@ -10,7 +10,7 @@ import (
 )
 
 type SamServices struct {
-	listOfServices []samHttpService
+	listOfServices []samHTTPService
 	samAddrString  string
 	samPortString  string
 	err            error
@@ -61,9 +61,9 @@ func (samServiceStack *SamServices) createService(alias string) {
 	samServiceStack.listOfServices = append(samServiceStack.listOfServices, createSamHTTPService(samServiceStack.samAddrString, samServiceStack.samPortString, alias))
 }
 
-func (samServiceStack *SamServices) findService(request string) *samHttpService {
+func (samServiceStack *SamServices) findService(request string) *samHTTPService {
 	found := false
-	var s samHttpService
+	var s samHTTPService
 	for index, service := range samServiceStack.listOfServices {
 		log.Println("Checking client requests", index+1)
 		log.Println("of", len(samServiceStack.listOfServices))

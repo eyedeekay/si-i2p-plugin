@@ -68,7 +68,7 @@ func (samStack *SamList) createClient(request string) {
 	samStack.listOfClients = append(samStack.listOfClients, newSamHTTP(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
-func (samStack *SamList) createClientHttp(request *http.Request) {
+func (samStack *SamList) createClientHTTP(request *http.Request) {
 	Log("sam-list.go Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients, newSamHTTPHTTP(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
