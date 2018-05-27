@@ -67,14 +67,13 @@ func (addressBook *addressHelper) checkAddressHelper(url *http.Request) (*http.R
 		}
 		Log("addresshelper.go wierd base32 error you need to debug when you're not violently ill.")
 		return url, false
-	} else {
-		rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
-		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
-			Log("addresshelper.go no rewrite required")
-			return rq, false
-		}
-		return url, false
 	}
+	rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
+	if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
+		Log("addresshelper.go no rewrite required")
+		return rq, false
+	}
+	return url, false
 }
 
 func (addressBook *addressHelper) checkAddPair(arg string) bool {
@@ -165,9 +164,8 @@ func (addressBook *addressHelper) fileCheck(line string) bool {
 	temp, err := ioutil.ReadFile(addressBook.bookPath)
 	if addressBook.c, addressBook.err = Warn(err, "addresshelper.go File check error, handling:", "addresshelper.go Checking Addressbook file", addressBook.bookPath); addressBook.c {
 		return !strings.Contains(string(temp), line)
-	} else {
-		return true
 	}
+    return true
 }
 
 func (addressBook *addressHelper) updateAh() {
@@ -189,11 +187,11 @@ func (addressBook *addressHelper) updateAh() {
 	}
 }
 
-func newAddressHelper(addressHelperUrl, samHost, samPort string) *addressHelper {
+func newAddressHelper(addressHelperURL, samHost, samPort string) *addressHelper {
 	var a addressHelper
 	//a.assistant = i2paddresshelper.NewI2pAddressHelperFromOptions(i2paddresshelper.SetJump(addressHelperUrl), i2paddresshelper.SetHost(samHost), i2paddresshelper.SetPort(samPort))
-	a.assistant = i2paddresshelper.NewI2pAddressHelper(addressHelperUrl, samHost, samPort)
-	log.Println("addresshelper.go connecting to SAM bridge on:", addressHelperUrl, samHost, ":", samPort)
+	a.assistant = i2paddresshelper.NewI2pAddressHelper(addressHelperURL, samHost, samPort)
+	log.Println("addresshelper.go connecting to SAM bridge on:", addressHelperURL, samHost, ":", samPort)
 	a.pairs = []string{}
 	a.err = nil
 	a.c = false
