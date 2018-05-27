@@ -5,8 +5,10 @@ import (
 	"strconv"
 )
 
+//ClientOption is a SamList option
 type ClientOption func(*SamList) error
 
+//SetHost sets the host of the client's SAM bridge
 func SetHost(s string) func(*SamList) error {
 	return func(c *SamList) error {
 		c.samAddrString = s
@@ -14,6 +16,7 @@ func SetHost(s string) func(*SamList) error {
 	}
 }
 
+//SetPort sets the port of the client's SAM bridge
 func SetPort(s interface{}) func(*SamList) error {
 	return func(c *SamList) error {
 		switch v := s.(type) {
@@ -25,22 +28,21 @@ func SetPort(s interface{}) func(*SamList) error {
 			if port < 65536 && port > -1 {
 				c.samPortString = v
 				return nil
-			} else {
-				return fmt.Errorf("Invalid port")
 			}
+			return fmt.Errorf("Invalid port")
 		case int:
 			if v < 65536 && v > -1 {
 				c.samPortString = strconv.Itoa(v)
 				return nil
-			} else {
-				return fmt.Errorf("Invalid port")
 			}
+			return fmt.Errorf("Invalid port")
 		default:
 			return fmt.Errorf("Invalid port")
 		}
 	}
 }
 
+//SetTimeout set's the client timeout
 func SetTimeout(s int) func(*SamList) error {
 	return func(c *SamList) error {
 		c.timeoutTime = s
@@ -48,6 +50,7 @@ func SetTimeout(s int) func(*SamList) error {
 	}
 }
 
+//SetKeepAlives tells the client whether or not to allow keepalives
 func SetKeepAlives(s bool) func(*SamList) error {
 	return func(c *SamList) error {
 		c.keepAlives = s
@@ -55,6 +58,7 @@ func SetKeepAlives(s bool) func(*SamList) error {
 	}
 }
 
+//SetInitAddress tells the client to retrieve an URL before any other URL
 func SetInitAddress(s string) func(*SamList) error {
 	return func(c *SamList) error {
 		if s == "" {
