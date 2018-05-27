@@ -54,14 +54,9 @@ func safeNames(str string) string {
 
 func safeUrlString(str string) string {
     temp := strings.SplitN(str, "/", -1)
-    last := safeNames(temp[len(temp)-1])
     var r string
-    for x, i := range temp {
-        if x != len(temp) -1 {
-            r += i
-        }else{
-            r += last
-        }
+    for _, i := range temp {
+        r += safeNames(i)
     }
     return r
 }
