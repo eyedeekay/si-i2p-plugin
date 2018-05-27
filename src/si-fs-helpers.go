@@ -51,7 +51,7 @@ func safeNames(str string) string {
 	}
 }
 
-func safeUrlString(str string) string {
+func safeURLString(str string) string {
 	temp := strings.SplitN(str, "/", -1)
 	var r string
 	for _, i := range temp {

@@ -165,11 +165,11 @@ func (proxy *samHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 }
 
 //export CreateHTTPProxy
-func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, samStack *SamList, timeoutTime int, keepAlives bool) *samHTTPProxy {
+func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *samHTTPProxy {
 	var samProxy samHTTPProxy
 	samProxy.Host = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = newAddressHelper(addressHelperUrl, samStack.samAddrString, samStack.samPortString)
+	samProxy.addressbook = newAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
 	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.Host)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute

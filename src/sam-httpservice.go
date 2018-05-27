@@ -12,7 +12,7 @@ import (
 )
 
 type samHTTPService struct {
-	subCache []samUrl
+	subCache []samURL
 	err      error
 	c        bool
 

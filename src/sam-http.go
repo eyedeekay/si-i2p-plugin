@@ -24,7 +24,7 @@ var DEBUG bool
 //SamHTTP is an HTTP proxy which requests resources from the i2p network using
 //the same unique destination
 type SamHTTP struct {
-	subCache []samUrl
+	subCache []samURL
 	err      error
 	c        bool
 
@@ -264,7 +264,7 @@ func (samConn *SamHTTP) hostCheck(request string) bool {
 
 func (samConn *SamHTTP) getURL(request string) (string, string) {
 	r := request
-	directory := strings.Replace(safeUrlString(request), "http://", "", -1)
+	directory := strings.Replace(safeURLString(request), "http://", "", -1)
 	_, err := url.ParseRequestURI(r)
 	if err != nil {
 		r = "http://" + request
@@ -290,7 +290,7 @@ func (samConn *SamHTTP) sendRequest(request string) (*http.Response, error) {
 }
 
 func (samConn *SamHTTP) getURLHTTP(request *http.Request) (string, string) {
-	directory := strings.Replace(safeUrlString(request.URL.String()), "http://", "", -1)
+	directory := strings.Replace(safeURLString(request.URL.String()), "http://", "", -1)
 	return request.URL.String(), directory
 }
 
@@ -306,9 +306,9 @@ func (samConn *SamHTTP) sendRequestBase64HTTP(request *http.Request, base64helpe
 	return samConn.subClient, dir
 }
 
-func (samConn *SamHTTP) findSubCache(response *http.Response, directory string) *samUrl {
+func (samConn *SamHTTP) findSubCache(response *http.Response, directory string) *samURL {
 	b := false
-	var u samUrl
+	var u samURL
 	for _, url := range samConn.subCache {
 		Log("sam-http.go Seeking Subdirectory", url.subDirectory)
 		if url.checkDirectory(directory) {
