@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+//SamHTTPProxy is an http proxy for making isolated SAM requests
 type SamHTTPProxy struct {
 	Host        string
 	client      *SamList
@@ -119,7 +120,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 	return
 }
 
-//Do
+//Do does a request
 func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int, useah bool) (*http.Response, error) {
 	req.RequestURI = ""
 
@@ -158,7 +159,7 @@ func (proxy *SamHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 	}
 }
 
-//CreateHTTPProxy
+//CreateHTTPProxy creates a SamHTTPProxy
 func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamHTTPProxy {
 	var samProxy SamHTTPProxy
 	samProxy.Host = proxAddr + ":" + proxPort
