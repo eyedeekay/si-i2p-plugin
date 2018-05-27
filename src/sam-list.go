@@ -184,6 +184,9 @@ func (samStack *SamList) ReadDelete() bool {
 			return false
 		}
 	}
+    for _, client := range samStack.listOfClients {
+        client.ReadDelete()
+    }
 	clearFile(filepath.Join(connectionDirectory, samStack.dir), "del")
 	return false
 }
