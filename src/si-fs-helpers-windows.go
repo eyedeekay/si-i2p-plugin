@@ -89,15 +89,14 @@ func setupFolder(directory string) bool {
 			Log("si-fs-helpers-windows.go Creating a connection:", directory)
 			os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
-		} else {
-			os.RemoveAll(truncatePaths(filepath.Join(connectionDirectory, directory)))
-			Log("si-fs-helpers-windows.go Creating a connection:", directory)
-			os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
-			return true
 		}
-	} else {
-		return false
+		os.RemoveAll(truncatePaths(filepath.Join(connectionDirectory, directory)))
+		Log("si-fs-helpers-windows.go Creating a connection:", directory)
+		os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
+		return true
+
 	}
+	return false
 }
 
 func checkFolder(directory string) bool {
@@ -107,12 +106,10 @@ func checkFolder(directory string) bool {
 			Log("si-fs-helpers-windows.go Creating a child directory folder:", directory)
 			os.MkdirAll(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
-		} else {
-			return false
 		}
-	} else {
 		return false
 	}
+	return false
 }
 
 func setupFile(directory, path string) (string, *os.File, error) {
@@ -178,9 +175,8 @@ func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error)
 		retScanner.Split(bufio.ScanLines)
 		Log("si-fs-helpers-windows.go Created a named Pipe for sending requests:", mkPath)
 		return retScanner, nil
-	} else {
-		return nil, c
 	}
+	return nil, c
 }
 
 //func setupCookieJar()
