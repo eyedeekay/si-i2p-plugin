@@ -24,7 +24,7 @@ var DEBUG bool
 //SamHTTP is an HTTP proxy which requests resources from the i2p network using
 //the same unique destination
 type SamHTTP struct {
-	subCache []samURL
+	subCache []SamURL
 	err      error
 	c        bool
 
@@ -306,9 +306,9 @@ func (samConn *SamHTTP) sendRequestBase64HTTP(request *http.Request, base64helpe
 	return samConn.subClient, dir
 }
 
-func (samConn *SamHTTP) findSubCache(response *http.Response, directory string) *samURL {
+func (samConn *SamHTTP) findSubCache(response *http.Response, directory string) *SamURL {
 	b := false
-	var u samURL
+	var u SamURL
 	for _, url := range samConn.subCache {
 		Log("sam-http.go Seeking Subdirectory", url.subDirectory)
 		if url.checkDirectory(directory) {

@@ -12,7 +12,8 @@ import (
 	"time"
 )
 
-type samURL struct {
+//SamURL manages the recieve pipes for SamHTTP request targets
+type SamURL struct {
 	err          error
 	c            bool
 	subDirectory string
@@ -29,7 +30,7 @@ type samURL struct {
 	delScan *bufio.Scanner
 }
 
-func (subURL *samURL) initPipes() {
+func (subURL *SamURL) initPipes() {
 	checkFolder(filepath.Join(connectionDirectory, subURL.subDirectory))
 
 	subURL.recvPath, subURL.recvFile, subURL.err = setupFile(filepath.Join(connectionDirectory, subURL.subDirectory), "recv")
@@ -52,12 +53,12 @@ func (subURL *samURL) initPipes() {
 
 }
 
-func (subURL *samURL) createDirectory(requestdir string) {
+func (subURL *SamURL) createDirectory(requestdir string) {
 	subURL.subDirectory = subURL.dirSet(requestdir)
 	subURL.initPipes()
 }
 
-func (subURL *samURL) scannerText() (string, error) {
+func (subURL *SamURL) scannerText() (string, error) {
 	d, err := ioutil.ReadFile(subURL.recvPath)
 	if subURL.c, subURL.err = Fatal(err, "sam-url.go Scanner error", "sam-url.go Scanning recv"); subURL.c {
 		return "", subURL.err
@@ -70,14 +71,14 @@ func (subURL *samURL) scannerText() (string, error) {
 	return "", err
 }
 
-func (subURL *samURL) dirSet(requestdir string) string {
+func (subURL *SamURL) dirSet(requestdir string) string {
 	Log("sam-url.go Requesting directory: ", requestdir+"/")
 	d1 := requestdir
 	d2 := strings.Replace(d1, "//", "/", -1)
 	return d2
 }
 
-func (subURL *samURL) checkDirectory(directory string) bool {
+func (subURL *SamURL) checkDirectory(directory string) bool {
 	b := false
 	if directory == subURL.subDirectory {
 		Log("sam-url.go Directory / ", directory+" : equals : "+subURL.subDirectory)
@@ -88,7 +89,7 @@ func (subURL *samURL) checkDirectory(directory string) bool {
 	return b
 }
 
-func (subURL *samURL) copyDirectory(response *http.Response, directory string) bool {
+func (subURL *SamURL) copyDirectory(response *http.Response, directory string) bool {
 	b := false
 	subURL.mutex.Lock()
 	if subURL.checkDirectory(directory) {
@@ -105,7 +106,7 @@ func (subURL *samURL) copyDirectory(response *http.Response, directory string) b
 	return b
 }
 
-func (subURL *samURL) copyDirectoryHTTP(request *http.Request, response *http.Response, directory string) *http.Response {
+func (subURL *SamURL) copyDirectoryHTTP(request *http.Request, response *http.Response, directory string) *http.Response {
 	subURL.mutex.Lock()
 	if subURL.checkDirectory(directory) {
 		if response != nil {
@@ -121,7 +122,7 @@ func (subURL *samURL) copyDirectoryHTTP(request *http.Request, response *http.Re
 	return response
 }
 
-func (subURL *samURL) dealResponse(response *http.Response) {
+func (subURL *SamURL) dealResponse(response *http.Response) {
 	//defer
 	body, err := ioutil.ReadAll(response.Body)
 	//defer response.Body.Close()
@@ -133,7 +134,7 @@ func (subURL *samURL) dealResponse(response *http.Response) {
 	}
 }
 
-func (subURL *samURL) printHeader(src http.Header) {
+func (subURL *SamURL) printHeader(src http.Header) {
 	if src != nil {
 		for k, vv := range src {
 			if vv != nil {
@@ -147,8 +148,8 @@ func (subURL *samURL) printHeader(src http.Header) {
 	}
 }
 
-//func (subURL *samURL) dealResponseHTTP(request *http.Request, response *http.Response) *http.Response {
-func (subURL *samURL) dealResponseHTTP(request *http.Request, response *http.Response) *http.Response {
+//func (subURL *SamURL) dealResponseHTTP(request *http.Request, response *http.Response) *http.Response {
+func (subURL *SamURL) dealResponseHTTP(request *http.Request, response *http.Response) *http.Response {
 	defer response.Body.Close()
 	transferEncoding := response.TransferEncoding
 	unCompressed := response.Uncompressed
@@ -189,45 +190,45 @@ func (subURL *samURL) dealResponseHTTP(request *http.Request, response *http.Res
 			Log("sam-url.go Retrieval time: ", time.Now().String())
 			subURL.timeFile.WriteString(time.Now().String())
 			return r
-		} else {
-			return nil
 		}
+        return nil
 	}
 	return nil
 }
 
-func (subURL *samURL) cleanupDirectory() {
+func (subURL *SamURL) cleanupDirectory() {
 	subURL.recvFile.Close()
 	subURL.timeFile.Close()
 	subURL.delPipe.Close()
 	os.RemoveAll(filepath.Join(connectionDirectory, subURL.subDirectory))
 }
 
-func (subURL *samURL) readDelete() bool {
+func (subURL *SamURL) readDelete() bool {
 	Log("sam-url.go Managing pipes:")
 	for subURL.delScan.Scan() {
 		if subURL.delScan.Text() == "y" || subURL.delScan.Text() == "Y" {
 			defer subURL.cleanupDirectory()
 			return true
-		} else {
-			return false
 		}
+			return false
 	}
 	clearFile(filepath.Join(connectionDirectory, subURL.subDirectory), "del")
 	return false
 }
 
-func NewSamURL(requestdir string) samURL {
+//NewSamURL instantiates a SamURL
+func NewSamURL(requestdir string) SamURL {
 	Log("sam-url.go Creating a new cache directory.")
-	var subURL samURL
+	var subURL SamURL
 	subURL.createDirectory(requestdir)
 	subURL.mutex = &sync.Mutex{}
 	return subURL
 }
 
-func NewSamURLHTTP(request *http.Request) samURL {
+//NewSamURLHTTP instantiates a SamURL
+func NewSamURLHTTP(request *http.Request) SamURL {
 	Log("sam-url.go Creating a new cache directory.")
-	var subURL samURL
+	var subURL SamURL
 	log.Println(subURL.subDirectory)
 	subURL.createDirectory(request.Host + request.URL.Path)
 	subURL.mutex = &sync.Mutex{}
