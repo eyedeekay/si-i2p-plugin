@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type samHTTPProxy struct {
+type SamHTTPProxy struct {
 	Host        string
 	client      *SamList
 	transport   *http.Transport
@@ -20,7 +20,7 @@ type samHTTPProxy struct {
 	c           bool
 }
 
-func (proxy *samHTTPProxy) delHopHeaders(header http.Header) {
+func (proxy *SamHTTPProxy) delHopHeaders(header http.Header) {
 	for _, h := range hopHeaders {
 		Log("si-http-proxy.go Sanitizing headers: ", h, header.Get(h))
 		header.Del(h)
@@ -30,7 +30,7 @@ func (proxy *samHTTPProxy) delHopHeaders(header http.Header) {
 	}
 }
 
-func (proxy *samHTTPProxy) copyHeader(dst, src http.Header) {
+func (proxy *SamHTTPProxy) copyHeader(dst, src http.Header) {
 	if dst != nil && src != nil {
 		for k, vv := range src {
 			if vv != nil {
@@ -49,7 +49,7 @@ func (proxy *samHTTPProxy) copyHeader(dst, src http.Header) {
 	}
 }
 
-func (proxy *samHTTPProxy) prepare() {
+func (proxy *SamHTTPProxy) prepare() {
 	Log("si-http-proxy.go Initializing handler handle")
 	if err := proxy.newHandle.ListenAndServe(); err != nil {
 		Log("si-http-proxy.go Fatal Error: proxy not started")
@@ -57,7 +57,7 @@ func (proxy *samHTTPProxy) prepare() {
 }
 
 //export ServeHTTP
-func (proxy *samHTTPProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
+func (proxy *SamHTTPProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	if &rq == nil {
 		return
 	}
@@ -74,7 +74,7 @@ func (proxy *samHTTPProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 }
 
-func (proxy *samHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Request) {
+func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Request) {
 	if rq == nil {
 		return
 	}
@@ -119,8 +119,8 @@ func (proxy *samHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 	return
 }
 
-//export Do
-func (proxy *samHTTPProxy) Do(req *http.Request, client *http.Client, x int, useah bool) (*http.Response, error) {
+//Do
+func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int, useah bool) (*http.Response, error) {
 	req.RequestURI = ""
 
 	resp, doerr := client.Do(req)
@@ -131,28 +131,24 @@ func (proxy *samHTTPProxy) Do(req *http.Request, client *http.Client, x int, use
 
 	if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 		return resp, doerr
-	} else {
-		if useah {
-			if strings.Contains(doerr.Error(), "Hostname error") {
-				log.Println("Unknown Hostname")
-				proxy.addressbook.Lookup(req.Host)
-				requ, stage2 := proxy.addressbook.checkAddressHelper(req)
-				if stage2 {
-					log.Println("Redirecting", req.Host, "to", requ.Host)
-					requ.RequestURI = ""
-					return client.Do(requ)
-				}
-			} else {
-				return client.Do(req)
+	}
+	if useah {
+		if strings.Contains(doerr.Error(), "Hostname error") {
+			log.Println("Unknown Hostname")
+			proxy.addressbook.Lookup(req.Host)
+			requ, stage2 := proxy.addressbook.checkAddressHelper(req)
+			if stage2 {
+				log.Println("Redirecting", req.Host, "to", requ.Host)
+				requ.RequestURI = ""
+				return client.Do(requ)
 			}
-		} else {
-			return client.Do(req)
 		}
+		return client.Do(req)
 	}
 	return resp, doerr
 }
 
-func (proxy *samHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
+func (proxy *SamHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
 	if r != nil {
 		defer r.Body.Close()
 		proxy.copyHeader(rW.Header(), r.Header)
@@ -162,9 +158,9 @@ func (proxy *samHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 	}
 }
 
-//export CreateHTTPProxy
-func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *samHTTPProxy {
-	var samProxy samHTTPProxy
+//CreateHTTPProxy
+func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamHTTPProxy {
+	var samProxy SamHTTPProxy
 	samProxy.Host = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
 	samProxy.addressbook = newAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
