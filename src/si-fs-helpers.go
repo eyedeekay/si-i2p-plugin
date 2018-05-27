@@ -92,9 +92,8 @@ func setupFolder(directory string) bool {
 		Log("si-fs-helpers.go Creating a connection:", directory)
 		os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func checkFolder(directory string) bool {
@@ -106,9 +105,8 @@ func checkFolder(directory string) bool {
 			return true
 		}
 		return false
-	} else {
-		return false
 	}
+	return false
 }
 
 func setupFile(directory, path string) (string, *os.File, error) {
@@ -148,16 +146,13 @@ func setupFiFo(directory, path string) (string, *os.File, error) {
 			if f, d := Fatal(mkErr, "si-fs-helpers.go Pipe Creation Error", "si-fs-helpers.go Creating Pipe", mkPath); f {
 				file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 				return mkPath, file, err
-			} else {
-				return mkPath, nil, d
 			}
-		} else {
-			file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
-			return mkPath, file, err
+			return mkPath, nil, d
 		}
-	} else {
-		return mkPath, nil, c
+		file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
+		return mkPath, file, err
 	}
+	return mkPath, nil, c
 }
 
 func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
@@ -169,9 +164,8 @@ func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error)
 		retScanner.Split(bufio.ScanLines)
 		Log("si-fs-helpers.go Created a named Pipe for sending requests:", mkPath)
 		return retScanner, nil
-	} else {
-		return nil, c
 	}
+	return nil, c
 }
 
 //func setupCookieJar()
