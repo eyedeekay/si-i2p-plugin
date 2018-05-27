@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type samHttpProxy struct {
+type samHTTPProxy struct {
 	Host        string
 	client      *SamList
 	transport   *http.Transport
@@ -20,7 +20,7 @@ type samHttpProxy struct {
 	c           bool
 }
 
-func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
+func (proxy *samHTTPProxy) delHopHeaders(header http.Header) {
 	for _, h := range hopHeaders {
 		Log("si-http-proxy.go Sanitizing headers: ", h, header.Get(h))
 		header.Del(h)
@@ -30,7 +30,7 @@ func (proxy *samHttpProxy) delHopHeaders(header http.Header) {
 	}
 }
 
-func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
+func (proxy *samHTTPProxy) copyHeader(dst, src http.Header) {
 	if dst != nil && src != nil {
 		for k, vv := range src {
 			if vv != nil {
@@ -49,7 +49,7 @@ func (proxy *samHttpProxy) copyHeader(dst, src http.Header) {
 	}
 }
 
-func (proxy *samHttpProxy) prepare() {
+func (proxy *samHTTPProxy) prepare() {
 	Log("si-http-proxy.go Initializing handler handle")
 	if err := proxy.newHandle.ListenAndServe(); err != nil {
 		Log("si-http-proxy.go Fatal Error: proxy not started")
@@ -57,14 +57,14 @@ func (proxy *samHttpProxy) prepare() {
 }
 
 //export ServeHTTP
-func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
+func (proxy *samHTTPProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 	if &rq == nil {
 		return
 	}
 
 	Log("si-http-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
 
-    if ! CheckURLType(rq.URL.String()) {
+	if !CheckURLType(rq.URL.String()) {
 		return
 	}
 
@@ -74,7 +74,7 @@ func (proxy *samHttpProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 }
 
-func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Request) {
+func (proxy *samHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Request) {
 	if rq == nil {
 		return
 	}
@@ -92,7 +92,7 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	Log("si-http-proxy.go Retrieving client")
 
-	client, dir := proxy.client.sendClientRequestHttp(req)
+	client, dir := proxy.client.sendClientRequestHTTP(req)
 
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
@@ -122,7 +122,7 @@ func (proxy *samHttpProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 }
 
 //export Do
-func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int, useah bool) (*http.Response, error) {
+func (proxy *samHTTPProxy) Do(req *http.Request, client *http.Client, x int, useah bool) (*http.Response, error) {
 	req.RequestURI = ""
 
 	resp, doerr := client.Do(req)
@@ -154,7 +154,7 @@ func (proxy *samHttpProxy) Do(req *http.Request, client *http.Client, x int, use
 	return resp, doerr
 }
 
-func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
+func (proxy *samHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
 	if r != nil {
 		defer r.Body.Close()
 		proxy.copyHeader(rW.Header(), r.Header)
@@ -165,8 +165,8 @@ func (proxy *samHttpProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 }
 
 //export CreateHttpProxy
-func CreateHttpProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, samStack *SamList, timeoutTime int, keepAlives bool) *samHttpProxy {
-	var samProxy samHttpProxy
+func CreateHttpProxy(proxAddr, proxPort, initAddress, addressHelperUrl string, samStack *SamList, timeoutTime int, keepAlives bool) *samHTTPProxy {
+	var samProxy samHTTPProxy
 	samProxy.Host = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
 	samProxy.addressbook = newAddressHelper(addressHelperUrl, samStack.samAddrString, samStack.samPortString)

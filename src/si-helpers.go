@@ -1,7 +1,7 @@
 package dii2p
 
 import (
-    "strings"
+	"strings"
 )
 
 func CheckURLType(request string) bool {

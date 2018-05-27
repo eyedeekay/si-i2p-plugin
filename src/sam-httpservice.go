@@ -146,7 +146,7 @@ func (samService *samHttpService) cleanupService() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samService.host))
 }
 
-func createSamHttpService(samAddr string, samPort string, alias string) samHttpService {
+func createSamHTTPService(samAddr string, samPort string, alias string) samHttpService {
 	var samService samHttpService
 	return samService
 }

@@ -105,14 +105,14 @@ func (subUrl *samUrl) copyDirectory(response *http.Response, directory string) b
 	return b
 }
 
-func (subUrl *samUrl) copyDirectoryHttp(request *http.Request, response *http.Response, directory string) *http.Response {
+func (subUrl *samUrl) copyDirectoryHTTP(request *http.Request, response *http.Response, directory string) *http.Response {
 	subUrl.mutex.Lock()
 	if subUrl.checkDirectory(directory) {
 		if response != nil {
 			Log("sam-url.go Response Status ", response.Status)
 			if response.StatusCode == http.StatusOK {
 				Log("sam-url.go Setting file in cache")
-				resp := subUrl.dealResponseHttp(request, response)
+				resp := subUrl.dealResponseHTTP(request, response)
 				return resp
 			}
 		}
@@ -147,8 +147,8 @@ func (subUrl *samUrl) printHeader(src http.Header) {
 	}
 }
 
-//func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
-func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Response) *http.Response {
+//func (subUrl *samUrl) dealResponseHTTP(request *http.Request, response *http.Response) *http.Response {
+func (subUrl *samUrl) dealResponseHTTP(request *http.Request, response *http.Response) *http.Response {
 	defer response.Body.Close()
 	transferEncoding := response.TransferEncoding
 	unCompressed := response.Uncompressed
@@ -217,7 +217,7 @@ func (subUrl *samUrl) readDelete() bool {
 	return false
 }
 
-func NewSamUrl(requestdir string) samUrl {
+func NewSamURL(requestdir string) samUrl {
 	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	subUrl.createDirectory(requestdir)
@@ -225,7 +225,7 @@ func NewSamUrl(requestdir string) samUrl {
 	return subUrl
 }
 
-func NewSamUrlHttp(request *http.Request) samUrl {
+func NewSamURLHttp(request *http.Request) samUrl {
 	Log("sam-url.go Creating a new cache directory.")
 	var subUrl samUrl
 	log.Println(subUrl.subDirectory)

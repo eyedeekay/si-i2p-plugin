@@ -56,16 +56,16 @@ func SetKeepAlives(s bool) func(*SamList) error {
 }
 
 func SetInitAddress(s string) func(*SamList) error {
-    return func(c *SamList) error {
-        if s == "" {
-            c.lastAddress = s
-            return nil
-        }
-        if ! CheckURLType(s){
-            c.lastAddress = ""
-            return fmt.Errorf("Init Address was not an i2p url")
-        }
-        c.lastAddress = s
-        return nil
-    }
+	return func(c *SamList) error {
+		if s == "" {
+			c.lastAddress = s
+			return nil
+		}
+		if !CheckURLType(s) {
+			c.lastAddress = ""
+			return fmt.Errorf("Init Address was not an i2p url")
+		}
+		c.lastAddress = s
+		return nil
+	}
 }

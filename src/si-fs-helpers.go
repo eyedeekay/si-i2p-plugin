@@ -31,43 +31,42 @@ func truncatePath(str string) string {
 }
 
 func safeNames(str string) string {
-    switch d := str; d {
-        case "send":
-            return "_send"
-        case "recv":
-            return "_recv"
-        case "del":
-            return "_del"
-        case "time":
-            return "_time"
-        case "name":
-            return "_name"
-        case "id":
-            return "_id"
-        case "base64":
-            return "_base64"
-        default:
-            return str
-    }
-    return str
+	switch d := str; d {
+	case "send":
+		return "_send"
+	case "recv":
+		return "_recv"
+	case "del":
+		return "_del"
+	case "time":
+		return "_time"
+	case "name":
+		return "_name"
+	case "id":
+		return "_id"
+	case "base64":
+		return "_base64"
+	default:
+		return str
+	}
 }
 
 func safeUrlString(str string) string {
-    temp := strings.SplitN(str, "/", -1)
-    var r string
-    for _, i := range temp {
-        r += safeNames(i)
-    }
-    return r
+	temp := strings.SplitN(str, "/", -1)
+	var r string
+	for _, i := range temp {
+		r += safeNames(i)
+	}
+	return r
 }
 
 func truncatePaths(str string) string {
 	temp := strings.SplitN(str, "/", -1)
 	var fixedpath string
 	for x, i := range temp {
-        if x < len(temp)-1 {
-            i = safeNames(i)
-        }
+		if x < len(temp)-1 {
+			i = safeNames(i)
+		}
 		if i != "" {
 			fixedpath += truncatePath(i) + "/"
 			if fixedpath != "" {

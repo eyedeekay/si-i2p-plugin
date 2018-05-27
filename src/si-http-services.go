@@ -58,7 +58,7 @@ func (samServiceStack *SamServices) initPipes() {
 
 func (samServiceStack *SamServices) createService(alias string) {
 	Log("Appending service to SAM service stack.")
-	samServiceStack.listOfServices = append(samServiceStack.listOfServices, createSamHttpService(samServiceStack.samAddrString, samServiceStack.samPortString, alias))
+	samServiceStack.listOfServices = append(samServiceStack.listOfServices, createSamHTTPService(samServiceStack.samAddrString, samServiceStack.samPortString, alias))
 }
 
 func (samServiceStack *SamServices) findService(request string) *samHttpService {
@@ -68,20 +68,20 @@ func (samServiceStack *SamServices) findService(request string) *samHttpService 
 		log.Println("Checking client requests", index+1)
 		log.Println("of", len(samServiceStack.listOfServices))
 		if service.serviceCheck(request) {
-			Log("Client pipework for %s found.", request)
+			Log("Client pipework for", request, "found.", request)
 			Log("Request sent")
 			found = true
 			return &service
 		}
 	}
 	if !found {
-		Log("Client pipework for %s not found: Creating.", request)
+		Log("Client pipework for", request, "not found: Creating.")
 		samServiceStack.createService(request)
 		for index, service := range samServiceStack.listOfServices {
 			log.Println("Checking client requests", index+1)
 			log.Println("of", len(samServiceStack.listOfServices))
 			if service.serviceCheck(request) {
-				Log("Client pipework for %s found.", request)
+				Log("Client pipework for", request, "found.")
 				s = service
 			}
 		}

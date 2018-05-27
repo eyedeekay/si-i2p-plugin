@@ -3,8 +3,7 @@ package dii2p
 import (
 	"bufio"
 	"io"
-    "io/ioutil"
-	"log"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,7 +12,7 @@ import (
 )
 
 type SamList struct {
-	listOfClients []SamHttp
+	listOfClients []SamHTTP
 	samAddrString string
 	samPortString string
 	keepAlives    bool
@@ -23,7 +22,7 @@ type SamList struct {
 	dir           string
 	timeoutTime   int
 
-    lastAddress   string
+	lastAddress string
 
 	sendPath string
 	sendPipe *os.File
@@ -66,12 +65,12 @@ func (samStack *SamList) initPipes() {
 
 func (samStack *SamList) createClient(request string) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
+	samStack.listOfClients = append(samStack.listOfClients, newSamHTTP(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
 func (samStack *SamList) createClientHttp(request *http.Request) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHttpHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
+	samStack.listOfClients = append(samStack.listOfClients, newSamHTTPHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
 func (samStack *SamList) createSamList() {
@@ -88,7 +87,7 @@ func (samStack *SamList) sendClientRequest(request string) {
 	}
 }
 
-func (samStack *SamList) sendClientRequestHttp(request *http.Request) (*http.Client, string) {
+func (samStack *SamList) sendClientRequestHTTP(request *http.Request) (*http.Client, string) {
 	client := samStack.findClient(request.URL.String())
 	if client != nil {
 		return client.sendRequestHttp(request)
@@ -97,9 +96,9 @@ func (samStack *SamList) sendClientRequestHttp(request *http.Request) (*http.Cli
 	}
 }
 
-func (samStack *SamList) findClient(request string) *SamHttp {
+func (samStack *SamList) findClient(request string) *SamHTTP {
 	found := false
-	var c SamHttp
+	var c SamHTTP
 	if !CheckURLType(request) {
 		return nil
 	}
@@ -114,7 +113,7 @@ func (samStack *SamList) findClient(request string) *SamHttp {
 		}
 	}
 	if !found {
-		Log("sam-list.go Client pipework for %s not found: Creating.", request)
+		Log("sam-list.go Client pipework for", request, "not found: Creating.")
 		samStack.createClient(request)
 		for index, client := range samStack.listOfClients {
 			Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)
@@ -148,8 +147,8 @@ func (samStack *SamList) ReadRequest() {
 func (samStack *SamList) WriteResponses() {
 	Log("sam-list.go Writing responses:")
 	for i, client := range samStack.listOfClients {
-		log.Println("sam-list.go Checking for responses: %s", i+1)
-		log.Println("sam-list.go of: ", len(samStack.listOfClients))
+		Log("sam-list.go Checking for responses: ", i+1)
+		Log("sam-list.go of: ", len(samStack.listOfClients))
 		if client.printResponse() != "" {
 			go samStack.writeRecieved(client.printResponse())
 		}
@@ -158,7 +157,7 @@ func (samStack *SamList) WriteResponses() {
 
 func (samStack *SamList) responsify(input string) io.ReadCloser {
 	tmp := ioutil.NopCloser(strings.NewReader(input))
-    defer tmp.Close()
+	defer tmp.Close()
 	Log("sam-list.go Responsifying string:")
 	return tmp
 }
@@ -184,9 +183,9 @@ func (samStack *SamList) ReadDelete() bool {
 			return false
 		}
 	}
-    for _, client := range samStack.listOfClients {
-        client.readDelete()
-    }
+	for _, client := range samStack.listOfClients {
+		client.readDelete()
+	}
 	clearFile(filepath.Join(connectionDirectory, samStack.dir), "del")
 	return false
 }
