@@ -2,7 +2,6 @@ package dii2p
 
 import (
 	"bufio"
-	"bytes"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -177,7 +176,7 @@ func (subUrl *samUrl) dealResponseHttp(request *http.Request, response *http.Res
 				Proto:            proto,
 				ProtoMajor:       protoMajor,
 				ProtoMinor:       protoMinor,
-				Body:             ioutil.NopCloser(bytes.NewBuffer(body)),
+				Body:             ioutil.NopCloser(strings.NewReader(string(body))),
 				ContentLength:    contentLength,
 				Request:          request,
 				Header:           header,

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"crypto/tls"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -356,14 +355,15 @@ func (samConn *SamHttp) scannerText() (string, error) {
 	return text, err
 }
 
-/**/
-func (samConn *SamHttp) responsify(input string) io.Reader {
-	tmp := strings.NewReader(input)
-	Log("sam-http.go Turning string into a response", input)
+/*
+func (samConn *SamHttp) responsify(input string) io.ReadCloser {
+	tmp := ioutil.NopCloser(strings.NewReader(input))
+    defer tmp.Close()
+	Log("sam-list.go Responsifying string:")
 	return tmp
 }
 
-/**/
+*/
 func (samConn *SamHttp) printResponse() string {
 	s, e := samConn.scannerText()
 	if samConn.c, samConn.err = Fatal(e, "sam-http.go Response Retrieval Error", "sam-http.go Retrieving Responses"); !samConn.c {
@@ -384,7 +384,7 @@ func (samConn *SamHttp) readRequest() string {
 	return text
 }
 
-/*
+
 func (samConn *SamHttp) readDelete() bool {
 	b := false
 	for _, dir := range samConn.subCache {
@@ -397,7 +397,6 @@ func (samConn *SamHttp) readDelete() bool {
 	}
 	return b
 }
-*/
 
 func (samConn *SamHttp) writeName() {
 	Log("sam-http.go Looking up hostname:", samConn.host)

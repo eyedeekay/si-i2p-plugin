@@ -3,6 +3,7 @@ package dii2p
 import (
 	"bufio"
 	"io"
+    "io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -155,8 +156,9 @@ func (samStack *SamList) WriteResponses() {
 	}
 }
 
-func (samStack *SamList) responsify(input string) io.Reader {
-	tmp := strings.NewReader(input)
+func (samStack *SamList) responsify(input string) io.ReadCloser {
+	tmp := ioutil.NopCloser(strings.NewReader(input))
+    defer tmp.Close()
 	Log("sam-list.go Responsifying string:")
 	return tmp
 }
