@@ -389,10 +389,10 @@ func (samConn *SamHttp) readDelete() bool {
 	b := false
 	for _, dir := range samConn.subCache {
 		n := dir.readDelete()
-		if n == 0 {
+		if ! n  {
 			Log("sam-http.go Maintaining Connection:", samConn.hostGet())
-		} else if n > 0 {
-			b = true
+		} else {
+			b = n
 		}
 	}
 	return b
