@@ -102,23 +102,21 @@ func (proxy *samHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 			proxy.printResponse(rW, resp)
 			Log("si-http-proxy.go responded")
 			return
-		} else {
-			if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
-				if resp != nil {
-					resp := proxy.client.copyRequest(req, resp, dir)
-					proxy.printResponse(rW, resp)
-					return
-				}
-				Log("si-http-proxy.go status error", doerr.Error())
+		}
+		if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
+			if resp != nil {
+				resp := proxy.client.copyRequest(req, resp, dir)
+				proxy.printResponse(rW, resp)
 				return
 			}
 			Log("si-http-proxy.go status error", doerr.Error())
 			return
 		}
-	} else {
-		log.Println("si-http-proxy.go client retrieval error")
+		Log("si-http-proxy.go status error", doerr.Error())
 		return
 	}
+	log.Println("si-http-proxy.go client retrieval error")
+	return
 }
 
 //export Do
