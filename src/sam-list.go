@@ -94,7 +94,7 @@ func (samStack *SamList) sendClientRequestHTTP(request *http.Request) (*http.Cli
 	if client != nil {
 		return client.sendRequestHTTP(request)
 	}
-		return nil, "nil client"
+	return nil, "nil client"
 }
 
 func (samStack *SamList) findClient(request string) *SamHTTP {
@@ -180,9 +180,8 @@ func (samStack *SamList) ReadDelete() bool {
 		if samStack.delScan.Text() == "y" || samStack.delScan.Text() == "Y" {
 			defer samStack.CleanupClient()
 			return true
-		} else {
-			return false
 		}
+		return false
 	}
 	for _, client := range samStack.listOfClients {
 		client.readDelete()
@@ -191,7 +190,7 @@ func (samStack *SamList) ReadDelete() bool {
 	return false
 }
 
-//export CleanupClient
+//CleanupClient tears down all SamList members
 func (samStack *SamList) CleanupClient() {
 	samStack.sendPipe.Close()
 	samStack.recvPipe.Close()
@@ -202,7 +201,7 @@ func (samStack *SamList) CleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samStack.dir))
 }
 
-//export CreateSamList
+//CreateSamList initializes a SamList
 func CreateSamList(opts ...func(*SamList) error) (*SamList, error) {
 	var samStack SamList
 	samStack.dir = "parent"
