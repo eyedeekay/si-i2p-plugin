@@ -246,3 +246,9 @@ search:
 
 gotest:
 	cd src && go test
+
+golint:
+	cd src && golint
+
+govet:
+	cd src && go vet
