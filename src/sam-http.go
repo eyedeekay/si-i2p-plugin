@@ -285,9 +285,8 @@ func (samConn *SamHTTP) sendRequest(request string) (*http.Response, error) {
 		Log("sam-http.go Pumping result to top of parent pipe")
 		samConn.copyRequest(resp, dir)
 		return resp, err
-	} else {
-		return nil, nil
 	}
+	return nil, nil
 }
 
 func (samConn *SamHTTP) getURLHTTP(request *http.Request) (string, string) {
@@ -429,9 +428,8 @@ func (samConn *SamHTTP) checkName() bool {
 	if samConn.name != "" {
 		Log("sam-http.go Naming connection: Connection name was empty.")
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 //CleanupClient completely tears down a SamHTTP client
