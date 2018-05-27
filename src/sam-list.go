@@ -70,7 +70,7 @@ func (samStack *SamList) createClient(request string) {
 
 func (samStack *SamList) createClientHttp(request *http.Request) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHTTPHttp(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
+	samStack.listOfClients = append(samStack.listOfClients, newSamHTTPHTTP(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
 }
 
 func (samStack *SamList) createSamList() {
@@ -90,7 +90,7 @@ func (samStack *SamList) sendClientRequest(request string) {
 func (samStack *SamList) sendClientRequestHTTP(request *http.Request) (*http.Client, string) {
 	client := samStack.findClient(request.URL.String())
 	if client != nil {
-		return client.sendRequestHttp(request)
+		return client.sendRequestHTTP(request)
 	} else {
 		return nil, "nil client"
 	}
@@ -129,7 +129,7 @@ func (samStack *SamList) findClient(request string) *SamHTTP {
 }
 
 func (samStack *SamList) copyRequest(request *http.Request, response *http.Response, directory string) *http.Response {
-	return samStack.findClient(request.URL.String()).copyRequestHttp(request, response, directory)
+	return samStack.findClient(request.URL.String()).copyRequestHTTP(request, response, directory)
 }
 
 //export ReadRequest

@@ -253,14 +253,13 @@ func (samConn *SamHTTP) hostCheck(request string) bool {
 		}
 		Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
 		return false
-	} else {
-		if samConn.host == host {
-			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
-			return true
-		}
-		Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
-		return false
 	}
+	if samConn.host == host {
+		Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
+		return true
+	}
+	Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
+	return false
 }
 
 func (samConn *SamHTTP) getURL(request string) (string, string) {
@@ -291,18 +290,18 @@ func (samConn *SamHTTP) sendRequest(request string) (*http.Response, error) {
 	}
 }
 
-func (samConn *SamHTTP) getURLHttp(request *http.Request) (string, string) {
+func (samConn *SamHTTP) getURLHTTP(request *http.Request) (string, string) {
 	directory := strings.Replace(safeUrlString(request.URL.String()), "http://", "", -1)
 	return request.URL.String(), directory
 }
 
-func (samConn *SamHTTP) sendRequestHttp(request *http.Request) (*http.Client, string) {
-	r, dir := samConn.getURLHttp(request)
+func (samConn *SamHTTP) sendRequestHTTP(request *http.Request) (*http.Client, string) {
+	r, dir := samConn.getURLHTTP(request)
 	Log("sam-http.go Getting resource", r, "In ", dir)
 	return samConn.subClient, dir
 }
 
-func (samConn *SamHTTP) sendRequestBase64Http(request *http.Request, base64helper string) (*http.Client, string) {
+func (samConn *SamHTTP) sendRequestBase64HTTP(request *http.Request, base64helper string) (*http.Client, string) {
 	r, dir := samConn.getURL(request.URL.String())
 	Log("sam-http.go Getting resource", r, "In ", dir)
 	return samConn.subClient, dir
@@ -335,7 +334,7 @@ func (samConn *SamHTTP) copyRequest(response *http.Response, directory string) {
 	samConn.findSubCache(response, directory).copyDirectory(response, directory)
 }
 
-func (samConn *SamHTTP) copyRequestHttp(request *http.Request, response *http.Response, directory string) *http.Response {
+func (samConn *SamHTTP) copyRequestHTTP(request *http.Request, response *http.Response, directory string) *http.Response {
 	return samConn.findSubCache(response, directory).copyDirectoryHTTP(request, response, directory)
 }
 
@@ -435,7 +434,7 @@ func (samConn *SamHTTP) checkName() bool {
 	}
 }
 
-//export CleanupClient
+//CleanupClient completely tears down a SamHTTP client
 func (samConn *SamHTTP) CleanupClient() {
 	samConn.sendPipe.Close()
 	samConn.nameFile.Close()
@@ -460,13 +459,13 @@ func newSamHTTP(samAddrString, samPortString, request string, timeoutTime int, k
 	return samConn
 }
 
-func newSamHTTPHttp(samAddrString, samPortString string, request *http.Request, timeoutTime int, keepAlives bool) SamHTTP {
+func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime int, keepAlives bool) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	var samConn SamHTTP
 	samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
 	samConn.otherTimeoutTime = time.Duration(timeoutTime/3) * time.Minute
 	samConn.keepAlives = keepAlives
 	Log(request.Host + request.URL.Path)
-	samConn.createClientHttp(request, samAddrString, samPortString)
+	samConn.createClientHTTP(request, samAddrString, samPortString)
 	return samConn
 }
