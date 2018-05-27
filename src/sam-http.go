@@ -114,10 +114,9 @@ func (samConn *SamHTTP) subDial(network, addr string) (net.Conn, error) {
 		if samConn.id != 0 {
 			return samConn.connect()
 		}
-        return nil, &errorString{"ID error"}
-	} else {
-		return nil, &errorString{"Hostname error"}
+		return nil, &errorString{"ID error"}
 	}
+	return nil, &errorString{"Hostname error"}
 }
 
 func (samConn *SamHTTP) connect() (net.Conn, error) {
@@ -127,9 +126,9 @@ func (samConn *SamHTTP) connect() (net.Conn, error) {
 			Log("sam-http.go Stream Connection established")
 			return samConn.samBridgeClient.SamConn, samConn.err
 		}
-        return samConn.reConnect()
+		return samConn.reConnect()
 	}
-    return samConn.reConnect()
+	return samConn.reConnect()
 }
 
 func (samConn *SamHTTP) reConnect() (net.Conn, error) {
@@ -141,7 +140,7 @@ func (samConn *SamHTTP) reConnect() (net.Conn, error) {
 			Log("sam-http.go Stream Connection established")
 			return samConn.samBridgeClient.SamConn, samConn.err
 		}
-        return samConn.reConnect()
+		return samConn.reConnect()
 	}
 	//samConn.samBridgeClient.Close()
 	return samConn.reConnect()
@@ -251,18 +250,16 @@ func (samConn *SamHTTP) hostCheck(request string) bool {
 		if samConn.host == host {
 			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
 			return true
-		} else {
-			Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
-			return false
 		}
+		Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
+		return false
 	} else {
 		if samConn.host == host {
 			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
 			return true
-		} else {
-			Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
-			return false
 		}
+		Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
+		return false
 	}
 }
 

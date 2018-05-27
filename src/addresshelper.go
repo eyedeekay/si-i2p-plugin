@@ -165,7 +165,7 @@ func (addressBook *addressHelper) fileCheck(line string) bool {
 	if addressBook.c, addressBook.err = Warn(err, "addresshelper.go File check error, handling:", "addresshelper.go Checking Addressbook file", addressBook.bookPath); addressBook.c {
 		return !strings.Contains(string(temp), line)
 	}
-    return true
+	return true
 }
 
 func (addressBook *addressHelper) updateAh() {
