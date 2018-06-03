@@ -1,0 +1,266 @@
+docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
+Sending build context to Docker daemon 13.74 MB
+Step 1/10 : FROM debian:sid
+ ---> 4817bb6590f8
+Step 2/10 : RUN apt-get update && apt-get dist-upgrade -y
+ ---> Using cache
+ ---> 5eaea382cb11
+Step 3/10 : RUN apt-get install -y gpg ca-certificates
+ ---> Using cache
+ ---> 0a976a5a4fb9
+Step 4/10 : RUN echo "deb http://repo.lngserv.ru/debian stretch main" | tee /etc/apt/sources.list.d/i2pd.list
+ ---> Using cache
+ ---> 81ad05866b70
+Step 5/10 : RUN echo "deb-src http://repo.lngserv.ru/debian stretch main" | tee -a /etc/apt/sources.list.d/i2pd.list
+ ---> Using cache
+ ---> bad521d5b3cb
+Step 6/10 : RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv 66F6C87B98EBCFE2 ||     apt-key adv --keyserver pgp.mit.edu --recv-keys 66F6C87B98EBCFE2 ||     apt-key adv --keyserver keyserver.ubuntu.com --recv 66F6C87B98EBCFE2 ||     apt-key adv --keyserver keyserver.pgp.com --recv 66F6C87B98EBCFE2
+ ---> Using cache
+ ---> 643450a6493e
+Step 7/10 : RUN apt-get update && apt-get install -y i2pd
+ ---> Using cache
+ ---> c2d6c239f004
+Step 8/10 : COPY etc/i2pd/tunnels.si-i2p-plugin.conf /etc/i2pd/tunnels.conf
+ ---> Using cache
+ ---> 8b3fe84f14e1
+Step 9/10 : COPY etc/i2pd/i2pd.si-i2p-plugin.conf /etc/i2pd/i2pd.conf
+ ---> Using cache
+ ---> 22daee9330cd
+Step 10/10 : CMD chown -R i2pd:i2pd /var/lib/i2pd;     ln -sf /usr/share/i2pd/certificates /var/lib/i2pd/certificates;     ln -sf /etc/i2pd/subscriptions.txt /var/lib/i2pd/subscriptions.txt;     su - -c "i2pd i2pd --service --loglevel=error         --conf=/etc/i2pd/i2pd.conf         --tunconf=/etc/i2pd/tunnels.conf         --log=/var/log/i2pd/log";     sleep 5;     tail -f /var/log/i2pd/log
+ ---> Using cache
+ ---> 69d1c4bf6440
+Successfully built 69d1c4bf6440
+docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
+Sending build context to Docker daemon 13.74 MB
+Step 1/11 : FROM alpine:3.6
+ ---> 77144d8c6bdc
+Step 2/11 : RUN apk update -U
+ ---> Using cache
+ ---> 7635dcdb568c
+Step 3/11 : RUN apk add go go-tools go-doc git make musl-dev musl musl-utils
+ ---> Using cache
+ ---> e51ede66184e
+Step 4/11 : RUN adduser -s /opt/bin/si-i2p-plugin -S -H -D sii2pplugin sii2pplugin
+ ---> Using cache
+ ---> a5261bada085
+Step 5/11 : COPY . /opt/
+ ---> df790d81b303
+Removing intermediate container a575088671a8
+Step 6/11 : RUN chown -R sii2pplugin /opt/
+ ---> Running in 22c834fef13f
+ ---> e6ec53be8ef2
+Removing intermediate container 22c834fef13f
+Step 7/11 : WORKDIR /opt/
+ ---> aa8b2d9a1e20
+Removing intermediate container d14a2cc32808
+Step 8/11 : RUN make release && chmod a+x /opt/bin/si-i2p-plugin
+ ---> Running in 31a221ed63bd
+go get -u github.com/eyedeekay/i2pasta/addresshelper
+go get -u github.com/eyedeekay/i2pasta/convert
+go get -u github.com/eyedeekay/gosam
+#go get -u github.com/eyedeekay/si-i2p-plugin/src
+GOOS="linux" GOARCH="amd64" go build \
+	-a -tags netgo -ldflags '-w -extldflags "-static"' \
+	-buildmode=pie \
+	-o bin/si-i2p-plugin \
+	./src/main/si-i2p-plugin.go
+[91m# command-line-arguments
+warning: unable to find runtime/cgo.a
+[0mbuilt release
+ ---> 7dc781275c5d
+Removing intermediate container 31a221ed63bd
+Step 9/11 : RUN apk del go go-tools go-doc git make musl-dev musl musl-utils
+ ---> Running in b47dfedef579
+World updated, but the following packages are not removed due to:
+  musl: musl-utils libc-utils
+        libressl2.5-libcrypto libressl2.5-libssl
+        apk-tools busybox alpine-baselayout zlib
+        scanelf
+  musl-utils: libc-utils
+
+(1/23) Purging git (2.13.5-r0)
+(2/23) Purging go-doc (1.8.4-r0)
+(3/23) Purging go-tools (1.8.4-r0)
+(4/23) Purging go (1.8.4-r0)
+(5/23) Purging gcc (6.3.0-r4)
+(6/23) Purging binutils (2.28-r3)
+(7/23) Purging libatomic (6.3.0-r4)
+(8/23) Purging libgomp (6.3.0-r4)
+(9/23) Purging make (4.2.1-r0)
+(10/23) Purging musl-dev (1.1.16-r14)
+(11/23) Purging libcurl (7.59.0-r0)
+(12/23) Purging ca-certificates (20161130-r2)
+Executing ca-certificates-20161130-r2.post-deinstall
+(13/23) Purging libssh2 (1.8.0-r1)
+(14/23) Purging expat (2.2.0-r1)
+(15/23) Purging pcre (8.41-r0)
+(16/23) Purging binutils-libs (2.28-r3)
+(17/23) Purging mpc1 (1.0.3-r0)
+(18/23) Purging mpfr3 (3.1.5-r0)
+(19/23) Purging isl (0.17.1-r0)
+(20/23) Purging gmp (6.1.2-r0)
+(21/23) Purging pkgconf (1.3.7-r0)
+(22/23) Purging libstdc++ (6.3.0-r4)
+(23/23) Purging libgcc (6.3.0-r4)
+Executing busybox-1.26.2-r9.trigger
+OK: 4 MiB in 11 packages
+ ---> 48f7815716b2
+Removing intermediate container b47dfedef579
+Step 10/11 : USER sii2pplugin
+ ---> Running in f79ce97a302b
+ ---> 343523edc689
+Removing intermediate container f79ce97a302b
+Step 11/11 : CMD /opt/bin/si-i2p-plugin -proxy-addr=0.0.0.0 -proxy-port=44443 -bridge-addr=sam-host
+ ---> Running in 2477c642dffa
+ ---> b9b323fb07e9
+Removing intermediate container 2477c642dffa
+Successfully built b9b323fb07e9
+docker network create si; true
+Error response from daemon: network with name si already exists
+docker run \
+	-d \
+	--name sam-host \
+	--network si \
+	--network-alias sam-host \
+	--hostname sam-host \
+	--link si-proxy \
+	--restart always \
+	-p :4567 \
+	-p 127.0.0.1:7078:7073 \
+	--volume /home/idk/local-manifest/crypto-manifest/si-i2p-plugin/i2pd_dat:/var/lib/i2pd:rw \
+	-t eyedeekay/sam-host; true
+docker: Error response from daemon: Conflict. The container name "/sam-host" is already in use by container ca6526e0ff2da330b9061c70ae9e2050d8540b51cd0b884e30e5eb50214f5864. You have to remove (or rename) that container to be able to reuse that name..
+See 'docker run --help'.
+docker rm -f si-proxy; true
+si-proxy
+docker run \
+	-d \
+	--name si-proxy \
+	--network si \
+	--network-alias si-proxy \
+	--hostname si-proxy \
+	--link sam-host \
+	--link sam-browser \
+	--user sii2pplugin \
+	-p 127.0.0.1:44443:44443 \
+	--restart always \
+	-t eyedeekay/si-i2p-plugin
+2593010e674a3739ab80b7a9281dea2cd574447b7773a533f8bbe6888d60bd73
+docker build --force-rm --build-arg VERSION="7.5.4" \
+	-f Dockerfiles/Dockerfile.browser -t eyedeekay/sam-browser .
+Sending build context to Docker daemon 13.74 MB
+Step 1/35 : FROM debian:sid
+ ---> 4817bb6590f8
+Step 2/35 : ARG VERSION
+ ---> Using cache
+ ---> 0008f4e94293
+Step 3/35 : ENV DEBIAN_FRONTEND noninteractive HOME /home/anon
+ ---> Using cache
+ ---> 95799596c202
+Step 4/35 : RUN apt-get update &&     apt-get -y dist-upgrade &&     sed -i.bak 's/sid main/sid main contrib/g' /etc/apt/sources.list &&     apt-get update && apt-get install -y     iceweasel     gnupg     zenity     ca-certificates     xz-utils     curl     sudo     --no-install-recommends &&     localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
+ ---> Using cache
+ ---> bf7267da57f2
+Step 5/35 : RUN groupadd -g 1000 anon
+ ---> Using cache
+ ---> bf64cc9c47ec
+Step 6/35 : RUN useradd -m -g 1000 -u 1000 -d /home/anon anon
+ ---> Using cache
+ ---> 7d0638733bce
+Step 7/35 : RUN mkdir /home/anon/.local
+ ---> Using cache
+ ---> ac36e37fa0ac
+Step 8/35 : USER anon
+ ---> Using cache
+ ---> 3daa13775474
+Step 9/35 : WORKDIR /home/anon
+ ---> Using cache
+ ---> 64faba0ce84d
+Step 10/35 : RUN curl -sSL -o /home/anon/tor.tar.xz       https://www.torproject.org/dist/torbrowser/${VERSION}/tor-browser-linux64-${VERSION}_en-US.tar.xz
+ ---> Using cache
+ ---> 22a694d6d1b1
+Step 11/35 : RUN curl -sSL -o /home/anon/tor.tar.xz.asc       https://www.torproject.org/dist/torbrowser/${VERSION}/tor-browser-linux64-${VERSION}_en-US.tar.xz.asc
+ ---> Using cache
+ ---> 9a1974001e12
+Step 12/35 : RUN gpg --keyserver ha.pool.sks-keyservers.net       --recv-keys "EF6E 286D DA85 EA2A 4BA7  DE68 4E2C 6E87 9329 8290"
+ ---> Using cache
+ ---> bba8ae4abb8b
+Step 13/35 : RUN gpg --verify /home/anon/tor.tar.xz.asc
+ ---> Using cache
+ ---> b7cdca0cdf11
+Step 14/35 : RUN tar xf /home/anon/tor.tar.xz
+ ---> Using cache
+ ---> ab86fe617c3f
+Step 15/35 : RUN rm -f /home/anon/tor.tar.xz*
+ ---> Using cache
+ ---> 36e726799182
+Step 16/35 : RUN curl -sSL -o /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js     https://github.com/PurpleI2P/i2pdbrowser/raw/master/linux/build/preferences/syspref.js
+ ---> Using cache
+ ---> c651eb539377
+Step 17/35 : RUN sed -i 's|i2pd.i2p|i2p-projekt.i2p|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
+ ---> Using cache
+ ---> bcc6b230aa40
+Step 18/35 : RUN sed -i 's|4444|44443|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
+ ---> Using cache
+ ---> dbf7a1d94e05
+Step 19/35 : RUN sed -i 's|pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1");|pref("network.proxy.no_proxies_on", 0);|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
+ ---> Using cache
+ ---> 64abdcb35e47
+Step 20/35 : RUN sed -i 's|127.0.0.1|172.18.0.2|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
+ ---> Using cache
+ ---> 3dce7101373f
+Step 21/35 : RUN mv /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/extension-overrides.js     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/temp.js
+ ---> Using cache
+ ---> 148f7423f26c
+Step 22/35 : RUN grep -v torlauncher /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/temp.js >     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/extension-overrides.js &&     rm /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/temp.js
+ ---> Using cache
+ ---> 14fb9b76a5ec
+Step 23/35 : RUN echo  '# TorButton Preferences:' | tee -a /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/extension-overrides.js
+ ---> Using cache
+ ---> 0f4d02fb4250
+Step 24/35 : RUN echo  'pref("extensions.torbutton.use_nontor_proxy", true);' | tee -a /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/extension-overrides.js
+ ---> Using cache
+ ---> 74432f720200
+Step 25/35 : RUN rm -rf /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/extensions/tor-launcher*.xpi     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/extensions/tor-launcher*.xpi     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/extensions/https*.xpi     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.meek-http-helper
+ ---> Using cache
+ ---> 780a97d12c02
+Step 26/35 : RUN mv /home/anon/tor-browser_en-US/start-tor-browser.desktop /home/anon/tor-browser_en-US/start-i2p-browser.desktop
+ ---> Using cache
+ ---> 7c446febcad6
+Step 27/35 : RUN mv /home/anon/tor-browser_en-US/Browser/start-tor-browser.desktop /home/anon/tor-browser_en-US/Browser/start-i2p-browser.desktop
+ ---> Using cache
+ ---> 7c1ca2a88d44
+Step 28/35 : RUN mv /home/anon/tor-browser_en-US/Browser/start-tor-browser /home/anon/tor-browser_en-US/Browser/start-i2p-browser
+ ---> Using cache
+ ---> dcf7ed218f81
+Step 29/35 : RUN for f in $(find /home/anon/tor-browser_en-US/ -name *.desktop); do sed -i 's|start-tor-browser|start-i2p-browser|g' $f; done
+ ---> Using cache
+ ---> 4f3ac9ac8325
+Step 30/35 : RUN mkdir -p /home/anon/working
+ ---> Using cache
+ ---> 062cb5aba2b4
+Step 31/35 : RUN cp -r /home/anon/tor-browser_en-US/ /home/anon/working/i2p-browser_en-US/
+ ---> Using cache
+ ---> c6e65cc29a8c
+Step 32/35 : RUN cd /home/anon/working/ && tar czf /home/anon/i2p-browser.tar.gz .
+ ---> Using cache
+ ---> c265881e1642
+Step 33/35 : RUN mv /home/anon/working/i2p-browser_en-US/ /home/anon/i2p-browser_en-US/
+ ---> Using cache
+ ---> c4168bfb3b5c
+Step 34/35 : USER root
+ ---> Using cache
+ ---> 9375fd390134
+Step 35/35 : CMD chown -R anon:anon /home/anon/.local/ &&     chmod -R o+rw /home/anon/.local/ &&     sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser
+ ---> Using cache
+ ---> 0c7ee2131a9c
+Successfully built 0c7ee2131a9c
+docker logs -f si-proxy
+2018/06/03 07:07:13 si-i2p-plugin.go Timeout Time: 6 minutes
+2018/06/03 07:07:13 addresshelper.go  2 http://inr.i2p sam-host 7656
+addresshelper.go SAM client connection erroraddresshelper.go Setting up ClientWARNING: Lookup() Replyed to another name. assuming i2pd c++ fluke
+2018/06/03 07:07:58 addresshelper.go connecting to SAM bridge on: http://inr.i2p sam-host : 7656
+2018/06/03 07:07:58 si-http-proxy.go Starting HTTP proxy on:0.0.0.0:44443
+2018/06/03 07:07:58 si-http-proxy.go Connected SAM isolation stack to the HTTP proxy server
+2018/06/03 07:07:58 si-http-proxy.go HTTP Proxy prepared
+WARNING: Lookup() Replyed to another name. assuming i2pd c++ fluke
+WARNING: Lookup() Replyed to another name. assuming i2pd c++ fluke

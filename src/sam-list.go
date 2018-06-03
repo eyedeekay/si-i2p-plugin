@@ -68,12 +68,28 @@ func (samStack *SamList) initPipes() {
 
 func (samStack *SamList) createClient(request string) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHTTP(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
+	samStack.listOfClients = append(samStack.listOfClients,
+		newSamHTTP(samStack.samAddrString,
+			samStack.samPortString,
+			request,
+			samStack.timeoutTime,
+			samStack.lifeTime,
+			samStack.keepAlives,
+		),
+	)
 }
 
 func (samStack *SamList) createClientHTTP(request *http.Request) {
 	Log("sam-list.go Appending client to SAM stack.")
-	samStack.listOfClients = append(samStack.listOfClients, newSamHTTPHTTP(samStack.samAddrString, samStack.samPortString, request, samStack.timeoutTime, samStack.keepAlives))
+	samStack.listOfClients = append(samStack.listOfClients,
+		newSamHTTPHTTP(samStack.samAddrString,
+			samStack.samPortString,
+			request,
+			samStack.timeoutTime,
+			samStack.lifeTime,
+			samStack.keepAlives,
+		),
+	)
 }
 
 func (samStack *SamList) createSamList() {
@@ -105,12 +121,20 @@ func (samStack *SamList) hostCheck(request string) (bool, *SamHTTP) {
 	for index, client := range samStack.listOfClients {
 		Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)
 		Log("sam-list.go of", strconv.Itoa(len(samStack.listOfClients)))
-		if client.hostCheck(request) {
+		if client.hostCheck(request) > 0 {
 			Log("sam-list.go Client pipework for", request, "found.", client.host, "at", strconv.Itoa(index+1))
 			return true, &client
+		} else if client.hostCheck(request) < 0 {
+			Warn(nil, "", "sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.")
+			samStack.listOfClients = samStack.deleteClient(samStack.listOfClients, index)
+			return false, nil
 		}
 	}
 	return false, nil
+}
+
+func (samStack *SamList) deleteClient(s []SamHTTP, index int) []SamHTTP {
+	return append(s[:index], s[index+1])
 }
 
 func (samStack *SamList) findClient(request string) *SamHTTP {

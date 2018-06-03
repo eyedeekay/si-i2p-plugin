@@ -228,28 +228,30 @@ func (samConn *SamHTTP) hostGet() string {
 	return "http://" + samConn.host
 }
 
-func (samConn *SamHTTP) hostCheck(request string) bool {
+func (samConn *SamHTTP) hostCheck(request string) int {
 	host, _ := samConn.cleanURL(request)
 	_, err := url.ParseRequestURI(host)
+    if samConn.lifeTime < time.Now().Sub(samConn.useTime) {
+        Warn(nil, "sam-http.go Removing inactive client", "sam-http.go Removing inactive client", samConn.host)
+		samConn.CleanupClient()
+		return -1
+	}
+	Log("sam-http.go keeping client alive")
+	samConn.useTime = time.Now()
 	if err == nil {
 		if samConn.host == host {
 			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
-			return true
+			return 1
 		}
 		Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
-		return false
+		return 0
 	}
 	if samConn.host == host {
 		Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
-		return true
+		return 1
 	}
 	Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
-	if samConn.lifeTime > time.Now().Sub(samConn.useTime) {
-		samConn.CleanupClient()
-	} else {
-		samConn.useTime = time.Now()
-	}
-	return false
+	return 0
 }
 
 func (samConn *SamHTTP) getURL(request string) (string, string) {
@@ -426,19 +428,19 @@ func (samConn *SamHTTP) checkName() bool {
 func (samConn *SamHTTP) CleanupClient() {
 	samConn.sendPipe.Close()
 	samConn.nameFile.Close()
-    samConn.idFile.Close()
+	samConn.idFile.Close()
 	samConn.base64File.Close()
 	for _, url := range samConn.subCache {
 		url.cleanupDirectory()
 	}
 	err := samConn.samBridgeClient.Close()
-	if samConn.c, samConn.err = Fatal(err, "sam-http.go Closing SAM bridge error, retrying.", "sam-http.go Closing SAM bridge"); !samConn.c {
+	if samConn.c, samConn.err = Warn(err, "sam-http.go Closing SAM bridge error, retrying.", "sam-http.go Closing SAM bridge"); !samConn.c {
 		samConn.samBridgeClient.Close()
 	}
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
-func newSamHTTP(samAddrString, samPortString, request string, timeoutTime int, keepAlives bool) SamHTTP {
+func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeTime int, keepAlives bool) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),
@@ -446,12 +448,13 @@ func newSamHTTP(samAddrString, samPortString, request string, timeoutTime int, k
 		SetSamHTTPRequest(request),
 		SetSamHTTPTimeout(timeoutTime),
 		SetSamHTTPKeepAlives(keepAlives),
+		SetSamHTTPLifespan(lifeTime),
 	)
 	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
 }
 
-func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime int, keepAlives bool) SamHTTP {
+func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime, lifeTime int, keepAlives bool) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),
@@ -459,6 +462,7 @@ func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, 
 		SetSamHTTPRequest(request.URL.String()),
 		SetSamHTTPTimeout(timeoutTime),
 		SetSamHTTPKeepAlives(keepAlives),
+		SetSamHTTPLifespan(lifeTime),
 	)
 	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
