@@ -125,7 +125,7 @@ func (samStack *SamList) hostCheck(request string) (bool, *SamHTTP) {
 			Log("sam-list.go Client pipework for", request, "found.", client.host, "at", strconv.Itoa(index+1))
 			return true, &client
 		} else if client.hostCheck(request) < 0 {
-			Warn(nil, "", "sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.")
+			Log(nil, "sam-list.go Removing inactive client after", "sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.")
 			samStack.listOfClients = samStack.deleteClient(samStack.listOfClients, index)
 			return false, nil
 		}

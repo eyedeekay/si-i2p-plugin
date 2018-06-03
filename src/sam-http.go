@@ -341,15 +341,6 @@ func (samConn *SamHTTP) scannerText() (string, error) {
 	return text, err
 }
 
-/*
-func (samConn *SamHTTP) responsify(input string) io.ReadCloser {
-	tmp := ioutil.NopCloser(strings.NewReader(input))
-    defer tmp.Close()
-	Log("sam-list.go Responsifying string:")
-	return tmp
-}
-
-*/
 func (samConn *SamHTTP) printResponse() string {
 	s, e := samConn.scannerText()
 	if samConn.c, samConn.err = Fatal(e, "sam-http.go Response Retrieval Error", "sam-http.go Retrieving Responses"); !samConn.c {
