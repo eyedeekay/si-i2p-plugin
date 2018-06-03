@@ -35,6 +35,8 @@ func main() {
 		"i2p URL you want to retrieve")
 	addressHelper := flag.String("addresshelper", "http://inr.i2p",
 		"Jump/Addresshelper service you want to use")
+	destLifespan := flag.Int("lifespan", 3,
+		"Lifespan of an idle i2p destination in minutes(default three)")
 	timeoutTime := flag.Int("timeout", 6,
 		"Timeout duration in minutes(default six)")
 	/*
@@ -84,6 +86,7 @@ func main() {
 		dii2p.SetPort(*samPortString),
 		dii2p.SetTimeout(*timeoutTime),
 		dii2p.SetKeepAlives(*keepAlives),
+		dii2p.SetLifespan(*destLifespan),
 	)
 	if err != nil {
 		log.Fatal(err)

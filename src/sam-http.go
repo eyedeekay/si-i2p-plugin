@@ -33,6 +33,10 @@ type SamHTTP struct {
 	jar             *cookiejar.Jar
 	samAddrString   string
 	samPortString   string
+	initRequestURL  string
+
+	useTime  time.Time
+	lifeTime time.Duration
 
 	transport *http.Transport
 	subClient *http.Client
@@ -174,9 +178,7 @@ func (samConn *SamHTTP) setupTransport() {
 	//
 }
 
-func (samConn *SamHTTP) createClient(request string, samAddrString string, samPortString string) {
-	samConn.samAddrString = samAddrString
-	samConn.samPortString = samPortString
+func (samConn *SamHTTP) createClient() {
 	samConn.jar, samConn.err = cookiejar.New(nil)
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samConn.samAddrString, samConn.samPortString); samConn.c {
 		Log("sam-http.go Cookie Jar created")
@@ -187,28 +189,11 @@ func (samConn *SamHTTP) createClient(request string, samAddrString string, samPo
 		Log("sam-http.go Setting Dial function")
 		samConn.setupTransport()
 		if samConn.host == "" {
-			samConn.host, samConn.directory = samConn.hostSet(request)
+			samConn.host, samConn.directory = samConn.hostSet(samConn.initRequestURL)
 			samConn.initPipes()
 		}
-		samConn.setName(request)
+		samConn.setName(samConn.initRequestURL)
 		samConn.subCache = append(samConn.subCache, NewSamURL(samConn.directory))
-	}
-}
-
-func (samConn *SamHTTP) createClientHTTP(request *http.Request, samAddrString string, samPortString string) {
-	samConn.samAddrString = samAddrString
-	samConn.samPortString = samPortString
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetHost(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG), goSam.SetUnpublished(true), goSam.SetInQuantity(15), goSam.SetOutQuantity(15))
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go 205 SAM Client Connection Error", "sam-http.go SAM client connecting", samConn.samAddrString, samConn.samPortString); samConn.c {
-		Log("sam-http.go Setting Transport")
-		Log("sam-http.go Setting Dial function")
-		samConn.setupTransport()
-		if samConn.host == "" {
-			samConn.host, samConn.directory = samConn.hostSet(request.URL.String())
-			samConn.initPipes()
-		}
-		samConn.setName(request.URL.String()) //, samConn.samBridgeClient)
-		samConn.subCache = append(samConn.subCache, NewSamURLHTTP(request))
 	}
 }
 
@@ -447,23 +432,40 @@ func (samConn *SamHTTP) CleanupClient() {
 }
 
 func newSamHTTP(samAddrString, samPortString, request string, timeoutTime int, keepAlives bool) SamHTTP {
-	Log("sam-http.go Creating a new SAMv3 Client: ", request)
-	var samConn SamHTTP
-	samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
-	samConn.otherTimeoutTime = time.Duration(timeoutTime/3) * time.Minute
-	samConn.keepAlives = keepAlives
-	Log(request)
-	samConn.createClient(request, samAddrString, samPortString)
+    Log("sam-http.go Creating a new SAMv3 Client.")
+	samConn, err := NewSamHTTPFromOptions(
+        SetSamHTTPHost(samAddrString),
+        SetSamHTTPPort(samPortString),
+        SetSamHTTPRequest(request),
+        SetSamHTTPTimeout(timeoutTime),
+        SetSamHTTPKeepAlives(keepAlives),
+    )
+    Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
 }
 
 func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime int, keepAlives bool) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
-	var samConn SamHTTP
-	samConn.timeoutTime = time.Duration(timeoutTime) * time.Minute
-	samConn.otherTimeoutTime = time.Duration(timeoutTime/3) * time.Minute
-	samConn.keepAlives = keepAlives
-	Log(request.Host + request.URL.Path)
-	samConn.createClientHTTP(request, samAddrString, samPortString)
+	samConn, err := NewSamHTTPFromOptions(
+        SetSamHTTPHost(samAddrString),
+        SetSamHTTPPort(samPortString),
+        SetSamHTTPRequest(request.URL.String()),
+        SetSamHTTPTimeout(timeoutTime),
+        SetSamHTTPKeepAlives(keepAlives),
+    )
+    Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
+}
+
+//NewSamHTTPFromOptions creates a new SamHTTP connection manager for a single eepSite
+func NewSamHTTPFromOptions(opts ...func(*SamHTTP) error) (SamHTTP, error) {
+	Log("sam-http.go Creating a new SAMv3 Client.")
+	var samConn SamHTTP
+	for _, o := range opts {
+		if err := o(&samConn); err != nil {
+			return samConn, err
+		}
+	}
+    samConn.createClient()
+	return samConn, nil
 }

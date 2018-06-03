@@ -1,7 +1,8 @@
 Destination-Isolating i2p HTTP Proxy(SAM Application)
 =====================================================
 
-*one eepSite, one destination.*
+*one eepSite, one destination. Semi-automatic contextual identity management*
+*for casually browsing i2p eepSites.*
 
 This is an i2p SAM application which presents an HTTP proxy(on port 4443 by
 default) that acts as an intermediate between your browser and the i2p network.
@@ -164,11 +165,7 @@ Version Roadmap:
 Silly Questions I'm asking myself about how I want it to work:
 --------------------------------------------------------------
 
-Definitely not going to do any more filtering than I already do. Instead I'm
-going to do build a different proxy to do that and demonstrate how to connect
-the two.
-
-For right not, this proxy is definitely only intended for browsing in the i2p
+For right now, this proxy is definitely only intended for browsing in the i2p
 network and should not be combined with Tor in like, a FoxyProxy type situation,
 until someone has figured if there's a way to guarantee TorButton and all the
 Stream-Isolation stuff works.

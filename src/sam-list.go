@@ -23,6 +23,7 @@ type SamList struct {
 	up            bool
 	dir           string
 	timeoutTime   int
+	lifeTime      int
 
 	lastAddress string
 
