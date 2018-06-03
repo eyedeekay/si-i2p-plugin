@@ -98,36 +98,33 @@ func (samStack *SamList) sendClientRequestHTTP(request *http.Request) (*http.Cli
 	return nil, "nil client"
 }
 
-func (samStack *SamList) findClient(request string) *SamHTTP {
-	found := false
-	var c SamHTTP
+func (samStack *SamList) hostCheck(request string) (bool, *SamHTTP) {
 	if !CheckURLType(request) {
-		return nil
+		return false, nil
 	}
 	for index, client := range samStack.listOfClients {
 		Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)
 		Log("sam-list.go of", strconv.Itoa(len(samStack.listOfClients)))
 		if client.hostCheck(request) {
 			Log("sam-list.go Client pipework for", request, "found.", client.host, "at", strconv.Itoa(index+1))
-			found = true
-			c = client
-			return &c
+			return true, &client
 		}
 	}
-	if !found {
-		Log("sam-list.go Client pipework for", request, "not found: Creating.")
-		samStack.createClient(request)
-		for index, client := range samStack.listOfClients {
-			Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)
-			Log("sam-list.go of", strconv.Itoa(len(samStack.listOfClients)))
-			if client.hostCheck(request) {
-				Log("sam-list.go Client pipework for", request, "found.", client.host, "at", strconv.Itoa(index+1))
-				c = client
-				return &c
-			}
-		}
+	return false, nil
+}
+
+func (samStack *SamList) findClient(request string) *SamHTTP {
+	if !CheckURLType(request) {
+		return nil
 	}
-	return &c
+	found, c := samStack.hostCheck(request)
+	if found {
+		return c
+	}
+	Log("sam-list.go Client pipework for", request, "not found: Creating.")
+	samStack.createClient(request)
+	_, c = samStack.hostCheck(request)
+	return c
 }
 
 func (samStack *SamList) copyRequest(request *http.Request, response *http.Response, directory string) *http.Response {

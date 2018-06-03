@@ -18,7 +18,7 @@ import (
 	"github.com/eyedeekay/i2pasta/addresshelper"
 )
 
-// Remove this when you get the options laid in properly.
+//DEBUG Remove this when you get the options laid in properly.
 var DEBUG bool
 
 //SamHTTP is an HTTP proxy which requests resources from the i2p network using
@@ -244,6 +244,11 @@ func (samConn *SamHTTP) hostCheck(request string) bool {
 		return true
 	}
 	Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
+	if samConn.lifeTime > time.Now().Sub(samConn.useTime) {
+		samConn.CleanupClient()
+	} else {
+		samConn.useTime = time.Now()
+	}
 	return false
 }
 
@@ -421,6 +426,8 @@ func (samConn *SamHTTP) checkName() bool {
 func (samConn *SamHTTP) CleanupClient() {
 	samConn.sendPipe.Close()
 	samConn.nameFile.Close()
+    samConn.idFile.Close()
+	samConn.base64File.Close()
 	for _, url := range samConn.subCache {
 		url.cleanupDirectory()
 	}
@@ -432,28 +439,28 @@ func (samConn *SamHTTP) CleanupClient() {
 }
 
 func newSamHTTP(samAddrString, samPortString, request string, timeoutTime int, keepAlives bool) SamHTTP {
-    Log("sam-http.go Creating a new SAMv3 Client.")
+	Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
-        SetSamHTTPHost(samAddrString),
-        SetSamHTTPPort(samPortString),
-        SetSamHTTPRequest(request),
-        SetSamHTTPTimeout(timeoutTime),
-        SetSamHTTPKeepAlives(keepAlives),
-    )
-    Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
+		SetSamHTTPHost(samAddrString),
+		SetSamHTTPPort(samPortString),
+		SetSamHTTPRequest(request),
+		SetSamHTTPTimeout(timeoutTime),
+		SetSamHTTPKeepAlives(keepAlives),
+	)
+	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
 }
 
 func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime int, keepAlives bool) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
-        SetSamHTTPHost(samAddrString),
-        SetSamHTTPPort(samPortString),
-        SetSamHTTPRequest(request.URL.String()),
-        SetSamHTTPTimeout(timeoutTime),
-        SetSamHTTPKeepAlives(keepAlives),
-    )
-    Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
+		SetSamHTTPHost(samAddrString),
+		SetSamHTTPPort(samPortString),
+		SetSamHTTPRequest(request.URL.String()),
+		SetSamHTTPTimeout(timeoutTime),
+		SetSamHTTPKeepAlives(keepAlives),
+	)
+	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
 }
 
@@ -466,6 +473,6 @@ func NewSamHTTPFromOptions(opts ...func(*SamHTTP) error) (SamHTTP, error) {
 			return samConn, err
 		}
 	}
-    samConn.createClient()
+	samConn.createClient()
 	return samConn, nil
 }

@@ -3,12 +3,13 @@ package dii2p
 import (
 	"fmt"
 	"strconv"
-    "time"
+	"time"
 )
 
-//ClientOption is a SamHTTP option
+//ConnectOption is a SamHTTP option
 type ConnectOption func(*SamHTTP) error
 
+//SetSamHTTPHost sets the host of the client's SAM bridge
 func SetSamHTTPHost(s string) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
 		c.samAddrString = s
@@ -16,7 +17,7 @@ func SetSamHTTPHost(s string) func(*SamHTTP) error {
 	}
 }
 
-//SetPort sets the port of the client's SAM bridge
+//SetSamHTTPPort sets the port of the client's SAM bridge
 func SetSamHTTPPort(s interface{}) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
 		switch v := s.(type) {
@@ -42,6 +43,7 @@ func SetSamHTTPPort(s interface{}) func(*SamHTTP) error {
 	}
 }
 
+//SetSamHTTPRequest sets the initial request URL for the SamHTTP connection
 func SetSamHTTPRequest(s string) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
 		c.initRequestURL = s
@@ -49,17 +51,28 @@ func SetSamHTTPRequest(s string) func(*SamHTTP) error {
 	}
 }
 
+//SetSamHTTPTimeout sets the timeout of the SamHTTP connection
 func SetSamHTTPTimeout(s int) func(*SamHTTP) error {
-    return func(c *SamHTTP) error {
+	return func(c *SamHTTP) error {
 		c.timeoutTime = time.Duration(s) * time.Minute
-        c.otherTimeoutTime = time.Duration(s / 3) * time.Minute
+		c.otherTimeoutTime = time.Duration(s/3) * time.Minute
 		return nil
 	}
 }
 
+//SetSamHTTPKeepAlives tells the SamHTTP connection whether to accept keepAlives
 func SetSamHTTPKeepAlives(s bool) func(*SamHTTP) error {
-    return func(c *SamHTTP) error {
+	return func(c *SamHTTP) error {
 		c.keepAlives = s
+		return nil
+	}
+}
+
+//SetSamHTTPLifespan set's the time before an inactive SamHTTP client is torn down
+func SetSamHTTPLifespan(s int) func(*SamHTTP) error {
+	return func(c *SamHTTP) error {
+		c.lifeTime = time.Duration(s) * time.Minute
+		c.useTime = time.Now()
 		return nil
 	}
 }

@@ -128,8 +128,8 @@ func (samServiceStack *SamServices) writeDetails(details string) bool {
 func (samServiceStack *SamServices) writeResponses() {
 	Log("Writing responses:")
 	for i, service := range samServiceStack.listOfServices {
-		log.Println("Checking for responses: %s", i+1)
-		log.Println("of: ", len(samServiceStack.listOfServices))
+		Log("Checking for responses: ", i+1)
+		Log("of: ", len(samServiceStack.listOfServices))
 		if service.printDetails() != "" {
 			go samServiceStack.writeDetails(service.printDetails())
 		}

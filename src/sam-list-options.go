@@ -74,7 +74,7 @@ func SetInitAddress(s string) func(*SamList) error {
 	}
 }
 
-//SetTimeout set's the client timeout
+//SetLifespan set's the time before an inactive client is torn down
 func SetLifespan(s int) func(*SamList) error {
 	return func(c *SamList) error {
 		c.lifeTime = s
