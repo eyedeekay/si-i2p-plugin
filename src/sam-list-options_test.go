@@ -91,3 +91,45 @@ func TestCreateSamListOptionsKeepAlives(t *testing.T) {
 	}
 	samProxies.CleanupClient()
 }
+
+func TestCreateSamListOptionsTunLength(t *testing.T) {
+	Verbose = true
+	DEBUG = true
+	samProxies, err := CreateSamList(
+		SetTunLength(3),
+	)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+	}
+	samProxies.CleanupClient()
+}
+
+func TestCreateSamListOptionsInQuantity(t *testing.T) {
+	Verbose = true
+	DEBUG = true
+	samProxies, err := CreateSamList(
+		SetInQuantity(15),
+	)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+	}
+	samProxies.CleanupClient()
+}
+
+func TestCreateSamListOptionsOutQuantity(t *testing.T) {
+	Verbose = true
+	DEBUG = true
+	samProxies, err := CreateSamList(
+		SetOutQuantity(15),
+	)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+	}
+	samProxies.CleanupClient()
+}

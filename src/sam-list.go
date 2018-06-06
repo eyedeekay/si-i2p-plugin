@@ -238,6 +238,12 @@ func CreateSamList(opts ...func(*SamList) error) (*SamList, error) {
 	var samStack SamList
 	samStack.dir = "parent"
 	samStack.up = false
+	samStack.timeoutTime = 6
+	samStack.lifeTime = 2
+	samStack.tunnelLength = 3
+	samStack.inboundQuantity = 15
+	samStack.outboundQuantity = 15
+	samStack.lastAddress = ""
 	Log("sam-list.go Parent proxy set to down.")
 	Log("sam-list.go Generating parent proxy structure.")
 	for _, o := range opts {

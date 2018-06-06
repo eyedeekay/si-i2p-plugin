@@ -110,15 +110,15 @@ func (e *errorString) Error() string {
 //on a per-eepSite basis
 func (samConn *SamHTTP) Dial(network, addr string) (net.Conn, error) {
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
-        goSam.SetHost(samConn.samAddrString),
-        goSam.SetPort(samConn.samPortString),
-        goSam.SetDebug(DEBUG),
-        goSam.SetUnpublished(true),
-        goSam.SetInLength(uint(samConn.tunnelLength)),
-        goSam.SetOutLength(uint(samConn.tunnelLength)),
-        goSam.SetInQuantity(uint(samConn.inboundQuantity)),
-        goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
-    )
+		goSam.SetHost(samConn.samAddrString),
+		goSam.SetPort(samConn.samPortString),
+		goSam.SetDebug(DEBUG),
+		goSam.SetUnpublished(true),
+		goSam.SetInLength(uint(samConn.tunnelLength)),
+		goSam.SetOutLength(uint(samConn.tunnelLength)),
+		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
+		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
+	)
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
 		return samConn.subDial(network, addr)
 	}
@@ -149,15 +149,15 @@ func (samConn *SamHTTP) connect() (net.Conn, error) {
 
 func (samConn *SamHTTP) reConnect() (net.Conn, error) {
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
-        goSam.SetHost(samConn.samAddrString),
-        goSam.SetPort(samConn.samPortString),
-        goSam.SetDebug(DEBUG),
-        goSam.SetUnpublished(true),
-        goSam.SetInLength(uint(samConn.tunnelLength)),
-        goSam.SetOutLength(uint(samConn.tunnelLength)),
-        goSam.SetInQuantity(uint(samConn.inboundQuantity)),
-        goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
-    )
+		goSam.SetHost(samConn.samAddrString),
+		goSam.SetPort(samConn.samPortString),
+		goSam.SetDebug(DEBUG),
+		goSam.SetUnpublished(true),
+		goSam.SetInLength(uint(samConn.tunnelLength)),
+		goSam.SetOutLength(uint(samConn.tunnelLength)),
+		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
+		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
+	)
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go 133 SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
 		Log("sam-http.go SAM Connection established")
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
@@ -205,15 +205,15 @@ func (samConn *SamHTTP) createClient() {
 		Log("sam-http.go Cookie Jar created")
 	}
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
-        goSam.SetHost(samConn.samAddrString),
-        goSam.SetPort(samConn.samPortString),
-        goSam.SetDebug(DEBUG),
-        goSam.SetUnpublished(true),
-        goSam.SetInLength(uint(samConn.tunnelLength)),
-        goSam.SetOutLength(uint(samConn.tunnelLength)),
-        goSam.SetInQuantity(uint(samConn.inboundQuantity)),
-        goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
-    )
+		goSam.SetHost(samConn.samAddrString),
+		goSam.SetPort(samConn.samPortString),
+		goSam.SetDebug(DEBUG),
+		goSam.SetUnpublished(true),
+		goSam.SetInLength(uint(samConn.tunnelLength)),
+		goSam.SetOutLength(uint(samConn.tunnelLength)),
+		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
+		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
+	)
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samConn.samAddrString, samConn.samPortString); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
@@ -499,6 +499,17 @@ func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, 
 func NewSamHTTPFromOptions(opts ...func(*SamHTTP) error) (SamHTTP, error) {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	var samConn SamHTTP
+	samConn.samAddrString = "127.0.0.1"
+	samConn.samPortString = "7657"
+	samConn.initRequestURL = ""
+	samConn.timeoutTime = time.Duration(6) * time.Minute
+	samConn.otherTimeoutTime = time.Duration(2) * time.Minute
+	samConn.keepAlives = true
+	samConn.lifeTime = time.Duration(12) * time.Minute
+	samConn.useTime = time.Now()
+	samConn.tunnelLength = 3
+	samConn.inboundQuantity = 15
+	samConn.outboundQuantity = 15
 	for _, o := range opts {
 		if err := o(&samConn); err != nil {
 			return samConn, err
