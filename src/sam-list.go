@@ -22,8 +22,12 @@ type SamList struct {
 	c             bool
 	up            bool
 	dir           string
-	timeoutTime   int
-	lifeTime      int
+
+	timeoutTime      int
+	lifeTime         int
+	tunnelLength     int
+	inboundQuantity  int
+	outboundQuantity int
 
 	lastAddress string
 
@@ -75,6 +79,9 @@ func (samStack *SamList) createClient(request string) {
 			samStack.timeoutTime,
 			samStack.lifeTime,
 			samStack.keepAlives,
+			samStack.tunnelLength,
+			samStack.inboundQuantity,
+			samStack.outboundQuantity,
 		),
 	)
 }
@@ -88,6 +95,9 @@ func (samStack *SamList) createClientHTTP(request *http.Request) {
 			samStack.timeoutTime,
 			samStack.lifeTime,
 			samStack.keepAlives,
+			samStack.tunnelLength,
+			samStack.inboundQuantity,
+			samStack.outboundQuantity,
 		),
 	)
 }

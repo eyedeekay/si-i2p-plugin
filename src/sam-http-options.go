@@ -76,3 +76,27 @@ func SetSamHTTPLifespan(s int) func(*SamHTTP) error {
 		return nil
 	}
 }
+
+//SetSamHTTPTunLength set's the symmetric inbound and outbound tunnel lengths
+func SetSamHTTPTunLength(s int) func(*SamHTTP) error {
+	return func(c *SamHTTP) error {
+		c.tunnelLength = s
+		return nil
+	}
+}
+
+//SetSamHTTPInQuantity set's the inbound tunnel quantity
+func SetSamHTTPInQuantity(s int) func(*SamHTTP) error {
+	return func(c *SamHTTP) error {
+		c.inboundQuantity = s
+		return nil
+	}
+}
+
+//SetSamHTTPOutQuantity set's the outbound tunnel quantity
+func SetSamHTTPOutQuantity(s int) func(*SamHTTP) error {
+	return func(c *SamHTTP) error {
+		c.outboundQuantity = s
+		return nil
+	}
+}

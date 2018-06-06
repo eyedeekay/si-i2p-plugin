@@ -140,24 +140,27 @@ Version Roadmap:
   * ~~0.19 - Expose an http proxy that hooks up to the existing infrastructure~~
    ~~for destination isolation~~
   * 0.20 - ~~Ready for more mainstream testing~~, ~~should successfully isolate~~
-   ~~requests for resources embedded in the retrieved web pages. Addresshelper.~~
+   ~~requests for resources embedded in the retrieved web pages.~~ Addresshelper
+   still needs alot of work. I did this too soon.
   * 0.21 - Should be able to generate services on the fly by talking to the SAM
   bridge. First worthwhile release for people who aren't shell enthusiasts.
-  Tunnels should kill themselves after inactivity, and revive themselves with
-  new identities after. This will help minimize the impact of cross-site
-  resource-request timing attacks by making destinations more ephemeral,
-  requiring an attacker to keep tunnels alive to monitor an identity long-term.
+  ~~Tunnels should kill themselves after inactivity, and revive themselves with~~
+  ~~new identities after. This will help minimize the impact of cross-site~~
+  ~~resource-request timing attacks by making destinations more ephemeral,~~
+  ~~requiring an attacker to keep tunnels alive to monitor an identity~~
+  ~~long-term.~~
   * 0.22 - Library-fication should be finished by here. Turning the underlying
   code into a library will mostly be a matter of identifying which features need
   to be exposed for it to be useful in that way. I'll update the number when
-  I've written go-based tests for it.
-  * 0.23 - Enable additional configuration options, like tunnel lengths(always
-  symmetrical) tunnel quantities(not always symmetical) idle connections per
-  host, and backup tunnel quantity. If I'm being honest, this will probably be
-  done before 0.21 and 0.22, but it won't be incremented until they are done
-  too.
+  I've written go-based tests for it. ~~Maybe 1/5th of it has relevant tests~~
+  ~~now.~~
+  * 0.23 - ~~Enable additional configuration options, like tunnel lengths~~
+  ~~(always symmetrical) tunnel quantities(not always symmetical)~~ idle
+  connections per host, and backup tunnel quantity. If I'm being honest,
+  this will probably be done before 0.21 and 0.22, but it won't be incremented
+  until they are done too.
   * 0.24 - Experiment with adding a SOCKS proxy. Create a version which contains
-  a SOCKS proxy for testing.Actually have a SOCKS proxy.
+  a SOCKS proxy for testing. Actually have a SOCKS proxy. [This should be acceptable in implementing the SOCKS proxy](https://github.com/armon/go-socks5)
   * 0.25 - Package.
   * 0.26 -
 
@@ -209,3 +212,9 @@ Screenshots:
 ### screenshot of it in development, with the pipes.
 
 ![Proof-of-Concept screenshot of it in development, with the pipes.](misc/screenshot-pipes.png)
+
+## Donate
+
+### Monero Wallet Address
+
+  XMR:43V6cTZrUfAb9JD6Dmn3vjdT9XxLbiE27D1kaoehb359ACaHs8191mR4RsJH7hGjRTiAoSwFQAVdsCBToXXPAqTMDdP2bZB

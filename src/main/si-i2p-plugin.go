@@ -39,14 +39,12 @@ func main() {
 		"Lifespan of an idle i2p destination in minutes(default twelve)")
 	timeoutTime := flag.Int("timeout", 6,
 		"Timeout duration in minutes(default six)")
-	/*
-		    tunnelLength := flag.Int("tunlength", 3,
-				"Tunnel Length(default 3)")
-		    inboundTunnels := flag.Int("in-tunnels", 16,
-				"Inbound Tunnel Count(default 16)")
-		    outboundTunnels := flag.Int("out-tunnels", 4,
-				"Inbound Tunnel Count(default 4)")
-	*/
+	tunnelLength := flag.Int("tunlength", 3,
+		"Tunnel Length(default 3)")
+	inboundTunnels := flag.Int("in-tunnels", 15,
+		"Inbound Tunnel Count(default 15)")
+	outboundTunnels := flag.Int("out-tunnels", 15,
+		"Inbound Tunnel Count(default 15)")
 	keepAlives := flag.Bool("disable-keepalives", false,
 		"Disable keepalives(default false)")
 
@@ -60,7 +58,10 @@ func main() {
 	dii2p.Log("si-i2p-plugin.go Proxy Port:", *proxPortString)
 	dii2p.Log("si-i2p-plugin.go Working Directory:", *workDirectory)
 	dii2p.Log("si-i2p-plugin.go Addresshelper Services:", *addressHelper)
-	log.Println("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
+	dii2p.Log("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
+	dii2p.Log("si-i2p-plugin.go Tunnel Length:", *tunnelLength)
+	dii2p.Log("si-i2p-plugin.go Inbound Tunnel Quantity:", *inboundTunnels)
+	dii2p.Log("si-i2p-plugin.go Outbount Tunnel Quantity", *outboundTunnels)
 
 	if !*keepAlives {
 		dii2p.Log("si-i2p-plugin.go Keepalives Enabled")
@@ -87,7 +88,11 @@ func main() {
 		dii2p.SetTimeout(*timeoutTime),
 		dii2p.SetKeepAlives(*keepAlives),
 		dii2p.SetLifespan(*destLifespan),
+		dii2p.SetTunLength(*tunnelLength),
+		dii2p.SetInQuantity(*inboundTunnels),
+		dii2p.SetOutQuantity(*outboundTunnels),
 	)
+
 	if err != nil {
 		log.Fatal(err)
 	}

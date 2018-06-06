@@ -81,3 +81,27 @@ func SetLifespan(s int) func(*SamList) error {
 		return nil
 	}
 }
+
+//SetTunLength set's the symmetric inbound and outbound tunnel lengths
+func SetTunLength(s int) func(*SamList) error {
+	return func(c *SamList) error {
+		c.tunnelLength = s
+		return nil
+	}
+}
+
+//SetInQuantity set's the inbound tunnel quantity
+func SetInQuantity(s int) func(*SamList) error {
+	return func(c *SamList) error {
+		c.inboundQuantity = s
+		return nil
+	}
+}
+
+//SetOutQuantity set's the outbound tunnel quantity
+func SetOutQuantity(s int) func(*SamList) error {
+	return func(c *SamList) error {
+		c.outboundQuantity = s
+		return nil
+	}
+}

@@ -35,8 +35,11 @@ type SamHTTP struct {
 	samPortString   string
 	initRequestURL  string
 
-	useTime  time.Time
-	lifeTime time.Duration
+	useTime          time.Time
+	lifeTime         time.Duration
+	tunnelLength     int
+	inboundQuantity  int
+	outboundQuantity int
 
 	transport *http.Transport
 	subClient *http.Client
@@ -106,7 +109,16 @@ func (e *errorString) Error() string {
 //Dial is a custom Dialer function that allows us to keep the same i2p destination
 //on a per-eepSite basis
 func (samConn *SamHTTP) Dial(network, addr string) (net.Conn, error) {
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetHost(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG), goSam.SetUnpublished(true), goSam.SetInQuantity(15), goSam.SetOutQuantity(15))
+	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
+        goSam.SetHost(samConn.samAddrString),
+        goSam.SetPort(samConn.samPortString),
+        goSam.SetDebug(DEBUG),
+        goSam.SetUnpublished(true),
+        goSam.SetInLength(uint(samConn.tunnelLength)),
+        goSam.SetOutLength(uint(samConn.tunnelLength)),
+        goSam.SetInQuantity(uint(samConn.inboundQuantity)),
+        goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
+    )
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
 		return samConn.subDial(network, addr)
 	}
@@ -136,7 +148,16 @@ func (samConn *SamHTTP) connect() (net.Conn, error) {
 }
 
 func (samConn *SamHTTP) reConnect() (net.Conn, error) {
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetHost(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG), goSam.SetUnpublished(true), goSam.SetInQuantity(15), goSam.SetOutQuantity(15))
+	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
+        goSam.SetHost(samConn.samAddrString),
+        goSam.SetPort(samConn.samPortString),
+        goSam.SetDebug(DEBUG),
+        goSam.SetUnpublished(true),
+        goSam.SetInLength(uint(samConn.tunnelLength)),
+        goSam.SetOutLength(uint(samConn.tunnelLength)),
+        goSam.SetInQuantity(uint(samConn.inboundQuantity)),
+        goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
+    )
 	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go 133 SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
 		Log("sam-http.go SAM Connection established")
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
@@ -183,7 +204,16 @@ func (samConn *SamHTTP) createClient() {
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samConn.samAddrString, samConn.samPortString); samConn.c {
 		Log("sam-http.go Cookie Jar created")
 	}
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(goSam.SetHost(samConn.samAddrString), goSam.SetPort(samConn.samPortString), goSam.SetDebug(DEBUG), goSam.SetUnpublished(true), goSam.SetInQuantity(15), goSam.SetOutQuantity(15))
+	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
+        goSam.SetHost(samConn.samAddrString),
+        goSam.SetPort(samConn.samPortString),
+        goSam.SetDebug(DEBUG),
+        goSam.SetUnpublished(true),
+        goSam.SetInLength(uint(samConn.tunnelLength)),
+        goSam.SetOutLength(uint(samConn.tunnelLength)),
+        goSam.SetInQuantity(uint(samConn.inboundQuantity)),
+        goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
+    )
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samConn.samAddrString, samConn.samPortString); samConn.c {
 		Log("sam-http.go Setting Transport")
 		Log("sam-http.go Setting Dial function")
@@ -231,8 +261,8 @@ func (samConn *SamHTTP) hostGet() string {
 func (samConn *SamHTTP) hostCheck(request string) int {
 	host, _ := samConn.cleanURL(request)
 	_, err := url.ParseRequestURI(host)
-    if samConn.lifeTime < time.Now().Sub(samConn.useTime) {
-        Warn(nil, "sam-http.go Removing inactive client", "sam-http.go Removing inactive client", samConn.host)
+	if samConn.lifeTime < time.Now().Sub(samConn.useTime) {
+		Warn(nil, "sam-http.go Removing inactive client", "sam-http.go Removing inactive client", samConn.host)
 		samConn.CleanupClient()
 		return -1
 	}
@@ -431,7 +461,7 @@ func (samConn *SamHTTP) CleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
-func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeTime int, keepAlives bool) SamHTTP {
+func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity int) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),
@@ -440,12 +470,15 @@ func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeT
 		SetSamHTTPTimeout(timeoutTime),
 		SetSamHTTPKeepAlives(keepAlives),
 		SetSamHTTPLifespan(lifeTime),
+		SetSamHTTPTunLength(tunnelLength),
+		SetSamHTTPInQuantity(inboundQuantity),
+		SetSamHTTPOutQuantity(outboundQuantity),
 	)
 	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
 }
 
-func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime, lifeTime int, keepAlives bool) SamHTTP {
+func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity int) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),
@@ -454,6 +487,9 @@ func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, 
 		SetSamHTTPTimeout(timeoutTime),
 		SetSamHTTPKeepAlives(keepAlives),
 		SetSamHTTPLifespan(lifeTime),
+		SetSamHTTPTunLength(tunnelLength),
+		SetSamHTTPInQuantity(inboundQuantity),
+		SetSamHTTPOutQuantity(outboundQuantity),
 	)
 	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
