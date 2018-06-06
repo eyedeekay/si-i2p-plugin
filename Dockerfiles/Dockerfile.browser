@@ -3,10 +3,10 @@ ARG VERSION
 
 ENV DEBIAN_FRONTEND=noninteractive HOME=/home/anon
 
-RUN apt-get update && \
-    apt-get -y dist-upgrade && \
-    sed -i.bak 's/sid main/sid main contrib/g' /etc/apt/sources.list && \
-    apt-get update && apt-get install -y \
+RUN apt-get update
+RUN apt-get -y dist-upgrade
+RUN sed -i.bak 's/sid main/sid main contrib/g' /etc/apt/sources.list
+RUN apt-get update && apt-get install -y \
     iceweasel \
     gnupg \
     zenity \
@@ -45,13 +45,10 @@ RUN curl -sSL -o /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/pr
 
 RUN sed -i 's|i2pd.i2p|i2p-projekt.i2p|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 
-#GUESS WHAT YOU GET IF YOU COMMENT OUT THIS LINE:
-RUN sed -i 's|4444|44443|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
+RUN sed -i 's|4444|44444|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 RUN sed -i 's|pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1");|pref("network.proxy.no_proxies_on", 0);|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 
-
-#AND THIS LINE
-RUN sed -i 's|127.0.0.1|172.18.0.2|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
+RUN sed -i 's|127.0.0.1|172.80.80.3|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 
 RUN mv /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/extension-overrides.js \
     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/temp.js

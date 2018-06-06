@@ -7,7 +7,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/eyedeekay/si-i2p-plugin/src"
+	//"github.com/eyedeekay/si-i2p-plugin/src"
+    ".."
 )
 
 var exit bool = false
@@ -21,10 +22,16 @@ func main() {
 		"host: of the HTTP proxy")
 	proxPortString := flag.String("proxy-port", "4443",
 		":port of the HTTP proxy")
+    socksAddrString := flag.String("socks-addr", "127.0.0.1",
+		"host: of the SOCKS proxy")
+	socksPortString := flag.String("socks-port", "4446",
+		":port of the SOCKS proxy")
 	debugConnection := flag.Bool("conn-debug", false,
 		"Print connection debug info")
 	useHTTPProxy := flag.Bool("http-proxy", true,
 		"run the HTTP proxy(default true)")
+    useSOCKSProxy := flag.Bool("socks-proxy", false,
+		"run the SOCKS proxy(default true)")
 	verboseLogging := flag.Bool("verbose", false,
 		"Print connection debug info")
 	Defwd, _ := os.Getwd()
@@ -53,8 +60,10 @@ func main() {
 
 	dii2p.Log("si-i2p-plugin.go Sam Address:", *samAddrString)
 	dii2p.Log("si-i2p-plugin.go Sam Port:", *samPortString)
-	dii2p.Log("si-i2p-plugin.go Proxy Address:", *proxAddrString)
-	dii2p.Log("si-i2p-plugin.go Proxy Port:", *proxPortString)
+	dii2p.Log("si-i2p-plugin.go HTTP Proxy Address:", *proxAddrString)
+	dii2p.Log("si-i2p-plugin.go HTTP Proxy Port:", *proxPortString)
+    dii2p.Log("si-i2p-plugin.go SOCKS Proxy Address:", *socksAddrString)
+	dii2p.Log("si-i2p-plugin.go SOCKS Proxy Port:", *socksPortString)
 	dii2p.Log("si-i2p-plugin.go Working Directory:", *workDirectory)
 	dii2p.Log("si-i2p-plugin.go Addresshelper Services:", *addressHelper)
 	dii2p.Log("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
@@ -116,12 +125,21 @@ func main() {
 	}()
 
 	httpUp := false
+    socksUp := false
 
 	if *useHTTPProxy {
 		if !httpUp {
 			samProxy := dii2p.CreateHTTPProxy(*proxAddrString, *proxPortString, *address, *addressHelper, samProxies, *timeoutTime, *keepAlives)
-			dii2p.Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.Host)
+			dii2p.Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.Addr)
 			httpUp = true
+		}
+	}
+
+    if *useSOCKSProxy {
+		if !socksUp {
+			samProxy := dii2p.CreateSOCKSProxy(*socksAddrString, *socksPortString, *address, *addressHelper, samProxies, *timeoutTime, *keepAlives)
+			dii2p.Log("si-i2p-plugin.go Socks Proxy Started:" + samProxy.Addr)
+			socksUp = true
 		}
 	}
 

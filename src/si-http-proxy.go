@@ -10,7 +10,7 @@ import (
 
 //SamHTTPProxy is an http proxy for making isolated SAM requests
 type SamHTTPProxy struct {
-	Host        string
+	Addr        string
 	client      *SamList
 	transport   *http.Transport
 	newHandle   *http.Server
@@ -162,14 +162,14 @@ func (proxy *SamHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 //CreateHTTPProxy creates a SamHTTPProxy
 func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamHTTPProxy {
 	var samProxy SamHTTPProxy
-	samProxy.Host = proxAddr + ":" + proxPort
+	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
 	samProxy.addressbook = newAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
-	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.Host)
+	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute
 	samProxy.newHandle = &http.Server{
-		Addr:         samProxy.Host,
+		Addr:         samProxy.Addr,
 		Handler:      &samProxy,
 		ReadTimeout:  samProxy.timeoutTime,
 		WriteTimeout: samProxy.timeoutTime,

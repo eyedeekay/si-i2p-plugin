@@ -4,8 +4,9 @@ docker-clean:
 		sam-browser \
 		sam-host; true
 	docker rmi -f eyedeekay/sam-host \
-		docker rmi -f eyedeekay/sam-browser \
+		eyedeekay/sam-browser \
 		eyedeekay/si-i2p-plugin; true
+	docker network rm si; true
 
 docker-setup: docker docker-network docker-host docker-run docker-browser
 
@@ -22,6 +23,7 @@ browse: docker-browser
 		--network-alias sam-browser \
 		--hostname sam-browser \
 		--link si-proxy \
+		--ip 172.80.80.4 \
 		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
 		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
 		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
@@ -33,7 +35,7 @@ docker:
 
 
 docker-network:
-	docker network create si; true
+	docker network create --subnet 172.80.80.0/29 si; true
 
 docker-host:
 	docker run \
@@ -44,6 +46,7 @@ docker-host:
 		--hostname sam-host \
 		--link si-proxy \
 		--restart always \
+		--ip 172.80.80.2 \
 		-p :4567 \
 		-p 127.0.0.1:$(different_port):7073 \
 		--volume $(i2pd_dat):/var/lib/i2pd:rw \
@@ -60,7 +63,9 @@ docker-run: docker-tidy docker-host
 		--link sam-host \
 		--link sam-browser \
 		--user sii2pplugin \
+		--ip 172.80.80.3 \
 		-p 127.0.0.1:44443:44443 \
+		-p 127.0.0.1:44446:44446 \
 		--restart always \
 		-t eyedeekay/si-i2p-plugin
 
