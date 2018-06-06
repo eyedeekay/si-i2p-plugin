@@ -7,8 +7,7 @@ import (
 	"os/signal"
 	"time"
 
-	//"github.com/eyedeekay/si-i2p-plugin/src"
-	".."
+	"github.com/eyedeekay/si-i2p-plugin/src"
 )
 
 var exit bool = false
