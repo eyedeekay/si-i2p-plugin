@@ -14,7 +14,7 @@ type SamHTTPProxy struct {
 	client      *SamList
 	transport   *http.Transport
 	newHandle   *http.Server
-	addressbook *addressHelper
+	addressbook *AddressHelper
 	timeoutTime time.Duration
 	keepAlives  bool
 	err         error
@@ -164,7 +164,7 @@ func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, s
 	var samProxy SamHTTPProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = newAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
+	samProxy.addressbook = NewAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
 	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute

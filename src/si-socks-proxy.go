@@ -15,7 +15,7 @@ type samSOCKSProxy struct {
 	client      *SamList
 	transport   *http.Transport
 	newHandle   *socks5.Server
-	addressbook *addressHelper
+	addressbook *AddressHelper
 	timeoutTime time.Duration
 	keepAlives  bool
 	err         error
@@ -166,7 +166,7 @@ func CreateSOCKSProxy(proxAddr, proxPort, initAddress, addressHelperURL string, 
 	var samProxy samSOCKSProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = newAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
+	samProxy.addressbook = NewAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
 	log.Println("si-socks-proxy.go Starting SOCKS proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute
