@@ -211,9 +211,6 @@ noexit:
 user:
 	adduser --system --no-create-home --disabled-password --disabled-login --group sii2pplugin
 
-gofmt:
-	gofmt -w ./src/*.go ./src/*/*.go
-
 golist:
 	go list -f '{{.GoFiles}}' ./src
 
@@ -253,3 +250,6 @@ golint:
 
 govet:
 	cd src && go vet
+
+gofmt:
+	gofmt -w ./src/*.go ./src/*/*.go

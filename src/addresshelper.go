@@ -2,7 +2,6 @@ package dii2p
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -60,7 +59,7 @@ func (addressBook *AddressHelper) checkAddressHelper(url *http.Request) (*http.R
 		addressBook.addPair(url.URL)
 		return addressBook.base32ify(url)
 	} else if !addressBook.checkAddPair(url.URL.Host) {
-		log.Println("addresshelper.go addressBook URL detected")
+		Log("addresshelper.go addressBook URL detected")
 		return addressBook.base32ify(url)
 	} else if strings.Contains(url.URL.String(), ".b32.i2p") {
 		rq, err := http.NewRequest(url.Method, strings.TrimRight(url.URL.String(), "/"), url.Body)
@@ -70,14 +69,21 @@ func (addressBook *AddressHelper) checkAddressHelper(url *http.Request) (*http.R
 			return rq, false
 		}
 		Log("addresshelper.go wierd base32 error you need to debug when you're not violently ill.")
-		return url, false
-	}
+		return rq, false
+	}else if addressBook.Lookup(url.URL.String()) {
+        rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
+        if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
+            Log("addresshelper.go no rewrite required")
+            return rq, false
+        }
+        return rq, true
+    }
 	rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 	if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
 		Log("addresshelper.go no rewrite required")
 		return rq, false
 	}
-	return url, false
+	return rq, false
 }
 
 func (addressBook *AddressHelper) checkAddPair(arg string) bool {
@@ -94,14 +100,14 @@ func (addressBook *AddressHelper) checkAddPair(arg string) bool {
 	return true
 }
 
-func (addressBook *AddressHelper) Lookup(req string) {
+func (addressBook *AddressHelper) Lookup(req string) bool {
 	rv, jerr := addressBook.assistant.QueryHelper(req)
 	if jerr != "jumperror" {
 		addressBook.addPairString(rv)
-	} else {
-		log.Println("addressbook.go Jump URL not found")
+        return true
 	}
-	//return
+    Log("addressbook.go Jump URL not found")
+	return false
 }
 
 func (addressBook *AddressHelper) addPairString(url string) {

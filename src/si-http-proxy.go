@@ -133,9 +133,10 @@ func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int, use
 	if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 		return resp, doerr
 	}
+
 	if useah {
 		if strings.Contains(doerr.Error(), "Hostname error") {
-			log.Println("Unknown Hostname")
+			Log("Unknown Hostname")
 			proxy.addressbook.Lookup(req.Host)
 			requ, stage2 := proxy.addressbook.checkAddressHelper(req)
 			if stage2 {
