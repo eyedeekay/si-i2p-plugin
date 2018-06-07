@@ -15,9 +15,9 @@ type AddressHelper struct {
 	assistant *i2paddresshelper.I2paddresshelper
 	converter i2pconv.I2pconv
 
-    addressHelperURL string
-    samHostString string
-    samPortString string
+	addressHelperURL string
+	samHostString    string
+	samPortString    string
 
 	bookPath string
 	bookFile *os.File
@@ -68,16 +68,13 @@ func (addressBook *AddressHelper) checkAddressHelper(url *http.Request) (*http.R
 			Log("addresshelper.go no rewrite required")
 			return rq, false
 		}
-		Log("addresshelper.go wierd base32 error you need to debug when you're not violently ill.")
+		Log("addresshelper.go wierd base32 error you need to debug when you're not violently ill. Oh my god you forgot what this was now and you just noticed this log message.")
 		return url, false
 	} else if addressBook.assistant.CheckIsUnknownAddress(url.URL.String()) {
-        rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
-        if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
-            Log("addresshelper.go no rewrite required")
-            return rq, true
-        }
-        return url, true
-    }
+		if addressBook.Lookup(url.URL.String()) {
+			return url, true
+		}
+	}
 	rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 	if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
 		Log("addresshelper.go no rewrite required")
@@ -87,6 +84,7 @@ func (addressBook *AddressHelper) checkAddressHelper(url *http.Request) (*http.R
 }
 
 func (addressBook *AddressHelper) checkAddPair(arg string) bool {
+	addressBook.updateAh()
 	for _, pair := range addressBook.pairs {
 		kvPair := strings.SplitN(pair, "=", 2)
 		if kvPair != nil {
@@ -100,13 +98,27 @@ func (addressBook *AddressHelper) checkAddPair(arg string) bool {
 	return true
 }
 
+func (addressBook *AddressHelper) checkHasPair(arg string) bool {
+	for _, pair := range addressBook.pairs {
+		kvPair := strings.SplitN(pair, "=", 2)
+		if kvPair != nil {
+			if len(kvPair) == 2 {
+				if kvPair[0] == arg {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func (addressBook *AddressHelper) Lookup(req string) bool {
 	rv, jerr := addressBook.assistant.QueryHelper(req)
 	if jerr != "jumperror" {
 		addressBook.addPairString(rv)
-        return true
+		return true
 	}
-    Log("addressbook.go Jump URL not found")
+	Log("addressbook.go Jump URL not found")
 	return false
 }
 
@@ -159,7 +171,7 @@ func (addressBook *AddressHelper) getBase32(url *url.URL) (string, string) {
 			if len(kv) == 2 {
 				if kv[0] == url.Host {
 					b32, err := addressBook.converter.I2p64to32(kv[1])
-					if addressBook.c, addressBook.err = Warn(err, "addresshelper.go Base32 conversion failure", "Base32 converted"); addressBook.c {
+					if addressBook.c, addressBook.err = Warn(err, "addresshelper.go Base32 conversion failure", "addresshelper.go Base32 converted"); addressBook.c {
 						Log("addresshelper.go b32:", b32)
 						return kv[0], b32
 					}
@@ -199,28 +211,28 @@ func (addressBook *AddressHelper) updateAh() {
 
 func NewAddressHelper(AddressHelperURL, samHost, samPort string) *AddressHelper {
 	a, _ := NewAddressHelperFromOptions(
-        SetAddressHelperURL(AddressHelperURL),
-        SetAddressHelperHost(samHost),
-        SetAddressHelperPort(samPort),
-        SetAddressBookPath("addressbook.txt"),
-    )
+		SetAddressHelperURL(AddressHelperURL),
+		SetAddressHelperHost(samHost),
+		SetAddressHelperPort(samPort),
+		SetAddressBookPath("addressbook.txt"),
+	)
 	return a
 }
 
 func NewAddressHelperFromOptions(opts ...func(*AddressHelper) error) (*AddressHelper, error) {
 	var a AddressHelper
-    a.addressHelperURL = "inr.i2p"
-    a.samHostString = "127.0.0.1"
-    a.samPortString = "7656"
-    a.bookPath = "addressbook.txt"
+	a.addressHelperURL = "inr.i2p"
+	a.samHostString = "127.0.0.1"
+	a.samPortString = "7656"
+	a.bookPath = "addressbook.txt"
 	for _, o := range opts {
 		if err := o(&a); err != nil {
 			return nil, err
 		}
 	}
-    a.assistant, a.err = i2paddresshelper.NewI2pAddressHelper(a.addressHelperURL, a.samHostString, a.samPortString, DEBUG)
-    Fatal(a.err, "addresshelper.go failed to setup SAM bridge for addresshelper.", "addresshelper.go connecting to SAM bridge on:", a.addressHelperURL, a.samHostString, ":", a.samPortString)
-    a.pairs = []string{}
+	a.assistant, a.err = i2paddresshelper.NewI2pAddressHelper(a.addressHelperURL, a.samHostString, a.samPortString, DEBUG)
+	Fatal(a.err, "addresshelper.go failed to setup SAM bridge for addresshelper.", "addresshelper.go connecting to SAM bridge on:", a.addressHelperURL, a.samHostString, ":", a.samPortString)
+	a.pairs = []string{}
 	a.c = false
 	return &a, a.err
 }

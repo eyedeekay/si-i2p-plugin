@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/eyedeekay/si-i2p-plugin/src"
-    //".."
+	//"github.com/eyedeekay/si-i2p-plugin/src"
+	".."
 )
 
 var exit bool = false
@@ -22,7 +22,7 @@ func main() {
 		"host: of the HTTP proxy")
 	proxPortString := flag.String("proxy-port", "4443",
 		":port of the HTTP proxy")
-    socksAddrString := flag.String("socks-addr", "127.0.0.1",
+	socksAddrString := flag.String("socks-addr", "127.0.0.1",
 		"host: of the SOCKS proxy")
 	socksPortString := flag.String("socks-port", "4446",
 		":port of the SOCKS proxy")
@@ -30,7 +30,7 @@ func main() {
 		"Print connection debug info")
 	useHTTPProxy := flag.Bool("http-proxy", true,
 		"run the HTTP proxy(default true)")
-    useSOCKSProxy := flag.Bool("socks-proxy", false,
+	useSOCKSProxy := flag.Bool("socks-proxy", false,
 		"run the SOCKS proxy(default true)")
 	verboseLogging := flag.Bool("verbose", false,
 		"Print connection debug info")
@@ -53,6 +53,12 @@ func main() {
 		"Inbound Tunnel Count(default 15)")
 	keepAlives := flag.Bool("disable-keepalives", false,
 		"Disable keepalives(default false)")
+	idleConns := flag.Int("idle-conns", 4,
+		"Maximium idle connections per host(default 4)")
+	inboundBackups := flag.Int("in-backups", 4,
+		"Inbound Backup Count(default 4)")
+	outboundBackups := flag.Int("out-backups", 4,
+		"Inbound Backup Count(default 4)")
 
 	flag.Parse()
 
@@ -62,14 +68,17 @@ func main() {
 	dii2p.Log("si-i2p-plugin.go Sam Port:", *samPortString)
 	dii2p.Log("si-i2p-plugin.go HTTP Proxy Address:", *proxAddrString)
 	dii2p.Log("si-i2p-plugin.go HTTP Proxy Port:", *proxPortString)
-    dii2p.Log("si-i2p-plugin.go SOCKS Proxy Address:", *socksAddrString)
+	dii2p.Log("si-i2p-plugin.go SOCKS Proxy Address:", *socksAddrString)
 	dii2p.Log("si-i2p-plugin.go SOCKS Proxy Port:", *socksPortString)
 	dii2p.Log("si-i2p-plugin.go Working Directory:", *workDirectory)
 	dii2p.Log("si-i2p-plugin.go Addresshelper Services:", *addressHelper)
 	dii2p.Log("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
 	dii2p.Log("si-i2p-plugin.go Tunnel Length:", *tunnelLength)
 	dii2p.Log("si-i2p-plugin.go Inbound Tunnel Quantity:", *inboundTunnels)
-	dii2p.Log("si-i2p-plugin.go Outbount Tunnel Quantity", *outboundTunnels)
+	dii2p.Log("si-i2p-plugin.go Outbound Tunnel Quantity", *outboundTunnels)
+	dii2p.Log("si-i2p-plugin.go Idle Tunnel Count:", *idleConns)
+	dii2p.Log("si-i2p-plugin.go Inbound Backup Quantity:", *inboundBackups)
+	dii2p.Log("si-i2p-plugin.go Outbound Backup Quantity", *outboundBackups)
 
 	if !*keepAlives {
 		dii2p.Log("si-i2p-plugin.go Keepalives Enabled")
@@ -99,6 +108,9 @@ func main() {
 		dii2p.SetTunLength(*tunnelLength),
 		dii2p.SetInQuantity(*inboundTunnels),
 		dii2p.SetOutQuantity(*outboundTunnels),
+		dii2p.SetIdleConns(*idleConns),
+		dii2p.SetInBackups(*inboundBackups),
+		dii2p.SetOutBackups(*outboundBackups),
 	)
 
 	if err != nil {
@@ -125,7 +137,7 @@ func main() {
 	}()
 
 	httpUp := false
-    socksUp := false
+	socksUp := false
 
 	if *useHTTPProxy {
 		if !httpUp {
@@ -135,7 +147,7 @@ func main() {
 		}
 	}
 
-    if *useSOCKSProxy {
+	if *useSOCKSProxy {
 		if !socksUp {
 			samProxy := dii2p.CreateSOCKSProxy(*socksAddrString, *socksPortString, *address, *addressHelper, samProxies, *timeoutTime, *keepAlives)
 			dii2p.Log("si-i2p-plugin.go Socks Proxy Started:" + samProxy.Addr)

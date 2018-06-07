@@ -83,4 +83,4 @@ docker-copy:
 	docker cp sam-browser:/home/anon/i2p-browser.tar.gz ../di-i2p-browser.tar.gz
 
 stop:
-	docker rm -f si-proxy
+	docker rm -f si-proxy; true

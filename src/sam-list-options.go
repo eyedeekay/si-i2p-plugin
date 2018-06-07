@@ -105,3 +105,27 @@ func SetOutQuantity(s int) func(*SamList) error {
 		return nil
 	}
 }
+
+//SetIdleConns set's the max idle connections per host
+func SetIdleConns(s int) func(*SamList) error {
+	return func(c *SamList) error {
+		c.idleConns = s
+		return nil
+	}
+}
+
+//SetInBackups set's the inbound backup tunnel quantity
+func SetInBackups(s int) func(*SamList) error {
+	return func(c *SamList) error {
+		c.inboundBackupQuantity = s
+		return nil
+	}
+}
+
+//SetOutBackups set's the outbound backup tunnel quantity
+func SetOutBackups(s int) func(*SamList) error {
+	return func(c *SamList) error {
+		c.outboundBackupQuantity = s
+		return nil
+	}
+}

@@ -3,11 +3,11 @@ package dii2p
 import (
 	"io"
 	"log"
-    "net/http"
+	"net/http"
 	"strings"
 	"time"
 
-    "github.com/armon/go-socks5"
+	"github.com/armon/go-socks5"
 )
 
 type samSOCKSProxy struct {
@@ -170,9 +170,9 @@ func CreateSOCKSProxy(proxAddr, proxPort, initAddress, addressHelperURL string, 
 	log.Println("si-socks-proxy.go Starting SOCKS proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute
-    conf := &socks5.Config{}
+	conf := &socks5.Config{}
 	samProxy.newHandle, samProxy.err = socks5.New(conf)
-    Fatal(samProxy.err, "si-socks-proxy.go SOCKS proxy creation error", "si-socks-proxy.go SOCKS proxy created")
+	Fatal(samProxy.err, "si-socks-proxy.go SOCKS proxy creation error", "si-socks-proxy.go SOCKS proxy created")
 	log.Println("si-socks-proxy.go Connected SAM isolation stack to the SOCKS proxy server")
 	go samProxy.prepare()
 	log.Println("si-socks-proxy.go SOCKS Proxy prepared")

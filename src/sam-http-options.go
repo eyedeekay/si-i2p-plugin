@@ -100,3 +100,27 @@ func SetSamHTTPOutQuantity(s int) func(*SamHTTP) error {
 		return nil
 	}
 }
+
+//SetSamHTTPInBackupQuantity set's the inbound tunnel quantity
+func SetSamHTTPInBackupQuantity(s int) func(*SamHTTP) error {
+	return func(c *SamHTTP) error {
+		c.inboundBackupQuantity = s
+		return nil
+	}
+}
+
+//SetSamHTTPOutBackupQuantity set's the outbound tunnel quantity
+func SetSamHTTPOutBackupQuantity(s int) func(*SamHTTP) error {
+	return func(c *SamHTTP) error {
+		c.outboundBackupQuantity = s
+		return nil
+	}
+}
+
+//SetSamHTTPIdleQuantity set's the outbound tunnel quantity
+func SetSamHTTPIdleQuantity(s int) func(*SamHTTP) error {
+	return func(c *SamHTTP) error {
+		c.idleConns = s
+		return nil
+	}
+}

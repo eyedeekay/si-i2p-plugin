@@ -23,11 +23,14 @@ type SamList struct {
 	up            bool
 	dir           string
 
-	timeoutTime      int
-	lifeTime         int
-	tunnelLength     int
-	inboundQuantity  int
-	outboundQuantity int
+	timeoutTime            int
+	lifeTime               int
+	tunnelLength           int
+	inboundQuantity        int
+	outboundQuantity       int
+	inboundBackupQuantity  int
+	outboundBackupQuantity int
+	idleConns              int
 
 	lastAddress string
 
@@ -82,6 +85,9 @@ func (samStack *SamList) createClient(request string) {
 			samStack.tunnelLength,
 			samStack.inboundQuantity,
 			samStack.outboundQuantity,
+			samStack.idleConns,
+			samStack.inboundBackupQuantity,
+			samStack.outboundBackupQuantity,
 		),
 	)
 }
@@ -98,6 +104,9 @@ func (samStack *SamList) createClientHTTP(request *http.Request) {
 			samStack.tunnelLength,
 			samStack.inboundQuantity,
 			samStack.outboundQuantity,
+			samStack.idleConns,
+			samStack.inboundBackupQuantity,
+			samStack.outboundBackupQuantity,
 		),
 	)
 }
@@ -243,6 +252,9 @@ func CreateSamList(opts ...func(*SamList) error) (*SamList, error) {
 	samStack.tunnelLength = 3
 	samStack.inboundQuantity = 15
 	samStack.outboundQuantity = 15
+	samStack.inboundBackupQuantity = 4
+	samStack.outboundBackupQuantity = 4
+	samStack.idleConns = 4
 	samStack.lastAddress = ""
 	Log("sam-list.go Parent proxy set to down.")
 	Log("sam-list.go Generating parent proxy structure.")

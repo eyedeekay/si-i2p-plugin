@@ -35,11 +35,14 @@ type SamHTTP struct {
 	samPortString   string
 	initRequestURL  string
 
-	useTime          time.Time
-	lifeTime         time.Duration
-	tunnelLength     int
-	inboundQuantity  int
-	outboundQuantity int
+	useTime                time.Time
+	lifeTime               time.Duration
+	tunnelLength           int
+	inboundQuantity        int
+	outboundQuantity       int
+	inboundBackupQuantity  int
+	outboundBackupQuantity int
+	idleConns              int
 
 	transport *http.Transport
 	subClient *http.Client
@@ -182,7 +185,7 @@ func (samConn *SamHTTP) setupTransport() {
 		Dial: samConn.Dial,
 		//Dial:                  samConn.samBridgeClient.Dial,
 		MaxIdleConns:          0,
-		MaxIdleConnsPerHost:   4,
+		MaxIdleConnsPerHost:   samConn.idleConns,
 		DisableKeepAlives:     samConn.keepAlives,
 		ResponseHeaderTimeout: samConn.otherTimeoutTime,
 		ExpectContinueTimeout: samConn.otherTimeoutTime,
@@ -213,6 +216,8 @@ func (samConn *SamHTTP) createClient() {
 		goSam.SetOutLength(uint(samConn.tunnelLength)),
 		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
 		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
+		goSam.SetInBackups(uint(samConn.inboundQuantity)),
+		goSam.SetOutBackups(uint(samConn.outboundQuantity)),
 	)
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samConn.samAddrString, samConn.samPortString); samConn.c {
 		Log("sam-http.go Setting Transport")
@@ -461,7 +466,7 @@ func (samConn *SamHTTP) CleanupClient() {
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
-func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity int) SamHTTP {
+func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity, idleConns, inboundBackups, outboundBackups int) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),
@@ -473,12 +478,15 @@ func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeT
 		SetSamHTTPTunLength(tunnelLength),
 		SetSamHTTPInQuantity(inboundQuantity),
 		SetSamHTTPOutQuantity(outboundQuantity),
+		SetSamHTTPIdleQuantity(idleConns),
+		SetSamHTTPInBackupQuantity(inboundBackups),
+		SetSamHTTPOutBackupQuantity(outboundBackups),
 	)
 	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
 }
 
-func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity int) SamHTTP {
+func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity, idleConns, inboundBackups, outboundBackups int) SamHTTP {
 	Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),
@@ -490,6 +498,9 @@ func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, 
 		SetSamHTTPTunLength(tunnelLength),
 		SetSamHTTPInQuantity(inboundQuantity),
 		SetSamHTTPOutQuantity(outboundQuantity),
+		SetSamHTTPIdleQuantity(idleConns),
+		SetSamHTTPInBackupQuantity(inboundBackups),
+		SetSamHTTPOutBackupQuantity(outboundBackups),
 	)
 	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
@@ -510,6 +521,9 @@ func NewSamHTTPFromOptions(opts ...func(*SamHTTP) error) (SamHTTP, error) {
 	samConn.tunnelLength = 3
 	samConn.inboundQuantity = 15
 	samConn.outboundQuantity = 15
+	samConn.inboundBackupQuantity = 4
+	samConn.outboundBackupQuantity = 4
+	samConn.idleConns = 4
 	for _, o := range opts {
 		if err := o(&samConn); err != nil {
 			return samConn, err

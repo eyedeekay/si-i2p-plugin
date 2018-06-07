@@ -155,12 +155,13 @@ Version Roadmap:
   I've written go-based tests for it. ~~Maybe 1/5th of it has relevant tests~~
   ~~now.~~
   * 0.23 - ~~Enable additional configuration options, like tunnel lengths~~
-  ~~(always symmetrical) tunnel quantities(not always symmetical)~~ idle
-  connections per host, and backup tunnel quantity. If I'm being honest,
+  ~~(always symmetrical) tunnel quantities(not always symmetical) idle~~
+  ~~connections per host, and backup tunnel quantity.~~ If I'm being honest,
   this will probably be done before 0.21 and 0.22, but it won't be incremented
   until they are done too.
   * 0.24 - Experiment with adding a SOCKS proxy. Create a version which contains
   a SOCKS proxy for testing. Actually have a SOCKS proxy. [This should be acceptable in implementing the SOCKS proxy](https://github.com/armon/go-socks5)
+  Torbutton Control Port compatibility.
   * 0.25 - Package.
   * 0.26 -
 
