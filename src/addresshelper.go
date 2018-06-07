@@ -212,7 +212,7 @@ func NewAddressHelperFromOptions(opts ...func(*AddressHelper) error) (*AddressHe
 			return nil, err
 		}
 	}
-    a.assistant, a.err = i2paddresshelper.NewI2pAddressHelper(a.addressHelperURL, a.samHostString, a.samPortString)
+    a.assistant, a.err = i2paddresshelper.NewI2pAddressHelper(a.addressHelperURL, a.samHostString, a.samPortString, true)
     Fatal(a.err, "addresshelper.go failed to setup SAM bridge for addresshelper.", "addresshelper.go connecting to SAM bridge on:", a.addressHelperURL, a.samHostString, ":", a.samPortString)
     a.pairs = []string{}
 	a.c = false
