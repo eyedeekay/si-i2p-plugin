@@ -252,8 +252,8 @@ func CreateSamList(opts ...func(*SamList) error) (*SamList, error) {
 	samStack.tunnelLength = 3
 	samStack.inboundQuantity = 15
 	samStack.outboundQuantity = 15
-	samStack.inboundBackupQuantity = 4
-	samStack.outboundBackupQuantity = 4
+	samStack.inboundBackupQuantity = 3
+	samStack.outboundBackupQuantity = 3
 	samStack.idleConns = 4
 	samStack.lastAddress = ""
 	Log("sam-list.go Parent proxy set to down.")

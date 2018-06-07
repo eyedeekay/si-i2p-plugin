@@ -216,8 +216,8 @@ func (samConn *SamHTTP) createClient() {
 		goSam.SetOutLength(uint(samConn.tunnelLength)),
 		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
 		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
-		goSam.SetInBackups(uint(samConn.inboundQuantity)),
-		goSam.SetOutBackups(uint(samConn.outboundQuantity)),
+		goSam.SetInBackups(uint(samConn.inboundBackupQuantity)),
+		goSam.SetOutBackups(uint(samConn.outboundBackupQuantity)),
 	)
 	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samConn.samAddrString, samConn.samPortString); samConn.c {
 		Log("sam-http.go Setting Transport")
@@ -521,8 +521,8 @@ func NewSamHTTPFromOptions(opts ...func(*SamHTTP) error) (SamHTTP, error) {
 	samConn.tunnelLength = 3
 	samConn.inboundQuantity = 15
 	samConn.outboundQuantity = 15
-	samConn.inboundBackupQuantity = 4
-	samConn.outboundBackupQuantity = 4
+	samConn.inboundBackupQuantity = 3
+	samConn.outboundBackupQuantity = 3
 	samConn.idleConns = 4
 	for _, o := range opts {
 		if err := o(&samConn); err != nil {
