@@ -14,7 +14,7 @@ func TestCreateAddressHelper(t *testing.T){
         SetAddressHelperPort("7656"),
         SetAddressBookPath("addressbook.txt"),
     )
-    a.Lookup("333.i2p")
+    a.Lookup("i2pforum.i2p")
     if err != nil {
 		t.Fatal(err)
 	} else {
