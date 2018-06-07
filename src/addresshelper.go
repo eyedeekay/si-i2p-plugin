@@ -69,14 +69,21 @@ func (addressBook *AddressHelper) checkAddressHelper(url *http.Request) (*http.R
 			return rq, false
 		}
 		Log("addresshelper.go wierd base32 error you need to debug when you're not violently ill.")
-		return rq, false
-	}
+		return url, false
+	} else if addressBook.assistant.CheckIsUnknownAddress(url.URL.String()) {
+        rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
+        if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
+            Log("addresshelper.go no rewrite required")
+            return rq, true
+        }
+        return url, true
+    }
 	rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 	if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
 		Log("addresshelper.go no rewrite required")
 		return rq, false
 	}
-	return rq, false
+	return url, false
 }
 
 func (addressBook *AddressHelper) checkAddPair(arg string) bool {
