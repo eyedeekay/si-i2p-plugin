@@ -32,7 +32,7 @@ func main() {
 		"run the HTTP proxy(default true)")
 	useSOCKSProxy := flag.Bool("socks-proxy", false,
 		"run the SOCKS proxy(default true)")
-	verboseLogging := flag.Bool("verbose", true,
+	verboseLogging := flag.Bool("verbose", false,
 		"Print connection debug info")
 	Defwd, _ := os.Getwd()
 	workDirectory := flag.String("directory", Defwd,

@@ -2,7 +2,7 @@ checkinstall: release postinstall-pak postremove-pak description-pak
 	fakeroot-ng checkinstall --default \
 		--install=no \
 		--fstrans=yes \
-		--maintainer=problemsolver@openmailbox.org \
+		--maintainer=eyedeekay@safe-mail.net \
 		--pkgname="si-i2p-plugin" \
 		--pkgversion="$(VERSION)" \
 		--arch "$(UARCH)" \
@@ -20,7 +20,7 @@ checkinstall-arm: build-arm postinstall-pak postremove-pak description-pak stati
 	fakeroot-ng UARCH="arm" checkinstall --default \
 		--install=no \
 		--fstrans=yes \
-		--maintainer=problemsolver@openmailbox.org \
+		--maintainer=eyedeekay@safe-mail.net \
 		--pkgname="si-i2p-plugin" \
 		--pkgversion="$(VERSION)-arm" \
 		--arch=arm \
