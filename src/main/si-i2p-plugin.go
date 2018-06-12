@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/eyedeekay/si-i2p-plugin/src"
-	//".."
+	//"github.com/eyedeekay/si-i2p-plugin/src"
+	".."
 )
 
 var exit bool = false
@@ -79,6 +79,8 @@ func main() {
 	dii2p.Log("si-i2p-plugin.go Idle Tunnel Count:", *idleConns)
 	dii2p.Log("si-i2p-plugin.go Inbound Backup Quantity:", *inboundBackups)
 	dii2p.Log("si-i2p-plugin.go Outbound Backup Quantity", *outboundBackups)
+
+	*useSOCKSProxy = false
 
 	if !*keepAlives {
 		dii2p.Log("si-i2p-plugin.go Keepalives Enabled")

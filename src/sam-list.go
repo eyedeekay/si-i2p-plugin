@@ -140,19 +140,30 @@ func (samStack *SamList) hostCheck(request string) (bool, *SamHTTP) {
 	for index, client := range samStack.listOfClients {
 		Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)
 		Log("sam-list.go of", strconv.Itoa(len(samStack.listOfClients)))
-		if client.hostCheck(request) > 0 {
+		if client.hostCheck(request) {
 			Log("sam-list.go Client pipework for", request, "found.", client.host, "at", strconv.Itoa(index+1))
 			return true, &client
-		} else if client.hostCheck(request) < 0 {
-			Log(nil, "sam-list.go Removing inactive client after", "sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.")
-			samStack.listOfClients = samStack.deleteClient(samStack.listOfClients, index)
-			return false, nil
 		}
 	}
 	return false, nil
 }
 
+func (samStack *SamList) lifetimeCheck(request string) bool {
+	if !CheckURLType(request) {
+		return false
+	}
+	for index, client := range samStack.listOfClients {
+		if client.lifetimeCheck(request) {
+			Log("sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.")
+			samStack.listOfClients = samStack.deleteClient(samStack.listOfClients, index)
+			return true
+		}
+	}
+	return false
+}
+
 func (samStack *SamList) deleteClient(s []SamHTTP, index int) []SamHTTP {
+	s[index].CleanupClient()
 	return append(s[:index], s[index+1])
 }
 
@@ -160,13 +171,18 @@ func (samStack *SamList) findClient(request string) *SamHTTP {
 	if !CheckURLType(request) {
 		return nil
 	}
+	if !samStack.lifetimeCheck(request) {
+		found, c := samStack.hostCheck(request)
+		if found {
+			return c
+		}
+	}
+	Log("sam-list.go Client pipework for", request, "not found: Creating.")
+	samStack.createClient(request)
 	found, c := samStack.hostCheck(request)
 	if found {
 		return c
 	}
-	Log("sam-list.go Client pipework for", request, "not found: Creating.")
-	samStack.createClient(request)
-	_, c = samStack.hostCheck(request)
 	return c
 }
 

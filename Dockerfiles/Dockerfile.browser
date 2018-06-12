@@ -43,7 +43,7 @@ RUN rm -f /home/anon/tor.tar.xz*
 RUN curl -sSL -o /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js \
     https://github.com/PurpleI2P/i2pdbrowser/raw/master/linux/build/preferences/syspref.js
 
-RUN sed -i 's|i2pd.i2p|i2pforum.i2p|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
+RUN sed -i 's|i2pd.i2p|i2p-projekt.i2p|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 
 RUN sed -i 's|4444|44443|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 RUN sed -i 's|pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1");|pref("network.proxy.no_proxies_on", 0);|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js

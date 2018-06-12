@@ -8,4 +8,4 @@ WORKDIR /opt/
 RUN make release && chmod a+x /opt/bin/si-i2p-plugin
 RUN apk del go go-tools go-doc git make musl-dev musl musl-utils
 USER sii2pplugin
-CMD /opt/bin/si-i2p-plugin -socks-addr=0.0.0.0 -socks-port=44446 -proxy-addr=0.0.0.0 -proxy-port=44443 -bridge-addr=sam-host
+CMD /opt/bin/si-i2p-plugin -verbose=true -proxy-addr=0.0.0.0 -proxy-port=44443 -bridge-addr=sam-host

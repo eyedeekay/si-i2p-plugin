@@ -58,9 +58,6 @@ func (addressBook *AddressHelper) checkAddressHelper(url *http.Request) (*http.R
 		Log("addresshelper.go ?i2paddresshelper detected")
 		addressBook.addPair(url.URL)
 		return addressBook.base32ify(url)
-	} else if !addressBook.checkAddPair(url.URL.Host) {
-		Log("addresshelper.go addressBook URL detected")
-		return addressBook.base32ify(url)
 	} else if strings.Contains(url.URL.String(), ".b32.i2p") {
 		rq, err := http.NewRequest(url.Method, strings.TrimRight(url.URL.String(), "/"), url.Body)
 		if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {
@@ -74,6 +71,9 @@ func (addressBook *AddressHelper) checkAddressHelper(url *http.Request) (*http.R
 		if addressBook.Lookup(url.URL.String()) {
 			return url, true
 		}
+	} else if !addressBook.checkAddPair(url.URL.Host) {
+		Log("addresshelper.go addressBook URL detected")
+		return addressBook.base32ify(url)
 	}
 	rq, err := http.NewRequest(url.Method, url.URL.String(), url.Body)
 	if addressBook.c, addressBook.err = Fatal(err, "addresshelper.go Request return error", "addresshelper.go Returning same request"); addressBook.c {

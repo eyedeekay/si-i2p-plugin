@@ -263,30 +263,36 @@ func (samConn *SamHTTP) hostGet() string {
 	return "http://" + samConn.host
 }
 
-func (samConn *SamHTTP) hostCheck(request string) int {
+func (samConn *SamHTTP) hostCheck(request string) bool {
 	host, _ := samConn.cleanURL(request)
 	_, err := url.ParseRequestURI(host)
-	if samConn.lifeTime < time.Now().Sub(samConn.useTime) {
-		Warn(nil, "sam-http.go Removing inactive client", "sam-http.go Removing inactive client", samConn.host)
-		samConn.CleanupClient()
-		return -1
-	}
 	Log("sam-http.go keeping client alive")
 	samConn.useTime = time.Now()
 	if err == nil {
 		if samConn.host == host {
 			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
-			return 1
+			return true
 		}
 		Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
-		return 0
+		return false
 	}
+	Warn(err, "sam-http.go host check error", "sam-http.go host check undefined behavior")
 	if samConn.host == host {
 		Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
-		return 1
+		return true
 	}
-	Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
-	return 0
+	//Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
+	//return false
+	return false
+}
+
+func (samConn *SamHTTP) lifetimeCheck(request string) bool {
+	if samConn.lifeTime < time.Now().Sub(samConn.useTime) {
+		Warn(nil, "sam-http.go Removing inactive client", "sam-http.go Removing inactive client", samConn.host)
+		return true
+	}
+	samConn.useTime = time.Now()
+	return false
 }
 
 func (samConn *SamHTTP) getURL(request string) (string, string) {
