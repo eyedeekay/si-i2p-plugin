@@ -246,7 +246,7 @@ func (samConn *SamHTTP) cleanURL(request string) (string, string) {
 		url = url + "/"
 	}
 
-	host := strings.SplitAfter(url, ".i2p/")[0]
+	host := strings.Replace(strings.SplitAfter(url, ".i2p/")[0], "http://", "", -1)
     Log("sam-http.go cleanURL Request Host ", host)
 
 	if strings.HasSuffix(host, ".i2p/") {
