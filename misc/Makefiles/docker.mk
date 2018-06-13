@@ -1,5 +1,5 @@
 
-docker-clean:
+docker-clobber:
 	docker rm -f si-proxy \
 		sam-browser \
 		sam-host; true
@@ -75,7 +75,7 @@ docker-follow:
 docker-tidy:
 	docker rm -f si-proxy; true
 
-docker-clobber: docker-clean
+docker-clean: docker-clean
 	docker rm -f sam-host; true
 	docker rmi -f eyedeekay/si-i2p-plugin; true
 

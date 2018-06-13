@@ -52,30 +52,49 @@ func safeNames(str string) string {
 }
 
 func safeURLString(str string) string {
-	temp := strings.SplitN(str, "/", -1)
-	var r string
-	for _, i := range temp {
-		r += safeNames(i)
+	r := strings.Replace(
+		strings.Replace(
+			str,
+			"http:",
+			"",
+			-1,
+		),
+		"//",
+		"/",
+		-1,
+	)
+
+    if strings.HasSuffix(r, "/") {
+		r = strings.TrimSuffix(r, "/")
 	}
+	if strings.HasPrefix(r, "/") {
+		r = strings.TrimPrefix(r, "/")
+	}
+	Log("si-fs-helpers.go final directory", r)
 	return r
 }
 
 func truncatePaths(str string) string {
-	temp := strings.SplitN(str, "/", -1)
+	temp := strings.SplitN(
+		safeURLString(str),
+		"/",
+		-1,
+	)
 	var fixedpath string
 	for x, i := range temp {
-		if x < len(temp)-1 {
-			i = safeNames(i)
-		}
 		if i != "" {
-			fixedpath += truncatePath(i) + "/"
+			if x < len(temp)-1 {
+				fixedpath += safeNames(truncatePath(i)) + "/"
+			}else{
+                fixedpath += truncatePath(i)
+            }
 			if fixedpath != "" {
-				Log("si-fs-helpers.go ", truncatePath(i))
+				Log("si-fs-helpers.go fixedpath", fixedpath)
 			}
 		}
 	}
 	if strings.HasSuffix(fixedpath, "/") {
-		fixedpath = fixedpath[:len(fixedpath)-len("/")]
+		fixedpath = strings.TrimSuffix(fixedpath, "/")
 	}
 	return fixedpath
 }

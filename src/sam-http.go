@@ -235,26 +235,32 @@ func (samConn *SamHTTP) createClient() {
 func (samConn *SamHTTP) cleanURL(request string) (string, string) {
 	Log("sam-http.go cleanURL Request " + request)
 	//url := strings.Replace(request, "http://", "", -1)
-    var url string
-    if ! strings.HasPrefix(request, "http://") {
-        url = "http://" + request
-    }
-    url = request
+	var url string
+	if !strings.HasPrefix(request, "http://") {
+		url = "http://" + request
+	}
+	url = request
 
-	Log("sam-http.go cleanURL Request URL " + url)
 	if strings.HasSuffix(url, ".i2p") {
 		url = url + "/"
 	}
 
-	host := strings.Replace(strings.SplitAfter(url, ".i2p/")[0], "http://", "", -1)
-    Log("sam-http.go cleanURL Request Host ", host)
+	host := strings.Replace(
+		strings.SplitAfter(url, ".i2p/")[0],
+		"http://",
+		"",
+		-1,
+	)
 
 	if strings.HasSuffix(host, ".i2p/") {
-		host = host[:len(host)-len("/")]
+		host = strings.TrimSuffix(host, "/")
 	}
 	if strings.HasSuffix(url, ".i2p/") {
-		url = url[:len(url)-len("/")]
+		url = strings.TrimSuffix(url, "/")
 	}
+
+	Log("sam-http.go cleanURL Request URL " + url)
+	Log("sam-http.go cleanURL Request Host ", host)
 
 	return host, url
 }
@@ -297,7 +303,8 @@ func (samConn *SamHTTP) lifetimeCheck(request string) bool {
 
 func (samConn *SamHTTP) getURL(request string) (string, string) {
 	r := request
-	directory := strings.Replace(safeURLString(request), "http://", "", -1)
+	//directory := strings.Replace(safeURLString(request), "http://", "", -1)
+	directory := safeURLString(request)
 	_, err := url.ParseRequestURI(r)
 	if err != nil {
 		r = "http://" + request
@@ -323,7 +330,7 @@ func (samConn *SamHTTP) sendRequest(request string) (*http.Response, error) {
 }
 
 func (samConn *SamHTTP) getURLHTTP(request *http.Request) (string, string) {
-	directory := strings.Replace(safeURLString(request.URL.String()), "http://", "", -1)
+	directory := safeURLString(request.URL.String())
 	return request.URL.String(), directory
 }
 
