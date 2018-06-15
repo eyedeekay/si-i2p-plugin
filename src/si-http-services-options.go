@@ -5,8 +5,10 @@ import (
 	"strconv"
 )
 
+// ServiceOption is a functional argument for creating an http service
 type ServiceOption func(*SamServices) error
 
+// SetServHost sets the ip address of the SAM bridge
 func SetServHost(s string) func(*SamServices) error {
 	return func(c *SamServices) error {
 		c.samAddrString = s
@@ -14,6 +16,7 @@ func SetServHost(s string) func(*SamServices) error {
 	}
 }
 
+// SetServPort sets the port of the SAM bridge
 func SetServPort(s interface{}) func(*SamServices) error {
 	return func(c *SamServices) error {
 		switch v := s.(type) {
@@ -25,16 +28,14 @@ func SetServPort(s interface{}) func(*SamServices) error {
 			if port < 65536 && port > -1 {
 				c.samPortString = v
 				return nil
-			} else {
-				return fmt.Errorf("Invalid port")
 			}
+			return fmt.Errorf("Invalid port")
 		case int:
 			if v < 65536 && v > -1 {
 				c.samPortString = strconv.Itoa(v)
 				return nil
-			} else {
-				return fmt.Errorf("Invalid port")
 			}
+			return fmt.Errorf("Invalid port")
 		default:
 			return fmt.Errorf("Invalid port")
 		}

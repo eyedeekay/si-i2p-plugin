@@ -10,7 +10,8 @@ import (
 	"github.com/armon/go-socks5"
 )
 
-type samSOCKSProxy struct {
+// SamSOCKSProxy is a SOCKS proxy that automatically isolates per-destination
+type SamSOCKSProxy struct {
 	Addr        string
 	client      *SamList
 	transport   *http.Transport
@@ -22,7 +23,7 @@ type samSOCKSProxy struct {
 	c           bool
 }
 
-func (proxy *samSOCKSProxy) delHopHeaders(header http.Header) {
+func (proxy *SamSOCKSProxy) delHopHeaders(header http.Header) {
 	for _, h := range hopHeaders {
 		Log("si-socks-proxy.go Sanitizing headers: ", h, header.Get(h))
 		header.Del(h)
@@ -32,7 +33,7 @@ func (proxy *samSOCKSProxy) delHopHeaders(header http.Header) {
 	}
 }
 
-func (proxy *samSOCKSProxy) copyHeader(dst, src http.Header) {
+func (proxy *SamSOCKSProxy) copyHeader(dst, src http.Header) {
 	if dst != nil && src != nil {
 		for k, vv := range src {
 			if vv != nil {
@@ -51,14 +52,15 @@ func (proxy *samSOCKSProxy) copyHeader(dst, src http.Header) {
 	}
 }
 
-func (proxy *samSOCKSProxy) prepare() {
+func (proxy *SamSOCKSProxy) prepare() {
 	Log("si-socks-proxy.go Initializing handler handle")
 	if err := proxy.newHandle.ListenAndServe("tcp", proxy.Addr); err != nil {
 		Log("si-socks-proxy.go Fatal Error: proxy not started")
 	}
 }
 
-func (proxy *samSOCKSProxy) ServeSOCKS(rW http.ResponseWriter, rq *http.Request) {
+// ServeSOCKS Starts serving a SOCKS proxy
+func (proxy *SamSOCKSProxy) ServeSOCKS(rW http.ResponseWriter, rq *http.Request) {
 	if &rq == nil {
 		return
 	}
@@ -75,7 +77,7 @@ func (proxy *samSOCKSProxy) ServeSOCKS(rW http.ResponseWriter, rq *http.Request)
 
 }
 
-func (proxy *samSOCKSProxy) checkResponse(rW http.ResponseWriter, rq *http.Request) {
+func (proxy *SamSOCKSProxy) checkResponse(rW http.ResponseWriter, rq *http.Request) {
 	if rq == nil {
 		return
 	}
@@ -105,25 +107,24 @@ func (proxy *samSOCKSProxy) checkResponse(rW http.ResponseWriter, rq *http.Reque
 			proxy.printResponse(rW, resp)
 			Log("si-socks-proxy.go responded")
 			return
-		} else {
-			if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
-				if resp != nil {
-					resp := proxy.client.copyRequest(req, resp, dir)
-					proxy.printResponse(rW, resp)
-				}
-				Log("si-socks-proxy.go status error", doerr.Error())
-				return
+		}
+		if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
+			if resp != nil {
+				resp := proxy.client.copyRequest(req, resp, dir)
+				proxy.printResponse(rW, resp)
 			}
 			Log("si-socks-proxy.go status error", doerr.Error())
 			return
 		}
-	} else {
-		log.Println("si-socks-proxy.go client retrieval error")
+		Log("si-socks-proxy.go status error", doerr.Error())
 		return
 	}
+	log.Println("si-socks-proxy.go client retrieval error")
+	return
 }
 
-func (proxy *samSOCKSProxy) Do(req *http.Request, client *http.Client, x int) (*http.Response, error) {
+// Do does a request
+func (proxy *SamSOCKSProxy) Do(req *http.Request, client *http.Client, x int) (*http.Response, error) {
 	req.RequestURI = ""
 
 	resp, doerr := client.Do(req)
@@ -134,24 +135,23 @@ func (proxy *samSOCKSProxy) Do(req *http.Request, client *http.Client, x int) (*
 
 	if proxy.c, proxy.err = Warn(doerr, "si-socks-proxy.go Response body error:", "si-socks-proxy.go Read response body"); proxy.c {
 		return resp, doerr
-	} else {
-		if strings.Contains(doerr.Error(), "Hostname error") {
-			log.Println("Unknown Hostname")
-			proxy.addressbook.Lookup(req.Host)
-			requ, stage2 := proxy.addressbook.checkAddressHelper(req)
-			if stage2 {
-				log.Println("Redirecting", req.Host, "to", requ.Host)
-				requ.RequestURI = ""
-				return client.Do(requ)
-			}
-		} else {
-			return client.Do(req)
+	}
+	if strings.Contains(doerr.Error(), "Hostname error") {
+		log.Println("Unknown Hostname")
+		proxy.addressbook.Lookup(req.Host)
+		requ, stage2 := proxy.addressbook.checkAddressHelper(req)
+		if stage2 {
+			log.Println("Redirecting", req.Host, "to", requ.Host)
+			requ.RequestURI = ""
+			return client.Do(requ)
 		}
+	} else {
+		return client.Do(req)
 	}
 	return resp, doerr
 }
 
-func (proxy *samSOCKSProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
+func (proxy *SamSOCKSProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
 	if r != nil {
 		defer r.Body.Close()
 		proxy.copyHeader(rW.Header(), r.Header)
@@ -162,8 +162,9 @@ func (proxy *samSOCKSProxy) printResponse(rW http.ResponseWriter, r *http.Respon
 	}
 }
 
-func CreateSOCKSProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *samSOCKSProxy {
-	var samProxy samSOCKSProxy
+// CreateSOCKSProxy generates a SOCKS proxy
+func CreateSOCKSProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamSOCKSProxy {
+	var samProxy SamSOCKSProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
 	samProxy.addressbook = NewAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)

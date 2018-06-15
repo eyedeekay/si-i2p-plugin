@@ -11,6 +11,7 @@ import (
 	"github.com/eyedeekay/i2pasta/convert"
 )
 
+// AddressHelper prioritizes the address sources
 type AddressHelper struct {
 	assistant *i2paddresshelper.I2paddresshelper
 	converter i2pconv.I2pconv
@@ -112,6 +113,7 @@ func (addressBook *AddressHelper) checkHasPair(arg string) bool {
 	return false
 }
 
+// Lookup determines if a readble address is findable
 func (addressBook *AddressHelper) Lookup(req string) bool {
 	rv, jerr := addressBook.assistant.QueryHelper(req)
 	if jerr != "jumperror" {
@@ -209,6 +211,7 @@ func (addressBook *AddressHelper) updateAh() {
 	}
 }
 
+// NewAddressHelper creates a new address helper from string options
 func NewAddressHelper(AddressHelperURL, samHost, samPort string) *AddressHelper {
 	a, _ := NewAddressHelperFromOptions(
 		SetAddressHelperURL(AddressHelperURL),
@@ -219,6 +222,7 @@ func NewAddressHelper(AddressHelperURL, samHost, samPort string) *AddressHelper 
 	return a
 }
 
+// NewAddressHelperFromOptions creates a new address helper from functional arguments
 func NewAddressHelperFromOptions(opts ...func(*AddressHelper) error) (*AddressHelper, error) {
 	var a AddressHelper
 	a.addressHelperURL = "inr.i2p"

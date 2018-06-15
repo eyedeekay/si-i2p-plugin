@@ -83,7 +83,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 	rq.RequestURI = ""
 
 	//req, ah := proxy.addressbook.checkAddressHelper(rq)
-    req := rq
+	req := rq
 	ah := false
 	//req.RequestURI = ""
 	if proxy.keepAlives {

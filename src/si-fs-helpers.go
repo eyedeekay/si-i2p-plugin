@@ -64,7 +64,7 @@ func safeURLString(str string) string {
 		-1,
 	)
 
-    if strings.HasSuffix(r, "/") {
+	if strings.HasSuffix(r, "/") {
 		r = strings.TrimSuffix(r, "/")
 	}
 	if strings.HasPrefix(r, "/") {
@@ -85,9 +85,9 @@ func truncatePaths(str string) string {
 		if i != "" {
 			if x < len(temp)-1 {
 				fixedpath += safeNames(truncatePath(i)) + "/"
-			}else{
-                fixedpath += truncatePath(i)
-            }
+			} else {
+				fixedpath += truncatePath(i)
+			}
 			if fixedpath != "" {
 				Log("si-fs-helpers.go fixedpath", fixedpath)
 			}

@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// SamServices is a structure for managing SAM services
 type SamServices struct {
 	listOfServices []samHTTPService
 	samAddrString  string
@@ -106,6 +107,7 @@ func (samServiceStack *SamServices) responsify(input string) io.Reader {
 	return tmp
 }
 
+// ServiceRequest requests a new service interface from the SAM bridge
 func (samServiceStack *SamServices) ServiceRequest() {
 	Log("Reading requests:")
 	for samServiceStack.genrScan.Scan() {
@@ -136,15 +138,15 @@ func (samServiceStack *SamServices) writeResponses() {
 	}
 }
 
+// ReadDelete checks whether to shut down the service manager
 func (samServiceStack *SamServices) ReadDelete() bool {
 	Log("Managing pipes:")
 	for samServiceStack.delScan.Scan() {
 		if samServiceStack.delScan.Text() == "y" || samServiceStack.delScan.Text() == "Y" {
 			defer samServiceStack.cleanupServices()
 			return true
-		} else {
-			return false
 		}
+		return false
 	}
 	return false
 }
@@ -159,6 +161,7 @@ func (samServiceStack *SamServices) cleanupServices() {
 	os.RemoveAll(filepath.Join(connectionDirectory, "service"))
 }
 
+// CreateSamServiceList Creates a Service Manager from functional arguments
 func CreateSamServiceList(opts ...func(*SamServices) error) (*SamServices, error) {
 	var samServiceList SamServices
 	samServiceList.dir = "services"
