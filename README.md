@@ -60,11 +60,11 @@ don't think there's anything I can do about that. Also *if you're the only*
 to "*prove*" that it the same person exactly(certainly not in a cryptographic
 sense), just that it's likely to be the same person. I can't do anything about
 a small anonymity set. That said, the tunnels created by this proxy are
-inherently short-lived and soon, will tear themselves after an inactivity
-timeout, requiring an attacker to request resources over and over to keep a
-tunnel alive long-term to be useful for tracking. By the way, as far as I know,
-using this will drastically reduce your anonymity set unless it's widely
-adopted. TESTING ONLY.
+inherently short-lived and tear themselves down after an inactivity timeout,
+requiring an attacker to request resources over and over to keep a tunnel alive
+long-term to be useful for tracking. By the way, as far as I know, using this
+will drastically reduce your anonymity set unless it's widely adopted. TESTING
+ONLY.
 
 I am now fairly certain that it can't be forced to retrieve URL's outside the
 i2p network in properly configured browsers under normal circumstances. Remember
