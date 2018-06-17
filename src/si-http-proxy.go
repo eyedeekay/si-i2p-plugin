@@ -182,3 +182,4 @@ func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, s
 	log.Println("si-http-proxy.go HTTP Proxy prepared")
 	return &samProxy
 }
+

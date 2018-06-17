@@ -27,6 +27,9 @@ info:
 	@echo "$(BROWSER_VERSION)"
 	@echo "$(GOPATH)"
 
+include misc/Makefiles/docker.mk
+include misc/Makefiles/checkinstall.mk
+
 rebuild: clean build
 
 build: bin/si-i2p-plugin
@@ -233,11 +236,6 @@ continuously:
 	while true; do make docker-setup docker-run; sleep 10m; done
 
 c: continuously
-
-include misc/Makefiles/demo.mk
-include misc/Makefiles/docker.mk
-include misc/Makefiles/test.mk
-include misc/Makefiles/checkinstall.mk
 
 search:
 	surf https://trac.torproject.org/projects/tor/ticket/25564
