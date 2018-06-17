@@ -71,36 +71,13 @@ long-term to be useful for tracking. By the way, as far as I know, using this
 will drastically reduce your anonymity set unless it's widely adopted. TESTING
 ONLY.
 
-I am now fairly certain that it can't be forced to retrieve URL's outside the
-i2p network in properly configured browsers under normal circumstances. Remember
-to set [*] Use this proxy server for all protocols or other relevant browser
-configurations. This appears to be the default behavior for surf and uzbl.
-
-Before version 0.21, a framework for generating service tunnels ad-hoc will also
-be in place. This will be used for fuzz-testing the http proxy and the pipe
-proxy. Almost everything will be improved by the availability of this. Before
-version 0.25, whether to use either in or out pipes or to enable the pipes at
-all, will be configurable.
-
 [I wonder if I could make it talk to TorButton?](https://www.torproject.org/docs/torbutton/en/design/index.html.en)
 
-Elephant in the room #1, it's kind of unfortunately named. I really have a knack
-for that.
+I'm keeping the name.
 
-Elephant in the room #2, it runs excellent on anything that can work with the
-named pipe implementation in regular Go. I could take shortcuts that would limit
-the functionality available to Windows people, or figure out some way to
-implement that functionality on a per-platform basis without losing
-functionality. Oh shit conditional compilation in go is super easy! An early
-Windows version is available, but everything that's a named pipe in a Unix is a
-real file in Windows. So only use the HTTP proxy. Ever. At least until I find a
-way to ensure that sent requests are cleared from the file. Preliminary Windows
-support is enabled by turning the FIFO's into files and specifying their
-behavior in a windows-only version of si-fs-helpers.go. If this turns out to be
-good enough then this is how I'll keep doing it.
-
-Elephant in the room #3, absolutely ZERO outproxy support. But that's not really
-what it's for. It's probably 90% unhelpful for outproxies anyway.
+It runs excellent on anything that can work with the named pipe implementation
+in regular Go. Windows does not. But I can probably just wrap up some operations
+on files and pretend they are named pipes.
 
 ### The pipes
 
