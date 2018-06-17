@@ -126,7 +126,7 @@ Version Roadmap:
 Screenshots:
 ------------
 
-[moved here:](misc/SCREENSHOTS.md)
+[moved to misc/SCREENSHOTS.md](misc/SCREENSHOTS.md)
 
 Donate
 ------
