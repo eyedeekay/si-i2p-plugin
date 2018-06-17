@@ -14,6 +14,25 @@ destination isolation before there is a facebook.i2p.
 
 [**i2p link** A reference to this issue found on zzz.i2p, that I should have put in the readme sooner.](http://zzz.i2p/topics/217)
 
+Installation:
+-------------
+
+Moved to [misc/docs/INSTALL.md](misc/docs/INSTALL.md)
+
+### Usage Examples(HTTP Proxy)
+
+#### firefox
+
+![Firefox Configuration](misc/firefox.png)
+
+#### curl
+
+        curl -x 127.0.0.1:4443 http://i2p-projekt.i2p
+
+#### surf
+
+        export http_proxy="http://127.0.0.1:4443" surf http://i2p-projekt.i2p
+
 What works so far:
 ------------------
 
@@ -35,20 +54,6 @@ something bad happens.
 #### User-Defined Jump Hosts
 
 Addresshelper/Jump hosts are broken in here. I'm working on it.
-
-#### Examples
-
-##### firefox
-
-![Firefox Configuration](misc/firefox.png)
-
-##### curl
-
-        curl -x 127.0.0.1:4443 http://i2p-projekt.i2p
-
-##### surf
-
-        export http_proxy="http://127.0.0.1:4443" surf http://i2p-projekt.i2p
 
 #### Current Concerns:
 
@@ -140,12 +145,6 @@ Version Roadmap:
   Torbutton Control Port compatibility.
   * 0.25 - Package.
   * 0.26 -
-
-
-Installation and Usage:
-=======================
-
-Moved to [misc/docs/INSTALL.md](misc/docs/INSTALL.md)
 
 Screenshots:
 ------------
