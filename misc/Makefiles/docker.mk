@@ -23,7 +23,7 @@ browse: docker-browser
 		--network-alias sam-browser \
 		--hostname sam-browser \
 		--link si-proxy \
-		--ip 172.80.80.4 \
+		--ip 172.80.80.5 \
 		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
 		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
 		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
@@ -31,6 +31,7 @@ browse: docker-browser
 
 docker:
 	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
+	docker build --force-rm -f Dockerfiles/Dockerfile.jumphelper -t eyedeekay/sam-jumphelper .
 	docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
 
 
@@ -52,6 +53,19 @@ docker-host:
 		--volume $(i2pd_dat):/var/lib/i2pd:rw \
 		-t eyedeekay/sam-host; true
 
+docker-jumphelper:
+	docker run \
+		-d \
+		--name sam-jumphelper \
+		--network si \
+		--network-alias sam-jumphelper \
+		--hostname sam-jumphelper \
+		--link si-proxy \
+		--restart always \
+		--ip 172.80.80.3 \
+		-p 127.0.0.1:7054:7054 \
+		-t eyedeekay/sam-host; true
+
 docker-run: docker-tidy docker-host
 	@sleep 1
 	docker run \
@@ -62,8 +76,9 @@ docker-run: docker-tidy docker-host
 		--hostname si-proxy \
 		--link sam-host \
 		--link sam-browser \
+		--link sam-jumphelper \
 		--user sii2pplugin \
-		--ip 172.80.80.3 \
+		--ip 172.80.80.4 \
 		-p 127.0.0.1:44443:44443 \
 		-p 127.0.0.1:44446:44446 \
 		--restart always \

@@ -19,7 +19,7 @@ func SetAddressHelperURL(s string) func(*AddressHelper) error {
 //SetAddressHelperHost sets the host of the addresshelper client's SAM bridge
 func SetAddressHelperHost(s string) func(*AddressHelper) error {
 	return func(c *AddressHelper) error {
-		c.samHostString = s
+		c.jumpHostString = s
 		return nil
 	}
 }
@@ -34,13 +34,13 @@ func SetAddressHelperPort(s interface{}) func(*AddressHelper) error {
 				return fmt.Errorf("Invalid port; non-number")
 			}
 			if port < 65536 && port > -1 {
-				c.samPortString = v
+				c.jumpPortString = v
 				return nil
 			}
 			return fmt.Errorf("Invalid port")
 		case int:
 			if v < 65536 && v > -1 {
-				c.samPortString = strconv.Itoa(v)
+				c.jumpPortString = strconv.Itoa(v)
 				return nil
 			}
 			return fmt.Errorf("Invalid port")

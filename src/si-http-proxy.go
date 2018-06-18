@@ -82,10 +82,8 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	rq.RequestURI = ""
 
-	//req, ah := proxy.addressbook.checkAddressHelper(rq)
-	req := rq
-	ah := false
-	//req.RequestURI = ""
+	req, ah := proxy.addressbook.CheckAddressHelper(rq)
+	req.RequestURI = ""
 	if proxy.keepAlives {
 		req.Close = proxy.keepAlives
 	}
@@ -138,8 +136,8 @@ func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int, use
 	if useah {
 		if strings.Contains(doerr.Error(), "Hostname error") {
 			Log("Unknown Hostname")
-			proxy.addressbook.Lookup(req.Host)
-			requ, stage2 := proxy.addressbook.checkAddressHelper(req)
+			//proxy.addressbook.Lookup(req.Host)
+			requ, stage2 := proxy.addressbook.CheckAddressHelper(req)
 			stage2 = false
 			if stage2 {
 				log.Println("Redirecting", req.Host, "to", requ.Host)

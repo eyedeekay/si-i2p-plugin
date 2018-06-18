@@ -48,7 +48,7 @@ RUN sed -i 's|i2pd.i2p|i2p-projekt.i2p|g' /home/anon/tor-browser_en-US/Browser/T
 RUN sed -i 's|4444|44443|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 RUN sed -i 's|pref("network.proxy.no_proxies_on", "localhost, 127.0.0.1");|pref("network.proxy.no_proxies_on", 0);|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 
-RUN sed -i 's|127.0.0.1|172.80.80.3|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
+RUN sed -i 's|127.0.0.1|172.80.80.4|g' /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/prefs.js
 
 RUN mv /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/extension-overrides.js \
     /home/anon/tor-browser_en-US/Browser/TorBrowser/Data/Browser/profile.default/preferences/temp.js

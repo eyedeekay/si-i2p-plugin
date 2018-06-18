@@ -21,7 +21,7 @@ GOPATH = $(PWD)/.go
 
 GO_COMPILER_OPTS = -a -tags netgo -ldflags '-w -extldflags "-static"'
 
-info:
+info: gofmt
 	@echo "Version $(VERSION)"
 	@echo "$(UNAME), $(UARCH)"
 	@echo "$(BROWSER_VERSION)"
@@ -42,8 +42,7 @@ nodeps: clean
 	@echo 'built'
 
 deps:
-	go get -u github.com/eyedeekay/i2pasta/addresshelper
-	go get -u github.com/eyedeekay/i2pasta/convert
+	go get -u github.com/eyedeekay/jumphelper/src
 	go get -u github.com/eyedeekay/gosam
 	go get -u github.com/eyedeekay/si-i2p-plugin/src
 	go get -u github.com/armon/go-socks5
