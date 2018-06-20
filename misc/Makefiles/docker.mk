@@ -14,6 +14,7 @@ docker-browser:
 	docker build --force-rm \
 		--build-arg BROWSER_VERSION="$(BROWSER_VERSION)" \
 		--build-arg PORT="$(BROWSER_PORT)" \
+		--build-arg HOST="$(HOST)" \
 		-f Dockerfiles/Dockerfile.browser -t eyedeekay/sam-browser .
 
 browse: docker-browser

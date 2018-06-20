@@ -8,6 +8,7 @@ BROWSER_VERSION ?= $(shell curl https://www.torproject.org/projects/torbrowser.h
 different_port=7078
 DISPLAY = :0
 BROWSER_PORT=44443
+HOST=172.80.80.4
 
 PREFIX := /
 VAR := var/

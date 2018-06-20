@@ -1,5 +1,6 @@
 FROM debian:sid
 ARG BROWSER_VERSION="7.5.5"
+ARG HOST="172.80.80.4"
 ARG PORT="44443"
 
 ENV DEBIAN_FRONTEND=noninteractive HOME=/home/anon
@@ -47,7 +48,7 @@ RUN chmod a+x ./setup-i2p-browser.sh
 
 COPY etc/ etc/
 
-RUN ./setup-i2p-browser.sh "/home/anon/tor-browser_en-US/" "$PORT"
+RUN ./setup-i2p-browser.sh "/home/anon/tor-browser_en-US/" "$PORT" "$HOST"
 
 RUN mkdir -p /home/anon/working
 
