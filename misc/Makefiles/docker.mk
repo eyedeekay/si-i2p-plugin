@@ -11,7 +11,9 @@ docker-clobber:
 docker-setup: docker docker-network docker-host docker-run docker-browser
 
 docker-browser:
-	docker build --force-rm --build-arg VERSION="$(BROWSER_VERSION)" \
+	docker build --force-rm \
+		--build-arg BROWSER_VERSION="$(BROWSER_VERSION)" \
+		--build-arg PORT="$(BROWSER_PORT)" \
 		-f Dockerfiles/Dockerfile.browser -t eyedeekay/sam-browser .
 
 browse: docker-browser

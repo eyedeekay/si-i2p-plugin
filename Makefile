@@ -7,6 +7,7 @@ browser=$(PWD)/browser
 BROWSER_VERSION ?= $(shell curl https://www.torproject.org/projects/torbrowser.html.en 2>&1 | grep '<th>GNU/Linux<br>' | sed 's|<th>GNU/Linux<br><em>(||g' | sed 's|)</em></th>||g' | tr -d ' ')
 different_port=7078
 DISPLAY = :0
+BROWSER_PORT=44443
 
 PREFIX := /
 VAR := var/
