@@ -82,7 +82,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	rq.RequestURI = ""
 
-	req, ah := proxy.addressbook.CheckAddressHelper(rq)
+	req, useAddressHelper := proxy.addressbook.CheckAddressHelper(rq)
 	req.RequestURI = ""
 	if proxy.keepAlives {
 		req.Close = proxy.keepAlives
@@ -96,7 +96,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
-		resp, doerr := proxy.Do(req, client, 0, ah)
+		resp, doerr := proxy.Do(req, client, 0, useAddressHelper)
 		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); proxy.c {
 			resp := proxy.client.copyRequest(req, resp, dir)
 			proxy.printResponse(rW, resp)
@@ -161,11 +161,11 @@ func (proxy *SamHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 }
 
 //CreateHTTPProxy creates a SamHTTPProxy
-func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamHTTPProxy {
+func CreateHTTPProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamHTTPProxy {
 	var samProxy SamHTTPProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = NewAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
+	samProxy.addressbook = NewAddressHelper(addressHelperURL, ahAddr, ahPort)
 	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute
@@ -180,4 +180,3 @@ func CreateHTTPProxy(proxAddr, proxPort, initAddress, addressHelperURL string, s
 	log.Println("si-http-proxy.go HTTP Proxy prepared")
 	return &samProxy
 }
-

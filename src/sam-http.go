@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/eyedeekay/gosam"
@@ -232,41 +231,8 @@ func (samConn *SamHTTP) createClient() {
 	}
 }
 
-func (samConn *SamHTTP) cleanURL(request string) (string, string) {
-	Log("sam-http.go cleanURL Request " + request)
-	//url := strings.Replace(request, "http://", "", -1)
-	var url string
-	if !strings.HasPrefix(request, "http://") {
-		url = "http://" + request
-	}
-	url = request
-
-	if strings.HasSuffix(url, ".i2p") {
-		url = url + "/"
-	}
-
-	host := strings.Replace(
-		strings.SplitAfter(url, ".i2p/")[0],
-		"http://",
-		"",
-		-1,
-	)
-
-	if strings.HasSuffix(host, ".i2p/") {
-		host = strings.TrimSuffix(host, "/")
-	}
-	if strings.HasSuffix(url, ".i2p/") {
-		url = strings.TrimSuffix(url, "/")
-	}
-
-	Log("sam-http.go cleanURL Request URL " + url)
-	Log("sam-http.go cleanURL Request Host ", host)
-
-	return host, url
-}
-
 func (samConn *SamHTTP) hostSet(request string) (string, string) {
-	host, req := samConn.cleanURL(request)
+	host, req := CleanURL(request)
 	Log("sam-http.go Setting up micro-proxy for:", "http://"+host)
 	Log("sam-http.go in Directory", req)
 	return host, req
@@ -277,7 +243,7 @@ func (samConn *SamHTTP) hostGet() string {
 }
 
 func (samConn *SamHTTP) hostCheck(request string) bool {
-	host, u := samConn.cleanURL(request)
+	host, u := CleanURL(request)
 	_, err := url.ParseRequestURI(u)
 	Log("sam-http.go keeping client alive")
 	samConn.useTime = time.Now()

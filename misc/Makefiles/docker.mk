@@ -1,14 +1,16 @@
 
 docker-clobber:
 	docker rm -f si-proxy \
+		si-jumphelper \
 		sam-browser \
 		sam-host; true
 	docker rmi -f eyedeekay/sam-host \
+		eyedeekay/si-jumphelper \
 		eyedeekay/sam-browser \
 		eyedeekay/si-i2p-plugin; true
 	docker network rm si; true
 
-docker-setup: docker docker-network docker-host docker-run docker-browser
+docker-setup: docker docker-network docker-host docker-jumphelper docker-run docker-browser
 
 docker-browser:
 	docker build --force-rm \
@@ -68,7 +70,7 @@ docker-jumphelper:
 		--restart always \
 		--ip 172.80.80.3 \
 		-p 127.0.0.1:7054:7054 \
-		-t eyedeekay/sam-host; true
+		-t eyedeekay/sam-jumphelper; true
 
 docker-run: docker-tidy docker-host
 	@sleep 1
@@ -92,10 +94,10 @@ docker-follow:
 	docker logs -f si-proxy
 
 docker-tidy:
-	docker rm -f si-proxy; true
+	docker rm -f si-proxy sam-jumphelper; true
 
 docker-clean: docker-clean
-	docker rm -f sam-host; true
+	docker rm -f sam-host sam-jumphelper; true
 	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 docker-copy:

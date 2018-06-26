@@ -163,11 +163,11 @@ func (proxy *SamSOCKSProxy) printResponse(rW http.ResponseWriter, r *http.Respon
 }
 
 // CreateSOCKSProxy generates a SOCKS proxy
-func CreateSOCKSProxy(proxAddr, proxPort, initAddress, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamSOCKSProxy {
+func CreateSOCKSProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamSOCKSProxy {
 	var samProxy SamSOCKSProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = NewAddressHelper(addressHelperURL, samStack.samAddrString, samStack.samPortString)
+	samProxy.addressbook = NewAddressHelper(addressHelperURL, ahAddr, ahPort)
 	log.Println("si-socks-proxy.go Starting SOCKS proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute

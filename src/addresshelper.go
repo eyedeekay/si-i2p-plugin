@@ -1,22 +1,22 @@
 package dii2p
 
 import (
-    //"io/ioutil"
+	//"io/ioutil"
 	"net/http"
 	//"net/url"
 	"os"
 	//"strings"
 
-    "github.com/eyedeekay/jumphelper/src"
+	"github.com/eyedeekay/jumphelper/src"
 )
 
 // AddressHelper prioritizes the address sources
 type AddressHelper struct {
-    jumpClient *jumphelper.Client
-	jumpHostString    string
-	jumpPortString    string
+	jumpClient     *jumphelper.Client
+	jumpHostString string
+	jumpPortString string
 
-    addressHelperURL string
+	addressHelperURL string
 
 	bookPath string
 	bookFile *os.File
@@ -28,17 +28,34 @@ type AddressHelper struct {
 
 // CheckAddressHelper determines how the addresshelper will be used for an address
 func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.Request, bool) {
+	if url != nil {
+		b, e := addressBook.jumpClient.Check(url.URL.String())
+		if e != nil {
+			return url, false
+		}
+		return url, !b
+	}
 	return url, false
+}
+
+// CheckAddressHelperString determines how the addresshelper will be used for an address
+func (addressBook *AddressHelper) CheckAddressHelperString(url string) (string, bool) {
+	b, e := addressBook.jumpClient.Check(url)
+	if e != nil {
+		return "", false
+	}
+	return url, !b
 }
 
 // NewAddressHelper creates a new address helper from string options
 func NewAddressHelper(AddressHelperURL, jumpHost, jumpPort string) *AddressHelper {
-	a, _ := NewAddressHelperFromOptions(
+	a, e := NewAddressHelperFromOptions(
 		SetAddressHelperURL(AddressHelperURL),
 		SetAddressHelperHost(jumpHost),
 		SetAddressHelperPort(jumpPort),
 		SetAddressBookPath("addressbook.txt"),
 	)
+	Fatal(e, "addresshelper.go failed to create addresshelper from strings", "addresshelper.go created from strings")
 	return a
 }
 
@@ -54,7 +71,8 @@ func NewAddressHelperFromOptions(opts ...func(*AddressHelper) error) (*AddressHe
 			return nil, err
 		}
 	}
-	Fatal(a.err, "addresshelper.go failed to setup SAM bridge for addresshelper.", "addresshelper.go connecting to SAM bridge on:", a.addressHelperURL, a.jumpHostString, ":", a.jumpPortString)
+	a.jumpClient, a.err = jumphelper.NewClient(a.jumpHostString, a.jumpPortString)
+	Fatal(a.err, "addresshelper.go failed to setup standalone addresshelper.", "addresshelper.go connecting standalone addresshelper:", a.addressHelperURL, a.jumpHostString, ":", a.jumpPortString)
 	a.pairs = []string{}
 	a.c = false
 	return &a, a.err

@@ -35,3 +35,37 @@ func CheckURLType(request string) bool {
 	}
 	return true
 }
+
+//CleanURL
+func CleanURL(request string) (string, string) {
+	Log("sam-http.go cleanURL Request " + request)
+	//url := strings.Replace(request, "http://", "", -1)
+	var url string
+	if !strings.HasPrefix(request, "http://") {
+		url = "http://" + request
+	}
+	url = request
+
+	if strings.HasSuffix(url, ".i2p") {
+		url = url + "/"
+	}
+
+	host := strings.Replace(
+		strings.SplitAfter(url, ".i2p/")[0],
+		"http://",
+		"",
+		-1,
+	)
+
+	if strings.HasSuffix(host, ".i2p/") {
+		host = strings.TrimSuffix(host, "/")
+	}
+	if strings.HasSuffix(url, ".i2p/") {
+		url = strings.TrimSuffix(url, "/")
+	}
+
+	Log("sam-http.go cleanURL Request URL " + url)
+	Log("sam-http.go cleanURL Request Host ", host)
+
+	return host, url
+}
