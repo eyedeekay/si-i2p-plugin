@@ -19,6 +19,7 @@ import (
 
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
+    "github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
 
 //SamHTTP is an HTTP proxy which requests resources from the i2p network using

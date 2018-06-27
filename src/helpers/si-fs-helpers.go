@@ -74,7 +74,7 @@ func safeURLString(str string) string {
 	if strings.HasPrefix(r, "/") {
 		r = strings.TrimPrefix(r, "/")
 	}
-	dii2phelpererrs.Log("si-fs-helpers.go final directory", r)
+	dii2perrs.Log("si-fs-helpers.go final directory", r)
 	return r
 }
 
@@ -93,7 +93,7 @@ func truncatePaths(str string) string {
 				fixedpath += truncatePath(i)
 			}
 			if fixedpath != "" {
-				dii2phelpererrs.Log("si-fs-helpers.go fixedpath", fixedpath)
+				dii2perrs.Log("si-fs-helpers.go fixedpath", fixedpath)
 			}
 		}
 	}
@@ -105,14 +105,14 @@ func truncatePaths(str string) string {
 
 func SetupFolder(directory string) bool {
 	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory, directory)))
-	if e, _ := dii2phelpererrs.Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
+	if e, _ := dii2perrs.Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
-			dii2phelpererrs.Log("si-fs-helpers.go Creating a connection:", directory)
+			dii2perrs.Log("si-fs-helpers.go Creating a connection:", directory)
 			os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
 		}
 		os.RemoveAll(truncatePaths(filepath.Join(connectionDirectory, directory)))
-		dii2phelpererrs.Log("si-fs-helpers.go Creating a connection:", directory)
+		dii2perrs.Log("si-fs-helpers.go Creating a connection:", directory)
 		os.Mkdir(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 		return true
 	}
@@ -121,9 +121,9 @@ func SetupFolder(directory string) bool {
 
 func checkFolder(directory string) bool {
 	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory, directory)))
-	if e, _ := dii2phelpererrs.Fatal(err, "si-fs-helpers.go Child Directory Error", "si-fs-helpers.go Child Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
+	if e, _ := dii2perrs.Fatal(err, "si-fs-helpers.go Child Directory Error", "si-fs-helpers.go Child Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
-			dii2phelpererrs.Log("si-fs-helpers.go Creating a child directory folder:", directory)
+			dii2perrs.Log("si-fs-helpers.go Creating a child directory folder:", directory)
 			os.MkdirAll(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
 			return true
 		}
@@ -135,20 +135,20 @@ func checkFolder(directory string) bool {
 func SetupFile(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
-	if e, c := dii2phelpererrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
+	if e, c := dii2perrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
-			dii2phelpererrs.Log("si-fs-helpers.go Preparing to create File:", mkPath)
+			dii2perrs.Log("si-fs-helpers.go Preparing to create File:", mkPath)
 			file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
-			if f, d := dii2phelpererrs.Fatal(err, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); f {
+			if f, d := dii2perrs.Fatal(err, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); f {
 				return mkPath, file, d
 			}
 		} else {
 			g := os.Remove(mkPath)
-			if f, d := dii2phelpererrs.Fatal(g, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); !f {
+			if f, d := dii2perrs.Fatal(g, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); !f {
 				return mkPath, nil, d
 			}
 			file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
-			if h, i := dii2phelpererrs.Fatal(err, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); h {
+			if h, i := dii2perrs.Fatal(err, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); h {
 				return mkPath, file, i
 			}
 			return mkPath, nil, err
@@ -162,11 +162,11 @@ func SetupFile(directory, path string) (string, *os.File, error) {
 func SetupFiFo(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
-	if e, c := dii2phelpererrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
+	if e, c := dii2perrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
 			mkErr := syscall.Mkfifo(mkPath, 0755)
-			dii2phelpererrs.Log("si-fs-helpers.go Preparing to create Pipe:", mkPath)
-			if f, _ := dii2phelpererrs.Fatal(mkErr, "si-fs-helpers.go Pipe Creation Error", "si-fs-helpers.go Creating Pipe", mkPath); f {
+			dii2perrs.Log("si-fs-helpers.go Preparing to create Pipe:", mkPath)
+			if f, _ := dii2perrs.Fatal(mkErr, "si-fs-helpers.go Pipe Creation Error", "si-fs-helpers.go Creating Pipe", mkPath); f {
 				file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 				return mkPath, file, err
 			}
@@ -181,11 +181,11 @@ func SetupFiFo(directory, path string) (string, *os.File, error) {
 func SetupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
 	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	_, pathErr := exists(mkPath)
-	if e, c := dii2phelpererrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
-		dii2phelpererrs.Log("si-fs-helpers.go Opening the Named Pipe as a Scanner...")
+	if e, c := dii2perrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
+		dii2perrs.Log("si-fs-helpers.go Opening the Named Pipe as a Scanner...")
 		retScanner := bufio.NewScanner(pipe)
 		retScanner.Split(bufio.ScanLines)
-		dii2phelpererrs.Log("si-fs-helpers.go Created a named Pipe for sending requests:", mkPath)
+		dii2perrs.Log("si-fs-helpers.go Created a named Pipe for sending requests:", mkPath)
 		return retScanner, c
 	}
 	return nil, pathErr
