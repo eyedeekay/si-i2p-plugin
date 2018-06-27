@@ -1,4 +1,4 @@
-package dii2p
+package dii2phelper
 
 import (
 	"testing"
