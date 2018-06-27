@@ -1,4 +1,4 @@
-package dii2pah
+package dii2p
 
 import (
 	//"io/ioutil"
@@ -8,7 +8,7 @@ import (
 	//"strings"
 
 	"github.com/eyedeekay/jumphelper/src"
-    "github.com/eyedeekay/si-i2p-plugin/src"
+    //"github.com/eyedeekay/si-i2p-plugin/src"
 )
 
 // AddressHelper prioritizes the address sources
