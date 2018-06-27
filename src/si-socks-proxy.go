@@ -170,7 +170,7 @@ func (proxy *SamSOCKSProxy) printResponse(rW http.ResponseWriter, r *http.Respon
 }
 
 // CreateSOCKSProxy generates a SOCKS proxy
-func CreateSOCKSProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamSOCKSProxy {
+func CreateSOCKSProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHelperURL string, samStack *dii2pmain.SamList, timeoutTime int, keepAlives bool) *SamSOCKSProxy {
 	var samProxy SamSOCKSProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
