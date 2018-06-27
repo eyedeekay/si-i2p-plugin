@@ -130,7 +130,7 @@ func (samStack *SamList) sendClientRequest(request string) {
 	}
 }
 
-func (samStack *SamList) sendClientRequestHTTP(request *http.Request) (*http.Client, string) {
+func (samStack *SamList) SendClientRequestHTTP(request *http.Request) (*http.Client, string) {
 	client := samStack.findClient(request.URL.String())
 	if client != nil {
 		return client.sendRequestHTTP(request)
@@ -191,7 +191,7 @@ func (samStack *SamList) findClient(request string) *SamHTTP {
 	return c
 }
 
-func (samStack *SamList) copyRequest(request *http.Request, response *http.Response, directory string) *http.Response {
+func (samStack *SamList) CopyRequest(request *http.Request, response *http.Response, directory string) *http.Response {
 	return samStack.findClient(request.URL.String()).copyRequestHTTP(request, response, directory)
 }
 
