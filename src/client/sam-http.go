@@ -343,11 +343,11 @@ func (samConn *SamHTTP) copyRequestHTTP(request *http.Request, response *http.Re
 	return samConn.findSubCache(response, directory).copyDirectoryHTTP(request, response, directory)
 }
 
-func (samConn *SamHTTP) scannerText() (string, error) {
+func (samConn *SamHTTP) ScannerText() (string, error) {
 	text := ""
 	var err error
 	for _, url := range samConn.subCache {
-		text, err = url.scannerText()
+		text, err = url.ScannerText()
 		if len(text) > 0 {
 			break
 		}
@@ -356,7 +356,7 @@ func (samConn *SamHTTP) scannerText() (string, error) {
 }
 
 func (samConn *SamHTTP) printResponse() string {
-	s, e := samConn.scannerText()
+	s, e := samConn.ScannerText()
 	if samConn.c, samConn.err = dii2perrs.Fatal(e, "sam-http.go Response Retrieval Error", "sam-http.go Retrieving Responses"); !samConn.c {
 		dii2perrs.Log("sam-http.go Response Panic")
 		samConn.CleanupClient()

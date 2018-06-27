@@ -81,11 +81,11 @@ func (samService *samHTTPService) serviceCheck(alias string) bool {
 	return false
 }
 
-func (samService *samHTTPService) scannerText() (string, error) {
+func (samService *samHTTPService) ScannerText() (string, error) {
 	text := ""
 	var err error
 	for _, url := range samService.subCache {
-		text, err = url.scannerText()
+		text, err = url.ScannerText()
 		if len(text) > 0 {
 			break
 		}
@@ -135,7 +135,7 @@ func (samService *samHTTPService) writeName(request string) {
 }
 
 func (samService *samHTTPService) printDetails() string {
-	s, e := samService.scannerText()
+	s, e := samService.ScannerText()
 	dii2perrs.Fatal(e, "Response Retrieval Error", "Retrieving Responses")
 	return s
 }
