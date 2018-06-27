@@ -1,6 +1,6 @@
 // +build windows
 
-package dii2p
+package dii2phelpers
 
 import (
 	"testing"
