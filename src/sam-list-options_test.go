@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+import (
+    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+)
+
 func TestCreateSamListOptionsAll(t *testing.T) {
 	Verbose = true
 	DEBUG = true
@@ -15,9 +19,9 @@ func TestCreateSamListOptionsAll(t *testing.T) {
 		SetKeepAlives(true),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsAll Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsAll Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }
@@ -29,9 +33,9 @@ func TestCreateSamListOptionsInitAddress(t *testing.T) {
 		SetInitAddress("http://i2p-projekt.i2p"),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsInitAddress Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsInitAddress Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }
@@ -43,9 +47,9 @@ func TestCreateSamListOptionsHost(t *testing.T) {
 		SetHost("localhost"),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsHost Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsHost Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }
@@ -57,9 +61,9 @@ func TestCreateSamListOptionsPort(t *testing.T) {
 		SetPort("7656"),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsPort Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsPort Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }
@@ -71,9 +75,9 @@ func TestCreateSamListOptionsTimeout(t *testing.T) {
 		SetTimeout(600),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsTimeout Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsTimeout Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }
@@ -85,9 +89,9 @@ func TestCreateSamListOptionsKeepAlives(t *testing.T) {
 		SetKeepAlives(true),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsKeepAlives Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }
@@ -99,9 +103,9 @@ func TestCreateSamListOptionsTunLength(t *testing.T) {
 		SetTunLength(3),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsKeepAlives Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }
@@ -113,9 +117,9 @@ func TestCreateSamListOptionsInQuantity(t *testing.T) {
 		SetInQuantity(15),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsKeepAlives Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }
@@ -127,9 +131,9 @@ func TestCreateSamListOptionsOutQuantity(t *testing.T) {
 		SetOutQuantity(15),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+		t.dii2perrs.Log("CreateSamListOptionsKeepAlives Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }

@@ -17,6 +17,10 @@ import (
 	"github.com/eyedeekay/i2pasta/addresshelper"
 )
 
+import (
+    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+)
+
 //DEBUG Remove this when you get the options laid in properly.
 var DEBUG bool
 
@@ -76,25 +80,25 @@ func (samConn *SamHTTP) initPipes() {
 	checkFolder(filepath.Join(connectionDirectory, samConn.host))
 
 	samConn.sendPath, samConn.sendPipe, samConn.err = setupFiFo(filepath.Join(connectionDirectory, samConn.host), "send")
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
+	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.sendScan, samConn.err = setupScanner(filepath.Join(connectionDirectory, samConn.host), "send", samConn.sendPipe)
-		if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Scanner setup Error:", "sam-http.go Scanner set up successfully."); !samConn.c {
+		if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Scanner setup Error:", "sam-http.go Scanner set up successfully."); !samConn.c {
 			samConn.CleanupClient()
 		}
 	}
 
 	samConn.namePath, samConn.nameFile, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "name")
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
+	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.nameFile.WriteString("")
 	}
 
 	samConn.idPath, samConn.idFile, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "id")
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
+	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.idFile.WriteString("")
 	}
 
 	samConn.base64Path, samConn.base64File, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "base64")
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
+	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.idFile.WriteString("")
 	}
 
@@ -121,7 +125,7 @@ func (samConn *SamHTTP) Dial(network, addr string) (net.Conn, error) {
 		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
 		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
 	)
-	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
+	if samConn.c, samConn.err = dii2perrs.Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
 		return samConn.subDial(network, addr)
 	}
 	return samConn.samBridgeClient.SamConn, &errorString{"SAM connection error"}
@@ -140,8 +144,8 @@ func (samConn *SamHTTP) subDial(network, addr string) (net.Conn, error) {
 func (samConn *SamHTTP) connect() (net.Conn, error) {
 	if samConn.samBridgeClient != nil {
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
-		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Error connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
-			Log("sam-http.go Stream Connection established")
+		if samConn.c, samConn.err = dii2perrs.Warn(samConn.err, "sam-http.go Error connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
+			dii2perrs.Log("sam-http.go Stream Connection established")
 			return samConn.samBridgeClient.SamConn, samConn.err
 		}
 		return samConn.reConnect()
@@ -160,11 +164,11 @@ func (samConn *SamHTTP) reConnect() (net.Conn, error) {
 		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
 		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
 	)
-	if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go 133 SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
-		Log("sam-http.go SAM Connection established")
+	if samConn.c, samConn.err = dii2perrs.Warn(samConn.err, "sam-http.go 133 SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
+		dii2perrs.Log("sam-http.go SAM Connection established")
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
-		if samConn.c, samConn.err = Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
-			Log("sam-http.go Stream Connection established")
+		if samConn.c, samConn.err = dii2perrs.Warn(samConn.err, "sam-http.go Connecting SAM streams", "sam-http.go Connecting SAM streams"); samConn.c {
+			dii2perrs.Log("sam-http.go Stream Connection established")
 			return samConn.samBridgeClient.SamConn, samConn.err
 		}
 		return samConn.reConnect()
@@ -178,8 +182,8 @@ func (samConn *SamHTTP) checkRedirect(req *http.Request, via []*http.Request) er
 }
 
 func (samConn *SamHTTP) setupTransport() {
-	Log("sam-http.go Setting Transport")
-	Log("sam-http.go Setting Dial function")
+	dii2perrs.Log("sam-http.go Setting Transport")
+	dii2perrs.Log("sam-http.go Setting Dial function")
 	samConn.transport = &http.Transport{
 		Dial: samConn.Dial,
 		//Dial:                  samConn.samBridgeClient.Dial,
@@ -191,7 +195,7 @@ func (samConn *SamHTTP) setupTransport() {
 		IdleConnTimeout:       samConn.timeoutTime,
 		TLSNextProto:          make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
 	}
-	Log("sam-http.go Initializing sub-client")
+	dii2perrs.Log("sam-http.go Initializing sub-client")
 	samConn.subClient = &http.Client{
 		Timeout:       samConn.timeoutTime,
 		Transport:     samConn.transport,
@@ -203,8 +207,8 @@ func (samConn *SamHTTP) setupTransport() {
 
 func (samConn *SamHTTP) createClient() {
 	samConn.jar, samConn.err = cookiejar.New(nil)
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samConn.samAddrString, samConn.samPortString); samConn.c {
-		Log("sam-http.go Cookie Jar created")
+	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samConn.samAddrString, samConn.samPortString); samConn.c {
+		dii2perrs.Log("sam-http.go Cookie Jar created")
 	}
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
 		goSam.SetHost(samConn.samAddrString),
@@ -218,9 +222,9 @@ func (samConn *SamHTTP) createClient() {
 		goSam.SetInBackups(uint(samConn.inboundBackupQuantity)),
 		goSam.SetOutBackups(uint(samConn.outboundBackupQuantity)),
 	)
-	if samConn.c, samConn.err = Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samConn.samAddrString, samConn.samPortString); samConn.c {
-		Log("sam-http.go Setting Transport")
-		Log("sam-http.go Setting Dial function")
+	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samConn.samAddrString, samConn.samPortString); samConn.c {
+		dii2perrs.Log("sam-http.go Setting Transport")
+		dii2perrs.Log("sam-http.go Setting Dial function")
 		samConn.setupTransport()
 		if samConn.host == "" {
 			samConn.host, samConn.directory = samConn.hostSet(samConn.initRequestURL)
@@ -233,8 +237,8 @@ func (samConn *SamHTTP) createClient() {
 
 func (samConn *SamHTTP) hostSet(request string) (string, string) {
 	host, req := CleanURL(request)
-	Log("sam-http.go Setting up micro-proxy for:", "http://"+host)
-	Log("sam-http.go in Directory", req)
+	dii2perrs.Log("sam-http.go Setting up micro-proxy for:", "http://"+host)
+	dii2perrs.Log("sam-http.go in Directory", req)
 	return host, req
 }
 
@@ -245,14 +249,14 @@ func (samConn *SamHTTP) hostGet() string {
 func (samConn *SamHTTP) hostCheck(request string) bool {
 	host, u := CleanURL(request)
 	_, err := url.ParseRequestURI(u)
-	Log("sam-http.go keeping client alive")
+	dii2perrs.Log("sam-http.go keeping client alive")
 	samConn.useTime = time.Now()
 	if err == nil {
 		if samConn.host == host {
-			Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
+			dii2perrs.Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)
 			return true
 		}
-		Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
+		dii2perrs.Log("sam-http.go Request host ", host, "is not equal to client host", samConn.host)
 		return false
 	}
 	return false
@@ -260,7 +264,7 @@ func (samConn *SamHTTP) hostCheck(request string) bool {
 
 func (samConn *SamHTTP) lifetimeCheck(request string) bool {
 	if samConn.lifeTime < time.Now().Sub(samConn.useTime) {
-		Warn(nil, "sam-http.go Removing inactive client", "sam-http.go Removing inactive client", samConn.host)
+		dii2perrs.Warn(nil, "sam-http.go Removing inactive client", "sam-http.go Removing inactive client", samConn.host)
 		return true
 	}
 	samConn.useTime = time.Now()
@@ -274,21 +278,21 @@ func (samConn *SamHTTP) getURL(request string) (string, string) {
 	_, err := url.ParseRequestURI(r)
 	if err != nil {
 		r = "http://" + request
-		Log("sam-http.go URL failed validation, correcting to:", r)
+		dii2perrs.Log("sam-http.go URL failed validation, correcting to:", r)
 	} else {
-		Log("sam-http.go URL passed validation:", request)
+		dii2perrs.Log("sam-http.go URL passed validation:", request)
 	}
-	Log("sam-http.go Request will be managed in:", directory)
+	dii2perrs.Log("sam-http.go Request will be managed in:", directory)
 	return r, directory
 }
 
 func (samConn *SamHTTP) sendRequest(request string) (*http.Response, error) {
 	r, dir := samConn.getURL(request)
-	Log("sam-http.go Getting resource", request)
+	dii2perrs.Log("sam-http.go Getting resource", request)
 	if samConn.subClient != nil {
 		resp, err := samConn.subClient.Get(r)
-		Warn(err, "sam-http.go Response Error", "sam-http.go Getting Response")
-		Log("sam-http.go Pumping result to top of parent pipe")
+		dii2perrs.Warn(err, "sam-http.go Response Error", "sam-http.go Getting Response")
+		dii2perrs.Log("sam-http.go Pumping result to top of parent pipe")
 		samConn.copyRequest(resp, dir)
 		return resp, err
 	}
@@ -302,13 +306,13 @@ func (samConn *SamHTTP) getURLHTTP(request *http.Request) (string, string) {
 
 func (samConn *SamHTTP) sendRequestHTTP(request *http.Request) (*http.Client, string) {
 	r, dir := samConn.getURLHTTP(request)
-	Log("sam-http.go Getting resource", r, "In ", dir)
+	dii2perrs.Log("sam-http.go Getting resource", r, "In ", dir)
 	return samConn.subClient, dir
 }
 
 func (samConn *SamHTTP) sendRequestBase64HTTP(request *http.Request, base64helper string) (*http.Client, string) {
 	r, dir := samConn.getURL(request.URL.String())
-	Log("sam-http.go Getting resource", r, "In ", dir)
+	dii2perrs.Log("sam-http.go Getting resource", r, "In ", dir)
 	return samConn.subClient, dir
 }
 
@@ -316,16 +320,16 @@ func (samConn *SamHTTP) findSubCache(response *http.Response, directory string) 
 	b := false
 	var u SamURL
 	for _, url := range samConn.subCache {
-		Log("sam-http.go Seeking Subdirectory", url.subDirectory)
+		dii2perrs.Log("sam-http.go Seeking Subdirectory", url.subDirectory)
 		if url.checkDirectory(directory) {
 			return &url
 		}
 	}
 	if b == false {
-		Log("sam-http.go has not been retrieved yet. Setting up:", directory)
+		dii2perrs.Log("sam-http.go has not been retrieved yet. Setting up:", directory)
 		samConn.subCache = append(samConn.subCache, NewSamURL(directory))
 		for _, url := range samConn.subCache {
-			Log("sam-http.go Seeking Subdirectory", url.subDirectory)
+			dii2perrs.Log("sam-http.go Seeking Subdirectory", url.subDirectory)
 			if url.checkDirectory(directory) {
 				u = url
 				return &u
@@ -357,11 +361,11 @@ func (samConn *SamHTTP) scannerText() (string, error) {
 
 func (samConn *SamHTTP) printResponse() string {
 	s, e := samConn.scannerText()
-	if samConn.c, samConn.err = Fatal(e, "sam-http.go Response Retrieval Error", "sam-http.go Retrieving Responses"); !samConn.c {
-		Log("sam-http.go Response Panic")
+	if samConn.c, samConn.err = dii2perrs.Fatal(e, "sam-http.go Response Retrieval Error", "sam-http.go Retrieving Responses"); !samConn.c {
+		dii2perrs.Log("sam-http.go Response Panic")
 		samConn.CleanupClient()
 	} else {
-		Log("sam-http.go Response Retrieved")
+		dii2perrs.Log("sam-http.go Response Retrieved")
 	}
 	return s
 }
@@ -380,7 +384,7 @@ func (samConn *SamHTTP) readDelete() bool {
 	for _, dir := range samConn.subCache {
 		n := dir.readDelete()
 		if !n {
-			Log("sam-http.go Maintaining Connection:", samConn.hostGet())
+			dii2perrs.Log("sam-http.go Maintaining Connection:", samConn.hostGet())
 		} else {
 			b = n
 		}
@@ -389,31 +393,31 @@ func (samConn *SamHTTP) readDelete() bool {
 }
 
 func (samConn *SamHTTP) writeName() {
-	Log("sam-http.go Looking up hostname:", samConn.host)
+	dii2perrs.Log("sam-http.go Looking up hostname:", samConn.host)
 	samConn.name, samConn.err = samConn.samBridgeClient.Lookup(samConn.host)
 	samConn.nameFile.WriteString(samConn.name)
 }
 
 func (samConn *SamHTTP) writeSession(request string) {
-	Log("sam-http.go Caching base64 address of:", samConn.host+" "+samConn.name)
+	dii2perrs.Log("sam-http.go Caching base64 address of:", samConn.host+" "+samConn.name)
 	samConn.id, samConn.base64, samConn.err = samConn.samBridgeClient.CreateStreamSession("")
 	samConn.idFile.WriteString(fmt.Sprint(samConn.id))
-	Warn(samConn.err, "sam-http.go Local Base64 Caching error", "sam-http.go Cachine Base64 Address of:", request)
+	dii2perrs.Warn(samConn.err, "sam-http.go Local Base64 Caching error", "sam-http.go Cachine Base64 Address of:", request)
 	log.Println("sam-http.go Tunnel id: ", samConn.id)
-	Log("sam-http.go Tunnel dest: ", samConn.base64)
+	dii2perrs.Log("sam-http.go Tunnel dest: ", samConn.base64)
 	samConn.base64File.WriteString(samConn.base64)
-	Log("sam-http.go New Connection Name: ", samConn.base64)
+	dii2perrs.Log("sam-http.go New Connection Name: ", samConn.base64)
 }
 
 func (samConn *SamHTTP) setName(request string) {
 	if samConn.checkName() {
 		samConn.host, samConn.directory = samConn.hostSet(request)
-		Log("sam-http.go Setting hostname:", samConn.host)
+		dii2perrs.Log("sam-http.go Setting hostname:", samConn.host)
 		samConn.writeName()
 		samConn.writeSession(request)
 	} else {
 		samConn.host, samConn.directory = samConn.hostSet(request)
-		Log("sam-http.go Setting hostname:", samConn.host)
+		dii2perrs.Log("sam-http.go Setting hostname:", samConn.host)
 		samConn.initPipes()
 		samConn.writeName()
 		samConn.writeSession(request)
@@ -421,9 +425,9 @@ func (samConn *SamHTTP) setName(request string) {
 }
 
 func (samConn *SamHTTP) checkName() bool {
-	Log("sam-http.go seeing if the connection needs a name:")
+	dii2perrs.Log("sam-http.go seeing if the connection needs a name:")
 	if samConn.name != "" {
-		Log("sam-http.go Naming connection: Connection name was empty.")
+		dii2perrs.Log("sam-http.go Naming connection: Connection name was empty.")
 		return true
 	}
 	return false
@@ -439,14 +443,14 @@ func (samConn *SamHTTP) CleanupClient() {
 		url.cleanupDirectory()
 	}
 	err := samConn.samBridgeClient.Close()
-	if samConn.c, samConn.err = Warn(err, "sam-http.go Closing SAM bridge error, retrying.", "sam-http.go Closing SAM bridge"); !samConn.c {
+	if samConn.c, samConn.err = dii2perrs.Warn(err, "sam-http.go Closing SAM bridge error, retrying.", "sam-http.go Closing SAM bridge"); !samConn.c {
 		samConn.samBridgeClient.Close()
 	}
 	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
 }
 
 func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity, idleConns, inboundBackups, outboundBackups int) SamHTTP {
-	Log("sam-http.go Creating a new SAMv3 Client.")
+	dii2perrs.Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),
 		SetSamHTTPPort(samPortString),
@@ -461,12 +465,12 @@ func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeT
 		SetSamHTTPInBackupQuantity(inboundBackups),
 		SetSamHTTPOutBackupQuantity(outboundBackups),
 	)
-	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
+	dii2perrs.Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
 }
 
 func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity, idleConns, inboundBackups, outboundBackups int) SamHTTP {
-	Log("sam-http.go Creating a new SAMv3 Client.")
+	dii2perrs.Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),
 		SetSamHTTPPort(samPortString),
@@ -481,13 +485,13 @@ func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, 
 		SetSamHTTPInBackupQuantity(inboundBackups),
 		SetSamHTTPOutBackupQuantity(outboundBackups),
 	)
-	Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
+	dii2perrs.Fatal(err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup")
 	return samConn
 }
 
 //NewSamHTTPFromOptions creates a new SamHTTP connection manager for a single eepSite
 func NewSamHTTPFromOptions(opts ...func(*SamHTTP) error) (SamHTTP, error) {
-	Log("sam-http.go Creating a new SAMv3 Client.")
+	dii2perrs.Log("sam-http.go Creating a new SAMv3 Client.")
 	var samConn SamHTTP
 	samConn.samAddrString = "127.0.0.1"
 	samConn.samPortString = "7657"

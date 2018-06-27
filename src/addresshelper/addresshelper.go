@@ -6,7 +6,9 @@ import (
 	//"net/url"
 	"os"
 	//"strings"
+)
 
+import (
 	"github.com/eyedeekay/jumphelper/src"
     "github.com/eyedeekay/si-i2p-plugin/src/errors"
 )

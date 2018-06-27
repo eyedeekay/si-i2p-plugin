@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+import (
+    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+)
+
 func TestCreateSamList(t *testing.T) {
 	Verbose = true
 	DEBUG = true
@@ -15,9 +19,9 @@ func TestCreateSamList(t *testing.T) {
 		SetKeepAlives(true),
 	)
 	if err != nil {
-		t.Fatal(err)
+		t.dii2perrs.Fatal(err)
 	} else {
-		t.Log("CreateSamList Test Complete: true")
+		t.dii2perrs.Log("CreateSamList Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }

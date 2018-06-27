@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+import (
+    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+)
+
 // SamServices is a structure for managing SAM services
 type SamServices struct {
 	listOfServices []samHTTPService
@@ -35,22 +39,22 @@ func (samServiceStack *SamServices) initPipes() {
 	setupFolder(samServiceStack.dir)
 
 	samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "genr")
-	if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
+	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
 		samServiceStack.genrScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "genr", samServiceStack.genrPipe)
-		if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
+		if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
 			samServiceStack.cleanupServices()
 		}
 	}
 
 	samServiceStack.lsPath, samServiceStack.lsPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "ls")
-	if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
+	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
 		samServiceStack.lsPipe.WriteString("")
 	}
 
 	samServiceStack.delPath, samServiceStack.delPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "del")
-	if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
+	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
 		samServiceStack.delScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "del", samServiceStack.delPipe)
-		if samServiceStack.c, samServiceStack.err = Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
+		if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
 			samServiceStack.cleanupServices()
 		}
 	}
@@ -58,7 +62,7 @@ func (samServiceStack *SamServices) initPipes() {
 }
 
 func (samServiceStack *SamServices) createService(alias string) {
-	Log("Appending service to SAM service stack.")
+	dii2perrs.Log("Appending service to SAM service stack.")
 	samServiceStack.listOfServices = append(samServiceStack.listOfServices, createSamHTTPService(samServiceStack.samAddrString, samServiceStack.samPortString, alias))
 }
 
@@ -69,20 +73,20 @@ func (samServiceStack *SamServices) findService(request string) *samHTTPService 
 		log.Println("Checking client requests", index+1)
 		log.Println("of", len(samServiceStack.listOfServices))
 		if service.serviceCheck(request) {
-			Log("Client pipework for", request, "found.", request)
-			Log("Request sent")
+			dii2perrs.Log("Client pipework for", request, "found.", request)
+			dii2perrs.Log("Request sent")
 			found = true
 			return &service
 		}
 	}
 	if !found {
-		Log("Client pipework for", request, "not found: Creating.")
+		dii2perrs.Log("Client pipework for", request, "not found: Creating.")
 		samServiceStack.createService(request)
 		for index, service := range samServiceStack.listOfServices {
 			log.Println("Checking client requests", index+1)
 			log.Println("of", len(samServiceStack.listOfServices))
 			if service.serviceCheck(request) {
-				Log("Client pipework for", request, "found.")
+				dii2perrs.Log("Client pipework for", request, "found.")
 				s = service
 			}
 		}
@@ -93,7 +97,7 @@ func (samServiceStack *SamServices) findService(request string) *samHTTPService 
 func (samServiceStack *SamServices) createServiceList() {
 	if !samServiceStack.up {
 		samServiceStack.initPipes()
-		Log("Parent proxy pipes initialized. Parent proxy set to up.")
+		dii2perrs.Log("Parent proxy pipes initialized. Parent proxy set to up.")
 	}
 }
 
@@ -103,13 +107,13 @@ func (samServiceStack *SamServices) sendServiceRequest(index string) {
 
 func (samServiceStack *SamServices) responsify(input string) io.Reader {
 	tmp := strings.NewReader(input)
-	Log("Responsifying string:")
+	dii2perrs.Log("Responsifying string:")
 	return tmp
 }
 
 // ServiceRequest requests a new service interface from the SAM bridge
 func (samServiceStack *SamServices) ServiceRequest() {
-	Log("Reading requests:")
+	dii2perrs.Log("Reading requests:")
 	for samServiceStack.genrScan.Scan() {
 		if samServiceStack.genrScan.Text() == "y" || samServiceStack.genrScan.Text() == "Y" || samServiceStack.genrScan.Text() == "g" || samServiceStack.genrScan.Text() == "G" || samServiceStack.genrScan.Text() == "n" || samServiceStack.genrScan.Text() == "N" || samServiceStack.genrScan.Text() == "new" {
 			go samServiceStack.sendServiceRequest(samServiceStack.genrScan.Text())
@@ -120,7 +124,7 @@ func (samServiceStack *SamServices) ServiceRequest() {
 func (samServiceStack *SamServices) writeDetails(details string) bool {
 	b := false
 	if details != "" {
-		Log("Got response:")
+		dii2perrs.Log("Got response:")
 		io.Copy(samServiceStack.lsPipe, samServiceStack.responsify(details))
 		b = true
 	}
@@ -128,10 +132,10 @@ func (samServiceStack *SamServices) writeDetails(details string) bool {
 }
 
 func (samServiceStack *SamServices) writeResponses() {
-	Log("Writing responses:")
+	dii2perrs.Log("Writing responses:")
 	for i, service := range samServiceStack.listOfServices {
-		Log("Checking for responses: ", i+1)
-		Log("of: ", len(samServiceStack.listOfServices))
+		dii2perrs.Log("Checking for responses: ", i+1)
+		dii2perrs.Log("of: ", len(samServiceStack.listOfServices))
 		if service.printDetails() != "" {
 			go samServiceStack.writeDetails(service.printDetails())
 		}
@@ -140,7 +144,7 @@ func (samServiceStack *SamServices) writeResponses() {
 
 // ReadDelete checks whether to shut down the service manager
 func (samServiceStack *SamServices) ReadDelete() bool {
-	Log("Managing pipes:")
+	dii2perrs.Log("Managing pipes:")
 	for samServiceStack.delScan.Scan() {
 		if samServiceStack.delScan.Text() == "y" || samServiceStack.delScan.Text() == "Y" {
 			defer samServiceStack.cleanupServices()

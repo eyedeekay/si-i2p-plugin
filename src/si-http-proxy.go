@@ -6,8 +6,11 @@ import (
 	"net/http"
 	"strings"
 	"time"
+}
 
+import (
     "github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
+    "github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 //SamHTTPProxy is an http proxy for making isolated SAM requests
@@ -25,7 +28,7 @@ type SamHTTPProxy struct {
 
 func (proxy *SamHTTPProxy) delHopHeaders(header http.Header) {
 	for _, h := range hopHeaders {
-		Log("si-http-proxy.go Sanitizing headers: ", h, header.Get(h))
+		dii2perrs.Log("si-http-proxy.go Sanitizing headers: ", h, header.Get(h))
 		header.Del(h)
 	}
 	if header.Get("User-Agent") != "MYOB/6.66 (AN/ON)" {
@@ -39,7 +42,7 @@ func (proxy *SamHTTPProxy) copyHeader(dst, src http.Header) {
 			if vv != nil {
 				for _, v := range vv {
 					if v != "" {
-						Log("si-http-proxy.go Copying headers: " + k + "," + v)
+						dii2perrs.Log("si-http-proxy.go Copying headers: " + k + "," + v)
 						if dst.Get(k) != "" {
 							dst.Set(k, v)
 						} else {
@@ -53,9 +56,9 @@ func (proxy *SamHTTPProxy) copyHeader(dst, src http.Header) {
 }
 
 func (proxy *SamHTTPProxy) prepare() {
-	Log("si-http-proxy.go Initializing handler handle")
+	dii2perrs.Log("si-http-proxy.go Initializing handler handle")
 	if err := proxy.newHandle.ListenAndServe(); err != nil {
-		Log("si-http-proxy.go Fatal Error: proxy not started")
+		dii2perrs.Log("si-http-proxy.go dii2perrs.Fatal Error: proxy not started")
 	}
 }
 
@@ -65,13 +68,13 @@ func (proxy *SamHTTPProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 		return
 	}
 
-	Log("si-http-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
+	dii2perrs.Log("si-http-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
 
 	if !CheckURLType(rq.URL.String()) {
 		return
 	}
 
-	Log("si-http-proxy.go ", rq.URL.String())
+	dii2perrs.Log("si-http-proxy.go ", rq.URL.String())
 
 	proxy.checkResponse(rW, rq)
 
@@ -86,7 +89,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	req, useAddressHelper := proxy.addressbook.CheckAddressHelper(rq)
 	if useAddressHelper {
-		Log("si-http-proxy.go using jump helper")
+		dii2perrs.Log("si-http-proxy.go using jump helper")
 	}
 
 	req.RequestURI = ""
@@ -96,17 +99,17 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	proxy.delHopHeaders(req.Header)
 
-	Log("si-http-proxy.go Retrieving client")
+	dii2perrs.Log("si-http-proxy.go Retrieving client")
 
 	client, dir := proxy.client.sendClientRequestHTTP(req)
 
 	if client != nil {
-		Log("si-http-proxy.go Client was retrieved: ", dir)
+		dii2perrs.Log("si-http-proxy.go Client was retrieved: ", dir)
 		resp, doerr := proxy.Do(req, client, 0)
-		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); proxy.c {
+		if proxy.c, proxy.err = dii2perrs.Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); proxy.c {
 			resp := proxy.client.copyRequest(req, resp, dir)
 			proxy.printResponse(rW, resp)
-			Log("si-http-proxy.go responded")
+			dii2perrs.Log("si-http-proxy.go responded")
 			return
 		}
 		if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
@@ -115,10 +118,10 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 				proxy.printResponse(rW, resp)
 				return
 			}
-			Log("si-http-proxy.go status error", doerr.Error())
+			dii2perrs.Log("si-http-proxy.go status error", doerr.Error())
 			return
 		}
-		Log("si-http-proxy.go status error", doerr.Error())
+		dii2perrs.Log("si-http-proxy.go status error", doerr.Error())
 		return
 	}
 	log.Println("si-http-proxy.go client retrieval error")
@@ -132,10 +135,10 @@ func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int) (*h
 	resp, doerr := client.Do(req)
 
 	if req.Close {
-		Log("request must be closed")
+		dii2perrs.Log("request must be closed")
 	}
 
-	if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
+	if proxy.c, proxy.err = dii2perrs.Warn(doerr, "si-http-proxy.go Response body error:", "si-http-proxy.go Read response body"); proxy.c {
 		return resp, doerr
 	}
 
@@ -148,7 +151,7 @@ func (proxy *SamHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 		proxy.copyHeader(rW.Header(), r.Header)
 		rW.WriteHeader(r.StatusCode)
 		io.Copy(rW, r.Body)
-		Log("si-http-proxy.go Response status:", r.Status)
+		dii2perrs.Log("si-http-proxy.go Response status:", r.Status)
 	}
 }
 

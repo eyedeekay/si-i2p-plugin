@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+import (
+    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+)
+
 //SamURL manages the recieve pipes for SamHTTP request targets
 type SamURL struct {
 	err          error
@@ -34,19 +38,19 @@ func (subURL *SamURL) initPipes() {
 	checkFolder(filepath.Join(connectionDirectory, subURL.subDirectory))
 
 	subURL.recvPath, subURL.recvFile, subURL.err = setupFile(filepath.Join(connectionDirectory, subURL.subDirectory), "recv")
-	if subURL.c, subURL.err = Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
+	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.recvFile.WriteString("")
 	}
 
 	subURL.timePath, subURL.timeFile, subURL.err = setupFiFo(filepath.Join(connectionDirectory, subURL.subDirectory), "time")
-	if subURL.c, subURL.err = Fatal(subURL.err, "Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
+	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.timeFile.WriteString("")
 	}
 
 	subURL.delPath, subURL.delPipe, subURL.err = setupFiFo(filepath.Join(connectionDirectory, subURL.subDirectory), "del")
-	if subURL.c, subURL.err = Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
+	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.delScan, subURL.err = setupScanner(filepath.Join(connectionDirectory, subURL.subDirectory), "del", subURL.delPipe)
-		if subURL.c, subURL.err = Fatal(subURL.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subURL.c {
+		if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subURL.c {
 			subURL.cleanupDirectory()
 		}
 	}
@@ -60,19 +64,19 @@ func (subURL *SamURL) createDirectory(requestdir string) {
 
 func (subURL *SamURL) scannerText() (string, error) {
 	d, err := ioutil.ReadFile(subURL.recvPath)
-	if subURL.c, subURL.err = Fatal(err, "sam-url.go Scanner error", "sam-url.go Scanning recv"); subURL.c {
+	if subURL.c, subURL.err = dii2perrs.Fatal(err, "sam-url.go Scanner error", "sam-url.go Scanning recv"); subURL.c {
 		return "", subURL.err
 	}
 	s := string(d)
 	if s != "" {
-		Log("sam-url.go Read file", s)
+		dii2perrs.Log("sam-url.go Read file", s)
 		return s, err
 	}
 	return "", err
 }
 
 func (subURL *SamURL) dirSet(requestdir string) string {
-	Log("sam-url.go Requesting directory: ", requestdir+"/")
+	dii2perrs.Log("sam-url.go Requesting directory: ", requestdir+"/")
 	d1 := requestdir
 	d2 := strings.Replace(d1, "//", "/", -1)
 	return d2
@@ -81,10 +85,10 @@ func (subURL *SamURL) dirSet(requestdir string) string {
 func (subURL *SamURL) checkDirectory(directory string) bool {
 	b := false
 	if directory == subURL.subDirectory {
-		Log("sam-url.go Directory / ", directory+" : equals : "+subURL.subDirectory)
+		dii2perrs.Log("sam-url.go Directory / ", directory+" : equals : "+subURL.subDirectory)
 		b = true
 	} else {
-		Log("sam-url.go Directory / ", directory+" : does not equal : "+subURL.subDirectory)
+		dii2perrs.Log("sam-url.go Directory / ", directory+" : does not equal : "+subURL.subDirectory)
 	}
 	return b
 }
@@ -94,9 +98,9 @@ func (subURL *SamURL) copyDirectory(response *http.Response, directory string) b
 	subURL.mutex.Lock()
 	if subURL.checkDirectory(directory) {
 		if response != nil {
-			Log("sam-url.go Response Status ", response.Status)
+			dii2perrs.Log("sam-url.go Response Status ", response.Status)
 			if response.StatusCode == http.StatusOK {
-				Log("sam-url.go Setting file in cache")
+				dii2perrs.Log("sam-url.go Setting file in cache")
 				subURL.dealResponse(response)
 			}
 		}
@@ -110,9 +114,9 @@ func (subURL *SamURL) copyDirectoryHTTP(request *http.Request, response *http.Re
 	subURL.mutex.Lock()
 	if subURL.checkDirectory(directory) {
 		if response != nil {
-			Log("sam-url.go Response Status ", response.Status)
+			dii2perrs.Log("sam-url.go Response Status ", response.Status)
 			if response.StatusCode == http.StatusOK {
-				Log("sam-url.go Setting file in cache")
+				dii2perrs.Log("sam-url.go Setting file in cache")
 				resp := subURL.dealResponseHTTP(request, response)
 				return resp
 			}
@@ -126,10 +130,10 @@ func (subURL *SamURL) dealResponse(response *http.Response) {
 	//defer
 	body, err := ioutil.ReadAll(response.Body)
 	//defer response.Body.Close()
-	if subURL.c, subURL.err = Warn(err, "sam-url.go Response Write Error", "sam-url.go Writing responses"); subURL.c {
-		Log("sam-url.go Writing files.")
+	if subURL.c, subURL.err = dii2perrs.Warn(err, "sam-url.go Response Write Error", "sam-url.go Writing responses"); subURL.c {
+		dii2perrs.Log("sam-url.go Writing files.")
 		subURL.recvFile.Write(body)
-		Log("sam-url.go Retrieval time: ", time.Now().String())
+		dii2perrs.Log("sam-url.go Retrieval time: ", time.Now().String())
 		subURL.timeFile.WriteString(time.Now().String())
 	}
 }
@@ -140,7 +144,7 @@ func (subURL *SamURL) printHeader(src http.Header) {
 			if vv != nil {
 				for _, v := range vv {
 					if v != "" {
-						Log("sam-url.go Copying headers: " + k + "," + v)
+						dii2perrs.Log("sam-url.go Copying headers: " + k + "," + v)
 					}
 				}
 			}
@@ -166,11 +170,11 @@ func (subURL *SamURL) dealResponseHTTP(request *http.Request, response *http.Res
 	//doClose := false
 	body, err := ioutil.ReadAll(response.Body)
 	//response.Body.Close()
-	if subURL.c, subURL.err = Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subURL.c {
-		Log("sam-url.go Writing files.")
+	if subURL.c, subURL.err = dii2perrs.Warn(err, "sam-url.go Response read error", "sam-url.go Reading response from proxy"); subURL.c {
+		dii2perrs.Log("sam-url.go Writing files.")
 		_, e := subURL.recvFile.Write(body)
 		contentLength := int64(len(body))
-		if subURL.c, subURL.err = Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file"); subURL.c {
+		if subURL.c, subURL.err = dii2perrs.Warn(e, "sam-url.go File writing error", "sam-url.go Wrote response to file"); subURL.c {
 			r := &http.Response{
 				Status:           status,
 				StatusCode:       statusCode,
@@ -187,7 +191,7 @@ func (subURL *SamURL) dealResponseHTTP(request *http.Request, response *http.Res
 				Close:            doClose,
 			}
 			subURL.printHeader(header)
-			Log("sam-url.go Retrieval time: ", time.Now().String())
+			dii2perrs.Log("sam-url.go Retrieval time: ", time.Now().String())
 			subURL.timeFile.WriteString(time.Now().String())
 			return r
 		}
@@ -204,7 +208,7 @@ func (subURL *SamURL) cleanupDirectory() {
 }
 
 func (subURL *SamURL) readDelete() bool {
-	Log("sam-url.go Managing pipes:")
+	dii2perrs.Log("sam-url.go Managing pipes:")
 	for subURL.delScan.Scan() {
 		if subURL.delScan.Text() == "y" || subURL.delScan.Text() == "Y" {
 			defer subURL.cleanupDirectory()
@@ -218,7 +222,7 @@ func (subURL *SamURL) readDelete() bool {
 
 //NewSamURL instantiates a SamURL
 func NewSamURL(requestdir string) SamURL {
-	Log("sam-url.go Creating a new cache directory.")
+	dii2perrs.Log("sam-url.go Creating a new cache directory.")
 	var subURL SamURL
 	subURL.createDirectory(requestdir)
 	subURL.mutex = &sync.Mutex{}
@@ -227,7 +231,7 @@ func NewSamURL(requestdir string) SamURL {
 
 //NewSamURLHTTP instantiates a SamURL
 func NewSamURLHTTP(request *http.Request) SamURL {
-	Log("sam-url.go Creating a new cache directory.")
+	dii2perrs.Log("sam-url.go Creating a new cache directory.")
 	var subURL SamURL
 	log.Println(subURL.subDirectory)
 	subURL.createDirectory(request.Host + request.URL.Path)
