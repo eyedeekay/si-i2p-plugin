@@ -13,7 +13,7 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
-var exit bool = false
+var exit = false
 
 func main() {
 	samAddrString := flag.String("bridge-addr", "127.0.0.1",

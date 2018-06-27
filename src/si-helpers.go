@@ -40,7 +40,7 @@ func CheckURLType(request string) bool {
 	return true
 }
 
-//CleanURL
+//CleanURL will at some point be replaced.
 func CleanURL(request string) (string, string) {
 	dii2perrs.Log("sam-http.go cleanURL Request " + request)
 	//url := strings.Replace(request, "http://", "", -1)
