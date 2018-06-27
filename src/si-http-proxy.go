@@ -103,7 +103,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	dii2perrs.Log("si-http-proxy.go Retrieving client")
 
-	client, dir := proxy.client.sendClientRequestHTTP(req)
+	client, dir := proxy.client.SendClientRequestHTTP(req)
 
 	if client != nil {
 		dii2perrs.Log("si-http-proxy.go Client was retrieved: ", dir)

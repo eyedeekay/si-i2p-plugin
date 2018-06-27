@@ -102,7 +102,7 @@ func (proxy *SamSOCKSProxy) checkResponse(rW http.ResponseWriter, rq *http.Reque
 
 	dii2perrs.Log("si-socks-proxy.go Retrieving client")
 
-	client, dir := proxy.client.sendClientRequestHTTP(req)
+	client, dir := proxy.client.SendClientRequestHTTP(req)
 
 	time.Sleep(1 * time.Second)
 
