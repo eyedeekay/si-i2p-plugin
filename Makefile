@@ -249,16 +249,22 @@ search:
 gotest:
 	cd src && go test && \
 		cd addresshelper && go test && \
+		cd ../errors && go test && \
+		cd ../helpers && go test && \
 		cd ../main && go test
 
 golint:
 	cd src && golint && \
 		cd addresshelper && golint && \
+		cd ../errors && golint && \
+		cd ../helpers && golint && \
 		cd ../main && golint
 
 govet:
 	cd src && go vet && \
 		cd addresshelper && go vet && \
+		cd ../errors && go vet && \
+		cd ../helpers && go vet && \
 		cd ../main && go vet
 
 gofmt:
