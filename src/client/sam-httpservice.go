@@ -144,7 +144,7 @@ func (samService *samHTTPService) cleanupService() {
 	samService.servPipe.Close()
 	samService.nameFile.Close()
 	for _, url := range samService.subCache {
-		url.cleanupDirectory()
+		url.CleanupDirectory()
 	}
 	err := samService.samBridgeClient.Close()
 	dii2perrs.Fatal(err, "SAM Service Connection Closing Error", "Closing SAM service Connection")

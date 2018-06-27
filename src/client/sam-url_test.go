@@ -10,11 +10,11 @@ func NewSamURLHTTPTest(t *testing.T) {
 	t.Error(err)
 	SamURL := NewSamURLHTTP(req)
 	t.Log(SamURL.subDirectory)
-	SamURL.cleanupDirectory()
+	SamURL.CleanupDirectory()
 }
 
 func TestNewSamURLHTTPString(t *testing.T) {
 	SamURL := NewSamURL("i2p-projekt.i2p")
 	t.Log(SamURL.subDirectory)
-	SamURL.cleanupDirectory()
+	SamURL.CleanupDirectory()
 }
