@@ -107,7 +107,7 @@ func main() {
 		dii2perrs.Log("si-i2p-plugin.go Keepalives Disabled")
 	}
 	if *debugConnection {
-		dii2p.DEBUG = *debugConnection
+		dii2perrs.DEBUG = *debugConnection
 		dii2perrs.Log("si-i2p-plugin.go Debug mode: true")
 	}
 	if *verboseLogging {
