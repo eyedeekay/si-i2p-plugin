@@ -7,8 +7,9 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/eyedeekay/si-i2p-plugin/src"
-	//".."
+	//"github.com/eyedeekay/si-i2p-plugin/src"
+    "github.com/eyedeekay/jumphelper/src"
+	".."
 )
 
 var exit bool = false
@@ -63,6 +64,12 @@ func main() {
 		"Inbound Backup Count(default 3)")
 	outboundBackups := flag.Int("out-backups", 3,
 		"Inbound Backup Count(default 3)")
+	internalAddressHelper := flag.Bool("internal-ah", true,
+        "Use internal address helper")
+    addressBook := flag.String("addressbook", "./addresses.csv",
+		"path to local addressbook(default ./addresses.csv) (Unused without internal-ah)")
+	//diskAvoidance := flag.Bool("avoidance", true,
+	//  "Disk Avoidance Mode(default true)")
 
 	flag.Parse()
 
@@ -87,6 +94,11 @@ func main() {
 	dii2p.Log("si-i2p-plugin.go Outbound Backup Quantity", *outboundBackups)
 
 	*useSOCKSProxy = false
+
+    if *internalAddressHelper {
+        dii2p.Log("si-i2p-plugin.go starting internal addresshelper with")
+        jumphelper.NewService(*addrHelperHostString, *addrHelperPortString, *addressBook)
+    }
 
 	if !*keepAlives {
 		dii2p.Log("si-i2p-plugin.go Keepalives Enabled")

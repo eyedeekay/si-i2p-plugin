@@ -33,7 +33,16 @@ func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.R
 		if e != nil {
 			return url, false
 		}
-		return url, !b
+		if !b {
+			return url, !b
+		} else {
+			s, c := addressBook.jumpClient.Request(url.URL.String())
+			if c != nil {
+				url.URL.Host = s
+			}
+			return url, !b
+		}
+
 	}
 	return url, false
 }

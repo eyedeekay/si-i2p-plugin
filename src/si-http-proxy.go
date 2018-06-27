@@ -83,6 +83,10 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 	rq.RequestURI = ""
 
 	req, useAddressHelper := proxy.addressbook.CheckAddressHelper(rq)
+    if useAddressHelper {
+        Log("si-http-proxy.go using jump helper")
+    }
+
 	req.RequestURI = ""
 	if proxy.keepAlives {
 		req.Close = proxy.keepAlives
@@ -96,7 +100,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 
 	if client != nil {
 		Log("si-http-proxy.go Client was retrieved: ", dir)
-		resp, doerr := proxy.Do(req, client, 0, useAddressHelper)
+		resp, doerr := proxy.Do(req, client, 0)
 		if proxy.c, proxy.err = Warn(doerr, "si-http-proxy.go Encountered an oddly formed response. Skipping.", "si-http-proxy.go Processing Response"); proxy.c {
 			resp := proxy.client.copyRequest(req, resp, dir)
 			proxy.printResponse(rW, resp)
@@ -120,7 +124,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 }
 
 //Do does a request
-func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int, useah bool) (*http.Response, error) {
+func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int) (*http.Response, error) {
 	req.RequestURI = ""
 
 	resp, doerr := client.Do(req)
@@ -133,20 +137,6 @@ func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int, use
 		return resp, doerr
 	}
 
-	if useah {
-		if strings.Contains(doerr.Error(), "Hostname error") {
-			Log("Unknown Hostname")
-			//proxy.addressbook.Lookup(req.Host)
-			requ, stage2 := proxy.addressbook.CheckAddressHelper(req)
-			stage2 = false
-			if stage2 {
-				log.Println("Redirecting", req.Host, "to", requ.Host)
-				requ.RequestURI = ""
-				return client.Do(requ)
-			}
-		}
-		return client.Do(req)
-	}
 	return resp, doerr
 }
 

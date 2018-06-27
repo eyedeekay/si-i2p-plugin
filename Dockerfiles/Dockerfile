@@ -14,5 +14,12 @@ CMD /opt/bin/si-i2p-plugin \
     -ah-addr=sam-jumphelper \
     -ah-port=7054 \
     -bridge-addr=sam-host \
-    -bridge-port=7656
+    -bridge-port=7656 \
+    -in-tunnels=15 \
+    -out-tunnels=15 \
+    -in-backups=5 \
+    -out-backups=5 \
+    -internal-ah=false \
+    -addressbook=/opt/misc/addresses.csv
+    #-avoidance=true \
     #-verbose=true
