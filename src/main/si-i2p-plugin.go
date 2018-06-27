@@ -199,6 +199,6 @@ func closeProxy(samProxies *dii2pmain.SamList) {
 	exit = samProxies.ReadDelete()
 }
 
-func closeServices(samServiceList *dii2p.SamServices) {
+func closeServices(samServiceList *dii2pserv.SamServices) {
 	exit = samServiceList.ReadDelete()
 }
