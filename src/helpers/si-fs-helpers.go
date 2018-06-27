@@ -57,7 +57,7 @@ func safeNames(str string) string {
 	}
 }
 
-func safeURLString(str string) string {
+func SafeURLString(str string) string {
 	r := strings.Replace(
 		strings.Replace(
 			str,

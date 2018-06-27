@@ -269,8 +269,8 @@ func (samConn *SamHTTP) lifetimeCheck(request string) bool {
 
 func (samConn *SamHTTP) getURL(request string) (string, string) {
 	r := request
-	//directory := strings.Replace(safeURLString(request), "http://", "", -1)
-	directory := safeURLString(request)
+	//directory := strings.Replace(dii2phelper.SafeURLString(request), "http://", "", -1)
+	directory := dii2phelper.SafeURLString(request)
 	_, err := url.ParseRequestURI(r)
 	if err != nil {
 		r = "http://" + request
@@ -296,7 +296,7 @@ func (samConn *SamHTTP) sendRequest(request string) (*http.Response, error) {
 }
 
 func (samConn *SamHTTP) getURLHTTP(request *http.Request) (string, string) {
-	directory := safeURLString(request.URL.String())
+	directory := dii2phelper.SafeURLString(request.URL.String())
 	return request.URL.String(), directory
 }
 
