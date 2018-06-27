@@ -10,6 +10,7 @@ import (
 
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
+    "github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
@@ -17,7 +18,7 @@ import (
 //SamHTTPProxy is an http proxy for making isolated SAM requests
 type SamHTTPProxy struct {
 	Addr        string
-	client      *SamList
+	client      *dii2pmain.SamList
 	transport   *http.Transport
 	newHandle   *http.Server
 	addressbook *dii2pah.AddressHelper
