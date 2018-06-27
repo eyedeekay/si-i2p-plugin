@@ -52,13 +52,13 @@ func (subURL *SamURL) initPipes() {
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.delScan, subURL.err = dii2phelper.SetupScanner(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del", subURL.delPipe)
 		if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subURL.c {
-			subURL.cleanupDirectory()
+			subURL.CleanupDirectory()
 		}
 	}
 
 }
 
-func (subURL *SamURL) createDirectory(requestdir string) {
+func (subURL *SamURL) CreateDirectory(requestdir string) {
 	subURL.subDirectory = subURL.dirSet(requestdir)
 	subURL.initPipes()
 }
@@ -201,7 +201,7 @@ func (subURL *SamURL) dealResponseHTTP(request *http.Request, response *http.Res
 	return nil
 }
 
-func (subURL *SamURL) cleanupDirectory() {
+func (subURL *SamURL) CleanupDirectory() {
 	subURL.recvFile.Close()
 	subURL.timeFile.Close()
 	subURL.delPipe.Close()
@@ -212,7 +212,7 @@ func (subURL *SamURL) readDelete() bool {
 	dii2perrs.Log("sam-url.go Managing pipes:")
 	for subURL.delScan.Scan() {
 		if subURL.delScan.Text() == "y" || subURL.delScan.Text() == "Y" {
-			defer subURL.cleanupDirectory()
+			defer subURL.CleanupDirectory()
 			return true
 		}
 		return false
@@ -225,7 +225,7 @@ func (subURL *SamURL) readDelete() bool {
 func NewSamURL(requestdir string) SamURL {
 	dii2perrs.Log("sam-url.go Creating a new cache directory.")
 	var subURL SamURL
-	subURL.createDirectory(requestdir)
+	subURL.CreateDirectory(requestdir)
 	subURL.mutex = &sync.Mutex{}
 	return subURL
 }
@@ -235,7 +235,7 @@ func NewSamURLHTTP(request *http.Request) SamURL {
 	dii2perrs.Log("sam-url.go Creating a new cache directory.")
 	var subURL SamURL
 	log.Println(subURL.subDirectory)
-	subURL.createDirectory(request.Host + request.URL.Path)
+	subURL.CreateDirectory(request.Host + request.URL.Path)
 	subURL.mutex = &sync.Mutex{}
 	return subURL
 }
