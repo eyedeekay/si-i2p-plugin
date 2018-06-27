@@ -18,7 +18,7 @@ import (
 )
 
 type samHTTPService struct {
-	subCache []SamURL
+	subCache []dii2pmain.SamURL
 	err      error
 	c        bool
 
