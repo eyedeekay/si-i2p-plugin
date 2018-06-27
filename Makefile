@@ -239,7 +239,7 @@ ps:
 	while true; do make -s mps 2>/dev/null; sleep 2; clear; done
 
 continuously:
-	while true; do make docker-setup docker-run; sleep 10m; done
+	while true; do make docker-setup docker-run; sleep 30m; done
 
 c: continuously
 

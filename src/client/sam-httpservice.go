@@ -1,4 +1,4 @@
-package dii2p
+package dii2pmain
 
 import (
 	"bufio"
@@ -12,7 +12,6 @@ import (
 )
 
 import (
-	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
