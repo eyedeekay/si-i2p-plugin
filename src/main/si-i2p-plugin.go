@@ -97,7 +97,7 @@ func main() {
 
     if *internalAddressHelper {
         dii2p.Log("si-i2p-plugin.go starting internal addresshelper with")
-        jumphelper.NewService(*addrHelperHostString, *addrHelperPortString, *addressBook)
+        jumphelper.NewService(*addrHelperHostString, *addrHelperPortString, *addressBook, *samAddrString, *samPortString)
     }
 
 	if !*keepAlives {
