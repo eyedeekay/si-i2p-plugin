@@ -32,16 +32,16 @@ func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.R
 	if url != nil {
 		b, e := addressBook.jumpClient.Check(url.URL.String())
 		if e != nil {
-			dii2p.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
+			Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
 			return url, false
 		}
 		if !b {
-			dii2p.Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
+			Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
 			return url, !b
 		} else {
 			s, c := addressBook.jumpClient.Request(url.URL.String())
 			if c != nil {
-				dii2p.Log(s + ".b32.i2p")
+				Log(s + ".b32.i2p")
 				url.URL.Host = s + ".b32.i2p"
 			}
 			return url, !b
@@ -56,16 +56,16 @@ func (addressBook *AddressHelper) CheckAddressHelperString(url string) (string, 
 	if url != "" {
 		b, e := addressBook.jumpClient.Check(url)
 		if e != nil {
-			dii2p.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
+			Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
 			return "", false
 		}
 		if b {
-			dii2p.Warn(nil, "addresshelper.go !b "+url+".b32.i2p", "addresshelper.go !b "+url+".b32.i2p")
+			Warn(nil, "addresshelper.go !b "+url+".b32.i2p", "addresshelper.go !b "+url+".b32.i2p")
 			return url, false
 		} else {
 			s, c := addressBook.jumpClient.Request(url)
 			if c != nil {
-				dii2p.Warn(nil, "addresshelper.go b "+s+".b32.i2p", "addresshelper.go b "+s+".b32.i2p")
+				Warn(nil, "addresshelper.go b "+s+".b32.i2p", "addresshelper.go b "+s+".b32.i2p")
 				url = s + ".b32.i2p"
 			}
 			return url, true
@@ -82,7 +82,7 @@ func NewAddressHelper(AddressHelperURL, jumpHost, jumpPort string) *AddressHelpe
 		SetAddressHelperPort(jumpPort),
 		SetAddressBookPath("addressbook.txt"),
 	)
-	dii2p.Fatal(e, "addresshelper.go failed to create addresshelper from strings", "addresshelper.go created from strings")
+	Fatal(e, "addresshelper.go failed to create addresshelper from strings", "addresshelper.go created from strings")
 	return a
 }
 
@@ -99,7 +99,7 @@ func NewAddressHelperFromOptions(opts ...func(*AddressHelper) error) (*AddressHe
 		}
 	}
 	a.jumpClient, a.err = jumphelper.NewClient(a.jumpHostString, a.jumpPortString)
-	dii2p.Fatal(a.err, "addresshelper.go failed to setup standalone addresshelper.", "addresshelper.go connecting standalone addresshelper:", a.addressHelperURL, a.jumpHostString, ":", a.jumpPortString)
+	Fatal(a.err, "addresshelper.go failed to setup standalone addresshelper.", "addresshelper.go connecting standalone addresshelper:", a.addressHelperURL, a.jumpHostString, ":", a.jumpPortString)
 	a.pairs = []string{}
 	a.c = false
 	return &a, a.err
