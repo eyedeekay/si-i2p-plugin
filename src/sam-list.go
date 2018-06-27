@@ -139,7 +139,7 @@ func (samStack *SamList) sendClientRequestHTTP(request *http.Request) (*http.Cli
 }
 
 func (samStack *SamList) hostCheck(request string) (bool, *SamHTTP) {
-	if !CheckURLType(request) {
+	if !dii2phelper.CheckURLType(request) {
 		return false, nil
 	}
 	for index, client := range samStack.listOfClients {
@@ -154,7 +154,7 @@ func (samStack *SamList) hostCheck(request string) (bool, *SamHTTP) {
 }
 
 func (samStack *SamList) lifetimeCheck(request string) bool {
-	if !CheckURLType(request) {
+	if !dii2phelper.CheckURLType(request) {
 		return false
 	}
 	for index, client := range samStack.listOfClients {
@@ -173,7 +173,7 @@ func (samStack *SamList) deleteClient(s []SamHTTP, index int) []SamHTTP {
 }
 
 func (samStack *SamList) findClient(request string) *SamHTTP {
-	if !CheckURLType(request) {
+	if !dii2phelper.CheckURLType(request) {
 		return nil
 	}
 	if !samStack.lifetimeCheck(request) {

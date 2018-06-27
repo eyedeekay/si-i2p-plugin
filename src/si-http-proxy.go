@@ -11,6 +11,7 @@ import (
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
 
 //SamHTTPProxy is an http proxy for making isolated SAM requests
@@ -70,7 +71,7 @@ func (proxy *SamHTTPProxy) ServeHTTP(rW http.ResponseWriter, rq *http.Request) {
 
 	dii2perrs.Log("si-http-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
 
-	if !CheckURLType(rq.URL.String()) {
+	if !dii2phelper.CheckURLType(rq.URL.String()) {
 		return
 	}
 

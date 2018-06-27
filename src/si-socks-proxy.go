@@ -13,6 +13,7 @@ import (
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
 
 // SamSOCKSProxy is a SOCKS proxy that automatically isolates per-destination
@@ -72,7 +73,7 @@ func (proxy *SamSOCKSProxy) ServeSOCKS(rW http.ResponseWriter, rq *http.Request)
 
 	dii2perrs.Log("si-socks-proxy.go", rq.Host, " ", rq.RemoteAddr, " ", rq.Method, " ", rq.URL.String())
 
-	if !CheckURLType(rq.URL.String()) {
+	if !dii2phelper.CheckURLType(rq.URL.String()) {
 		return
 	}
 

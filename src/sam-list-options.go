@@ -5,6 +5,10 @@ import (
 	"strconv"
 )
 
+import (
+	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
+)
+
 //ClientOption is a SamList option
 type ClientOption func(*SamList) error
 
@@ -65,7 +69,7 @@ func SetInitAddress(s string) func(*SamList) error {
 			c.lastAddress = s
 			return nil
 		}
-		if !CheckURLType(s) {
+		if !dii2phelper.CheckURLType(s) {
 			c.lastAddress = ""
 			return fmt.Errorf("Init Address was not an i2p url")
 		}
