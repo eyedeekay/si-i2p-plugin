@@ -16,7 +16,7 @@ type SamHTTPProxy struct {
 	client      *SamList
 	transport   *http.Transport
 	newHandle   *http.Server
-	addressbook *AddressHelper
+	addressbook *dii2pah.AddressHelper
 	timeoutTime time.Duration
 	keepAlives  bool
 	err         error
