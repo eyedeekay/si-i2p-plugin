@@ -38,7 +38,7 @@ type SamServices struct {
 func (samServiceStack *SamServices) initPipes() {
 	setupFolder(samServiceStack.dir)
 
-	samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "genr")
+	samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "genr")
 	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
 		samServiceStack.genrScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "genr", samServiceStack.genrPipe)
 		if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
@@ -46,12 +46,12 @@ func (samServiceStack *SamServices) initPipes() {
 		}
 	}
 
-	samServiceStack.lsPath, samServiceStack.lsPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "ls")
+	samServiceStack.lsPath, samServiceStack.lsPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "ls")
 	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
 		samServiceStack.lsPipe.WriteString("")
 	}
 
-	samServiceStack.delPath, samServiceStack.delPipe, samServiceStack.err = setupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "del")
+	samServiceStack.delPath, samServiceStack.delPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "del")
 	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
 		samServiceStack.delScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "del", samServiceStack.delPipe)
 		if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {

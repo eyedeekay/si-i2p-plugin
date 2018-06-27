@@ -76,7 +76,7 @@ var connectionDirectory string
 func (samConn *SamHTTP) initPipes() {
 	checkFolder(filepath.Join(connectionDirectory, samConn.host))
 
-	samConn.sendPath, samConn.sendPipe, samConn.err = setupFiFo(filepath.Join(connectionDirectory, samConn.host), "send")
+	samConn.sendPath, samConn.sendPipe, samConn.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samConn.host), "send")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.sendScan, samConn.err = setupScanner(filepath.Join(connectionDirectory, samConn.host), "send", samConn.sendPipe)
 		if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Scanner setup Error:", "sam-http.go Scanner set up successfully."); !samConn.c {
@@ -84,17 +84,17 @@ func (samConn *SamHTTP) initPipes() {
 		}
 	}
 
-	samConn.namePath, samConn.nameFile, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "name")
+	samConn.namePath, samConn.nameFile, samConn.err = dii2phelper.SetupFile(filepath.Join(connectionDirectory, samConn.host), "name")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.nameFile.WriteString("")
 	}
 
-	samConn.idPath, samConn.idFile, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "id")
+	samConn.idPath, samConn.idFile, samConn.err = dii2phelper.SetupFile(filepath.Join(connectionDirectory, samConn.host), "id")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.idFile.WriteString("")
 	}
 
-	samConn.base64Path, samConn.base64File, samConn.err = setupFile(filepath.Join(connectionDirectory, samConn.host), "base64")
+	samConn.base64Path, samConn.base64File, samConn.err = dii2phelper.SetupFile(filepath.Join(connectionDirectory, samConn.host), "base64")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.idFile.WriteString("")
 	}

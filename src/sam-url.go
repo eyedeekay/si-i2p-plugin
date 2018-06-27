@@ -37,17 +37,17 @@ type SamURL struct {
 func (subURL *SamURL) initPipes() {
 	checkFolder(filepath.Join(connectionDirectory, subURL.subDirectory))
 
-	subURL.recvPath, subURL.recvFile, subURL.err = setupFile(filepath.Join(connectionDirectory, subURL.subDirectory), "recv")
+	subURL.recvPath, subURL.recvFile, subURL.err = dii2phelper.SetupFile(filepath.Join(connectionDirectory, subURL.subDirectory), "recv")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.recvFile.WriteString("")
 	}
 
-	subURL.timePath, subURL.timeFile, subURL.err = setupFiFo(filepath.Join(connectionDirectory, subURL.subDirectory), "time")
+	subURL.timePath, subURL.timeFile, subURL.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, subURL.subDirectory), "time")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.timeFile.WriteString("")
 	}
 
-	subURL.delPath, subURL.delPipe, subURL.err = setupFiFo(filepath.Join(connectionDirectory, subURL.subDirectory), "del")
+	subURL.delPath, subURL.delPipe, subURL.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, subURL.subDirectory), "del")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.delScan, subURL.err = setupScanner(filepath.Join(connectionDirectory, subURL.subDirectory), "del", subURL.delPipe)
 		if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subURL.c {

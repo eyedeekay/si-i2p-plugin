@@ -103,7 +103,7 @@ func truncatePaths(str string) string {
 	return fixedpath
 }
 
-func setupFolder(directory string) bool {
+func SetupFolder(directory string) bool {
 	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory, directory)))
 	if e, _ := dii2phelpererrs.Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
 		if !pathConnectionExists {
@@ -132,7 +132,7 @@ func checkFolder(directory string) bool {
 	return false
 }
 
-func setupFile(directory, path string) (string, *os.File, error) {
+func SetupFile(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
 	if e, c := dii2phelpererrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
@@ -159,7 +159,7 @@ func setupFile(directory, path string) (string, *os.File, error) {
 	return mkPath, nil, pathErr
 }
 
-func setupFiFo(directory, path string) (string, *os.File, error) {
+func SetupFiFo(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
 	if e, c := dii2phelpererrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
@@ -178,7 +178,7 @@ func setupFiFo(directory, path string) (string, *os.File, error) {
 	return mkPath, nil, nil
 }
 
-func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
+func SetupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
 	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	_, pathErr := exists(mkPath)
 	if e, c := dii2phelpererrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
@@ -191,7 +191,7 @@ func setupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error)
 	return nil, pathErr
 }
 
-//func setupCookieJar()
+//func SetupCookieJar()
 
 //This function does nothing on Unix-like platforms. It is only here to clear
 //the contents of files that would normally be named pipes on Windows.

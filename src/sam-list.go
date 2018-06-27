@@ -53,7 +53,7 @@ type SamList struct {
 func (samStack *SamList) initPipes() {
 	setupFolder(samStack.dir)
 
-	samStack.sendPath, samStack.sendPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "send")
+	samStack.sendPath, samStack.sendPipe, samStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samStack.dir), "send")
 	if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
 		samStack.sendScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "send", samStack.sendPipe)
 		if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
@@ -61,12 +61,12 @@ func (samStack *SamList) initPipes() {
 		}
 	}
 
-	samStack.recvPath, samStack.recvPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "recv")
+	samStack.recvPath, samStack.recvPipe, samStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samStack.dir), "recv")
 	if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
 		samStack.recvPipe.WriteString("")
 	}
 
-	samStack.delPath, samStack.delPipe, samStack.err = setupFiFo(filepath.Join(connectionDirectory, samStack.dir), "del")
+	samStack.delPath, samStack.delPipe, samStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samStack.dir), "del")
 	if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
 		samStack.delScan, samStack.err = setupScanner(filepath.Join(connectionDirectory, samStack.dir), "del", samStack.delPipe)
 		if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {

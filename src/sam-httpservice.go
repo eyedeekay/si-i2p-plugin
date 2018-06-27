@@ -50,7 +50,7 @@ type samHTTPService struct {
 func (samService *samHTTPService) initPipes() {
 	checkFolder(filepath.Join(connectionDirectory, samService.host))
 
-	samService.servPath, samService.servPipe, samService.err = setupFiFo(filepath.Join(connectionDirectory, samService.host), "send")
+	samService.servPath, samService.servPipe, samService.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samService.host), "send")
 	if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
 		samService.servScan, samService.err = setupScanner(filepath.Join(connectionDirectory, samService.host), "send", samService.servPipe)
 		if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Scanner setup Error:", "Scanner set up successfully."); !samService.c {
@@ -58,7 +58,7 @@ func (samService *samHTTPService) initPipes() {
 		}
 	}
 
-	samService.namePath, samService.nameFile, samService.err = setupFiFo(filepath.Join(connectionDirectory, samService.host), "name")
+	samService.namePath, samService.nameFile, samService.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samService.host), "name")
 	if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
 		samService.nameFile.WriteString("")
 	}
