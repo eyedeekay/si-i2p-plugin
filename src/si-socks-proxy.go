@@ -11,6 +11,7 @@ import (
 )
 
 import (
+    "github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
     "github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
@@ -20,7 +21,7 @@ type SamSOCKSProxy struct {
 	client      *SamList
 	transport   *http.Transport
 	newHandle   *socks5.Server
-	addressbook *AddressHelper
+	addressbook *dii2pah.AddressHelper
 	timeoutTime time.Duration
 	keepAlives  bool
 	err         error
@@ -171,7 +172,7 @@ func CreateSOCKSProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHe
 	var samProxy SamSOCKSProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = NewAddressHelper(addressHelperURL, ahAddr, ahPort)
+	samProxy.addressbook = dii2pah.NewAddressHelper(addressHelperURL, ahAddr, ahPort)
 	log.Println("si-socks-proxy.go Starting SOCKS proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute

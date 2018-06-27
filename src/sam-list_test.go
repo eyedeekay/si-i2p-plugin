@@ -9,7 +9,7 @@ import (
 )
 
 func TestCreateSamList(t *testing.T) {
-	Verbose = true
+	dii2perrs.Verbose = true
 	DEBUG = true
 	samProxies, err := CreateSamList(
 		SetInitAddress("http://i2p-projekt.i2p"),
@@ -19,9 +19,9 @@ func TestCreateSamList(t *testing.T) {
 		SetKeepAlives(true),
 	)
 	if err != nil {
-		t.dii2perrs.Fatal(err)
+		t.Fatal(err)
 	} else {
-		t.dii2perrs.Log("CreateSamList Test Complete: true")
+		t.Log("CreateSamList Test Complete: true")
 	}
 	samProxies.CleanupClient()
 }

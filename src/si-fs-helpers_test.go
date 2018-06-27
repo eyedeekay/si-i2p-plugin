@@ -4,37 +4,34 @@ import (
 	"testing"
 )
 
-import (
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
-)
 
 func TestSetupFile(t *testing.T) {
 	checkFolder("test")
 	path, file, err := setupFile("test", "file")
-	t.dii2perrs.Log(path, file)
+	t.Log(path, file)
 	if err != nil {
-		t.dii2perrs.Fatal(err)
+		t.Fatal(err)
 	}
 }
 
 func TestSetupFiFo(t *testing.T) {
 	checkFolder("test")
 	path, pipe, err := setupFiFo("test", "fifo")
-	t.dii2perrs.Log(path, pipe)
+	t.Log(path, pipe)
 	if err != nil {
-		t.dii2perrs.Fatal(err)
+		t.Fatal(err)
 	}
 }
 
 func TestSetupScanner(t *testing.T) {
 	checkFolder("test")
 	path, pipe, err := setupFiFo("test", "fifo")
-	t.dii2perrs.Log(path, pipe)
+	t.Log(path, pipe)
 	if err != nil {
-		t.dii2perrs.Fatal(err)
+		t.Fatal(err)
 	}
 	_, err = setupScanner("test", "scanner", pipe)
 	if err != nil {
-		t.dii2perrs.Fatal(err)
+		t.Fatal(err)
 	}
 }

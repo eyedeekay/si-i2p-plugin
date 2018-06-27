@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-}
+)
 
 import (
     "github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
@@ -160,7 +160,7 @@ func CreateHTTPProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHel
 	var samProxy SamHTTPProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = NewAddressHelper(addressHelperURL, ahAddr, ahPort)
+	samProxy.addressbook = dii2pah.NewAddressHelper(addressHelperURL, ahAddr, ahPort)
 	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute

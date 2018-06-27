@@ -5,10 +5,6 @@ import (
 	"strconv"
 )
 
-import (
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
-)
-
 //ClientOption is a SamList option
 type ClientOption func(*SamList) error
 
