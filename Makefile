@@ -47,6 +47,7 @@ deps:
 	go get -u github.com/eyedeekay/jumphelper/src
 	go get -u github.com/eyedeekay/gosam
 	go get -u github.com/eyedeekay/si-i2p-plugin/src
+	go get -u github.com/eyedeekay/si-i2p-plugin/src/addresshelper
 	go get -u github.com/armon/go-socks5
 
 bin/si-i2p-plugin: deps
