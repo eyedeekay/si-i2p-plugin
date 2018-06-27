@@ -110,14 +110,14 @@ func (proxy *SamSOCKSProxy) checkResponse(rW http.ResponseWriter, rq *http.Reque
 		dii2perrs.Log("si-socks-proxy.go Client was retrieved: ", dir)
 		resp, doerr := proxy.Do(req, client, 0)
 		if proxy.c, proxy.err = dii2perrs.Warn(doerr, "si-socks-proxy.go Encountered an oddly formed response. Skipping.", "si-socks-proxy.go Processing Response"); proxy.c {
-			resp := proxy.client.copyRequest(req, resp, dir)
+			resp := proxy.client.CopyRequest(req, resp, dir)
 			proxy.printResponse(rW, resp)
 			dii2perrs.Log("si-socks-proxy.go responded")
 			return
 		}
 		if !strings.Contains(doerr.Error(), "malformed HTTP status code") && !strings.Contains(doerr.Error(), "use of closed network connection") {
 			if resp != nil {
-				resp := proxy.client.copyRequest(req, resp, dir)
+				resp := proxy.client.CopyRequest(req, resp, dir)
 				proxy.printResponse(rW, resp)
 			}
 			dii2perrs.Log("si-socks-proxy.go status error", doerr.Error())

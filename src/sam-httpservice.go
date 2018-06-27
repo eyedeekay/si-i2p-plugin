@@ -73,7 +73,7 @@ func (samService *samHTTPService) sendContent(index string) (*http.Response, err
 	resp, err := samService.subClient.Get(r)
 	dii2perrs.Warn(err, "Response Error", "Getting Response")
 	dii2perrs.Log("Pumping result to top of parent pipe")
-	samService.copyRequest(resp, dir)
+	samService.CopyRequest(resp, dir)
 	return resp, err*/
 	return nil, nil
 }
