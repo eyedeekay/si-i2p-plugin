@@ -10,6 +10,7 @@ import (
 	//".."
 	"github.com/eyedeekay/jumphelper/src"
 	"github.com/eyedeekay/si-i2p-plugin/src"
+    "github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
@@ -119,19 +120,19 @@ func main() {
 	}
 	dii2perrs.Log("si-i2p-plugin.go Initial URL:", *address)
 
-	samProxies, err := dii2p.CreateSamList(
-		dii2p.SetInitAddress(*address),
-		dii2p.SetHost(*samAddrString),
-		dii2p.SetPort(*samPortString),
-		dii2p.SetTimeout(*timeoutTime),
-		dii2p.SetKeepAlives(*keepAlives),
-		dii2p.SetLifespan(*destLifespan),
-		dii2p.SetTunLength(*tunnelLength),
-		dii2p.SetInQuantity(*inboundTunnels),
-		dii2p.SetOutQuantity(*outboundTunnels),
-		dii2p.SetIdleConns(*idleConns),
-		dii2p.SetInBackups(*inboundBackups),
-		dii2p.SetOutBackups(*outboundBackups),
+	samProxies, err := dii2pmain.CreateSamList(
+		dii2pmain.SetInitAddress(*address),
+		dii2pmain.SetHost(*samAddrString),
+		dii2pmain.SetPort(*samPortString),
+		dii2pmain.SetTimeout(*timeoutTime),
+		dii2pmain.SetKeepAlives(*keepAlives),
+		dii2pmain.SetLifespan(*destLifespan),
+		dii2pmain.SetTunLength(*tunnelLength),
+		dii2pmain.SetInQuantity(*inboundTunnels),
+		dii2pmain.SetOutQuantity(*outboundTunnels),
+		dii2pmain.SetIdleConns(*idleConns),
+		dii2pmain.SetInBackups(*inboundBackups),
+		dii2pmain.SetOutBackups(*outboundBackups),
 	)
 
 	if err != nil {
@@ -192,7 +193,7 @@ func main() {
 	samProxies.CleanupClient()
 }
 
-func closeProxy(samProxies *dii2p.SamList) {
+func closeProxy(samProxies *dii2pmain.SamList) {
 	exit = samProxies.ReadDelete()
 }
 
