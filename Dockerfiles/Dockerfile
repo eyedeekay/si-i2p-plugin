@@ -20,6 +20,6 @@ CMD /opt/bin/si-i2p-plugin \
     -in-backups=5 \
     -out-backups=5 \
     -internal-ah=false \
-    -addressbook=/opt/misc/addresses.csv
+    -addressbook=/opt/etc/addresses.csv
     #-avoidance=true \
     #-verbose=true

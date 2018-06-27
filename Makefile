@@ -166,6 +166,7 @@ install:
 	install -D -m755 $(ETC)init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
 	install -D -m755 $(ETC)systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
 	install -D -g sii2pplugin -o sii2pplugin -m644 $(ETC)si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/
+	install -D -g sii2pplugin -o sii2pplugin -m600 $(ETC)si-i2p-plugin/addresses.csv $(PREFIX)$(ETC)si-i2p-plugin/
 
 remove:
 	rm -f $(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin \
