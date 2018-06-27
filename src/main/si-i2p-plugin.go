@@ -6,12 +6,14 @@ import (
 	"os"
 	"os/signal"
 	"time"
+)
 
-	//".."
+import (
 	"github.com/eyedeekay/jumphelper/src"
 	"github.com/eyedeekay/si-i2p-plugin/src"
 	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
+    "github.com/eyedeekay/si-i2p-plugin/src/server"
 )
 
 var exit = false
@@ -139,9 +141,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	samService, err := dii2p.CreateSamServiceList(
-		dii2p.SetServHost(*samAddrString),
-		dii2p.SetServPort(*samPortString),
+	samService, err := dii2pserv.CreateSamServiceList(
+		dii2pserv.SetServHost(*samAddrString),
+		dii2pserv.SetServPort(*samPortString),
 	)
 	if err != nil {
 		log.Fatal(err)

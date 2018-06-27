@@ -1,4 +1,4 @@
-package dii2p
+package dii2pserv
 
 import (
 	"bufio"
