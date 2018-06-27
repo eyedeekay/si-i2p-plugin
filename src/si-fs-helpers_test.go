@@ -4,7 +4,6 @@ import (
 	"testing"
 )
 
-
 func TestSetupFile(t *testing.T) {
 	checkFolder("test")
 	path, file, err := setupFile("test", "file")

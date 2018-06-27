@@ -4,9 +4,13 @@ import (
 	"testing"
 )
 
+import (
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
+)
+
 func TestCreateAddressHelperIB(t *testing.T) {
-	Verbose = true
-	DEBUG = true
+	dii2perrs.Verbose = true
+	//DEBUG = true
 	a, err := NewAddressHelperFromOptions(
 		SetAddressHelperURL("http://inr.i2p"),
 		SetAddressHelperHost("127.0.0.1"),
@@ -15,15 +19,15 @@ func TestCreateAddressHelperIB(t *testing.T) {
 	)
 	b32, b := a.CheckAddressHelperString("i2p-projekt.i2p")
 	if b {
-		t.dii2perrs.Fatal(err)
+		t.Fatal(err)
 	} else {
-		t.dii2perrs.Log("TestCreateAddressHelper Test Complete: true", b32)
+		t.Log("TestCreateAddressHelper Test Complete: true", b32)
 	}
 }
 
 func TestCreateAddressHelperNIB(t *testing.T) {
-	Verbose = true
-	DEBUG = true
+	dii2perrs.Verbose = true
+	//DEBUG = true
 	a, err := NewAddressHelperFromOptions(
 		SetAddressHelperURL("http://inr.i2p"),
 		SetAddressHelperHost("127.0.0.1"),
@@ -31,8 +35,8 @@ func TestCreateAddressHelperNIB(t *testing.T) {
 		SetAddressBookPath("addressbook.txt"),
 	)
 	b32, b := a.CheckAddressHelperString("i2pforum.i2p")
-	t.dii2perrs.Log(b32, b, err)
+	t.Log(b32, b, err)
 	if b {
-		t.dii2perrs.Fatal("TestCreateAddressHelper Test Complete: false")
+		t.Fatal("TestCreateAddressHelper Test Complete: false")
 	}
 }

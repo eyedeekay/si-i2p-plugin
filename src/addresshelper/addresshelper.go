@@ -10,7 +10,7 @@ import (
 
 import (
 	"github.com/eyedeekay/jumphelper/src"
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 // AddressHelper prioritizes the address sources

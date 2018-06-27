@@ -5,7 +5,7 @@ import (
 )
 
 import (
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 func TestCreateSamListOptionsAll(t *testing.T) {

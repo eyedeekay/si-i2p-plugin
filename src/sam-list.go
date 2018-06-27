@@ -12,7 +12,7 @@ import (
 )
 
 import (
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 //SamList is a manager which guarantee's unique destinations for websites

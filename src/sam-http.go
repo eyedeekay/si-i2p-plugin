@@ -18,7 +18,7 @@ import (
 )
 
 import (
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 //DEBUG Remove this when you get the options laid in properly.

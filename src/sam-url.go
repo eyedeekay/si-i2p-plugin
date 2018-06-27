@@ -13,7 +13,7 @@ import (
 )
 
 import (
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 //SamURL manages the recieve pipes for SamHTTP request targets

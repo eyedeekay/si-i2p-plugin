@@ -11,8 +11,8 @@ import (
 )
 
 import (
-    "github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 // SamSOCKSProxy is a SOCKS proxy that automatically isolates per-destination

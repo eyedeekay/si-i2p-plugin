@@ -7,9 +7,10 @@ import (
 	"os/signal"
 	"time"
 
-	//"github.com/eyedeekay/si-i2p-plugin/src"
-	".."
+	//".."
 	"github.com/eyedeekay/jumphelper/src"
+	"github.com/eyedeekay/si-i2p-plugin/src"
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 var exit bool = false
@@ -75,48 +76,48 @@ func main() {
 
 	log.SetOutput(os.Stdout)
 
-	dii2p.Log("si-i2p-plugin.go Sam Address:", *samAddrString)
-	dii2p.Log("si-i2p-plugin.go Sam Port:", *samPortString)
-	dii2p.Log("si-i2p-plugin.go HTTP Proxy Address:", *proxAddrString)
-	dii2p.Log("si-i2p-plugin.go HTTP Proxy Port:", *proxPortString)
-	dii2p.Log("si-i2p-plugin.go SOCKS Proxy Address:", *socksAddrString)
-	dii2p.Log("si-i2p-plugin.go SOCKS Proxy Port:", *socksPortString)
-	dii2p.Log("si-i2p-plugin.go Addresshelper Address:", *addrHelperHostString)
-	dii2p.Log("si-i2p-plugin.go Addresshelper Port:", *addrHelperPortString)
-	dii2p.Log("si-i2p-plugin.go Working Directory:", *workDirectory)
-	dii2p.Log("si-i2p-plugin.go Addresshelper Services:", *addressHelper)
-	dii2p.Log("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
-	dii2p.Log("si-i2p-plugin.go Tunnel Length:", *tunnelLength)
-	dii2p.Log("si-i2p-plugin.go Inbound Tunnel Quantity:", *inboundTunnels)
-	dii2p.Log("si-i2p-plugin.go Outbound Tunnel Quantity", *outboundTunnels)
-	dii2p.Log("si-i2p-plugin.go Idle Tunnel Count:", *idleConns)
-	dii2p.Log("si-i2p-plugin.go Inbound Backup Quantity:", *inboundBackups)
-	dii2p.Log("si-i2p-plugin.go Outbound Backup Quantity", *outboundBackups)
+	dii2perrs.Log("si-i2p-plugin.go Sam Address:", *samAddrString)
+	dii2perrs.Log("si-i2p-plugin.go Sam Port:", *samPortString)
+	dii2perrs.Log("si-i2p-plugin.go HTTP Proxy Address:", *proxAddrString)
+	dii2perrs.Log("si-i2p-plugin.go HTTP Proxy Port:", *proxPortString)
+	dii2perrs.Log("si-i2p-plugin.go SOCKS Proxy Address:", *socksAddrString)
+	dii2perrs.Log("si-i2p-plugin.go SOCKS Proxy Port:", *socksPortString)
+	dii2perrs.Log("si-i2p-plugin.go Addresshelper Address:", *addrHelperHostString)
+	dii2perrs.Log("si-i2p-plugin.go Addresshelper Port:", *addrHelperPortString)
+	dii2perrs.Log("si-i2p-plugin.go Working Directory:", *workDirectory)
+	dii2perrs.Log("si-i2p-plugin.go Addresshelper Services:", *addressHelper)
+	dii2perrs.Log("si-i2p-plugin.go Timeout Time:", *timeoutTime, "minutes")
+	dii2perrs.Log("si-i2p-plugin.go Tunnel Length:", *tunnelLength)
+	dii2perrs.Log("si-i2p-plugin.go Inbound Tunnel Quantity:", *inboundTunnels)
+	dii2perrs.Log("si-i2p-plugin.go Outbound Tunnel Quantity", *outboundTunnels)
+	dii2perrs.Log("si-i2p-plugin.go Idle Tunnel Count:", *idleConns)
+	dii2perrs.Log("si-i2p-plugin.go Inbound Backup Quantity:", *inboundBackups)
+	dii2perrs.Log("si-i2p-plugin.go Outbound Backup Quantity", *outboundBackups)
 
 	*useSOCKSProxy = false
 
 	if *internalAddressHelper {
-		dii2p.Log("si-i2p-plugin.go starting internal addresshelper with")
+		dii2perrs.Log("si-i2p-plugin.go starting internal addresshelper with")
 		jumphelper.NewService(*addrHelperHostString, *addrHelperPortString, *addressBook, *samAddrString, *samPortString)
 	}
 
 	if !*keepAlives {
-		dii2p.Log("si-i2p-plugin.go Keepalives Enabled")
+		dii2perrs.Log("si-i2p-plugin.go Keepalives Enabled")
 	} else {
-		dii2p.Log("si-i2p-plugin.go Keepalives Disabled")
+		dii2perrs.Log("si-i2p-plugin.go Keepalives Disabled")
 	}
 	if *debugConnection {
 		dii2p.DEBUG = *debugConnection
-		dii2p.Log("si-i2p-plugin.go Debug mode: true")
+		dii2perrs.Log("si-i2p-plugin.go Debug mode: true")
 	}
 	if *verboseLogging {
-		dii2p.Verbose = *verboseLogging
-		dii2p.Log("si-i2p-plugin.go Verbose mode: true")
+		dii2perrs.Verbose = *verboseLogging
+		dii2perrs.Log("si-i2p-plugin.go Verbose mode: true")
 	}
 	if *useHTTPProxy {
-		dii2p.Log("si-i2p-plugin.go Using HTTP proxy: true")
+		dii2perrs.Log("si-i2p-plugin.go Using HTTP proxy: true")
 	}
-	dii2p.Log("si-i2p-plugin.go Initial URL:", *address)
+	dii2perrs.Log("si-i2p-plugin.go Initial URL:", *address)
 
 	samProxies, err := dii2p.CreateSamList(
 		dii2p.SetInitAddress(*address),
@@ -162,7 +163,7 @@ func main() {
 	if *useHTTPProxy {
 		if !httpUp {
 			samProxy := dii2p.CreateHTTPProxy(*proxAddrString, *proxPortString, *address, *addrHelperHostString, *addrHelperPortString, *addressHelper, samProxies, *timeoutTime, *keepAlives)
-			dii2p.Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.Addr)
+			dii2perrs.Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.Addr)
 			httpUp = true
 		}
 	}
@@ -170,12 +171,12 @@ func main() {
 	if *useSOCKSProxy {
 		if !socksUp {
 			samProxy := dii2p.CreateSOCKSProxy(*proxAddrString, *proxPortString, *address, *addrHelperHostString, *addrHelperPortString, *addressHelper, samProxies, *timeoutTime, *keepAlives)
-			dii2p.Log("si-i2p-plugin.go Socks Proxy Started:" + samProxy.Addr)
+			dii2perrs.Log("si-i2p-plugin.go Socks Proxy Started:" + samProxy.Addr)
 			socksUp = true
 		}
 	}
 
-	dii2p.Log("si-i2p-plugin.go Created client, starting loop...")
+	dii2perrs.Log("si-i2p-plugin.go Created client, starting loop...")
 
 	for exit != true {
 		go closeProxy(samProxies)

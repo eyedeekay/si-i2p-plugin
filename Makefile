@@ -246,13 +246,21 @@ search:
 	surf https://trac.torproject.org/projects/tor/ticket/25564
 
 gotest:
-	cd src && go test
+	cd src && go test && \
+		cd addresshelper && go test && \
+		cd ../main && go test
 
 golint:
-	cd src && golint
+	cd src && golint && \
+		cd addresshelper && golint && \
+		cd ../main && golint
 
 govet:
-	cd src && go vet
+	cd src && go vet && \
+		cd addresshelper && go vet && \
+		cd ../main && go vet
 
 gofmt:
 	gofmt -w ./src/*.go ./src/*/*.go
+
+gostuff: gofmt golint govet gotest
