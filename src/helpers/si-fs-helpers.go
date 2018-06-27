@@ -57,6 +57,7 @@ func safeNames(str string) string {
 	}
 }
 
+// SafeURLString removes illegal characters from URL strings
 func SafeURLString(str string) string {
 	r := strings.Replace(
 		strings.Replace(
@@ -105,6 +106,7 @@ func truncatePaths(str string) string {
 	return fixedpath
 }
 
+// SetupFolder Creates a folder for a site or directory control interface
 func SetupFolder(directory string) bool {
 	pathConnectionExists, err := exists(truncatePaths(filepath.Join(ConnectionDirectory, directory)))
 	if e, _ := dii2perrs.Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePaths(filepath.Join(ConnectionDirectory))); e {
@@ -121,6 +123,7 @@ func SetupFolder(directory string) bool {
 	return false
 }
 
+// CheckFolder ensures a folder exists. It's probably redundant.
 func CheckFolder(directory string) bool {
 	pathConnectionExists, err := exists(truncatePaths(filepath.Join(ConnectionDirectory, directory)))
 	if e, _ := dii2perrs.Fatal(err, "si-fs-helpers.go Child Directory Error", "si-fs-helpers.go Child Directory Check", truncatePaths(filepath.Join(ConnectionDirectory))); e {
@@ -134,6 +137,7 @@ func CheckFolder(directory string) bool {
 	return false
 }
 
+// SetupFile creates a regular file
 func SetupFile(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
@@ -161,6 +165,7 @@ func SetupFile(directory, path string) (string, *os.File, error) {
 	return mkPath, nil, pathErr
 }
 
+// SetupFiFo creates a named pipe
 func SetupFiFo(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
@@ -180,6 +185,7 @@ func SetupFiFo(directory, path string) (string, *os.File, error) {
 	return mkPath, nil, nil
 }
 
+// SetupScanner sets up a scanner
 func SetupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
 	_, pathErr := exists(mkPath)

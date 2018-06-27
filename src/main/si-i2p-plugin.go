@@ -10,7 +10,7 @@ import (
 	//".."
 	"github.com/eyedeekay/jumphelper/src"
 	"github.com/eyedeekay/si-i2p-plugin/src"
-    "github.com/eyedeekay/si-i2p-plugin/src/client"
+	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
