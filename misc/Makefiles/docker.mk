@@ -15,7 +15,7 @@ docker-setup:
 	make docker-host docker-jumphelper docker-run docker-browser
 
 docker:
-	docker build --no-cache -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
+	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
 	docker build --no-cache -f Dockerfiles/Dockerfile.jumphelper -t eyedeekay/sam-jumphelper .
 	docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
 

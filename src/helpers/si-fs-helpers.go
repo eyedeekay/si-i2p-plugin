@@ -14,6 +14,7 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
+// ConnectionDirectory is the global working directory of the service
 var ConnectionDirectory string
 
 func exists(path string) (bool, error) {
@@ -203,6 +204,8 @@ func SetupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error)
 
 //This function does nothing on Unix-like platforms. It is only here to clear
 //the contents of files that would normally be named pipes on Windows.
+
+// ClearFile does nothing here.
 func ClearFile(directory, path string) {
 
 }
