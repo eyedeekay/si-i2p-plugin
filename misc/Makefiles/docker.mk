@@ -57,7 +57,7 @@ docker-jumphelper:
 		--restart always \
 		--ip 172.80.80.3 \
 		-p 127.0.0.1:7054:7054 \
-		-t eyedeekay/sam-jumphelper
+		-t eyedeekay/sam-jumphelper; true
 
 docker-run: docker-tidy docker-host
 	@sleep 1
@@ -81,7 +81,7 @@ docker-follow:
 	docker logs -f si-proxy
 
 docker-tidy:
-	docker rm -f si-proxy; true
+	docker rm -f si-proxy sam-jumphelper; true
 
 docker-clean: docker-clean
 	docker rm -f sam-host sam-jumphelper; true
