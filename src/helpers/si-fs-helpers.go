@@ -82,7 +82,7 @@ func SafeURLString(str string) string {
 
 func truncatePaths(str string) string {
 	temp := strings.SplitN(
-		safeURLString(str),
+		SafeURLString(str),
 		"/",
 		-1,
 	)
