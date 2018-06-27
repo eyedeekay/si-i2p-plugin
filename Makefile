@@ -49,6 +49,7 @@ deps:
 	go get -u github.com/armon/go-socks5
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/errors
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/addresshelper
+	go get -u github.com/eyedeekay/si-i2p-plugin/src/helpers
 	go get -u github.com/eyedeekay/si-i2p-plugin/src
 
 
