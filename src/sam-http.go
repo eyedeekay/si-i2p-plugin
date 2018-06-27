@@ -21,9 +21,6 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
-//DEBUG Remove this when you get the options laid in properly.
-var DEBUG bool
-
 //SamHTTP is an HTTP proxy which requests resources from the i2p network using
 //the same unique destination
 type SamHTTP struct {
@@ -118,7 +115,7 @@ func (samConn *SamHTTP) Dial(network, addr string) (net.Conn, error) {
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
 		goSam.SetHost(samConn.samAddrString),
 		goSam.SetPort(samConn.samPortString),
-		goSam.SetDebug(DEBUG),
+		goSam.SetDebug(dii2perrs.DEBUG),
 		goSam.SetUnpublished(true),
 		goSam.SetInLength(uint(samConn.tunnelLength)),
 		goSam.SetOutLength(uint(samConn.tunnelLength)),
@@ -157,7 +154,7 @@ func (samConn *SamHTTP) reConnect() (net.Conn, error) {
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
 		goSam.SetHost(samConn.samAddrString),
 		goSam.SetPort(samConn.samPortString),
-		goSam.SetDebug(DEBUG),
+		goSam.SetDebug(dii2perrs.DEBUG),
 		goSam.SetUnpublished(true),
 		goSam.SetInLength(uint(samConn.tunnelLength)),
 		goSam.SetOutLength(uint(samConn.tunnelLength)),
@@ -213,7 +210,7 @@ func (samConn *SamHTTP) createClient() {
 	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
 		goSam.SetHost(samConn.samAddrString),
 		goSam.SetPort(samConn.samPortString),
-		goSam.SetDebug(DEBUG),
+		goSam.SetDebug(dii2perrs.DEBUG),
 		goSam.SetUnpublished(true),
 		goSam.SetInLength(uint(samConn.tunnelLength)),
 		goSam.SetOutLength(uint(samConn.tunnelLength)),

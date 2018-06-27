@@ -10,7 +10,7 @@ import (
 
 func TestCreateSamListOptionsAll(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetInitAddress("http://i2p-projekt.i2p"),
 		SetHost("localhost"),
@@ -28,7 +28,7 @@ func TestCreateSamListOptionsAll(t *testing.T) {
 
 func TestCreateSamListOptionsInitAddress(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetInitAddress("http://i2p-projekt.i2p"),
 	)
@@ -42,7 +42,7 @@ func TestCreateSamListOptionsInitAddress(t *testing.T) {
 
 func TestCreateSamListOptionsHost(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetHost("localhost"),
 	)
@@ -56,7 +56,7 @@ func TestCreateSamListOptionsHost(t *testing.T) {
 
 func TestCreateSamListOptionsPort(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetPort("7656"),
 	)
@@ -70,7 +70,7 @@ func TestCreateSamListOptionsPort(t *testing.T) {
 
 func TestCreateSamListOptionsTimeout(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetTimeout(600),
 	)
@@ -84,7 +84,7 @@ func TestCreateSamListOptionsTimeout(t *testing.T) {
 
 func TestCreateSamListOptionsKeepAlives(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetKeepAlives(true),
 	)
@@ -98,7 +98,7 @@ func TestCreateSamListOptionsKeepAlives(t *testing.T) {
 
 func TestCreateSamListOptionsTunLength(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetTunLength(3),
 	)
@@ -112,7 +112,7 @@ func TestCreateSamListOptionsTunLength(t *testing.T) {
 
 func TestCreateSamListOptionsInQuantity(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetInQuantity(15),
 	)
@@ -126,7 +126,7 @@ func TestCreateSamListOptionsInQuantity(t *testing.T) {
 
 func TestCreateSamListOptionsOutQuantity(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetOutQuantity(15),
 	)

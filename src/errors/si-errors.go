@@ -7,6 +7,9 @@ import (
 //Verbose determines the log verbosity
 var Verbose = false
 
+//DEBUG Remove this when you get the options laid in properly.
+var DEBUG = false
+
 //Log wraps logging
 func Log(msg ...interface{}) {
 	if Verbose {

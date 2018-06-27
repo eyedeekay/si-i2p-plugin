@@ -10,7 +10,7 @@ import (
 
 func TestCreateSamList(t *testing.T) {
 	dii2perrs.Verbose = true
-	DEBUG = true
+	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
 		SetInitAddress("http://i2p-projekt.i2p"),
 		SetHost("localhost"),
