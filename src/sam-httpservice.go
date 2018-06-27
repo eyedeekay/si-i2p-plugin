@@ -48,17 +48,17 @@ type samHTTPService struct {
 }
 
 func (samService *samHTTPService) initPipes() {
-	checkFolder(filepath.Join(connectionDirectory, samService.host))
+	checkFolder(filepath.Join(dii2phelper.ConnectionDirectory, samService.host))
 
-	samService.servPath, samService.servPipe, samService.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samService.host), "send")
+	samService.servPath, samService.servPipe, samService.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samService.host), "send")
 	if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
-		samService.servScan, samService.err = setupScanner(filepath.Join(connectionDirectory, samService.host), "send", samService.servPipe)
+		samService.servScan, samService.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samService.host), "send", samService.servPipe)
 		if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Scanner setup Error:", "Scanner set up successfully."); !samService.c {
 			samService.cleanupService()
 		}
 	}
 
-	samService.namePath, samService.nameFile, samService.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samService.host), "name")
+	samService.namePath, samService.nameFile, samService.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samService.host), "name")
 	if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
 		samService.nameFile.WriteString("")
 	}
@@ -147,7 +147,7 @@ func (samService *samHTTPService) cleanupService() {
 	}
 	err := samService.samBridgeClient.Close()
 	dii2perrs.Fatal(err, "SAM Service Connection Closing Error", "Closing SAM service Connection")
-	os.RemoveAll(filepath.Join(connectionDirectory, samService.host))
+	os.RemoveAll(filepath.Join(dii2phelper.ConnectionDirectory, samService.host))
 }
 
 func createSamHTTPService(samAddr string, samPort string, alias string) samHTTPService {

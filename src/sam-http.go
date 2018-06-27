@@ -19,7 +19,7 @@ import (
 
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
-    "github.com/eyedeekay/si-i2p-plugin/src/helpers"
+	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
 
 //SamHTTP is an HTTP proxy which requests resources from the i2p network using
@@ -72,30 +72,28 @@ type SamHTTP struct {
 	base64     string
 }
 
-var connectionDirectory string
-
 func (samConn *SamHTTP) initPipes() {
-	checkFolder(filepath.Join(connectionDirectory, samConn.host))
+	checkFolder(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host))
 
-	samConn.sendPath, samConn.sendPipe, samConn.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samConn.host), "send")
+	samConn.sendPath, samConn.sendPipe, samConn.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "send")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
-		samConn.sendScan, samConn.err = setupScanner(filepath.Join(connectionDirectory, samConn.host), "send", samConn.sendPipe)
+		samConn.sendScan, samConn.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "send", samConn.sendPipe)
 		if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Scanner setup Error:", "sam-http.go Scanner set up successfully."); !samConn.c {
 			samConn.CleanupClient()
 		}
 	}
 
-	samConn.namePath, samConn.nameFile, samConn.err = dii2phelper.SetupFile(filepath.Join(connectionDirectory, samConn.host), "name")
+	samConn.namePath, samConn.nameFile, samConn.err = dii2phelper.SetupFile(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "name")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.nameFile.WriteString("")
 	}
 
-	samConn.idPath, samConn.idFile, samConn.err = dii2phelper.SetupFile(filepath.Join(connectionDirectory, samConn.host), "id")
+	samConn.idPath, samConn.idFile, samConn.err = dii2phelper.SetupFile(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "id")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.idFile.WriteString("")
 	}
 
-	samConn.base64Path, samConn.base64File, samConn.err = dii2phelper.SetupFile(filepath.Join(connectionDirectory, samConn.host), "base64")
+	samConn.base64Path, samConn.base64File, samConn.err = dii2phelper.SetupFile(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "base64")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
 		samConn.idFile.WriteString("")
 	}
@@ -373,7 +371,7 @@ func (samConn *SamHTTP) readRequest() string {
 	for samConn.sendScan.Scan() {
 		samConn.sendRequest(text)
 	}
-	clearFile(filepath.Join(connectionDirectory, samConn.directory), "send")
+	clearFile(filepath.Join(dii2phelper.ConnectionDirectory, samConn.directory), "send")
 	return text
 }
 
@@ -444,7 +442,7 @@ func (samConn *SamHTTP) CleanupClient() {
 	if samConn.c, samConn.err = dii2perrs.Warn(err, "sam-http.go Closing SAM bridge error, retrying.", "sam-http.go Closing SAM bridge"); !samConn.c {
 		samConn.samBridgeClient.Close()
 	}
-	os.RemoveAll(filepath.Join(connectionDirectory, samConn.host))
+	os.RemoveAll(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host))
 }
 
 func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity, idleConns, inboundBackups, outboundBackups int) SamHTTP {

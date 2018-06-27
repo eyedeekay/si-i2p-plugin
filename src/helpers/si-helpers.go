@@ -11,30 +11,30 @@ import (
 //CheckURLType assures a URL is intended for i2p
 func CheckURLType(request string) bool {
 
-	dii2phelpererrs.Log(request)
+	dii2perrs.Log(request)
 
 	test := strings.Split(request, ".i2p")
 
 	if len(test) < 2 {
 		msg := "Non i2p domain detected. Skipping."
-		dii2phelpererrs.Log(msg) //Outproxy support? Might be cool.
+		dii2perrs.Log(msg) //Outproxy support? Might be cool.
 		return false
 	}
 	n := strings.Split(strings.Replace(strings.Replace(test[0], "https://", "", -1), "http://", "", -1), "/")
 	if len(n) > 1 {
 		msg := "Non i2p domain detected, possible attempt to impersonate i2p domain in path. Skipping."
-		dii2phelpererrs.Log(msg) //Outproxy support? Might be cool. Riskier here.
+		dii2perrs.Log(msg) //Outproxy support? Might be cool. Riskier here.
 		return false
 	}
 	strings.Contains(request, "http")
 	if !strings.Contains(request, "http") {
 		if strings.Contains(request, "https") {
 			msg := "Dropping https request for now, assumed attempt to get clearnet resource."
-			dii2phelpererrs.Log(msg)
+			dii2perrs.Log(msg)
 			return false
 		}
 		msg := "unsupported protocal scheme " + request
-		dii2phelpererrs.Log(msg)
+		dii2perrs.Log(msg)
 		return false
 	}
 	return true
@@ -42,7 +42,7 @@ func CheckURLType(request string) bool {
 
 //CleanURL will at some point be replaced.
 func CleanURL(request string) (string, string) {
-	dii2phelpererrs.Log("sam-http.go cleanURL Request " + request)
+	dii2perrs.Log("sam-http.go cleanURL Request " + request)
 	//url := strings.Replace(request, "http://", "", -1)
 	var url string
 	if !strings.HasPrefix(request, "http://") {
@@ -68,8 +68,8 @@ func CleanURL(request string) (string, string) {
 		url = strings.TrimSuffix(url, "/")
 	}
 
-	dii2phelpererrs.Log("sam-http.go cleanURL Request URL " + url)
-	dii2phelpererrs.Log("sam-http.go cleanURL Request Host ", host)
+	dii2perrs.Log("sam-http.go cleanURL Request URL " + url)
+	dii2perrs.Log("sam-http.go cleanURL Request Host ", host)
 
 	return host, url
 }

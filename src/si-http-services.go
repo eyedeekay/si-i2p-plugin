@@ -38,22 +38,22 @@ type SamServices struct {
 func (samServiceStack *SamServices) initPipes() {
 	setupFolder(samServiceStack.dir)
 
-	samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "genr")
+	samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "genr")
 	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
-		samServiceStack.genrScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "genr", samServiceStack.genrPipe)
+		samServiceStack.genrScan, samServiceStack.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "genr", samServiceStack.genrPipe)
 		if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
 			samServiceStack.cleanupServices()
 		}
 	}
 
-	samServiceStack.lsPath, samServiceStack.lsPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "ls")
+	samServiceStack.lsPath, samServiceStack.lsPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "ls")
 	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
 		samServiceStack.lsPipe.WriteString("")
 	}
 
-	samServiceStack.delPath, samServiceStack.delPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, samServiceStack.dir), "del")
+	samServiceStack.delPath, samServiceStack.delPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "del")
 	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
-		samServiceStack.delScan, samServiceStack.err = setupScanner(filepath.Join(connectionDirectory, samServiceStack.dir), "del", samServiceStack.delPipe)
+		samServiceStack.delScan, samServiceStack.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "del", samServiceStack.delPipe)
 		if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
 			samServiceStack.cleanupServices()
 		}
@@ -162,7 +162,7 @@ func (samServiceStack *SamServices) cleanupServices() {
 		service.cleanupService()
 	}
 	samServiceStack.delPipe.Close()
-	os.RemoveAll(filepath.Join(connectionDirectory, "service"))
+	os.RemoveAll(filepath.Join(dii2phelper.ConnectionDirectory, "service"))
 }
 
 // CreateSamServiceList Creates a Service Manager from functional arguments

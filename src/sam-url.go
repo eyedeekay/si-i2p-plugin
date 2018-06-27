@@ -35,21 +35,21 @@ type SamURL struct {
 }
 
 func (subURL *SamURL) initPipes() {
-	checkFolder(filepath.Join(connectionDirectory, subURL.subDirectory))
+	checkFolder(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory))
 
-	subURL.recvPath, subURL.recvFile, subURL.err = dii2phelper.SetupFile(filepath.Join(connectionDirectory, subURL.subDirectory), "recv")
+	subURL.recvPath, subURL.recvFile, subURL.err = dii2phelper.SetupFile(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "recv")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.recvFile.WriteString("")
 	}
 
-	subURL.timePath, subURL.timeFile, subURL.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, subURL.subDirectory), "time")
+	subURL.timePath, subURL.timeFile, subURL.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "time")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
 		subURL.timeFile.WriteString("")
 	}
 
-	subURL.delPath, subURL.delPipe, subURL.err = dii2phelper.SetupFiFo(filepath.Join(connectionDirectory, subURL.subDirectory), "del")
+	subURL.delPath, subURL.delPipe, subURL.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
-		subURL.delScan, subURL.err = setupScanner(filepath.Join(connectionDirectory, subURL.subDirectory), "del", subURL.delPipe)
+		subURL.delScan, subURL.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del", subURL.delPipe)
 		if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subURL.c {
 			subURL.cleanupDirectory()
 		}
@@ -204,7 +204,7 @@ func (subURL *SamURL) cleanupDirectory() {
 	subURL.recvFile.Close()
 	subURL.timeFile.Close()
 	subURL.delPipe.Close()
-	os.RemoveAll(filepath.Join(connectionDirectory, subURL.subDirectory))
+	os.RemoveAll(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory))
 }
 
 func (subURL *SamURL) readDelete() bool {
@@ -216,7 +216,7 @@ func (subURL *SamURL) readDelete() bool {
 		}
 		return false
 	}
-	clearFile(filepath.Join(connectionDirectory, subURL.subDirectory), "del")
+	clearFile(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del")
 	return false
 }
 
