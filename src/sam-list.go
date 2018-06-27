@@ -203,7 +203,7 @@ func (samStack *SamList) ReadRequest() {
 			go samStack.sendClientRequest(samStack.sendScan.Text())
 		}
 	}
-	clearFile(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "send")
+	dii2phelper.ClearFile(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "send")
 }
 
 //WriteResponses writes the responses to the pipes
@@ -248,7 +248,7 @@ func (samStack *SamList) ReadDelete() bool {
 	for _, client := range samStack.listOfClients {
 		client.readDelete()
 	}
-	clearFile(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "del")
+	dii2phelper.ClearFile(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "del")
 	return false
 }
 

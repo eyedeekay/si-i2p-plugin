@@ -216,7 +216,7 @@ func (subURL *SamURL) readDelete() bool {
 		}
 		return false
 	}
-	clearFile(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del")
+	dii2phelper.ClearFile(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del")
 	return false
 }
 

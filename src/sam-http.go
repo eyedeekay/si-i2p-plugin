@@ -371,7 +371,7 @@ func (samConn *SamHTTP) readRequest() string {
 	for samConn.sendScan.Scan() {
 		samConn.sendRequest(text)
 	}
-	clearFile(filepath.Join(dii2phelper.ConnectionDirectory, samConn.directory), "send")
+	dii2phelper.ClearFile(filepath.Join(dii2phelper.ConnectionDirectory, samConn.directory), "send")
 	return text
 }
 
