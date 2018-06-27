@@ -73,11 +73,11 @@ type SamHTTP struct {
 }
 
 func (samConn *SamHTTP) initPipes() {
-	checkFolder(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host))
+	dii2phelper.CheckFolder(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host))
 
 	samConn.sendPath, samConn.sendPipe, samConn.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "send")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
-		samConn.sendScan, samConn.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "send", samConn.sendPipe)
+		samConn.sendScan, samConn.err = dii2phelper.SetupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "send", samConn.sendPipe)
 		if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Scanner setup Error:", "sam-http.go Scanner set up successfully."); !samConn.c {
 			samConn.CleanupClient()
 		}
@@ -232,7 +232,7 @@ func (samConn *SamHTTP) createClient() {
 }
 
 func (samConn *SamHTTP) hostSet(request string) (string, string) {
-	host, req := CleanURL(request)
+	host, req := dii2phelper.CleanURL(request)
 	dii2perrs.Log("sam-http.go Setting up micro-proxy for:", "http://"+host)
 	dii2perrs.Log("sam-http.go in Directory", req)
 	return host, req
@@ -243,7 +243,7 @@ func (samConn *SamHTTP) hostGet() string {
 }
 
 func (samConn *SamHTTP) hostCheck(request string) bool {
-	host, u := CleanURL(request)
+	host, u := dii2phelper.CleanURL(request)
 	_, err := url.ParseRequestURI(u)
 	dii2perrs.Log("sam-http.go keeping client alive")
 	samConn.useTime = time.Now()

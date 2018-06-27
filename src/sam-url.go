@@ -35,7 +35,7 @@ type SamURL struct {
 }
 
 func (subURL *SamURL) initPipes() {
-	checkFolder(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory))
+	dii2phelper.CheckFolder(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory))
 
 	subURL.recvPath, subURL.recvFile, subURL.err = dii2phelper.SetupFile(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "recv")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
@@ -49,7 +49,7 @@ func (subURL *SamURL) initPipes() {
 
 	subURL.delPath, subURL.delPipe, subURL.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
-		subURL.delScan, subURL.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del", subURL.delPipe)
+		subURL.delScan, subURL.err = dii2phelper.SetupScanner(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "del", subURL.delPipe)
 		if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Scanner setup Error:", "sam-url.go Scanner set up successfully."); !subURL.c {
 			subURL.cleanupDirectory()
 		}

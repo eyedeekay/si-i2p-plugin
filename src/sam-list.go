@@ -13,6 +13,7 @@ import (
 
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
 
 //SamList is a manager which guarantee's unique destinations for websites
@@ -51,11 +52,11 @@ type SamList struct {
 }
 
 func (samStack *SamList) initPipes() {
-	setupFolder(samStack.dir)
+	dii2phelper.SetupFolder(samStack.dir)
 
 	samStack.sendPath, samStack.sendPipe, samStack.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "send")
 	if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
-		samStack.sendScan, samStack.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "send", samStack.sendPipe)
+		samStack.sendScan, samStack.err = dii2phelper.SetupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "send", samStack.sendPipe)
 		if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
 			samStack.CleanupClient()
 		}
@@ -68,7 +69,7 @@ func (samStack *SamList) initPipes() {
 
 	samStack.delPath, samStack.delPipe, samStack.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "del")
 	if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Pipe setup error", "sam-list.go Pipe setup"); samStack.c {
-		samStack.delScan, samStack.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "del", samStack.delPipe)
+		samStack.delScan, samStack.err = dii2phelper.SetupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samStack.dir), "del", samStack.delPipe)
 		if samStack.c, samStack.err = dii2perrs.Fatal(samStack.err, "sam-list.go Scanner setup Error:", "sam-list.go Scanner set up successfully."); !samStack.c {
 			samStack.CleanupClient()
 		}

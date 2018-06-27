@@ -121,7 +121,7 @@ func SetupFolder(directory string) bool {
 	return false
 }
 
-func checkFolder(directory string) bool {
+func CheckFolder(directory string) bool {
 	pathConnectionExists, err := exists(truncatePaths(filepath.Join(ConnectionDirectory, directory)))
 	if e, _ := dii2perrs.Fatal(err, "si-fs-helpers.go Child Directory Error", "si-fs-helpers.go Child Directory Check", truncatePaths(filepath.Join(ConnectionDirectory))); e {
 		if !pathConnectionExists {

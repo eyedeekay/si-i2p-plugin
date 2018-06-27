@@ -36,11 +36,11 @@ type SamServices struct {
 }
 
 func (samServiceStack *SamServices) initPipes() {
-	setupFolder(samServiceStack.dir)
+	dii2phelper.SetupFolder(samServiceStack.dir)
 
 	samServiceStack.genrPath, samServiceStack.genrPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "genr")
 	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
-		samServiceStack.genrScan, samServiceStack.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "genr", samServiceStack.genrPipe)
+		samServiceStack.genrScan, samServiceStack.err = dii2phelper.SetupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "genr", samServiceStack.genrPipe)
 		if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
 			samServiceStack.cleanupServices()
 		}
@@ -53,7 +53,7 @@ func (samServiceStack *SamServices) initPipes() {
 
 	samServiceStack.delPath, samServiceStack.delPipe, samServiceStack.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "del")
 	if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Pipe setup error", "Pipe setup"); samServiceStack.c {
-		samServiceStack.delScan, samServiceStack.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "del", samServiceStack.delPipe)
+		samServiceStack.delScan, samServiceStack.err = dii2phelper.SetupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samServiceStack.dir), "del", samServiceStack.delPipe)
 		if samServiceStack.c, samServiceStack.err = dii2perrs.Fatal(samServiceStack.err, "Scanner setup Error:", "Scanner set up successfully."); !samServiceStack.c {
 			samServiceStack.cleanupServices()
 		}

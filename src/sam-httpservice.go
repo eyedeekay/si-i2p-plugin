@@ -13,6 +13,7 @@ import (
 
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
 
 type samHTTPService struct {
@@ -48,11 +49,11 @@ type samHTTPService struct {
 }
 
 func (samService *samHTTPService) initPipes() {
-	checkFolder(filepath.Join(dii2phelper.ConnectionDirectory, samService.host))
+	dii2phelper.CheckFolder(filepath.Join(dii2phelper.ConnectionDirectory, samService.host))
 
 	samService.servPath, samService.servPipe, samService.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samService.host), "send")
 	if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {
-		samService.servScan, samService.err = setupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samService.host), "send", samService.servPipe)
+		samService.servScan, samService.err = dii2phelper.SetupScanner(filepath.Join(dii2phelper.ConnectionDirectory, samService.host), "send", samService.servPipe)
 		if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Scanner setup Error:", "Scanner set up successfully."); !samService.c {
 			samService.cleanupService()
 		}
