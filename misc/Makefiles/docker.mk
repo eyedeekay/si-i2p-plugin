@@ -11,7 +11,7 @@ docker-clobber:
 	docker network rm si; true
 
 docker-setup:
-	make docker docker-network
+	make docker docker-tidy docker-network
 	make docker-host docker-jumphelper docker-run docker-browser
 
 docker:

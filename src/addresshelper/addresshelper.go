@@ -37,7 +37,7 @@ func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.R
 			dii2perrs.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
 			return url, false
 		}
-		if !b {
+		if b {
 			dii2perrs.Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
 			return url, !b
 		}
@@ -61,7 +61,7 @@ func (addressBook *AddressHelper) CheckAddressHelperString(url string) (string, 
 			return "", false
 		}
 		if b {
-			dii2perrs.Warn(nil, "addresshelper.go !b "+url+".b32.i2p", "addresshelper.go !b "+url+".b32.i2p")
+			dii2perrs.Warn(nil, "addresshelper.go !b "+url+".i2p", "addresshelper.go !b "+url+".i2p")
 			return url, false
 		}
 		s, c := addressBook.jumpClient.Request(url)

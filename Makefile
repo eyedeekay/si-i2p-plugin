@@ -253,6 +253,8 @@ gotest:
 		cd addresshelper && go test && \
 		cd ../errors && go test && \
 		cd ../helpers && go test && \
+		cd ../client && go test && \
+		cd ../server && go test && \
 		cd ../main && go test
 
 golint:
@@ -260,6 +262,8 @@ golint:
 		cd addresshelper && golint && \
 		cd ../errors && golint && \
 		cd ../helpers && golint && \
+		cd ../client && golint && \
+		cd ../server && golint && \
 		cd ../main && golint
 
 govet:
@@ -267,6 +271,8 @@ govet:
 		cd addresshelper && go vet && \
 		cd ../errors && go vet && \
 		cd ../helpers && go vet && \
+		cd ../client && go vet && \
+		cd ../server && go vet && \
 		cd ../main && go vet
 
 gofmt:

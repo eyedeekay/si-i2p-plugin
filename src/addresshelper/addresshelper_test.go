@@ -10,7 +10,7 @@ import (
 
 func TestCreateAddressHelperIB(t *testing.T) {
 	dii2perrs.Verbose = true
-	//dii2perrs.DEBUG = true
+	dii2perrs.DEBUG = true
 	a, err := NewAddressHelperFromOptions(
 		SetAddressHelperURL("http://inr.i2p"),
 		SetAddressHelperHost("127.0.0.1"),
@@ -27,16 +27,16 @@ func TestCreateAddressHelperIB(t *testing.T) {
 
 func TestCreateAddressHelperNIB(t *testing.T) {
 	dii2perrs.Verbose = true
-	//dii2perrs.DEBUG = true
+	dii2perrs.DEBUG = true
 	a, err := NewAddressHelperFromOptions(
 		SetAddressHelperURL("http://inr.i2p"),
 		SetAddressHelperHost("127.0.0.1"),
 		SetAddressHelperPort("7054"),
 		SetAddressBookPath("addressbook.txt"),
 	)
-	b32, b := a.CheckAddressHelperString("i2pforum.i2p")
-	t.Log(b32, b, err)
-	if b {
+	c, b := a.CheckAddressHelperString("forum.i2p")
+	t.Log(c, b, err)
+	if !b {
 		t.Fatal("TestCreateAddressHelper Test Complete: false")
 	}
 }

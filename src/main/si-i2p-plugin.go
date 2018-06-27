@@ -13,7 +13,7 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src"
 	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
-    "github.com/eyedeekay/si-i2p-plugin/src/server"
+	"github.com/eyedeekay/si-i2p-plugin/src/server"
 )
 
 var exit = false
