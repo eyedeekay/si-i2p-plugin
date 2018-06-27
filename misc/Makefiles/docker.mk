@@ -1,7 +1,7 @@
 
 docker-clobber:
 	docker rm -f si-proxy \
-		si-jumphelper \
+		sam-jumphelper \
 		sam-browser \
 		sam-host; true
 	docker rmi -f eyedeekay/sam-host \
@@ -10,7 +10,17 @@ docker-clobber:
 		eyedeekay/si-i2p-plugin; true
 	docker network rm si; true
 
-docker-setup: docker docker-network docker-host docker-jumphelper docker-run docker-browser
+docker-setup:
+	make docker docker-network
+	make docker-host docker-jumphelper docker-run docker-browser
+
+docker:
+	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
+	docker build --no-cache -f Dockerfiles/Dockerfile.jumphelper -t eyedeekay/sam-jumphelper .
+	docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
+
+docker-network:
+	docker network create --subnet 172.80.80.0/29 si; true
 
 docker-browser:
 	docker build --force-rm \
@@ -18,30 +28,6 @@ docker-browser:
 		--build-arg PORT="$(BROWSER_PORT)" \
 		--build-arg HOST="$(HOST)" \
 		-f Dockerfiles/Dockerfile.browser -t eyedeekay/sam-browser .
-
-browse: docker-browser
-	docker run --rm -i -t -d \
-		-e DISPLAY=$(DISPLAY) \
-		-e VERSION="$(BROWSER_VERSION)" \
-		--name sam-browser \
-		--network si \
-		--network-alias sam-browser \
-		--hostname sam-browser \
-		--link si-proxy \
-		--ip 172.80.80.5 \
-		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
-		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
-		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
-		$(browse_args)
-
-docker:
-	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
-	docker build --force-rm -f Dockerfiles/Dockerfile.jumphelper -t eyedeekay/sam-jumphelper .
-	docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
-
-
-docker-network:
-	docker network create --subnet 172.80.80.0/29 si; true
 
 docker-host:
 	docker run \
@@ -67,10 +53,11 @@ docker-jumphelper:
 		--network-alias sam-jumphelper \
 		--hostname sam-jumphelper \
 		--link si-proxy \
+		--link sam-host \
 		--restart always \
 		--ip 172.80.80.3 \
 		-p 127.0.0.1:7054:7054 \
-		-t eyedeekay/sam-jumphelper; true
+		-t eyedeekay/sam-jumphelper
 
 docker-run: docker-tidy docker-host
 	@sleep 1
@@ -94,10 +81,10 @@ docker-follow:
 	docker logs -f si-proxy
 
 docker-tidy:
-	docker rm -f si-proxy sam-jumphelper; true
+	docker rm -f si-proxy; true
 
 docker-clean: docker-clean
-	docker rm -f sam-host sam-jumphelper; true
+	docker rm -f sam-host; true
 	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 docker-copy:
@@ -105,3 +92,18 @@ docker-copy:
 
 stop:
 	docker rm -f si-proxy; true
+
+browse: docker-browser
+	docker run --rm -i -t -d \
+		-e DISPLAY=$(DISPLAY) \
+		-e VERSION="$(BROWSER_VERSION)" \
+		--name sam-browser \
+		--network si \
+		--network-alias sam-browser \
+		--hostname sam-browser \
+		--link si-proxy \
+		--ip 172.80.80.5 \
+		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
+		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
+		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
+		$(browse_args)
