@@ -10,7 +10,7 @@ import (
 
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
-    "github.com/eyedeekay/si-i2p-plugin/src/client"
+	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
@@ -158,7 +158,7 @@ func (proxy *SamHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Respons
 }
 
 //CreateHTTPProxy creates a SamHTTPProxy
-func CreateHTTPProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHelperURL string, samStack *SamList, timeoutTime int, keepAlives bool) *SamHTTPProxy {
+func CreateHTTPProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHelperURL string, samStack *dii2pmain.SamList, timeoutTime int, keepAlives bool) *SamHTTPProxy {
 	var samProxy SamHTTPProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives

@@ -63,7 +63,7 @@ func (subURL *SamURL) createDirectory(requestdir string) {
 	subURL.initPipes()
 }
 
-func (subURL *SamURL) scannerText() (string, error) {
+func (subURL *SamURL) ScannerText() (string, error) {
 	d, err := ioutil.ReadFile(subURL.recvPath)
 	if subURL.c, subURL.err = dii2perrs.Fatal(err, "sam-url.go Scanner error", "sam-url.go Scanning recv"); subURL.c {
 		return "", subURL.err

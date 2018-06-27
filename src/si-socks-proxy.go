@@ -12,6 +12,7 @@ import (
 
 import (
 	"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
+	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
 )
@@ -19,7 +20,7 @@ import (
 // SamSOCKSProxy is a SOCKS proxy that automatically isolates per-destination
 type SamSOCKSProxy struct {
 	Addr        string
-	client      *SamList
+	client      *dii2pmain.SamList
 	transport   *http.Transport
 	newHandle   *socks5.Server
 	addressbook *dii2pah.AddressHelper
