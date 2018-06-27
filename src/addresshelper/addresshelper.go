@@ -31,14 +31,17 @@ func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.R
 	if url != nil {
 		b, e := addressBook.jumpClient.Check(url.URL.String())
 		if e != nil {
+			Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
 			return url, false
 		}
 		if !b {
+			Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
 			return url, !b
 		} else {
 			s, c := addressBook.jumpClient.Request(url.URL.String())
 			if c != nil {
-				url.URL.Host = s
+				Log(s + ".b32.i2p")
+				url.URL.Host = s + ".b32.i2p"
 			}
 			return url, !b
 		}
@@ -49,11 +52,25 @@ func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.R
 
 // CheckAddressHelperString determines how the addresshelper will be used for an address
 func (addressBook *AddressHelper) CheckAddressHelperString(url string) (string, bool) {
-	b, e := addressBook.jumpClient.Check(url)
-	if e != nil {
-		return "", false
+	if url != "" {
+		b, e := addressBook.jumpClient.Check(url)
+		if e != nil {
+			Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
+			return "", false
+		}
+		if b {
+			Warn(nil, "addresshelper.go !b "+url+".b32.i2p", "addresshelper.go !b "+url+".b32.i2p")
+			return url, false
+		} else {
+			s, c := addressBook.jumpClient.Request(url)
+			if c != nil {
+				Warn(nil, "addresshelper.go b "+s+".b32.i2p", "addresshelper.go b "+s+".b32.i2p")
+				url = s + ".b32.i2p"
+			}
+			return url, true
+		}
 	}
-	return url, !b
+	return url, false
 }
 
 // NewAddressHelper creates a new address helper from string options

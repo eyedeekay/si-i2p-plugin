@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+    "github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
 )
 
 //SamHTTPProxy is an http proxy for making isolated SAM requests
@@ -83,9 +85,9 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 	rq.RequestURI = ""
 
 	req, useAddressHelper := proxy.addressbook.CheckAddressHelper(rq)
-    if useAddressHelper {
-        Log("si-http-proxy.go using jump helper")
-    }
+	if useAddressHelper {
+		Log("si-http-proxy.go using jump helper")
+	}
 
 	req.RequestURI = ""
 	if proxy.keepAlives {

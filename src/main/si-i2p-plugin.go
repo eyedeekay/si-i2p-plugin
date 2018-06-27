@@ -8,8 +8,8 @@ import (
 	"time"
 
 	//"github.com/eyedeekay/si-i2p-plugin/src"
-    "github.com/eyedeekay/jumphelper/src"
 	".."
+	"github.com/eyedeekay/jumphelper/src"
 )
 
 var exit bool = false
@@ -58,15 +58,15 @@ func main() {
 		"Inbound Tunnel Count(default 15)")
 	keepAlives := flag.Bool("disable-keepalives", false,
 		"Disable keepalives(default false)")
-	idleConns := flag.Int("idle-conns", 5,
-		"Maximium idle connections per host(default 5)")
+	idleConns := flag.Int("idle-conns", 8,
+		"Maximium idle connections per host(default 8)")
 	inboundBackups := flag.Int("in-backups", 3,
 		"Inbound Backup Count(default 3)")
 	outboundBackups := flag.Int("out-backups", 3,
 		"Inbound Backup Count(default 3)")
 	internalAddressHelper := flag.Bool("internal-ah", true,
-        "Use internal address helper")
-    addressBook := flag.String("addressbook", "./addresses.csv",
+		"Use internal address helper")
+	addressBook := flag.String("addressbook", "./addresses.csv",
 		"path to local addressbook(default ./addresses.csv) (Unused without internal-ah)")
 	//diskAvoidance := flag.Bool("avoidance", true,
 	//  "Disk Avoidance Mode(default true)")
@@ -95,10 +95,10 @@ func main() {
 
 	*useSOCKSProxy = false
 
-    if *internalAddressHelper {
-        dii2p.Log("si-i2p-plugin.go starting internal addresshelper with")
-        jumphelper.NewService(*addrHelperHostString, *addrHelperPortString, *addressBook, *samAddrString, *samPortString)
-    }
+	if *internalAddressHelper {
+		dii2p.Log("si-i2p-plugin.go starting internal addresshelper with")
+		jumphelper.NewService(*addrHelperHostString, *addrHelperPortString, *addressBook, *samAddrString, *samPortString)
+	}
 
 	if !*keepAlives {
 		dii2p.Log("si-i2p-plugin.go Keepalives Enabled")
