@@ -84,7 +84,7 @@ docker-tidy:
 	docker rm -f si-proxy; true
 
 docker-clean: docker-clean
-	docker rm -f sam-host; true
+	docker rm -f sam-host sam-jumphelper; true
 	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 docker-copy:

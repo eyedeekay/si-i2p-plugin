@@ -58,8 +58,8 @@ func main() {
 		"Inbound Tunnel Count(default 15)")
 	keepAlives := flag.Bool("disable-keepalives", false,
 		"Disable keepalives(default false)")
-	idleConns := flag.Int("idle-conns", 15,
-		"Maximium idle connections per host(default 4)")
+	idleConns := flag.Int("idle-conns", 5,
+		"Maximium idle connections per host(default 5)")
 	inboundBackups := flag.Int("in-backups", 3,
 		"Inbound Backup Count(default 3)")
 	outboundBackups := flag.Int("out-backups", 3,
