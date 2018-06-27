@@ -436,7 +436,7 @@ func (samConn *SamHTTP) CleanupClient() {
 	samConn.idFile.Close()
 	samConn.base64File.Close()
 	for _, url := range samConn.subCache {
-		url.cleanupDirectory()
+		url.CleanupDirectory()
 	}
 	err := samConn.samBridgeClient.Close()
 	if samConn.c, samConn.err = dii2perrs.Warn(err, "sam-http.go Closing SAM bridge error, retrying.", "sam-http.go Closing SAM bridge"); !samConn.c {
