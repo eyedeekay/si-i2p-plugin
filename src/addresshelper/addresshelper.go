@@ -31,23 +31,24 @@ type AddressHelper struct {
 
 // CheckAddressHelper determines how the addresshelper will be used for an address
 func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.Request, bool) {
+    return url, false
 	if url != nil {
 		b, e := addressBook.jumpClient.Check(url.URL.String())
 		if e != nil {
 			dii2perrs.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
 			return url, false
 		}
-		dii2perrs.Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
 		if !b {
 			s, c := addressBook.jumpClient.Request(url.URL.String())
 			if c == nil {
+				dii2perrs.Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
 				url.URL.Host = s + ".b32.i2p"
-                dii2perrs.Warn(c, "", "addresshelper.go ", url.URL.String())
+				return url, true
 			}
-			return url, true
-		}
-		return url, false
 
+		}
+		dii2perrs.Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
+		return url, false
 	}
 	return url, false
 }
@@ -60,15 +61,15 @@ func (addressBook *AddressHelper) CheckAddressHelperString(url string) (string, 
 			dii2perrs.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
 			return "", false
 		}
-		dii2perrs.Warn(nil, "addresshelper.go !b "+url+".i2p", "addresshelper.go !b "+url+".i2p")
 		if !b {
 			s, c := addressBook.jumpClient.Request(url)
 			if c == nil {
-				dii2perrs.Warn(nil, "addresshelper.go b "+s+".b32.i2p", "addresshelper.go b "+s+".b32.i2p")
+				dii2perrs.Warn(nil, "addresshelper.go !b "+s+".b32.i2p", "addresshelper.go !b "+s+".b32.i2p")
 				url = s + ".b32.i2p"
+				return url, true
 			}
-			return url, true
 		}
+		dii2perrs.Warn(nil, "addresshelper.go b "+url, "addresshelper.go b "+url)
 		return url, false
 	}
 	return url, false
