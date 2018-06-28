@@ -20,7 +20,7 @@ func TestCreateAddressHelperIB(t *testing.T) {
 		SetAddressBookPath("addressbook.txt"),
 	)
 	b32, b := a.CheckAddressHelperString("i2p-projekt.i2p")
-	if b {
+	if !b {
 		t.Fatal("TestCreateAddressHelperq", err)
 	} else {
 		t.Log("TestCreateAddressHelper Test Complete: true", b32)
@@ -37,7 +37,7 @@ func TestCreateAddressHelperNIB(t *testing.T) {
 		SetAddressHelperPort("7054"),
 		SetAddressBookPath("addressbook.txt"),
 	)
-	c, b := a.CheckAddressHelperString("forum.i2p")
+	c, b := a.CheckAddressHelperString("fireaxe.i2p")
 	t.Log("TestCreateAddressHelperNIB", c, b, err)
 	if b {
 		t.Fatal("TestCreateAddressHelper Test Complete: true")

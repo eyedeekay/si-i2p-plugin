@@ -279,3 +279,4 @@ gofmt:
 	gofmt -w ./src/*.go ./src/*/*.go
 
 gostuff: gofmt golint govet gotest
+

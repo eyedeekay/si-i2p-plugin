@@ -29,8 +29,31 @@ type AddressHelper struct {
 	c   bool
 }
 
+func (addressBook *AddressHelper) request(url *http.Request) *http.Request {
+	return &http.Request{
+	/*Method:
+	  URL:
+	  Proto:
+	  ProtoMajor:
+	  ProtoMinor:
+	  Header:
+	  Body:
+	  ContentLength:
+	  TransferEncoding:
+	  Close:
+	  Host:
+	  Form:
+	  PostForm:
+	  MultiPartForm:
+	  Trailer:
+	  RemoteAddr:
+	  RequestURI:*/
+	}
+}
+
 // CheckAddressHelper determines how the addresshelper will be used for an address
 func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.Request, bool) {
+	//
 	return url, false
 	/*if url != nil {
 		b, e := addressBook.jumpClient.Check(url.URL.String())
