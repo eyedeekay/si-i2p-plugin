@@ -14,6 +14,8 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
+var DiskAvoidance = false
+
 // ConnectionDirectory is the global working directory of the service
 var ConnectionDirectory string
 

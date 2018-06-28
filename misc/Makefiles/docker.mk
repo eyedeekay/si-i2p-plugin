@@ -11,7 +11,7 @@ docker-clobber:
 	docker network rm si; true
 
 docker-setup:
-	make docker-tidy docker docker-network docker-host
+	make docker docker-network docker-host
 	make docker-jumphelper docker-run
 
 docker:
@@ -46,6 +46,7 @@ docker-host:
 		-t eyedeekay/sam-host; true
 
 docker-jumphelper:
+	docker rm -f sam-jumphelper; true
 	docker run \
 		-d \
 		--name sam-jumphelper \
@@ -96,6 +97,9 @@ docker-copy:
 
 stop:
 	docker rm -f si-proxy; true
+
+start:
+	while true; do make docker-setup follow; done
 
 browse: docker-browser
 	docker run --rm -i -t -d \

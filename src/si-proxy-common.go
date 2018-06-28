@@ -1,11 +1,11 @@
 package dii2p
 
 import (
-    "net/http"
+	"net/http"
 )
 
 import (
-    "github.com/eyedeekay/si-i2p-plugin/src/errors"
+	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
 var hopHeaders = []string{
@@ -24,7 +24,6 @@ func delHopHeaders(header http.Header) {
 		header.Set("User-Agent", "MYOB/6.66 (AN/ON)")
 	}
 }
-
 
 func copyHeader(dst, src http.Header) {
 	if dst != nil && src != nil {

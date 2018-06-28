@@ -48,7 +48,7 @@ func main() {
 		"The working directory you want to use, defaults to current directory")
 	address := flag.String("url", "",
 		"i2p URL you want to retrieve")
-	addressHelper := flag.String("addresshelper", "http://inr.i2p",
+	addressHelper := flag.String("addresshelper", "http://joajgazyztfssty4w2on5oaqksz6tqoxbduy553y34mf4byv6gpq.b32.i2p/export/alive-hosts.txt",
 		"Jump/Addresshelper service you want to use")
 	destLifespan := flag.Int("lifespan", 12,
 		"Lifespan of an idle i2p destination in minutes(default twelve)")
@@ -101,7 +101,15 @@ func main() {
 
 	if *internalAddressHelper {
 		dii2perrs.Log("si-i2p-plugin.go starting internal addresshelper with")
-		jumphelper.NewService(*addrHelperHostString, *addrHelperPortString, *addressBook, *samAddrString, *samPortString)
+		jumphelper.NewService(
+			*addrHelperHostString,
+			*addrHelperPortString,
+			*addressBook,
+			*samAddrString,
+			*samPortString,
+			[]string{*addressHelper},
+			*internalAddressHelper,
+		)
 	}
 
 	if !*keepAlives {

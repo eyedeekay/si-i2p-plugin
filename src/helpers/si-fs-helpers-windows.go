@@ -13,6 +13,8 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
+var DiskAvoidance = false
+
 func exists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {

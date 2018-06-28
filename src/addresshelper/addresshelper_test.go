@@ -2,7 +2,7 @@ package dii2pah
 
 import (
 	"testing"
-    "time"
+	"time"
 )
 
 import (
@@ -10,7 +10,7 @@ import (
 )
 
 func TestCreateAddressHelperIB(t *testing.T) {
-    time.Sleep(1 * time.Second)
+	time.Sleep(2 * time.Second)
 	dii2perrs.Verbose = true
 	dii2perrs.DEBUG = true
 	a, err := NewAddressHelperFromOptions(
@@ -28,7 +28,7 @@ func TestCreateAddressHelperIB(t *testing.T) {
 }
 
 func TestCreateAddressHelperNIB(t *testing.T) {
-    time.Sleep(1 * time.Second)
+	time.Sleep(2 * time.Second)
 	dii2perrs.Verbose = true
 	dii2perrs.DEBUG = true
 	a, err := NewAddressHelperFromOptions(
