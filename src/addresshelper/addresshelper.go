@@ -31,8 +31,8 @@ type AddressHelper struct {
 
 // CheckAddressHelper determines how the addresshelper will be used for an address
 func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.Request, bool) {
-    return url, false
-	if url != nil {
+	return url, false
+	/*if url != nil {
 		b, e := addressBook.jumpClient.Check(url.URL.String())
 		if e != nil {
 			dii2perrs.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
@@ -50,7 +50,7 @@ func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.R
 		dii2perrs.Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
 		return url, false
 	}
-	return url, false
+	return url, false*/
 }
 
 // CheckAddressHelperString determines how the addresshelper will be used for an address
