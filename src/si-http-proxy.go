@@ -28,35 +28,6 @@ type SamHTTPProxy struct {
 	c           bool
 }
 
-func (proxy *SamHTTPProxy) delHopHeaders(header http.Header) {
-	for _, h := range hopHeaders {
-		dii2perrs.Log("si-http-proxy.go Sanitizing headers: ", h, header.Get(h))
-		header.Del(h)
-	}
-	if header.Get("User-Agent") != "MYOB/6.66 (AN/ON)" {
-		header.Set("User-Agent", "MYOB/6.66 (AN/ON)")
-	}
-}
-
-func (proxy *SamHTTPProxy) copyHeader(dst, src http.Header) {
-	if dst != nil && src != nil {
-		for k, vv := range src {
-			if vv != nil {
-				for _, v := range vv {
-					if v != "" {
-						dii2perrs.Log("si-http-proxy.go Copying headers: " + k + "," + v)
-						if dst.Get(k) != "" {
-							dst.Set(k, v)
-						} else {
-							dst.Add(k, v)
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
 func (proxy *SamHTTPProxy) prepare() {
 	dii2perrs.Log("si-http-proxy.go Initializing handler handle")
 	if err := proxy.newHandle.ListenAndServe(); err != nil {
@@ -99,7 +70,7 @@ func (proxy *SamHTTPProxy) checkResponse(rW http.ResponseWriter, rq *http.Reques
 		req.Close = proxy.keepAlives
 	}
 
-	proxy.delHopHeaders(req.Header)
+	delHopHeaders(req.Header)
 
 	dii2perrs.Log("si-http-proxy.go Retrieving client")
 
@@ -150,7 +121,7 @@ func (proxy *SamHTTPProxy) Do(req *http.Request, client *http.Client, x int) (*h
 func (proxy *SamHTTPProxy) printResponse(rW http.ResponseWriter, r *http.Response) {
 	if r != nil {
 		defer r.Body.Close()
-		proxy.copyHeader(rW.Header(), r.Header)
+		copyHeader(rW.Header(), r.Header)
 		rW.WriteHeader(r.StatusCode)
 		io.Copy(rW, r.Body)
 		dii2perrs.Log("si-http-proxy.go Response status:", r.Status)
