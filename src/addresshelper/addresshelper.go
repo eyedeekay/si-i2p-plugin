@@ -31,49 +31,39 @@ type AddressHelper struct {
 
 func (addressBook *AddressHelper) request(url *http.Request) *http.Request {
 	return &http.Request{
-	/*Method:
-	  URL:
-	  Proto:
-	  ProtoMajor:
-	  ProtoMinor:
-	  Header:
-	  Body:
-	  ContentLength:
-	  TransferEncoding:
-	  Close:
-	  Host:
-	  Form:
-	  PostForm:
-	  MultiPartForm:
-	  Trailer:
-	  RemoteAddr:
-	  RequestURI:*/
+		Method: url.Method,
+		//URL:
+		Proto:      url.Proto,
+		ProtoMajor: url.ProtoMajor,
+		ProtoMinor: url.ProtoMinor,
+		Header:     url.Header,
+		//Body:
+		ContentLength:    url.ContentLength,
+		TransferEncoding: url.TransferEncoding,
+		Close:            url.Close,
+		//Host:
+		Form:     url.Form,
+		PostForm: url.PostForm,
+		//MultiPartForm: url.MultiPartForm,
+		Trailer:    url.Trailer,
+		RemoteAddr: url.RemoteAddr,
+		//RequestURI: '',
 	}
 }
 
 // CheckAddressHelper determines how the addresshelper will be used for an address
 func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.Request, bool) {
-	//
+	/*
+	   	u, b := addressBook.CheckAddressHelperString(url.URL.String())
+	   	if !b {
+	   		dii2perrs.Warn(nil, "addresshelper.go !b"+u, "addresshelper.go !b"+u)
+	   		url.URL.Host = u
+	           //nurl := addressBook.request(url)
+	   		//return nurl, true
+	           return url, true
+	   	}
+	*/
 	return url, false
-	/*if url != nil {
-		b, e := addressBook.jumpClient.Check(url.URL.String())
-		if e != nil {
-			dii2perrs.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
-			return url, false
-		}
-		if !b {
-			s, c := addressBook.jumpClient.Request(url.URL.String())
-			if c == nil {
-				dii2perrs.Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
-				url.URL.Host = s + ".b32.i2p"
-				return url, true
-			}
-
-		}
-		dii2perrs.Warn(nil, "addresshelper.go !b"+url.URL.String()+".b32.i2p", "addresshelper.go !b"+url.URL.String()+".b32.i2p")
-		return url, false
-	}
-	return url, false*/
 }
 
 // CheckAddressHelperString determines how the addresshelper will be used for an address
@@ -99,15 +89,14 @@ func (addressBook *AddressHelper) CheckAddressHelperString(url string) (string, 
 }
 
 // NewAddressHelper creates a new address helper from string options
-func NewAddressHelper(AddressHelperURL, jumpHost, jumpPort string) *AddressHelper {
+func NewAddressHelper(AddressHelperURL, jumpHost, jumpPort string) (*AddressHelper, error) {
 	a, e := NewAddressHelperFromOptions(
 		SetAddressHelperURL(AddressHelperURL),
 		SetAddressHelperHost(jumpHost),
 		SetAddressHelperPort(jumpPort),
 		SetAddressBookPath("addressbook.txt"),
 	)
-	dii2perrs.Fatal(e, "addresshelper.go failed to create addresshelper from strings", "addresshelper.go created from strings")
-	return a
+	return a, e
 }
 
 // NewAddressHelperFromOptions creates a new address helper from functional arguments

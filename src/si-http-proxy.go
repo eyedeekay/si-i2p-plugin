@@ -133,7 +133,8 @@ func CreateHTTPProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHel
 	var samProxy SamHTTPProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = dii2pah.NewAddressHelper(addressHelperURL, ahAddr, ahPort)
+	samProxy.addressbook, samProxy.err = dii2pah.NewAddressHelper(addressHelperURL, ahAddr, ahPort)
+	dii2perrs.Fatal(samProxy.err, "si-http-proxy.go Addresshelper not available", "si-i2p-proxy.go Connected to addresshelper")
 	log.Println("si-http-proxy.go Starting HTTP proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute

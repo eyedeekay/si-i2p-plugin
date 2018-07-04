@@ -11,7 +11,8 @@ import (
 )
 
 import (
-	"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
+	"./resolver" //"github.com/eyedeekay/si-i2p-plugin/src/resolver"
+	//"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
 	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
@@ -23,7 +24,7 @@ type SamSOCKSProxy struct {
 	client      *dii2pmain.SamList
 	transport   *http.Transport
 	newHandle   *socks5.Server
-	addressbook *dii2pah.AddressHelper
+	addressbook *jumpresolver.JumpResolver
 	timeoutTime time.Duration
 	keepAlives  bool
 	err         error
@@ -62,7 +63,10 @@ func (proxy *SamSOCKSProxy) checkResponse(rW http.ResponseWriter, rq *http.Reque
 
 	rq.RequestURI = ""
 
-	req, _ := proxy.addressbook.CheckAddressHelper(rq)
+	req, useAddressHelper := proxy.addressbook.CheckAddressHelper(rq)
+	if useAddressHelper {
+		dii2perrs.Log("si-http-proxy.go using jump helper")
+	}
 
 	req.RequestURI = ""
 	if proxy.keepAlives {
@@ -74,8 +78,6 @@ func (proxy *SamSOCKSProxy) checkResponse(rW http.ResponseWriter, rq *http.Reque
 	dii2perrs.Log("si-socks-proxy.go Retrieving client")
 
 	client, dir := proxy.client.SendClientRequestHTTP(req)
-
-	time.Sleep(1 * time.Second)
 
 	if client != nil {
 		dii2perrs.Log("si-socks-proxy.go Client was retrieved: ", dir)
@@ -114,18 +116,6 @@ func (proxy *SamSOCKSProxy) Do(req *http.Request, client *http.Client, x int) (*
 	if proxy.c, proxy.err = dii2perrs.Warn(doerr, "si-socks-proxy.go Response body error:", "si-socks-proxy.go Read response body"); proxy.c {
 		return resp, doerr
 	}
-	if strings.Contains(doerr.Error(), "Hostname error") {
-		log.Println("Unknown Hostname")
-		//proxy.addressbook.Lookup(req.Host)
-		requ, stage2 := proxy.addressbook.CheckAddressHelper(req)
-		if stage2 {
-			log.Println("Redirecting", req.Host, "to", requ.Host)
-			requ.RequestURI = ""
-			return client.Do(requ)
-		}
-	} else {
-		return client.Do(req)
-	}
 	return resp, doerr
 }
 
@@ -135,22 +125,21 @@ func (proxy *SamSOCKSProxy) printResponse(rW http.ResponseWriter, r *http.Respon
 		copyHeader(rW.Header(), r.Header)
 		rW.WriteHeader(r.StatusCode)
 		io.Copy(rW, r.Body)
-		//r.Body.Close()
 		dii2perrs.Log("si-socks-proxy.go Response status:", r.Status)
 	}
 }
 
-// CreateSOCKSProxy generates a SOCKS proxy
+// CreateSOCKSProxy generates a SOCKS proxy conf := &socks5.Config{}
 func CreateSOCKSProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHelperURL string, samStack *dii2pmain.SamList, timeoutTime int, keepAlives bool) *SamSOCKSProxy {
 	var samProxy SamSOCKSProxy
 	samProxy.Addr = proxAddr + ":" + proxPort
 	samProxy.keepAlives = keepAlives
-	samProxy.addressbook = dii2pah.NewAddressHelper(addressHelperURL, ahAddr, ahPort)
+	samProxy.addressbook, samProxy.err = jumpresolver.NewJumpResolver(ahAddr, ahPort)
+	dii2perrs.Fatal(samProxy.err, "si-http-proxy.go Addresshelper not available", "si-i2p-proxy.go Connected to addresshelper")
 	log.Println("si-socks-proxy.go Starting SOCKS proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute
-	conf := &socks5.Config{}
-	samProxy.newHandle, samProxy.err = socks5.New(conf)
+	samProxy.newHandle, samProxy.err = socks5.New(&socks5.Config{})
 	dii2perrs.Fatal(samProxy.err, "si-socks-proxy.go SOCKS proxy creation error", "si-socks-proxy.go SOCKS proxy created")
 	log.Println("si-socks-proxy.go Connected SAM isolation stack to the SOCKS proxy server")
 	go samProxy.prepare()

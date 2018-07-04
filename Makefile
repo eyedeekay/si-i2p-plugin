@@ -54,7 +54,6 @@ deps:
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/server
 	go get -u github.com/eyedeekay/si-i2p-plugin/src
 
-
 bin/si-i2p-plugin: deps
 	GOOS=linux GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
