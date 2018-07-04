@@ -51,6 +51,7 @@ deps:
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/addresshelper
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/helpers
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/client
+	go get -u github.com/eyedeekay/si-i2p-plugin/src/resolver
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/server
 	go get -u github.com/eyedeekay/si-i2p-plugin/src
 

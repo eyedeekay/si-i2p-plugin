@@ -111,7 +111,7 @@ func NewAddressHelperFromOptions(opts ...func(*AddressHelper) error) (*AddressHe
 			return nil, err
 		}
 	}
-	a.jumpClient, a.err = jumphelper.NewClient(a.jumpHostString, a.jumpPortString)
+	a.jumpClient, a.err = jumphelper.NewClient(a.addressHelperURL, a.jumpHostString, a.jumpPortString)
 	dii2perrs.Fatal(a.err, "addresshelper.go failed to setup standalone addresshelper.", "addresshelper.go connecting standalone addresshelper:", a.addressHelperURL, a.jumpHostString, ":", a.jumpPortString)
 	a.pairs = []string{}
 	a.c = false
