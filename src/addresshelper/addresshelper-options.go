@@ -8,14 +8,6 @@ import (
 //AddressHelperConnectOption is a AddressHelper option
 type AddressHelperConnectOption func(*AddressHelper) error
 
-//SetAddressHelperURL sets the host of the addresshelper client's SAM bridge
-func SetAddressHelperURL(s string) func(*AddressHelper) error {
-	return func(c *AddressHelper) error {
-		c.addressHelperURL = s
-		return nil
-	}
-}
-
 //SetAddressHelperHost sets the host of the addresshelper client's SAM bridge
 func SetAddressHelperHost(s string) func(*AddressHelper) error {
 	return func(c *AddressHelper) error {
@@ -47,13 +39,5 @@ func SetAddressHelperPortInt(s int) func(*AddressHelper) error {
 			return nil
 		}
 		return fmt.Errorf("Invalid port")
-	}
-}
-
-//SetAddressBookPath sets the address book path
-func SetAddressBookPath(s string) func(*AddressHelper) error {
-	return func(c *AddressHelper) error {
-		c.bookPath = s
-		return nil
 	}
 }

@@ -11,7 +11,7 @@ import (
 )
 
 import (
-	"./resolver" //"github.com/eyedeekay/si-i2p-plugin/src/resolver"
+	"github.com/eyedeekay/si-i2p-plugin/src/resolver"
 	//"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
 	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
