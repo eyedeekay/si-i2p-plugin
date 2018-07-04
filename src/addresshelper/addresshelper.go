@@ -1,11 +1,7 @@
 package dii2pah
 
 import (
-	//"io/ioutil"
 	"net/http"
-	//"net/url"
-	"os"
-	//"strings"
 )
 
 import (
@@ -85,10 +81,8 @@ func (addressBook *AddressHelper) CheckAddressHelperString(url string) (string, 
 // NewAddressHelper creates a new address helper from string options
 func NewAddressHelper(AddressHelperURL, jumpHost, jumpPort string) (*AddressHelper, error) {
 	a, e := NewAddressHelperFromOptions(
-		SetAddressHelperURL(AddressHelperURL),
 		SetAddressHelperHost(jumpHost),
 		SetAddressHelperPort(jumpPort),
-		SetAddressBookPath("addressbook.txt"),
 	)
 	return a, e
 }
