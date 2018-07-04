@@ -38,10 +38,8 @@ func NewJumpResolver(host, port string) (*JumpResolver, error) {
 
 func NewJumpResolverFromOptions(opts ...func(*JumpResolver) error) (*JumpResolver, error) {
 	var j JumpResolver
-	//j.addressHelperURL = "inr.i2p"
 	j.jumpHostString = "127.0.0.1"
 	j.jumpPortString = "7054"
-	//j.bookPath = "addressbook.txt"
 	for _, o := range opts {
 		if err := o(&j); err != nil {
 			return nil, err

@@ -22,7 +22,7 @@ type AddressHelper struct {
 func (addressBook *AddressHelper) request(url *http.Request) *http.Request {
 	return &http.Request{
 		Method: url.Method,
-		//URL:
+		//URL: ,
 		Proto:      url.Proto,
 		ProtoMajor: url.ProtoMajor,
 		ProtoMinor: url.ProtoMinor,

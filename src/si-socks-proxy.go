@@ -11,11 +11,10 @@ import (
 )
 
 import (
-	"github.com/eyedeekay/si-i2p-plugin/src/resolver"
-	//"github.com/eyedeekay/si-i2p-plugin/src/addresshelper"
 	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 	"github.com/eyedeekay/si-i2p-plugin/src/helpers"
+	"github.com/eyedeekay/si-i2p-plugin/src/resolver"
 )
 
 // SamSOCKSProxy is a SOCKS proxy that automatically isolates per-destination
@@ -139,7 +138,9 @@ func CreateSOCKSProxy(proxAddr, proxPort, initAddress, ahAddr, ahPort, addressHe
 	log.Println("si-socks-proxy.go Starting SOCKS proxy on:" + samProxy.Addr)
 	samProxy.client = samStack
 	samProxy.timeoutTime = time.Duration(timeoutTime) * time.Minute
-	samProxy.newHandle, samProxy.err = socks5.New(&socks5.Config{})
+	samProxy.newHandle, samProxy.err = socks5.New(
+		&socks5.Config{},
+	)
 	dii2perrs.Fatal(samProxy.err, "si-socks-proxy.go SOCKS proxy creation error", "si-socks-proxy.go SOCKS proxy created")
 	log.Println("si-socks-proxy.go Connected SAM isolation stack to the SOCKS proxy server")
 	go samProxy.prepare()

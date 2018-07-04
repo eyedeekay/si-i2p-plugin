@@ -6,39 +6,42 @@ import (
 )
 
 import (
+	"github.com/eyedeekay/jumphelper/src"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
-func TestCreateAddressHelperIB(t *testing.T) {
+func CreateAddressHelperIB() {
 	time.Sleep(2 * time.Second)
 	dii2perrs.Verbose = true
 	dii2perrs.DEBUG = true
 	a, err := NewAddressHelperFromOptions(
-		SetAddressHelperURL("http://inr.i2p"),
 		SetAddressHelperHost("127.0.0.1"),
 		SetAddressHelperPort("7054"),
-		SetAddressBookPath("addressbook.txt"),
 	)
 	c, b := a.CheckAddressHelperString("i2p-projekt.i2p")
-	t.Log("TestCreateAddressHelperIB Test Complete: true", c)
+	dii2perrs.Log("TestCreateAddressHelperIB Test Complete: true", c)
 	if !b {
-		t.Fatal("TestCreateAddressHelperIB", err)
+		dii2perrs.Fatal(err, "TestCreateAddressHelperIB", "TestCreateAddressHelperIB")
 	}
 }
 
-func TestCreateAddressHelperNIB(t *testing.T) {
+func CreateAddressHelperNIB() {
 	time.Sleep(2 * time.Second)
 	dii2perrs.Verbose = true
 	dii2perrs.DEBUG = true
 	a, err := NewAddressHelperFromOptions(
-		SetAddressHelperURL("http://inr.i2p"),
 		SetAddressHelperHost("127.0.0.1"),
 		SetAddressHelperPort("7054"),
-		SetAddressBookPath("addressbook.txt"),
 	)
 	c, b := a.CheckAddressHelperString("fireaxe.i2p")
-	t.Log("TestCreateAddressHelperNIB", c)
+	dii2perrs.Log("TestCreateAddressHelperNIB", c)
 	if !b {
-		t.Fatal("TestCreateAddressHelperNIB Test Complete: true", err)
+		dii2perrs.Fatal(err, "TestCreateAddressHelperNIB Test Complete: true", "TestCreateAddressHelperNIB Test Complete: true")
 	}
+}
+
+func TestCreateAddressHelper(t *testing.T) {
+	jumphelper.NewService("localhost", "7054", "../../misc/addresses.csv", "127.0.0.1", "7656", []string{}, false)
+	CreateAddressHelperIB()
+	CreateAddressHelperNIB()
 }
