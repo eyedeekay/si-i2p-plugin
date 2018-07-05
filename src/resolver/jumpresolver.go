@@ -1,9 +1,7 @@
 package jumpresolver
 
 import (
-    "fmt"
 	"golang.org/x/net/context"
-	"net"
 	"net/http"
 )
 

@@ -23,11 +23,26 @@ docker-network:
 	docker network create --subnet 172.80.80.0/29 si; true
 
 docker-browser:
-	docker build --no-cache \
+	docker build --force-rm \
 		--build-arg BROWSER_VERSION="$(BROWSER_VERSION)" \
 		--build-arg PORT="$(BROWSER_PORT)" \
 		--build-arg HOST="$(HOST)" \
 		-f Dockerfiles/Dockerfile.browser -t eyedeekay/sam-browser .
+
+browse: docker-browser
+	docker run --rm -i -t -d \
+		-e DISPLAY=$(DISPLAY) \
+		-e VERSION="$(BROWSER_VERSION)" \
+		--name sam-browser \
+		--network si \
+		--network-alias sam-browser \
+		--hostname sam-browser \
+		--link si-proxy \
+		--ip 172.80.80.5 \
+		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
+		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
+		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
+		$(browse_args)
 
 docker-host:
 	docker run \
@@ -100,17 +115,3 @@ stop:
 start:
 	while true; do make docker-setup follow; done
 
-browse: docker-browser
-	docker run --rm -i -t -d \
-		-e DISPLAY=$(DISPLAY) \
-		-e VERSION="$(BROWSER_VERSION)" \
-		--name sam-browser \
-		--network si \
-		--network-alias sam-browser \
-		--hostname sam-browser \
-		--link si-proxy \
-		--ip 172.80.80.5 \
-		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
-		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
-		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
-		$(browse_args)

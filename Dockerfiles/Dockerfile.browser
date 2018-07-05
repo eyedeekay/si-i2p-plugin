@@ -1,5 +1,5 @@
-FROM debian:sid
-ARG BROWSER_VERSION="7.5.5"
+FROM debian:stretch
+ARG BROWSER_VERSION="7.5.6"
 ARG HOST="172.80.80.4"
 ARG PORT="44443"
 
@@ -9,7 +9,7 @@ RUN apt-get update && \
     apt-get -y dist-upgrade && \
     sed -i.bak 's/sid main/sid main contrib/g' /etc/apt/sources.list && \
     apt-get update && apt-get install -y \
-    firefox \
+    iceweasel \
     gnupg \
     zenity \
     ca-certificates \
@@ -17,6 +17,7 @@ RUN apt-get update && \
     curl \
     sudo \
     xdotool \
+    dirmngr \
     --no-install-recommends && \
     localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 
