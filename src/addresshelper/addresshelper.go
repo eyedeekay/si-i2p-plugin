@@ -1,7 +1,10 @@
 package dii2pah
 
 import (
+	"io/ioutil"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 import (
@@ -19,63 +22,67 @@ type AddressHelper struct {
 	c   bool
 }
 
-func (addressBook *AddressHelper) request(url *http.Request) *http.Request {
+func (addressBook *AddressHelper) request(req *http.Request, addr string) *http.Request {
+	u, e := url.Parse(addr)
+	if e != nil {
+		return req
+	}
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		dii2perrs.Warn(err, "", "")
+		return req
+	}
+	contentLength := int64(len(body))
 	return &http.Request{
-		Method: url.Method,
-		//URL: ,
-		Proto:      url.Proto,
-		ProtoMajor: url.ProtoMajor,
-		ProtoMinor: url.ProtoMinor,
-		Header:     url.Header,
-		//Body:
-		ContentLength:    url.ContentLength,
-		TransferEncoding: url.TransferEncoding,
-		Close:            url.Close,
-		//Host:
-		Form:     url.Form,
-		PostForm: url.PostForm,
-		//MultiPartForm: url.MultiPartForm,
-		Trailer:    url.Trailer,
-		RemoteAddr: url.RemoteAddr,
-		//RequestURI: '',
+		Method:           req.Method,
+		URL:              u,
+		Proto:            req.Proto,
+		ProtoMajor:       req.ProtoMajor,
+		ProtoMinor:       req.ProtoMinor,
+		Header:           req.Header,
+		Body:             ioutil.NopCloser(strings.NewReader(string(body))),
+		ContentLength:    contentLength,
+		TransferEncoding: req.TransferEncoding,
+		Close:            req.Close,
+		Form:             req.Form,
+		PostForm:         req.PostForm,
+		MultipartForm:    req.MultipartForm,
+		Trailer:          req.Trailer,
+		RequestURI:       "",
+		Response:         req.Response,
 	}
 }
 
 // CheckAddressHelper determines how the addresshelper will be used for an address
-func (addressBook *AddressHelper) CheckAddressHelper(url *http.Request) (*http.Request, bool) {
-	/*
-	   	u, b := addressBook.CheckAddressHelperString(url.URL.String())
-	   	if !b {
-	   		dii2perrs.Warn(nil, "addresshelper.go !b"+u, "addresshelper.go !b"+u)
-	   		url.URL.Host = u
-	           //nurl := addressBook.request(url)
-	   		//return nurl, true
-	           return url, true
-	   	}
-	*/
-	return url, false
+func (addressBook *AddressHelper) CheckAddressHelper(req *http.Request) (*http.Request, bool) {
+	u, b := addressBook.CheckAddressHelperString(req.URL.String())
+	if !b {
+  		dii2perrs.Warn(nil, "addresshelper.go !b"+u, "addresshelper.go !b"+u)
+        return addressBook.request(req, u), true
+  	}
+	return req, false
 }
 
 // CheckAddressHelperString determines how the addresshelper will be used for an address
-func (addressBook *AddressHelper) CheckAddressHelperString(url string) (string, bool) {
-	if url != "" {
-		b, e := addressBook.jumpClient.Check(url)
+func (addressBook *AddressHelper) CheckAddressHelperString(req string) (string, bool) {
+	if req != "" {
+		b, e := addressBook.jumpClient.Check(req)
 		if e != nil {
 			dii2perrs.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
 			return "", false
 		}
 		if !b {
-			s, c := addressBook.jumpClient.Request(url)
+			s, c := addressBook.jumpClient.Request(req)
 			if c == nil {
 				dii2perrs.Warn(nil, "addresshelper.go !b "+s+".b32.i2p", "addresshelper.go !b "+s+".b32.i2p")
-				url = s + ".b32.i2p"
-				return url, true
+				req = s + ".b32.i2p"
+				return req, true
 			}
 		}
-		dii2perrs.Warn(nil, "addresshelper.go b "+url, "addresshelper.go b "+url)
-		return url, false
+		dii2perrs.Warn(nil, "addresshelper.go b "+req, "addresshelper.go b "+req)
+		return req, false
 	}
-	return url, false
+	return req, false
 }
 
 // NewAddressHelper creates a new address helper from string options

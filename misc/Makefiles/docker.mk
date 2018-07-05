@@ -23,7 +23,7 @@ docker-network:
 	docker network create --subnet 172.80.80.0/29 si; true
 
 docker-browser:
-	docker build --force-rm \
+	docker build --no-cache \
 		--build-arg BROWSER_VERSION="$(BROWSER_VERSION)" \
 		--build-arg PORT="$(BROWSER_PORT)" \
 		--build-arg HOST="$(HOST)" \

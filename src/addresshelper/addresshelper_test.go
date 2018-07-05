@@ -33,7 +33,7 @@ func CreateAddressHelperNIB() {
 		SetAddressHelperHost("127.0.0.1"),
 		SetAddressHelperPort("7054"),
 	)
-	c, b := a.CheckAddressHelperString("fireaxe.i2p")
+	c, b := a.CheckAddressHelperString("notarealaddress.i2p")
 	dii2perrs.Log("TestCreateAddressHelperNIB", c)
 	if !b {
 		dii2perrs.Fatal(err, "TestCreateAddressHelperNIB Test Complete: true", "TestCreateAddressHelperNIB Test Complete: true")

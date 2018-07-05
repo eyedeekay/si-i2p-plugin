@@ -1,6 +1,7 @@
 package jumpresolver
 
 import (
+    "fmt"
 	"golang.org/x/net/context"
 	"net"
 	"net/http"
@@ -20,13 +21,12 @@ func (j *JumpResolver) CheckAddressHelper(url *http.Request) (*http.Request, boo
 	return j.CheckAddressHelper(url)
 }
 
-func (j JumpResolver) Resolve(ctx context.Context, name string) (context.Context, net.IP, error) {
-	addr, err := net.ResolveIPAddr("ip", name)
-	//addr :=
-	if err != nil {
-		return ctx, nil, err
+func (j JumpResolver) Resolve(ctx context.Context, name string) (context.Context, string, error) {
+	addr, b := j.addressbook.CheckAddressHelperString(name)
+	if b {
+		return ctx, name, nil
 	}
-	return ctx, addr.IP, err
+	return ctx, addr, nil
 }
 
 func NewJumpResolver(host, port string) (*JumpResolver, error) {
