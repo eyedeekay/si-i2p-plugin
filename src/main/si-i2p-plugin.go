@@ -40,7 +40,7 @@ func main() {
 	useHTTPProxy := flag.Bool("http-proxy", true,
 		"run the HTTP proxy(default true)")
 	useSOCKSProxy := flag.Bool("socks-proxy", false,
-		"run the SOCKS proxy(default true)")
+		"run the SOCKS proxy(default false)")
 	verboseLogging := flag.Bool("verbose", false,
 		"Print connection debug info")
 	Defwd, _ := os.Getwd()
@@ -96,8 +96,6 @@ func main() {
 	dii2perrs.Log("si-i2p-plugin.go Idle Tunnel Count:", *idleConns)
 	dii2perrs.Log("si-i2p-plugin.go Inbound Backup Quantity:", *inboundBackups)
 	dii2perrs.Log("si-i2p-plugin.go Outbound Backup Quantity", *outboundBackups)
-
-	*useSOCKSProxy = false
 
 	if *internalAddressHelper {
 		dii2perrs.Log("si-i2p-plugin.go starting internal addresshelper with")

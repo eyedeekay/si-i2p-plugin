@@ -57,9 +57,9 @@ func (addressBook *AddressHelper) request(req *http.Request, addr string) *http.
 func (addressBook *AddressHelper) CheckAddressHelper(req *http.Request) (*http.Request, bool) {
 	u, b := addressBook.CheckAddressHelperString(req.URL.String())
 	if !b {
-  		dii2perrs.Warn(nil, "addresshelper.go !b"+u, "addresshelper.go !b"+u)
-        return addressBook.request(req, u), true
-  	}
+		dii2perrs.Warn(nil, "addresshelper.go !b"+u, "addresshelper.go !b"+u)
+		return addressBook.request(req, u), true
+	}
 	return req, false
 }
 

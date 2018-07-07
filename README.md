@@ -53,7 +53,8 @@ something bad happens.
 
 #### User-Defined Jump Hosts
 
-Addresshelper/Jump hosts are broken in here. I'm working on it.
+Addresshelpers are tentatively working again. I'll need to explain more on how
+soon.
 
 #### Current Concerns:
 
@@ -121,7 +122,9 @@ Version Roadmap:
   a SOCKS proxy for testing. Actually have a SOCKS proxy. [This should be acceptable in implementing the SOCKS proxy](https://github.com/armon/go-socks5)
   Torbutton Control Port compatibility.
   * 0.25 - Package.
-  * 0.26 -
+  * 0.26 - Android? WebRTC over SSU? Try linking libi2pd? Help make go-i2p into
+  a usable router? Browser Bundle? At risk of growing a little further than I
+  originally intended, but I feel like there's some potential here.
 
 Screenshots:
 ------------
