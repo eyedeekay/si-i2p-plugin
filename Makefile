@@ -55,14 +55,14 @@ deps:
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/server
 	go get -u github.com/eyedeekay/si-i2p-plugin/src
 
-bin/si-i2p-plugin: deps
+bin/si-i2p-plugin:
 	GOOS=linux GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin \
 		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
-bin/si-i2p-plugin.bin: deps
+bin/si-i2p-plugin.bin:
 	GOOS=darwin GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
 		-o bin/si-i2p-plugin.bin \
@@ -71,7 +71,7 @@ bin/si-i2p-plugin.bin: deps
 
 osx: bin/si-i2p-plugin.bin
 
-bin/si-i2p-plugin.exe: deps
+bin/si-i2p-plugin.exe:
 	GOOS=windows GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
 		-buildmode=exe \
@@ -85,7 +85,7 @@ bin: bin/si-i2p-plugin bin/si-i2p-plugin.bin bin/si-i2p-plugin.exe
 
 build-arm: bin/si-i2p-plugin-arm
 
-bin/si-i2p-plugin-arm: deps arm
+bin/si-i2p-plugin-arm: arm
 
 arm:
 	ARCH=arm GOARCH=arm GOARM=7 go build \
@@ -96,7 +96,7 @@ arm:
 		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
-release: deps
+release:
 	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
 		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \
@@ -104,7 +104,7 @@ release: deps
 		./src/main/si-i2p-plugin.go
 	@echo 'built release'
 
-native: deps
+native:
 	go build \
 		-a \
 		-buildmode=pie \
@@ -114,7 +114,7 @@ native: deps
 
 android: bin/si-i2p-plugin-arm-droid
 
-bin/si-i2p-plugin-arm-droid: deps
+bin/si-i2p-plugin-arm-droid:
 	gomobile build \
 		-target=android \
 		$(GO_COMPILER_OPTS) \
