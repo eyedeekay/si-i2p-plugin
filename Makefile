@@ -23,7 +23,7 @@ GOPATH = $(PWD)/.go
 
 GO_COMPILER_OPTS = -a -tags netgo -ldflags '-w -extldflags "-static"'
 
-info: gostuff
+info: deps gostuff
 	@echo "Version $(VERSION)"
 	@echo "$(UNAME), $(UARCH)"
 	@echo "$(BROWSER_VERSION)"
