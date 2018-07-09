@@ -96,7 +96,7 @@ arm:
 		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
-release: deps gostuff
+release: deps gotest
 	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
 		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \

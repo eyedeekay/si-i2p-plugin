@@ -1,2 +1,5 @@
 
 language: go
+
+script:
+	make release
