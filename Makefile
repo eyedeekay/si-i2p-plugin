@@ -23,7 +23,7 @@ GOPATH = $(PWD)/.go
 
 GO_COMPILER_OPTS = -a -tags netgo -ldflags '-w -extldflags "-static"'
 
-info: gofmt
+info: gostuff
 	@echo "Version $(VERSION)"
 	@echo "$(UNAME), $(UARCH)"
 	@echo "$(BROWSER_VERSION)"
@@ -96,7 +96,7 @@ arm:
 		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
-release:
+release: deps gostuff
 	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
 		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \
