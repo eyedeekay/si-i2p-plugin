@@ -14,6 +14,11 @@ destination isolation before there is a facebook.i2p.
 
 [**i2p link** A reference to this issue found on zzz.i2p, that I should have put in the readme sooner.](http://zzz.i2p/topics/217)
 
+License
+-------
+
+Sorry for forgetting to license this. It's MIT Licensed now.
+
 Installation:
 -------------
 
