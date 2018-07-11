@@ -1,15 +1,18 @@
 package dii2pmain
 
 import (
+    "io/ioutil"
+    "net/url"
 	"net/http"
+    "strings"
 	"testing"
 )
 
-func (addressBook *AddressHelper) request() *http.Request {
+func request() *http.Request {
 	u, e := url.Parse("i2p-projekt.i2p")
-	if e != nil {
-		return req
-	}
+    if e != nil {
+        return nil
+    }
 	body := ""
 	contentLength := int64(len(body))
 	return &http.Request{
@@ -28,8 +31,8 @@ func TestCreateSamHTTPOptionsAll(t *testing.T) {
 	backup := 3
 	idles := 4
 	var req *http.Request
-    req = http.Request{}
-	newSamHTTPHTTP("127.0.0.1",
+    req = &http.Request{}
+	h := newSamHTTPHTTP("127.0.0.1",
 		"7656",
 		req,
 		timeout,
@@ -41,4 +44,5 @@ func TestCreateSamHTTPOptionsAll(t *testing.T) {
 		idles,
 		backup,
 		backup)
+    h.CleanupClient()
 }
