@@ -172,7 +172,7 @@ func SetupFile(directory, path string) (string, *os.File, error) {
 func SetupFiFo(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
-	if e, c := dii2perrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
+	if e, _ := dii2perrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
 			mkErr := syscall.Mkfifo(mkPath, 0755)
 			dii2perrs.Log("si-fs-helpers.go Preparing to create Pipe:", mkPath)

@@ -36,7 +36,7 @@ type SamURL struct {
 }
 
 func (subURL *SamURL) initPipes() {
-	dii2phelper.CheckFolder(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory))
+	dii2phelper.SetupFolder(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory))
 
 	subURL.recvPath, subURL.recvFile, subURL.err = dii2phelper.SetupFile(filepath.Join(dii2phelper.ConnectionDirectory, subURL.subDirectory), "recv")
 	if subURL.c, subURL.err = dii2perrs.Fatal(subURL.err, "sam-url.go Pipe setup error", "sam-url.go Pipe setup"); subURL.c {
