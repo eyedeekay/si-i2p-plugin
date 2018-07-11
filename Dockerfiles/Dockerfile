@@ -22,5 +22,3 @@ CMD /opt/bin/si-i2p-plugin \
     -internal-ah=false \
     -verbose=true \
     -addressbook=/opt/etc/si-i2p-plugin/addresses.csv
-    #-avoidance=true \
-    #

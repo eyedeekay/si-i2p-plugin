@@ -73,7 +73,7 @@ type SamHTTP struct {
 }
 
 func (samConn *SamHTTP) initPipes() {
-	dii2phelper.SetupFolder(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host))
+	dii2phelper.CheckFolder(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host))
 
 	samConn.sendPath, samConn.sendPipe, samConn.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samConn.host), "send")
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Pipe setup error", "sam-http.go Pipe setup"); samConn.c {
