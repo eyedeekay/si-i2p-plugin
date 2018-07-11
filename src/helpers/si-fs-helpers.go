@@ -176,7 +176,7 @@ func SetupFiFo(directory, path string) (string, *os.File, error) {
 		if !pathExists {
 			mkErr := syscall.Mkfifo(mkPath, 0755)
 			dii2perrs.Log("si-fs-helpers.go Preparing to create Pipe:", mkPath)
-			if f, _ := dii2perrs.Fatal(mkErr, "si-fs-helpers.go Pipe Creation Error", "si-fs-helpers.go Creating Pipe", mkPath); f {
+			if f, _ := dii2perrs.Warn(mkErr, "si-fs-helpers.go Pipe Creation Error", "si-fs-helpers.go Creating Pipe", mkPath); f {
 				file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 				return mkPath, file, err
 			}
