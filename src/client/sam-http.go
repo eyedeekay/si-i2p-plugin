@@ -465,7 +465,13 @@ func newSamHTTP(samAddrString, samPortString, request string, timeoutTime, lifeT
 	return samConn
 }
 
-func newSamHTTPHTTP(samAddrString, samPortString string, request *http.Request, timeoutTime, lifeTime int, keepAlives bool, tunnelLength, inboundQuantity, outboundQuantity, idleConns, inboundBackups, outboundBackups int) SamHTTP {
+func newSamHTTPHTTP(
+	samAddrString, samPortString string,
+	request *http.Request,
+	timeoutTime,
+	lifeTime int,
+	keepAlives bool,
+	tunnelLength, inboundQuantity, outboundQuantity, idleConns, inboundBackups, outboundBackups int) SamHTTP {
 	dii2perrs.Log("sam-http.go Creating a new SAMv3 Client.")
 	samConn, err := NewSamHTTPFromOptions(
 		SetSamHTTPHost(samAddrString),

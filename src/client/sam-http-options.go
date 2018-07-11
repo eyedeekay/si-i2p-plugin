@@ -18,28 +18,28 @@ func SetSamHTTPHost(s string) func(*SamHTTP) error {
 }
 
 //SetSamHTTPPort sets the port of the client's SAM bridge
-func SetSamHTTPPort(s interface{}) func(*SamHTTP) error {
+func SetSamHTTPPort(s string) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		switch v := s.(type) {
-		case string:
-			port, err := strconv.Atoi(v)
-			if err != nil {
-				return fmt.Errorf("Invalid port; non-number")
-			}
-			if port < 65536 && port > -1 {
-				c.samPortString = v
-				return nil
-			}
-			return fmt.Errorf("Invalid port")
-		case int:
-			if v < 65536 && v > -1 {
-				c.samPortString = strconv.Itoa(v)
-				return nil
-			}
-			return fmt.Errorf("Invalid port")
-		default:
-			return fmt.Errorf("Invalid port")
+		port, err := strconv.Atoi(s)
+		if err != nil {
+			return fmt.Errorf("Invalid port; non-number")
 		}
+		if port < 65536 && port > -1 {
+			c.samPortString = s
+			return nil
+		}
+		return fmt.Errorf("Invalid port")
+	}
+}
+
+//SetSamHTTPPortInt sets the port of the client's SAM bridge
+func SetSamHTTPPortInt(s int) func(*SamHTTP) error {
+	return func(c *SamHTTP) error {
+		if s < 65536 && s > -1 {
+			c.samPortString = strconv.Itoa(s)
+			return nil
+		}
+		return fmt.Errorf("Invalid port")
 	}
 }
 

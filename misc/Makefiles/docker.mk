@@ -103,7 +103,7 @@ docker-tidy:
 	sleep 2
 
 docker-clean:
-	docker rm -f sam-host sam-jumphelper; true
+	docker rm -f si-proxy sam-jumphelper; true
 	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 docker-copy:

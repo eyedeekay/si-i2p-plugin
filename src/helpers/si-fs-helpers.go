@@ -166,9 +166,9 @@ func SetupFiFo(directory, path string) (string, *os.File, error) {
 				file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 				return mkPath, file, err
 			}
-            SetupFolder(filepath.Join(ConnectionDirectory, directory))
-            file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
-            return mkPath, file, err
+			SetupFolder(filepath.Join(ConnectionDirectory, directory))
+			file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
+			return mkPath, file, err
 			//return mkPath, nil, c
 		}
 		file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
