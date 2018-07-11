@@ -21,28 +21,28 @@ func SetHost(s string) func(*SamList) error {
 }
 
 //SetPort sets the port of the client's SAM bridge
-func SetPort(s interface{}) func(*SamList) error {
+func SetPort(s string) func(*SamList) error {
 	return func(c *SamList) error {
-		switch v := s.(type) {
-		case string:
-			port, err := strconv.Atoi(v)
-			if err != nil {
-				return fmt.Errorf("Invalid port; non-number")
-			}
-			if port < 65536 && port > -1 {
-				c.samPortString = v
-				return nil
-			}
-			return fmt.Errorf("Invalid port")
-		case int:
-			if v < 65536 && v > -1 {
-				c.samPortString = strconv.Itoa(v)
-				return nil
-			}
-			return fmt.Errorf("Invalid port")
-		default:
-			return fmt.Errorf("Invalid port")
+		port, err := strconv.Atoi(s)
+		if err != nil {
+			return fmt.Errorf("Invalid port; non-number")
 		}
+		if port < 65536 && port > -1 {
+			c.samPortString = s
+			return nil
+		}
+		return fmt.Errorf("Invalid port")
+	}
+}
+
+//SetPortInt sets the port of the client's SAM bridge
+func SetPortInt(s int) func(*SamList) error {
+	return func(c *SamList) error {
+		if s < 65536 && s > -1 {
+			c.samPortString = strconv.Itoa(s)
+			return nil
+		}
+		return fmt.Errorf("Invalid port")
 	}
 }
 

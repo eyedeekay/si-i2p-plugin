@@ -30,11 +30,9 @@ func TestCreateSamHTTPOptionsAll(t *testing.T) {
 	lifeout := 1200
 	backup := 3
 	idles := 4
-	var req *http.Request
-    req = &http.Request{}
 	h := newSamHTTPHTTP("127.0.0.1",
 		"7656",
-		req,
+		request(),
 		timeout,
 		lifeout,
 		true,

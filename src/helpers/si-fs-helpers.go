@@ -14,6 +14,11 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
+type SamFSHelper struct {
+    DiskAvoidance bool
+    ConnectionDirectory string
+}
+
 var DiskAvoidance = false
 
 // ConnectionDirectory is the global working directory of the service

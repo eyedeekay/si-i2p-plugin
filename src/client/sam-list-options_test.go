@@ -137,3 +137,75 @@ func TestCreateSamListOptionsOutQuantity(t *testing.T) {
 	}
 	samProxies.CleanupClient()
 }
+
+func TestCreateSamListOptionsIdleConns(t *testing.T) {
+	dii2perrs.Verbose = true
+	dii2perrs.DEBUG = true
+	samProxies, err := CreateSamList(
+		SetIdleConns(15),
+	)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+	}
+	samProxies.CleanupClient()
+}
+
+func TestCreateSamListOptionsInBackups(t *testing.T) {
+	dii2perrs.Verbose = true
+	dii2perrs.DEBUG = true
+	samProxies, err := CreateSamList(
+		SetInBackups(15),
+	)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+	}
+	samProxies.CleanupClient()
+}
+
+func TestCreateSamListOptionsOutBackups(t *testing.T) {
+	dii2perrs.Verbose = true
+	dii2perrs.DEBUG = true
+	samProxies, err := CreateSamList(
+		SetOutBackups(15),
+	)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+	}
+	samProxies.CleanupClient()
+}
+
+func TestCreateSamListOptionsLifespan(t *testing.T) {
+	dii2perrs.Verbose = true
+	dii2perrs.DEBUG = true
+	samProxies, err := CreateSamList(
+		SetLifespan(15),
+	)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+	}
+	samProxies.CleanupClient()
+}
+
+/* Stub for new tests.
+func TestCreateSamListOptionsXXXXXXXXXXXX(t *testing.T) {
+	dii2perrs.Verbose = true
+	dii2perrs.DEBUG = true
+	samProxies, err := CreateSamList(
+		SetXXXXXXXXXXXX(15),
+	)
+	if err != nil {
+		t.Fatal(err)
+	} else {
+		t.Log("CreateSamListOptionsKeepAlives Test Complete: true")
+	}
+	samProxies.CleanupClient()
+}
+*/
