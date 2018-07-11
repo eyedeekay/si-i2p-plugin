@@ -21,4 +21,4 @@ CMD /opt/bin/si-i2p-plugin \
     -out-backups=5 \
     -internal-ah=false \
     -verbose=true \
-    -addressbook=/opt/etc/si-i2p-plugin/addresses.csv; sleep 20
+    -addressbook=/opt/etc/si-i2p-plugin/addresses.csv
