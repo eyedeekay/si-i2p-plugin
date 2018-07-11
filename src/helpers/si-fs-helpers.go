@@ -115,12 +115,12 @@ func SetupFolder(directory string) bool {
 	if e, _ := dii2perrs.Fatal(err, "si-fs-helpers.go Parent Directory Error", "si-fs-helpers.go Parent Directory Check", truncatePaths(filepath.Join(ConnectionDirectory))); e {
 		if !pathConnectionExists {
 			dii2perrs.Log("si-fs-helpers.go Creating a connection:", directory)
-			os.Mkdir(truncatePaths(filepath.Join(ConnectionDirectory, directory)), 0755)
+			os.MkdirAll(truncatePaths(filepath.Join(ConnectionDirectory, directory)), 0755)
 			return true
 		}
 		os.RemoveAll(truncatePaths(filepath.Join(ConnectionDirectory, directory)))
 		dii2perrs.Log("si-fs-helpers.go Creating a connection:", directory)
-		os.Mkdir(truncatePaths(filepath.Join(ConnectionDirectory, directory)), 0755)
+		os.MkdirAll(truncatePaths(filepath.Join(ConnectionDirectory, directory)), 0755)
 		return true
 	}
 	return false
