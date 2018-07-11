@@ -50,7 +50,7 @@ type samHTTPService struct {
 }
 
 func (samService *samHTTPService) initPipes() {
-	dii2phelper.CheckFolder(filepath.Join(dii2phelper.ConnectionDirectory, samService.host))
+	dii2phelper.SetupFolder(filepath.Join(dii2phelper.ConnectionDirectory, samService.host))
 
 	samService.servPath, samService.servPipe, samService.err = dii2phelper.SetupFiFo(filepath.Join(dii2phelper.ConnectionDirectory, samService.host), "send")
 	if samService.c, samService.err = dii2perrs.Fatal(samService.err, "Pipe setup error", "Pipe setup"); samService.c {

@@ -5,7 +5,7 @@ import (
 )
 
 func TestSetupFile(t *testing.T) {
-	CheckFolder("test")
+	SetupFolder("test")
 	path, file, err := SetupFile("test", "file")
 	t.Log(path, file)
 	if err != nil {
@@ -14,7 +14,7 @@ func TestSetupFile(t *testing.T) {
 }
 
 func TestSetupFiFo(t *testing.T) {
-	CheckFolder("test")
+	SetupFolder("test")
 	path, pipe, err := SetupFiFo("test", "fifo")
 	t.Log(path, pipe)
 	if err != nil {
@@ -23,7 +23,7 @@ func TestSetupFiFo(t *testing.T) {
 }
 
 func TestSetupScanner(t *testing.T) {
-	CheckFolder("test")
+	SetupFolder("test")
 	path, pipe, err := SetupFiFo("test", "fifo")
 	t.Log(path, pipe)
 	if err != nil {

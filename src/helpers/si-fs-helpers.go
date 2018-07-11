@@ -126,20 +126,6 @@ func SetupFolder(directory string) bool {
 	return false
 }
 
-// CheckFolder ensures a folder exists. It's probably redundant.
-func CheckFolder(directory string) bool {
-	pathConnectionExists, err := exists(truncatePaths(filepath.Join(ConnectionDirectory, directory)))
-	if e, _ := dii2perrs.Fatal(err, "si-fs-helpers.go Child Directory Error", "si-fs-helpers.go Child Directory Check", truncatePaths(filepath.Join(ConnectionDirectory))); e {
-		if !pathConnectionExists {
-			dii2perrs.Log("si-fs-helpers.go Creating a child directory folder:", directory)
-			os.MkdirAll(truncatePaths(filepath.Join(ConnectionDirectory, directory)), 0755)
-			return true
-		}
-		return false
-	}
-	return false
-}
-
 // SetupFile creates a regular file
 func SetupFile(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
@@ -180,7 +166,7 @@ func SetupFiFo(directory, path string) (string, *os.File, error) {
 				file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
 				return mkPath, file, err
 			}
-            CheckFolder(filepath.Join(ConnectionDirectory, directory))
+            SetupFolder(filepath.Join(ConnectionDirectory, directory))
             file, err := os.OpenFile(mkPath, os.O_RDWR|os.O_CREATE, 0755)
             return mkPath, file, err
 			//return mkPath, nil, c
