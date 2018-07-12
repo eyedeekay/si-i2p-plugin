@@ -23,4 +23,4 @@ before_install:
         sudo cp etc/i2pd/i2pd.si-i2p-plugin.conf ./i2pd.conf &&
     fi
 
-install: if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo service i2pd start;else ./i2pd --conf ./i2pd.conf &;fimake deps gotest noopts
+install: if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo service i2pd start;else ./i2pd --conf ./i2pd.conf &;fi make deps gotest noopts
