@@ -22,6 +22,6 @@ before_install:
 
 install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    make deps noopts; else
+    make deps osx; else
         sudo service i2pd start;
         make deps gotest noopts; fi
