@@ -6,7 +6,6 @@ matrix:
       sudo: required
     - os: osx
       osx_image: xcode9.4
-      sudo: required
 
 language: go
 
@@ -14,7 +13,7 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         curl -o i2pd.tar.gz 'https://github.com/PurpleI2P/i2pd/releases/download/2.19.0/i2pd_2.19.0_osx.tar.gz' &&
         mkdir -p i2pd && cd i2pd && tar xvf ../i2pd.tar.gz &&
-    sudo cp etc/i2pd/i2pd.si-i2p-plugin.conf ./i2pd.conf; else
+    cp etc/i2pd/i2pd.si-i2p-plugin.conf ./i2pd.conf; else
         sudo sed -i 's|xenial|bionic|g' /etc/apt/sources.list &&
         sudo apt-get update &&
         sudo apt-get dist-upgrade &&
