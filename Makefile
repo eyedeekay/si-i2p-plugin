@@ -62,14 +62,14 @@ bin/si-i2p-plugin:
 		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
-bin/si-i2p-plugin.bin:
+bin/si-i2p-plugin.app:
 	GOOS=darwin GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
-		-o bin/si-i2p-plugin.bin \
+		-o bin/si-i2p-plugin.app \
 		./src/main/si-i2p-plugin.go
 	@echo 'built'
 
-osx: bin/si-i2p-plugin.bin
+osx: bin/si-i2p-plugin.app
 
 bin/si-i2p-plugin.exe:
 	GOOS=windows GOARCH=amd64 go build \
@@ -81,7 +81,7 @@ bin/si-i2p-plugin.exe:
 
 windows: bin/si-i2p-plugin.exe
 
-bin: bin/si-i2p-plugin bin/si-i2p-plugin.bin bin/si-i2p-plugin.exe
+bin: bin/si-i2p-plugin bin/si-i2p-plugin.app bin/si-i2p-plugin.exe
 
 build-arm: bin/si-i2p-plugin-arm
 
