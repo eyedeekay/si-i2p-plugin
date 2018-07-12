@@ -72,7 +72,7 @@ func TestCreateSamListOptionsTimeout(t *testing.T) {
 	dii2perrs.Verbose = true
 	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
-		SetTimeout(600),
+		SetTimeout(6),
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -114,7 +114,7 @@ func TestCreateSamListOptionsLifespan(t *testing.T) {
 	dii2perrs.Verbose = true
 	dii2perrs.DEBUG = true
 	samProxies, err := CreateSamList(
-		SetLifespan(1500),
+		SetLifespan(12),
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -207,4 +207,3 @@ func TestCreateSamListOptionsOutBackups(t *testing.T) {
 	}
 	samProxies.CleanupClient()
 }
-

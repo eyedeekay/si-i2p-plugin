@@ -103,10 +103,6 @@ a Windows machine. I might be able to swing the temporary use of one at the
 local university. When I do disk-avoidance mode Windows bugs related to pipes
 will disappear. So I kind of want to get these taken care of first if I can.
 
-### The pipes
-
-Moved to [misc/docs/PIPES.md](misc/docs/PIPES.md)
-
 What the final version should do:
 ---------------------------------
 
@@ -153,6 +149,10 @@ Version Roadmap:
   * 0.26 - Android? WebRTC over SSU? Try linking libi2pd? Help make go-i2p into
   a usable router? Browser Bundle? At risk of growing a little further than I
   originally intended, but I feel like there's some potential here.
+
+### The pipes
+
+Moved to [misc/docs/PIPES.md](misc/docs/PIPES.md)
 
 Screenshots:
 ------------

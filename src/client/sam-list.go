@@ -269,7 +269,7 @@ func CreateSamList(opts ...func(*SamList) error) (*SamList, error) {
 	samStack.dir = "parent"
 	samStack.up = false
 	samStack.timeoutTime = 6
-	samStack.lifeTime = 2
+	samStack.lifeTime = 12
 	samStack.tunnelLength = 3
 	samStack.inboundQuantity = 15
 	samStack.outboundQuantity = 15

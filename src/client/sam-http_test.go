@@ -23,5 +23,5 @@ func TestCreateSamHTTPOptionsAll(t *testing.T) {
 		idles,
 		backup,
 		backup)
-    h.CleanupClient()
+	h.CleanupClient()
 }

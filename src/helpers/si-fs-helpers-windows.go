@@ -14,8 +14,8 @@ import (
 )
 
 type SamFSHelper struct {
-    DiskAvoidance bool
-    ConnectionDirectory string
+	DiskAvoidance       bool
+	ConnectionDirectory string
 }
 
 var DiskAvoidance = false
@@ -188,8 +188,8 @@ func SetupFiFo(directory, path string) (string, *os.File, error) {
 func SetupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
 	_, pathErr := exists(mkPath)
-    var e bool
-    var c error
+	var e bool
+	var c error
 	if e, c = dii2perrs.Fatal(pathErr, "si-fs-helpers-windows.go File Check Error", "si-fs-helpers-windows.go File Check", mkPath); e {
 		dii2perrs.Log("si-fs-helpers-windows.go Opening the Named Pipe as a Scanner...")
 		retScanner := bufio.NewScanner(pipe)

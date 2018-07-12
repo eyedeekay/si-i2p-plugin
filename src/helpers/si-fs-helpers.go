@@ -15,8 +15,8 @@ import (
 )
 
 type SamFSHelper struct {
-    DiskAvoidance bool
-    ConnectionDirectory string
+	DiskAvoidance       bool
+	ConnectionDirectory string
 }
 
 var DiskAvoidance = false

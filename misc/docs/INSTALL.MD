@@ -70,7 +70,7 @@ OSX
 ===
 
 **UNTESTED** An untested OSX static binary is in the repository at
-bin/si-i2p-plugin.bin. It's a free-standing, unpackaged mach-O static
+bin/si-i2p-plugin.app. It's a free-standing, unpackaged mach-O static
 executable. But it's built from identical code to the Linux version.
 
 To cross-compile for OSX, you can do:

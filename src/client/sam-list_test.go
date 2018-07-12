@@ -15,7 +15,7 @@ func TestCreateSamList(t *testing.T) {
 		SetInitAddress("http://i2p-projekt.i2p"),
 		SetHost("localhost"),
 		SetPort("7656"),
-		SetTimeout(600),
+		SetTimeout(6),
 		SetKeepAlives(true),
 	)
 	if err != nil {
