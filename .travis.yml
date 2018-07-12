@@ -11,8 +11,8 @@ language: go
 
 before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        curl 'https://github.com/PurpleI2P/i2pd/releases/download/2.19.0/i2pd_2.19.0_osx.tar.gz' &&
-        tar xvf ./i2pd_2.19.0_osx.tar.gz &&
+        cp misc/i2pd.osx.tar.gz ./i2pd.tar.gz &&
+        tar xvf ./i2pd.tar.gz &&
     cp etc/i2pd/i2pd.si-i2p-plugin.conf ./i2pd.conf; else
         sudo sed -i 's|xenial|bionic|g' /etc/apt/sources.list &&
         sudo apt-get update &&
