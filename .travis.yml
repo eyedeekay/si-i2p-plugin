@@ -20,4 +20,8 @@ before_install:
         sudo apt-get install i2pd &&
         sudo cp etc/i2pd/i2pd.si-i2p-plugin.conf /etc/i2pd/i2pd.conf;    fi
 
-install: if [[ "$TRAVIS_OS_NAME" != "osx" ]]; then sudo service i2pd start;else ./i2pd --conf ./i2pd.conf &;fi make deps gotest noopts
+install:
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        ./i2pd --daemon --conf ./i2pd.conf; else
+        sudo service i2pd start; fi
+    make deps gotest noopts
