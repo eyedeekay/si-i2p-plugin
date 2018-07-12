@@ -25,4 +25,4 @@ install:
         ./i2pd --daemon --conf ./i2pd.conf;
     make deps gotest noopts; else
         sudo service i2pd start;
-        make deps gotest noopts; fi
+        make deps noopts; fi

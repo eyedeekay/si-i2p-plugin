@@ -76,6 +76,8 @@ bin/si-i2p-plugin.app:
 
 osx: bin/si-i2p-plugin.app
 
+dmg:
+
 bin/si-i2p-plugin.exe:
 	cd ./src/main/ && \
 	GOOS=windows GOARCH=amd64 go build \
