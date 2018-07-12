@@ -1,5 +1,8 @@
 ### The pipes
 
+This section needs rewritten. It's still like, mostly accurate, but it needs
+work.
+
 In the front, right now there are three "Parent" pipes which are used to
 delegate requests and order responses from the system which exists behind them
 and signal the interruption of the isolating proxy. It can't be hooked up to a

@@ -13,6 +13,7 @@ var hopHeaders = []string{
 	"Proxy-Authorization",
 	"Proxy-Connection",
 	"X-Forwarded-For",
+    "Accept-Language",
 }
 
 func delHopHeaders(header http.Header) {

@@ -88,11 +88,11 @@ soon.
 
 The goddamn thing still has to wait for the goddamn standalone jumphelper to
 sync whatever jump service it asks for things from, which means it still takes
-too long to start. Jumphelper could cache it, I guess, so it would only happen
-once, but it kind of starts to risk defeating the purpose of jumphelper to do
-that. Truth be told, it looks to me from the jumphelper code like it should
-start the service and answer local addressbook queries immediately. Which was
-the goal. And still is.
+too long to start(Still faster than a fresh i2p service, though). Jumphelper
+could cache it, I guess, so it would only happen once, but it kind of starts to
+risk defeating the purpose of jumphelper to do that. Truth be told, it looks to
+me from the jumphelper code like it should start the service and answer local
+addressbook queries immediately. Which was the goal. And still is.
 
 [I wonder if I could make it talk to TorButton?](https://www.torproject.org/docs/torbutton/en/design/index.html.en)
 
