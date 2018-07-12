@@ -23,7 +23,7 @@ func request() *http.Request {
 	}
 }
 
-func TestCreateSamHTTPOptionsAll(t *testing.T) {
+func TestCreateSamHTTPOptionsAllOld(t *testing.T) {
 	length := 1
 	quant := 15
 	timeout := 600

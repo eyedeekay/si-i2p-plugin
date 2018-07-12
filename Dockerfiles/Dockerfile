@@ -3,8 +3,9 @@ RUN apk update -U
 RUN apk add go go-tools go-doc git make musl-dev musl musl-utils
 RUN adduser -s /opt/bin/si-i2p-plugin -S -H -D sii2pplugin sii2pplugin
 COPY . /opt/
-WORKDIR /opt/
 RUN chown -R sii2pplugin /opt
+WORKDIR /opt/
+RUN make deps
 RUN make release && chmod a+x /opt/bin/si-i2p-plugin
 RUN apk del go go-tools go-doc git make musl-dev musl musl-utils
 USER sii2pplugin
@@ -20,5 +21,6 @@ CMD /opt/bin/si-i2p-plugin \
     -in-backups=5 \
     -out-backups=5 \
     -internal-ah=false \
-    -verbose=true \
     -addressbook=/opt/etc/si-i2p-plugin/addresses.csv
+    #-avoidance=true \
+    #-verbose=true

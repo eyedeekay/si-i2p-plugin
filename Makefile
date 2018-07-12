@@ -87,6 +87,12 @@ build-arm: bin/si-i2p-plugin-arm
 
 bin/si-i2p-plugin-arm: arm
 
+noopts:
+	go build \
+		-o bin/si-i2p-plugin \
+		./src/main/si-i2p-plugin.go
+	@echo 'built'
+
 arm:
 	ARCH=arm GOARCH=arm GOARM=7 go build \
 		-compiler gc \

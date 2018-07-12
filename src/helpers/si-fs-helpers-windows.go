@@ -105,6 +105,19 @@ func SetupFolder(directory string) bool {
 	return false
 }
 
+func CheckFolder(directory string) bool {
+	pathConnectionExists, err := exists(truncatePaths(filepath.Join(connectionDirectory, directory)))
+	if e, _ := dii2perrs.Fatal(err, "si-fs-helpers-windows.go Child Directory Error", "si-fs-helpers-windows.go Child Directory Check", truncatePaths(filepath.Join(connectionDirectory))); e {
+		if !pathConnectionExists {
+			dii2perrs.Log("si-fs-helpers-windows.go Creating a child directory folder:", directory)
+			os.MkdirAll(truncatePaths(filepath.Join(connectionDirectory, directory)), 0755)
+			return true
+		}
+		return false
+	}
+	return false
+}
+
 func SetupFile(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(connectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)

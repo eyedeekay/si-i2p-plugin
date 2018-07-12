@@ -16,7 +16,7 @@ docker-setup:
 
 docker:
 	docker build --force-rm -f Dockerfiles/Dockerfile.samhost -t eyedeekay/sam-host .
-	#docker build --force-rm -f Dockerfiles/Dockerfile.jumphelper -t eyedeekay/sam-jumphelper .
+	docker build --force-rm -f Dockerfiles/Dockerfile.jumphelper -t eyedeekay/sam-jumphelper .
 	docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
 
 docker-network:
@@ -103,7 +103,7 @@ docker-tidy:
 	sleep 2
 
 docker-clean:
-	docker rm -f si-proxy sam-jumphelper; true
+	docker rm -f sam-host sam-jumphelper; true
 	docker rmi -f eyedeekay/si-i2p-plugin; true
 
 docker-copy:
