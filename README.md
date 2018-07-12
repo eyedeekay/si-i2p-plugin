@@ -88,11 +88,12 @@ soon.
 
 [I wonder if I could make it talk to TorButton?](https://www.torproject.org/docs/torbutton/en/design/index.html.en)
 
-I'm keeping the name.
-
 It runs excellent on anything that can work with the named pipe implementation
 in regular Go. Windows does not. But I can probably just wrap up some operations
-on files and pretend they are named pipes.
+on files and pretend they are named pipes. Windows needs testing. I don't own
+a Windows machine. I might be able to swing the temporary use of one at the
+local university. When I do disk-avoidance mode Windows bugs related to pipes
+will disappear.
 
 ### The pipes
 
@@ -133,7 +134,10 @@ Version Roadmap:
   ~~can't fail yet.~~
   * 0.23 - ~~Enable additional configuration options, like tunnel lengths~~
   ~~(always symmetrical) tunnel quantities(not always symmetical) idle~~
-  ~~connections per host, and backup tunnel quantity.~~
+  ~~connections per host, and backup tunnel quantity.~~ Implement "Saved
+  Tunnels" which will allow per-eepSite long-term destinations, and ironically,
+  potential parity with standard http proxies from i2p and i2pd. I used that
+  word deliberately.
   * 0.24 - Experiment with adding a SOCKS proxy. Create a version which contains
   a SOCKS proxy for testing. Actually have a SOCKS proxy. [This should be acceptable in implementing the SOCKS proxy](https://github.com/armon/go-socks5)
   Torbutton Control Port compatibility.

@@ -160,16 +160,16 @@ func (samStack *SamList) lifetimeCheck(request string) bool {
 	for index, client := range samStack.listOfClients {
 		if client.lifetimeCheck(request) {
 			dii2perrs.Log("sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.", index)
-			//samStack.listOfClients = samStack.deleteClient(samStack.listOfClients, index)
+			samStack.listOfClients = samStack.deleteClient(index)
 			return true
 		}
 	}
 	return false
 }
 
-func (samStack *SamList) deleteClient(s []SamHTTP, index int) []SamHTTP {
-	s[index].CleanupClient()
-	return append(s[:index], s[index+1])
+func (samStack *SamList) deleteClient(index int) []SamHTTP {
+	samStack.listOfClients[index].CleanupClient()
+	return append(samStack.listOfClients[:index], samStack.listOfClients[index+1:]...)
 }
 
 func (samStack *SamList) findClient(request string) *SamHTTP {
