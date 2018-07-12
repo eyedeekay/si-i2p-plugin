@@ -13,7 +13,8 @@ before_install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         cp misc/i2pd.osx.tar.gz ./i2pd.tar.gz &&
         tar xvf ./i2pd.tar.gz &&
-    cp etc/i2pd/i2pd.si-i2p-plugin.conf ./i2pd.conf; else
+        cp etc/i2pd/i2pd.si-i2p-plugin.conf ./i2pd.conf &&
+    sed 's|0.0.0.0|127.0.0.1|g' -i ./i2pd.conf; else
         sudo sed -i 's|xenial|bionic|g' /etc/apt/sources.list &&
         sudo apt-get update &&
         sudo apt-get dist-upgrade &&
@@ -22,7 +23,6 @@ before_install:
 
 install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        sed -i 's|0.0.0.0|127.0.0.1|g' ./i2pd.conf;
         ./i2pd --daemon --conf=./i2pd.conf; sleep 10;
     make deps gotest osx; else
         sudo service i2pd start; sleep 10;
