@@ -9,7 +9,7 @@ import (
 )
 
 func request() *http.Request {
-	u, e := url.Parse("i2p-projekt.i2p")
+	u, e := url.Parse("http://i2p-projekt.i2p")
     if e != nil {
         return nil
     }

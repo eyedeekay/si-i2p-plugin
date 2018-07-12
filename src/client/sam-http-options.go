@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+import (
+    "github.com/eyedeekay/si-i2p-plugin/src/helpers"
+)
+
 //ConnectOption is a SamHTTP option
 type ConnectOption func(*SamHTTP) error
 
@@ -46,8 +50,11 @@ func SetSamHTTPPortInt(v int) func(*SamHTTP) error {
 //SetSamHTTPRequest sets the initial request URL for the SamHTTP connection
 func SetSamHTTPRequest(s string) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.initRequestURL = s
-		return nil
+        if dii2phelper.CheckURLType(s) {
+            c.initRequestURL = s
+            return nil
+        }
+		return fmt.Errorf("Invalid initiate URL %s", s)
 	}
 }
 

@@ -159,7 +159,7 @@ func (samStack *SamList) lifetimeCheck(request string) bool {
 	}
 	for index, client := range samStack.listOfClients {
 		if client.lifetimeCheck(request) {
-			dii2perrs.Log("sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.")
+			dii2perrs.Log("sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.", index)
 			//samStack.listOfClients = samStack.deleteClient(samStack.listOfClients, index)
 			return true
 		}

@@ -107,19 +107,23 @@ Version Roadmap:
    ~~for destination isolation~~
   * 0.20 - ~~Ready for more mainstream testing~~, ~~should successfully isolate~~
    ~~requests for resources embedded in the retrieved web pages.~~ Addresshelper
-   still needs alot of work. I did this too soon.
+   still needs a little work, but it's way better than before.
   * 0.21 - Should be able to generate services on the fly by talking to the SAM
-  bridge. First worthwhile release for people who aren't shell enthusiasts.
+  bridge. Truth be told, except when I break something, it works nearly
+  perfectly. I do break stuff alot though, development is quite active and I
+  have to leverage the communication tools available to me to get it done, of
+  which github is, for better or for worse, an integral one at this point.
   ~~Tunnels should kill themselves after inactivity, and revive themselves with~~
   ~~new identities after. This will help minimize the impact of cross-site~~
   ~~resource-request timing attacks by making destinations more ephemeral,~~
   ~~requiring an attacker to keep tunnels alive to monitor an identity~~
-  ~~long-term.~~
+  ~~long-term.~~<\-\- This functionality is temporarily limited.
   * 0.22 - Library-fication should be finished by here. Turning the underlying
   code into a library will mostly be a matter of identifying which features need
   to be exposed for it to be useful in that way. I'll update the number when
   I've written go-based tests for it. ~~Maybe 1/5th of it has relevant tests~~
-  ~~now.~~
+  ~~now, but some of those tests will never fail because the things they test~~
+  ~~can't fail yet.~~
   * 0.23 - ~~Enable additional configuration options, like tunnel lengths~~
   ~~(always symmetrical) tunnel quantities(not always symmetical) idle~~
   ~~connections per host, and backup tunnel quantity.~~ If I'm being honest,

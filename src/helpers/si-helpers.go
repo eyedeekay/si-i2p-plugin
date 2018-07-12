@@ -8,7 +8,8 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
-//CheckURLType assures a URL is intended for i2p
+//CheckURLType assures a URL is intended for i2p. For now it also assures a URL
+//is going to an http service. That will change soon, to a whitelist approach.
 func CheckURLType(request string) bool {
 
 	dii2perrs.Log(request)
