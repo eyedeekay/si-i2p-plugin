@@ -133,7 +133,7 @@ Version Roadmap:
   ~~new identities after. This will help minimize the impact of cross-site~~
   ~~resource-request timing attacks by making destinations more ephemeral,~~
   ~~requiring an attacker to keep tunnels alive to monitor an identity~~
-  ~~long-term.~~<\-\- This functionality is temporarily limited.
+  ~~long-term.~~
   * 0.22 - Library-fication should be finished by here. Turning the underlying
   code into a library will mostly be a matter of identifying which features need
   to be exposed for it to be useful in that way. I'll update the number when
