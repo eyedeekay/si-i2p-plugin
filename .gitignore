@@ -12,3 +12,4 @@ src/helpers/generate-cert.go
 src/si-control-port.go
 .go
 src/test
+src/*/test
