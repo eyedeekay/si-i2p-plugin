@@ -19,6 +19,8 @@ USR := usr/
 LOCAL := local/
 VERSION := 0.20
 
+OUTFOLDER = $(PWD)/bin
+
 GOPATH = $(PWD)/.go
 
 GO_COMPILER_OPTS = -a -tags netgo -ldflags '-w -extldflags "-static"'
@@ -37,10 +39,11 @@ rebuild: clean build
 build: bin/si-i2p-plugin
 
 nodeps: clean
+	cd ./src/main/ && \
 	GOOS=linux GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
-		-o bin/si-i2p-plugin \
-		./src/main/si-i2p-plugin.go
+		-o $(OUTFOLDER)/si-i2p-plugin \
+		./si-i2p-plugin.go
 	@echo 'built'
 
 deps:
@@ -56,27 +59,30 @@ deps:
 	go get -u github.com/eyedeekay/si-i2p-plugin/src
 
 bin/si-i2p-plugin:
+	cd ./src/main/ && \
 	GOOS=linux GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
-		-o bin/si-i2p-plugin \
-		./src/main/si-i2p-plugin.go
+		-o $(OUTFOLDER)/si-i2p-plugin \
+		./si-i2p-plugin.go
 	@echo 'built'
 
 bin/si-i2p-plugin.app:
+	cd ./src/main/ && \
 	GOOS=darwin GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
-		-o bin/si-i2p-plugin.app \
-		./src/main/si-i2p-plugin.go
+		-o $(OUTFOLDER)/si-i2p-plugin.app \
+		./si-i2p-plugin.go
 	@echo 'built'
 
 osx: bin/si-i2p-plugin.app
 
 bin/si-i2p-plugin.exe:
+	cd ./src/main/ && \
 	GOOS=windows GOARCH=amd64 go build \
 		$(GO_COMPILER_OPTS) \
 		-buildmode=exe \
-		-o bin/si-i2p-plugin.exe \
-		./src/main/si-i2p-plugin.go
+		-o $(OUTFOLDER)/si-i2p-plugin.exe \
+		./si-i2p-plugin.go
 	@echo 'built'
 
 windows: bin/si-i2p-plugin.exe
@@ -88,68 +94,50 @@ build-arm: bin/si-i2p-plugin-arm
 bin/si-i2p-plugin-arm: arm
 
 noopts:
+	cd ./src/main/ && \
 	go build \
-		-o bin/si-i2p-plugin \
-		./src/main/si-i2p-plugin.go
+		-o $(OUTFOLDER)/si-i2p-plugin \
+		./si-i2p-plugin.go
 	@echo 'built'
 
 arm:
+	cd ./src/main/ && \
 	ARCH=arm GOARCH=arm GOARM=7 go build \
 		-compiler gc \
 		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \
-		-o bin/si-i2p-plugin-arm \
-		./src/main/si-i2p-plugin.go
+		-o $(OUTFOLDER)/si-i2p-plugin-arm \
+		./si-i2p-plugin.go
 	@echo 'built'
 
 release: deps
+	cd ./src/main/ && \
 	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
 		$(GO_COMPILER_OPTS) \
 		-buildmode=pie \
-		-o bin/si-i2p-plugin \
-		./src/main/si-i2p-plugin.go
+		-o $(OUTFOLDER)/si-i2p-plugin \
+		./si-i2p-plugin.go
 	@echo 'built release'
 
 native:
+	cd ./src/main/ && \
 	go build \
 		-a \
 		-buildmode=pie \
-		-o bin/si-i2p-plugin \
-		./src/main/si-i2p-plugin.go
+		-o $(OUTFOLDER)/si-i2p-plugin \
+		./si-i2p-plugin.go
 	@echo 'built release'
 
 android: bin/si-i2p-plugin-arm-droid
 
 bin/si-i2p-plugin-arm-droid:
+	cd ./src/main/ && \
 	gomobile build \
 		-target=android \
 		$(GO_COMPILER_OPTS) \
-		-o bin/si-i2p-plugin-droid \
+		-o $(OUTFOLDER)/si-i2p-plugin-droid \
 		./src/android/si-i2p-plugin.go
 	@echo 'built'
-
-lib/si-i2p-plugin.a:
-	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
-		$(GO_COMPILER_OPTS) \
-		-buildmode=pie \
-		-buildmode=archive \
-		-o lib/si-i2p-plugin.a \
-		./src/
-	file lib/si-i2p-plugin.a
-
-slib: lib/si-i2p-plugin.a
-
-lib/si-i2p-plugin.so:
-	GOOS="$(UNAME)" GOARCH="$(UARCH)" go build \
-		-buildmode=pie \
-		-buildmode=c-shared \
-		-o lib/si-i2p-plugin.so \
-		./src/main/si-i2p-plugin.go
-	file lib/si-i2p-plugin.so
-
-dylib: lib/si-i2p-plugin.so
-
-lib: slib dylib
 
 xpi2p:
 
