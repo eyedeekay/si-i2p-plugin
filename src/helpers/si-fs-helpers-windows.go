@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 )
 
 import (
@@ -189,7 +188,9 @@ func SetupFiFo(directory, path string) (string, *os.File, error) {
 func SetupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
 	_, pathErr := exists(mkPath)
-	if e, c := dii2perrs.Fatal(pathErr, "si-fs-helpers-windows.go File Check Error", "si-fs-helpers-windows.go File Check", mkPath); e {
+    var e bool
+    var c error
+	if e, c = dii2perrs.Fatal(pathErr, "si-fs-helpers-windows.go File Check Error", "si-fs-helpers-windows.go File Check", mkPath); e {
 		dii2perrs.Log("si-fs-helpers-windows.go Opening the Named Pipe as a Scanner...")
 		retScanner := bufio.NewScanner(pipe)
 		retScanner.Split(bufio.ScanLines)

@@ -52,18 +52,14 @@ the required containers locally and start a pre-configured browser, run:
 
 ### The http proxy
 
-Again, *still pretty experimental*, but currently it is possible to set
-your web browser's HTTP proxy to localhost:4443 and use it to browse eepSites.
-I haven't been able to crash it or attack it by adapting known attacks on
-browsers and HTTP proxies to this environment. It should at least fail early if
-something bad happens.
+It's *still a little experimental*, but currently it is possible to set
+your web browser's HTTP proxy to localhost:4443 and use it to browse eepSites
+with the guarantee that you will show a different destination to every eepSite
+you visit. Combined with a browser designed to minimize your uniqueness to the
+servers you visit, you should be much more difficult to track across sites and
+across sessions.
 
-#### User-Defined Jump Hosts
-
-Addresshelpers are tentatively working again. I'll need to explain more on how
-soon.
-
-#### Current Concerns:
+**That said there *is the obvious thing to consider*:**
 
 If it wasn't super, super obvious to everyone, it's really, really easy to tell
 the difference between this proxy and the default i2p/i2pd http proxies and I
@@ -78,6 +74,17 @@ requiring an attacker to request resources over and over to keep a tunnel alive
 long-term to be useful for tracking. By the way, as far as I know, using this
 will drastically reduce your anonymity set unless it's widely adopted. TESTING
 ONLY.
+
+I haven't been able to crash it or attack it by adapting known attacks on
+browsers and HTTP proxies to this environment. It should at least fail early if
+something bad happens.
+
+#### User-Defined Jump Hosts
+
+Addresshelpers are tentatively working again. I'll need to explain more on how
+soon.
+
+#### Current Concerns:
 
 [I wonder if I could make it talk to TorButton?](https://www.torproject.org/docs/torbutton/en/design/index.html.en)
 
