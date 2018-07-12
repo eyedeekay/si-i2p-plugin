@@ -11,4 +11,4 @@ before_install:
     sudo apt-get install i2pd &&
     sudo cp etc/i2pd/i2pd.si-i2p-plugin.conf /etc/i2pd/i2pd.conf
 
-install: sudo service i2pd start && make gotest release
+install: sudo service i2pd start && make deps gotest release
