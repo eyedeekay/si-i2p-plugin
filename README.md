@@ -86,6 +86,14 @@ soon.
 
 #### Current Concerns:
 
+The goddamn thing still has to wait for the goddamn standalone jumphelper to
+sync whatever jump service it asks for things from, which means it still takes
+too long to start. Jumphelper could cache it, I guess, so it would only happen
+once, but it kind of starts to risk defeating the purpose of jumphelper to do
+that. Truth be told, it looks to me from the jumphelper code like it should
+start the service and answer local addressbook queries immediately. Which was
+the goal. And still is.
+
 [I wonder if I could make it talk to TorButton?](https://www.torproject.org/docs/torbutton/en/design/index.html.en)
 
 It runs excellent on anything that can work with the named pipe implementation
@@ -93,7 +101,7 @@ in regular Go. Windows does not. But I can probably just wrap up some operations
 on files and pretend they are named pipes. Windows needs testing. I don't own
 a Windows machine. I might be able to swing the temporary use of one at the
 local university. When I do disk-avoidance mode Windows bugs related to pipes
-will disappear.
+will disappear. So I kind of want to get these taken care of first if I can.
 
 ### The pipes
 
