@@ -22,7 +22,8 @@ before_install:
 
 install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        ./i2pd --daemon --conf=./i2pd.conf; sleep 10;
+        sleep 10;
     make deps osx; else
         sudo service i2pd start; sleep 10;
-    make deps gotest noopts; fi
+        make deps gotest noopts;
+    sudo service i2pd stop; fi
