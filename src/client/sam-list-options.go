@@ -49,8 +49,8 @@ func SetPortInt(v int) func(*SamList) error {
 //SetTimeout set's the client timeout
 func SetTimeout(s int) func(*SamList) error {
 	return func(c *SamList) error {
-		if c.timeoutTime > 5 {
-			if c.timeoutTime <= c.lifeTime {
+		if s > 5 {
+			if s <= c.lifeTime {
 				c.timeoutTime = s
 				return nil
 			}
@@ -98,8 +98,8 @@ func SetLifespan(s int) func(*SamList) error {
 //SetTunLength set's the symmetric inbound and outbound tunnel lengths
 func SetTunLength(s int) func(*SamList) error {
 	return func(c *SamList) error {
-		if c.tunnelLength >= 0 {
-			if c.tunnelLength <= 7 {
+		if s >= 0 {
+			if s <= 7 {
 				c.tunnelLength = s
 				return nil
 			}
@@ -112,8 +112,8 @@ func SetTunLength(s int) func(*SamList) error {
 //SetInQuantity set's the inbound tunnel quantity
 func SetInQuantity(s int) func(*SamList) error {
 	return func(c *SamList) error {
-		if c.inboundQuantity > 0 {
-			if c.inboundQuantity < 16 {
+		if s > 0 {
+			if s < 16 {
 				c.inboundQuantity = s
 				return nil
 			}
@@ -126,8 +126,8 @@ func SetInQuantity(s int) func(*SamList) error {
 //SetOutQuantity set's the outbound tunnel quantity
 func SetOutQuantity(s int) func(*SamList) error {
 	return func(c *SamList) error {
-		if c.outboundQuantity > 0 {
-			if c.outboundQuantity < 16 {
+		if s > 0 {
+			if s < 16 {
 				c.outboundQuantity = s
 				return nil
 			}
@@ -137,25 +137,11 @@ func SetOutQuantity(s int) func(*SamList) error {
 	}
 }
 
-//SetIdleConns set's the max idle connections per host
-func SetIdleConns(s int) func(*SamList) error {
-	return func(c *SamList) error {
-		if c.idleConns > 0 {
-			if c.idleConns < 11 {
-				c.idleConns = s
-				return nil
-			}
-			return fmt.Errorf("Idle connection quantity must less than than 11.")
-		}
-		return fmt.Errorf("Idle connection quantity must be greater than 0.")
-	}
-}
-
 //SetInBackups set's the inbound backup tunnel quantity
 func SetInBackups(s int) func(*SamList) error {
 	return func(c *SamList) error {
-		if c.inboundBackupQuantity >= 0 {
-			if c.inboundBackupQuantity < 6 {
+		if s >= 0 {
+			if s < 6 {
 				c.inboundBackupQuantity = s
 				return nil
 			}
@@ -168,13 +154,27 @@ func SetInBackups(s int) func(*SamList) error {
 //SetOutBackups set's the outbound backup tunnel quantity
 func SetOutBackups(s int) func(*SamList) error {
 	return func(c *SamList) error {
-		if c.outboundBackupQuantity >= 0 {
-			if c.outboundBackupQuantity < 6 {
+		if s >= 0 {
+			if s < 6 {
 				c.outboundBackupQuantity = s
 				return nil
 			}
 			return fmt.Errorf("Outbound backup tunnel quantity cannot be negative.")
 		}
 		return fmt.Errorf("Outbound backup tunnel quantity must be less than 6")
+	}
+}
+
+//SetIdleConns set's the max idle connections per host
+func SetIdleConns(s int) func(*SamList) error {
+	return func(c *SamList) error {
+		if s > 0 {
+			if s < 11 {
+				c.idleConns = s
+				return nil
+			}
+			return fmt.Errorf("Idle connection quantity must less than than 11.")
+		}
+		return fmt.Errorf("Idle connection quantity must be greater than 0.")
 	}
 }

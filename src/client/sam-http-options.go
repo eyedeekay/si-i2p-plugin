@@ -61,9 +61,15 @@ func SetSamHTTPRequest(s string) func(*SamHTTP) error {
 //SetSamHTTPTimeout sets the timeout of the SamHTTP connection
 func SetSamHTTPTimeout(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.timeoutTime = time.Duration(s) * time.Minute
-		c.otherTimeoutTime = time.Duration(s/3) * time.Minute
-		return nil
+		if s > 5 {
+			if c.timeoutTime <= c.LifeTime {
+				c.timeoutTime = time.Duration(s) * time.Minute
+				c.otherTimeoutTime = time.Duration(s/3) * time.Minute
+				return nil
+			}
+			return fmt.Errorf("A specified lifetime must be greater than a specified timeout.")
+		}
+		return fmt.Errorf("Timeout must be greater than 5 minutes.")
 	}
 }
 
@@ -78,56 +84,97 @@ func SetSamHTTPKeepAlives(s bool) func(*SamHTTP) error {
 //SetSamHTTPLifespan set's the time before an inactive SamHTTP client is torn down
 func SetSamHTTPLifespan(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.lifeTime = time.Duration(s) * time.Minute
-		c.useTime = time.Now()
-		return nil
+		if c.timeoutTime <= s {
+			c.lifeTime = time.Duration(s) * time.Minute
+			c.useTime = time.Now()
+			return nil
+		}
+		return fmt.Errorf("A specified lifetime must be greater than a specified timeout.")
 	}
 }
 
 //SetSamHTTPTunLength set's the symmetric inbound and outbound tunnel lengths
 func SetSamHTTPTunLength(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.tunnelLength = s
-		return nil
+		if s >= 0 {
+			if s <= 7 {
+				c.tunnelLength = s
+				return nil
+			}
+			return fmt.Errorf("Tunnel length must be less than seven.")
+		}
+		return fmt.Errorf("Tunnel length must be greater than or equal to 0.")
 	}
 }
 
 //SetSamHTTPInQuantity set's the inbound tunnel quantity
 func SetSamHTTPInQuantity(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.inboundQuantity = s
-		return nil
+		if s > 0 {
+			if s < 16 {
+				c.inboundQuantity = s
+				c.inboundQuantity = s
+				return nil
+			}
+			return fmt.Errorf("Tunnel quantity must be less than 16.")
+		}
+		return fmt.Errorf("Tunnel quantity must be greater than 0.")
 	}
 }
 
 //SetSamHTTPOutQuantity set's the outbound tunnel quantity
 func SetSamHTTPOutQuantity(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.outboundQuantity = s
-		return nil
+		if s > 0 {
+			if s < 16 {
+				c.outboundQuantity = s
+				return nil
+			}
+			return fmt.Errorf("Tunnel quantity must be less than 16.")
+		}
+		return fmt.Errorf("Tunnel quantity must be greater than 0.")
 	}
 }
 
 //SetSamHTTPInBackupQuantity set's the inbound tunnel quantity
 func SetSamHTTPInBackupQuantity(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.inboundBackupQuantity = s
-		return nil
+		if s >= 0 {
+			if s < 6 {
+				c.inboundBackupQuantity = s
+				return nil
+			}
+			return fmt.Errorf("Inbound backup tunnel quantity cannot be negative.")
+		}
+		return fmt.Errorf("Inbound backup tunnel quantity must be less than 6")
 	}
 }
 
 //SetSamHTTPOutBackupQuantity set's the outbound tunnel quantity
 func SetSamHTTPOutBackupQuantity(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.outboundBackupQuantity = s
-		return nil
+		if s >= 0 {
+			if s < 6 {
+				c.outboundBackupQuantity = s
+				c.outboundBackupQuantity = s
+				return nil
+			}
+			return fmt.Errorf("Outbound backup tunnel quantity cannot be negative.")
+		}
+		return fmt.Errorf("Outbound backup tunnel quantity must be less than 6")
 	}
 }
 
 //SetSamHTTPIdleQuantity set's the outbound tunnel quantity
 func SetSamHTTPIdleQuantity(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		c.idleConns = s
-		return nil
+		if s > 0 {
+			if s < 11 {
+				c.idleConns = s
+				return nil
+			}
+			return fmt.Errorf("Idle connection quantity must less than than 11.")
+		}
+		return fmt.Errorf("Idle connection quantity must be greater than 0.")
 	}
 }
