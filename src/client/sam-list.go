@@ -266,6 +266,8 @@ func (samStack *SamList) CleanupClient() {
 //CreateSamList initializes a SamList
 func CreateSamList(opts ...func(*SamList) error) (*SamList, error) {
 	var samStack SamList
+	samStack.samAddrString = "127.0.0.1"
+	samStack.samPortString = "7656"
 	samStack.dir = "parent"
 	samStack.up = false
 	samStack.timeoutTime = 6

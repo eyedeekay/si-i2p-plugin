@@ -497,7 +497,7 @@ func NewSamHTTPFromOptions(opts ...func(*SamHTTP) error) (SamHTTP, error) {
 	dii2perrs.Log("sam-http.go Creating a new SAMv3 Client.")
 	var samConn SamHTTP
 	samConn.samAddrString = "127.0.0.1"
-	samConn.samPortString = "7657"
+	samConn.samPortString = "7656"
 	samConn.initRequestURL = ""
 	samConn.timeoutTime = time.Duration(6) * time.Minute
 	samConn.otherTimeoutTime = time.Duration(2) * time.Minute

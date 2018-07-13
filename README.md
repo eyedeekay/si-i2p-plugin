@@ -134,8 +134,7 @@ Version Roadmap:
   code into a library will mostly be a matter of identifying which features need
   to be exposed for it to be useful in that way. I'll update the number when
   I've written go-based tests for it. ~~Maybe 1/2th of it has relevant tests~~
-  ~~now, but some of those tests will never fail because the things they test~~
-  ~~can't fail yet.~~
+  ~~now~~
   * 0.23 - ~~Enable additional configuration options, like tunnel lengths~~
   ~~(always symmetrical) tunnel quantities(not always symmetical) idle~~
   ~~connections per host, and backup tunnel quantity.~~ Implement "Saved
