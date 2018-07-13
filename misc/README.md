@@ -122,3 +122,6 @@ is probably a good idea.
 Thoughts on long-term destinations for eepSites
 -----------------------------------------------
 
+Something something destination-as-login something something accountable alias
+something something I promise to write it later but they have genuine
+importance and I just want to point that out to any haters.

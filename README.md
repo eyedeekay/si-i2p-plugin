@@ -133,8 +133,9 @@ Version Roadmap:
   * 0.22 - Library-fication should be finished by here. Turning the underlying
   code into a library will mostly be a matter of identifying which features need
   to be exposed for it to be useful in that way. I'll update the number when
-  I've written go-based tests for it. ~~Maybe 1/2th of it has relevant tests~~
-  ~~now~~
+  I've written go-based tests for it. ~~Maybe 4/5ths of the code that exists~~
+  ~~has relevant tests now. All of them actually test a thing that knows how~~
+  ~~to fail now.~~
   * 0.23 - ~~Enable additional configuration options, like tunnel lengths~~
   ~~(always symmetrical) tunnel quantities(not always symmetical) idle~~
   ~~connections per host, and backup tunnel quantity.~~ Implement "Saved

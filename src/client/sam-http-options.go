@@ -62,7 +62,7 @@ func SetSamHTTPRequest(s string) func(*SamHTTP) error {
 func SetSamHTTPTimeout(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
 		if s > 5 {
-			if c.timeoutTime <= c.lifeTime {
+			if time.Duration(s) * time.Minute <= c.lifeTime {
 				c.timeoutTime = time.Duration(s) * time.Minute
 				c.otherTimeoutTime = time.Duration(s/3) * time.Minute
 				return nil
@@ -84,7 +84,7 @@ func SetSamHTTPKeepAlives(s bool) func(*SamHTTP) error {
 //SetSamHTTPLifespan set's the time before an inactive SamHTTP client is torn down
 func SetSamHTTPLifespan(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		if c.timeoutTime <= time.Duration(s) {
+		if time.Duration(s) * time.Minute >= c.timeoutTime {
 			c.lifeTime = time.Duration(s) * time.Minute
 			c.useTime = time.Now()
 			return nil
