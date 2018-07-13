@@ -194,7 +194,10 @@ clean:
 	rm -rf parent services ./.*.i2p*/ ./*.i2p*/ \
 		*.html *-pak *err *log \
 		static-include static-exclude \
-		bin/si-i2p-plugin* bin/si-i2p-plugin-arm lib/*
+		bin/si-i2p-plugin* bin/si-i2p-plugin-arm lib/* \
+		src/client/base64 src/client/id src/client/name \
+		src/client/recv src/client/del src/client/send src/client/time \
+		test/ src/test/ src/*/test/
 
 kill:
 	killall si-i2p-plugin; \
