@@ -62,12 +62,13 @@ func SetSamHTTPRequest(s string) func(*SamHTTP) error {
 func SetSamHTTPTimeout(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
 		if s > 5 {
-			if time.Duration(s) * time.Minute <= c.lifeTime {
+			if time.Duration(s)*time.Minute <= c.lifeTime {
 				c.timeoutTime = time.Duration(s) * time.Minute
 				c.otherTimeoutTime = time.Duration(s/3) * time.Minute
 				return nil
 			}
-			return fmt.Errorf("A specified lifetime must be greater than a specified timeout.")
+            tmp := time.Duration(s) * time.Minute
+			return fmt.Errorf("A specified timeout must be less than a specified lifetime. %s %s %s", tmp.String(), ">" , c.lifeTime.String())
 		}
 		return fmt.Errorf("Timeout must be greater than 5 minutes.")
 	}
@@ -84,12 +85,13 @@ func SetSamHTTPKeepAlives(s bool) func(*SamHTTP) error {
 //SetSamHTTPLifespan set's the time before an inactive SamHTTP client is torn down
 func SetSamHTTPLifespan(s int) func(*SamHTTP) error {
 	return func(c *SamHTTP) error {
-		if time.Duration(s) * time.Minute >= c.timeoutTime {
+		if time.Duration(s)*time.Minute >= c.timeoutTime {
 			c.lifeTime = time.Duration(s) * time.Minute
 			c.useTime = time.Now()
 			return nil
 		}
-		return fmt.Errorf("A specified lifetime must be greater than a specified timeout.")
+        tmp := time.Duration(s) * time.Minute
+        return fmt.Errorf("A specified lifetime must be greater than a specified timeout. %s %s %s", tmp.String(), "<", c.timeoutTime.String())
 	}
 }
 

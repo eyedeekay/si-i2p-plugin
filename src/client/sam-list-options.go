@@ -54,7 +54,7 @@ func SetTimeout(s int) func(*SamList) error {
 				c.timeoutTime = s
 				return nil
 			}
-			return fmt.Errorf("A specified lifetime must be greater than a specified timeout.")
+			return fmt.Errorf("A specified timeout must be less than a specified lifetime.", strconv.Itoa(s), strconv.Itoa(c.lifeTime))
 		}
 		return fmt.Errorf("Timeout must be greater than 5 minutes.")
 	}
@@ -91,7 +91,7 @@ func SetLifespan(s int) func(*SamList) error {
 			c.lifeTime = s
 			return nil
 		}
-		return fmt.Errorf("A specified lifetime must be greater than a specified timeout.")
+		return fmt.Errorf("A specified lifetime must be greater than a specified timeout.", strconv.Itoa(s), strconv.Itoa(c.timeoutTime))
 	}
 }
 

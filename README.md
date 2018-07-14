@@ -147,8 +147,8 @@ Version Roadmap:
   Torbutton Control Port compatibility.
   * 0.25 - Package.
   * 0.26 - Android? WebRTC over SSU? Try linking libi2pd? Help make go-i2p into
-  a usable router? Browser Bundle? At risk of growing a little further than I
-  originally intended, but I feel like there's some potential here.
+  a usable router? Browser Bundle(s?)? At risk of growing a little further than
+  I originally intended, but I feel like there's some potential here.
 
 ### The pipes
 

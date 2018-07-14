@@ -14,9 +14,31 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 )
 
-type SamFSHelper struct {
+type WrappedFile struct {
 	DiskAvoidance       bool
 	ConnectionDirectory string
+
+	Path     string
+	PipeFile *os.File
+	PipeScan *bufio.Scanner
+}
+
+func (wrapped *WrappedFile) OpenAsFile() {
+
+}
+
+func (wrapped *WrappedFile) OpenAsScanner() {
+
+}
+
+func (wrapped *WrappedFile) WriteString(input... string) {
+
+}
+
+func NewFile(path string) *WrappedFile {
+	return &WrappedFile{
+		Path: path,
+	}
 }
 
 var DiskAvoidance = false

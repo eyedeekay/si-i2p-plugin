@@ -13,7 +13,9 @@ competing.
 
 In the default i2p http proxy, all applications using the proxy share the same
 destination, which is visible to all services that they communicate with. That
-means that a few kinds of tracking are possible.
+destination is periodically refreshed(Leaving the old destination behind), but
+only after a period of idle time. That means that a few kinds of tracking are
+possible.
 
   1. An attacker who controls multiple eepSites can link a user's behavior on
   one eepSite to their behavior on another eepSite if they visit them at the
@@ -87,7 +89,8 @@ headers. **THIS IS WHY I STRONGLY RECOMMEND, and pre-configure if desired, a**
 **Tor Browser.** Whether I think another existing project could be recommended
 is a question I haven't got a good answer to at this point. Brave's new privacy
 mode is a thing. Maybe browsers will get better. Maybe the web can be a little
-less crappy.
+less crappy. Another one that seems worth checking out is ungoogled-chromium.
+Firefox quantum will probably eventually be good enough.
 
 ### Timing Attacks on Small Anonymity Sets
 
@@ -106,10 +109,11 @@ some kind of caching to prevent repeated resource requests within the lifespan
 of the http proxy if it's possible to do that without causing cache-timing
 attacks.
 
-So those are the two I know about. If you know of other's, I'm pretty happy to
+So those are the three I know about. If you know of other's, I'm pretty happy to
 deal with them publicly. I've visibly insisted this is experimental for quite a
 long time, hopefully nobody is misusing it. Also I'm reasonably confident it
-works.
+works. Also attacks on the browser always work. This isn't a browser. It's a
+proxy.
 
 Other avenues for Destination-Isolation:
 ----------------------------------------

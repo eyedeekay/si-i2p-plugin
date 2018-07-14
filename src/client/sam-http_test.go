@@ -7,8 +7,8 @@ import (
 func TestCreateSamHTTPOptionsAll(t *testing.T) {
 	length := 1
 	quant := 15
-	timeout := 600
-	lifeout := 1200
+	timeout := 6
+	lifeout := 12
 	backup := 3
 	idles := 4
 	h := newSamHTTPHTTP("127.0.0.1",
