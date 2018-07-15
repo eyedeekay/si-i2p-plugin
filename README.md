@@ -16,6 +16,9 @@ destination isolation before there is a facebook.i2p.
 
 [![Build Status](https://travis-ci.org/eyedeekay/si-i2p-plugin.svg?branch=master)](https://travis-ci.org/eyedeekay/si-i2p-plugin)
 
+[Usage](USAGE.md)
+-----------------
+
 License
 -------
 
