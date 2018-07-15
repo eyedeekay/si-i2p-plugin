@@ -43,13 +43,13 @@ http proxy destination for every eepSite I visit.
 This changes the default behavior to use a different destination for every eepSite
 ----------------------------------------------------------------------------------
 
-So, instead of visiting every eepSite with the same destination, we could avoid
-the easiest kinds of cross-site tracking via the destination of the http proxy.
-The obvious thing to do is connect to each eepSite with a unique destination,
-but I considered other things. I think unique destinations is the best way to
-proceed. I had considered the possibility of making requests for third-party
-resources along the same destination as the eepSite requesting the third-party
-resource but that seemed easier to abuse.
+What if, instead of visiting every eepSite with the same destination, we could
+avoid the easiest kinds of cross-site tracking via the destination of the http
+proxy. The obvious thing to do is connect to each eepSite with a unique
+destination, but I considered other things. I think unique destinations is the
+best way to proceed. I had considered the possibility of making requests for
+third-party resources along the same destination as the eepSite requesting the
+third-party resource but that seemed easier to abuse.
 
 Attacking this New Proxy
 ------------------------
@@ -71,7 +71,7 @@ effect is probably worse if there are few visitors to that eepSite.
 ### Header Fingerprinting
 
 As you can see from [these screenshots](SCREENSHOTS.md), the headers used to
-allow 'Accept-Language' through, revealing it was in use. They don't anymore,
+qallow 'Accept-Language' through, revealing it was in use. They don't anymore,
 which is cool, but these are the only headers it filters:
 
         var hopHeaders = []string{
@@ -128,4 +128,4 @@ Thoughts on long-term destinations for eepSites
 
 Something something destination-as-login something something accountable alias
 something something I promise to write it later but they have genuine
-importance and I just want to point that out to any haters.
+importance and I just want to point that out to any default proxy haters.
