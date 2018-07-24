@@ -99,6 +99,9 @@ addressbook queries immediately. Which was the goal. And still is.
 
 [I wonder if I could make it talk to TorButton?](https://www.torproject.org/docs/torbutton/en/design/index.html.en)
 
+Littleboss seems like it could potentially be useful in lots of contexts, like
+in a portable browser bundle and stuff like that.
+
 It runs excellent on anything that can work with the named pipe implementation
 in regular Go. Windows does not. But I can probably just wrap up some operations
 on files and pretend they are named pipes. Windows needs testing. I don't own

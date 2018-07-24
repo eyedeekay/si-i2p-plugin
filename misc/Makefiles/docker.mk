@@ -115,3 +115,5 @@ stop:
 start:
 	while true; do make docker-setup follow; done
 
+monitor:
+	docker exec sam-host lynx 127.0.0.1:7073

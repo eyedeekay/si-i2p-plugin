@@ -2,7 +2,7 @@
 UNAME ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 UARCH ?= $(shell uname -m | tr '[:upper:]' '[:lower:]' | sed 's|x86_64|amd64|g')
 
-i2pd_dat?=$(PWD)/i2pd_dat
+i2pd_dat?=i2pd_dat
 browser=$(PWD)/browser
 BROWSER_VERSION ?= $(shell curl https://www.torproject.org/projects/torbrowser.html.en 2>&1 | grep '<th>GNU/Linux<br>' | sed 's|<th>GNU/Linux<br><em>(||g' | sed 's|)</em></th>||g' | tr -d ' ')
 different_port=7073
@@ -57,6 +57,7 @@ deps:
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/resolver
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/server
 	go get -u github.com/eyedeekay/si-i2p-plugin/src
+	#go get -u crawshaw.io/littleboss
 
 bin/si-i2p-plugin:
 	cd ./src/main/ && \

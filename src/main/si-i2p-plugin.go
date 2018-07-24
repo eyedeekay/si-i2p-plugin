@@ -14,11 +14,15 @@ import (
 	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
 	"github.com/eyedeekay/si-i2p-plugin/src/server"
+
+    //"github.com/crawshaw/littleboss"
 )
 
 var exit = false
 
 func main() {
+    //lb := littleboss.New("si-i2p-plugin")
+    //lb.Run(func(ctx context.Context){
 	samAddrString := flag.String("bridge-addr", "127.0.0.1",
 		"host: of the SAM bridge")
 	samPortString := flag.String("bridge-port", "7656",
@@ -199,6 +203,7 @@ func main() {
 	}
 
 	samProxies.CleanupClient()
+    //})
 }
 
 func closeProxy(samProxies *dii2pmain.SamList) {
