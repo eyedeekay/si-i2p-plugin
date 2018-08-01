@@ -20,7 +20,7 @@ docker:
 	docker build --force-rm -f Dockerfile -t eyedeekay/si-i2p-plugin .
 
 docker-network:
-	docker network create --subnet 172.80.80.0/29 si; true
+	docker network create --subnet 172.80.80.0/24 si; true
 
 docker-browser:
 	docker build --force-rm \
@@ -44,7 +44,7 @@ browse: docker-browser
 		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
 		$(browse_args)
 
-docker-host:
+docker-host: docker-network
 	docker run -d \
 		--name sam-host \
 		--network si \
