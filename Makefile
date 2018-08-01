@@ -47,6 +47,7 @@ nodeps: clean
 	@echo 'built'
 
 deps:
+	go get -u github.com/eyedeekay/samrtc/src
 	go get -u github.com/eyedeekay/jumphelper/src
 	go get -u github.com/eyedeekay/gosam
 	go get -u github.com/armon/go-socks5
@@ -180,13 +181,13 @@ remove:
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 
 run: nodeps
-	./bin/si-i2p-plugin -proxy-port="4443" -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
+	./bin/si-i2p-plugin -proxy-port="$(BROWSER_PORT)" -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
 
 verbose: nodeps
-	./bin/si-i2p-plugin -proxy-port="4443" -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
+	./bin/si-i2p-plugin -proxy-port="$(BROWSER_PORT)" -verbose=true -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
 
 try: nodeps
-	./bin/si-i2p-plugin -proxy-port="4443" -conn-debug=true -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
+	./bin/si-i2p-plugin -proxy-port="$(BROWSER_PORT)" -conn-debug=true -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
 
 follow:
 	docker logs -f si-proxy

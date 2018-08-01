@@ -10,6 +10,7 @@ import (
 
 import (
 	"github.com/eyedeekay/jumphelper/src"
+    "github.com/eyedeekay/samrtc/src"
 	"github.com/eyedeekay/si-i2p-plugin/src"
 	"github.com/eyedeekay/si-i2p-plugin/src/client"
 	"github.com/eyedeekay/si-i2p-plugin/src/errors"
@@ -76,6 +77,12 @@ func main() {
 		"Use internal address helper")
 	addressBook := flag.String("addressbook", "./addresses.csv",
 		"path to local addressbook(default ./addresses.csv) (Unused without internal-ah)")
+    internalSamRTCHost := flag.Bool("internal-rtc", false,
+        "Use internal SamRTC(Experimenatl)(default false)")
+    rtcHostString := flag.String("rtc-addr", "127.0.0.1",
+		"host: of the RTC over SAM bridge")
+	rtcPortString := flag.String("rtc-port", "7682",
+		":port of the RTC over SAM bridge")
 	//diskAvoidance := flag.Bool("avoidance", true,
 	//  "Disk Avoidance Mode(default true)")
 
@@ -113,6 +120,19 @@ func main() {
 			*internalAddressHelper,
 		)
 	}
+    if *internalSamRTCHost {
+        dii2perrs.Log("si-i2p-plugin.go starting internal RTC forwarder")
+        if err := samrtc.NewEmbedSamRTCHostFromOptions(
+            samrtc.SetHostSamHost(*samAddrString),
+            samrtc.SetHostSamPort(*samPortString),
+            samrtc.SetHostLocalHost(*rtcHostString),
+            samrtc.SetHostLocalPort(*rtcPortString),
+            samrtc.SetHostSamTunName("siSAMRTC"),
+            samrtc.SetHostSamVerbose(*verboseLogging),
+        ); err != nil {
+            dii2perrs.Fatal(err, "si-i2p-plugin.go failed to start internal RTC forwarder")
+        }
+    }
 
 	if !*keepAlives {
 		dii2perrs.Log("si-i2p-plugin.go Keepalives Enabled")

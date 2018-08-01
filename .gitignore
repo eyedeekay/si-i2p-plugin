@@ -9,16 +9,17 @@ test.diff
 i2pd_dat
 browser
 src/helpers/generate-cert.go
-src/si-control-port.go
+src/proxycpe/si-control-port.go
 .go
 src/test
 src/*/test
-src/client/base64
-src/client/id
-src/client/name
-src/client/recv
-src/client/del
-src/client/send
-src/client/time
+src/client/*.i2p
+src/client/*.i2p/base64
+src/client/*.i2p/id
+src/client/*.i2p/name
+src/client/*.i2p/recv
+src/client/*.i2p/del
+src/client/*.i2p/send
+src/client/*.i2p/time
 
 

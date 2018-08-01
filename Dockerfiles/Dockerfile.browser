@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:sid
 ARG BROWSER_VERSION="7.5.6"
 ARG HOST="172.80.80.4"
 ARG PORT="44443"
