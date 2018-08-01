@@ -45,8 +45,7 @@ browse: docker-browser
 		$(browse_args)
 
 docker-host:
-	docker run \
-		-d \
+	docker run -d \
 		--name sam-host \
 		--network si \
 		--network-alias sam-host \

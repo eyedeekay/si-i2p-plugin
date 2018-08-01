@@ -7,15 +7,12 @@ RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv 66F6C87B98EBCFE2 |
     apt-key adv --keyserver pgp.mit.edu --recv-keys 66F6C87B98EBCFE2 || \
     apt-key adv --keyserver keyserver.ubuntu.com --recv 66F6C87B98EBCFE2 || \
     apt-key adv --keyserver keyserver.pgp.com --recv 66F6C87B98EBCFE2
-RUN apt-get update && apt-get install -y i2pd lynx
+RUN apt-get update && apt-get install -y i2pd
 COPY etc/i2pd/tunnels.si-i2p-plugin.conf /etc/i2pd/tunnels.conf
 COPY etc/i2pd/i2pd.si-i2p-plugin.conf /etc/i2pd/i2pd.conf
-CMD chown -R i2pd:i2pd /var/lib/i2pd; \
-    ln -sf /usr/share/i2pd/certificates /var/lib/i2pd/certificates; \
-    ln -sf /etc/i2pd/subscriptions.txt /var/lib/i2pd/subscriptions.txt; \
-    su - -c "i2pd i2pd --service --loglevel=error \
-        --conf=/etc/i2pd/i2pd.conf \
-        --tunconf=/etc/i2pd/tunnels.conf \
-        --log=/var/log/i2pd/log"; \
-    sleep 5; \
-    tail -f /var/log/i2pd/log
+RUN chown -R i2pd:i2pd /var/lib/i2pd /var/log/i2pd
+RUN chmod -R o+rw /var/lib/i2pd /var/log/i2pd
+RUN ln -sf /usr/share/i2pd/certificates /var/lib/i2pd/certificates
+RUN ln -sf /etc/i2pd/subscriptions.txt /var/lib/i2pd/subscriptions.txt
+VOLUME /var/lib/i2pd
+CMD service i2pd start; tail -f /var/log/i2pd/i2pd.log
