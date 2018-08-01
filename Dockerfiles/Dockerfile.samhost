@@ -7,7 +7,7 @@ RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv 66F6C87B98EBCFE2 |
     apt-key adv --keyserver pgp.mit.edu --recv-keys 66F6C87B98EBCFE2 || \
     apt-key adv --keyserver keyserver.ubuntu.com --recv 66F6C87B98EBCFE2 || \
     apt-key adv --keyserver keyserver.pgp.com --recv 66F6C87B98EBCFE2
-RUN apt-get update && apt-get install -y i2pd
+RUN apt-get update && apt-get install -y i2pd procps
 COPY etc/i2pd/tunnels.si-i2p-plugin.conf /etc/i2pd/tunnels.conf
 COPY etc/i2pd/i2pd.si-i2p-plugin.conf /etc/i2pd/i2pd.conf
 RUN chown -R i2pd:i2pd /var/lib/i2pd /var/log/i2pd

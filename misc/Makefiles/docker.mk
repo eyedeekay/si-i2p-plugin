@@ -56,6 +56,7 @@ docker-host: docker-network
 		-p :4567 \
 		-p 127.0.0.1:7073:7073 \
 		-p 127.0.0.1:7656:7656 \
+		--security-opt apparmor=docker-default \
 		--volume $(i2pd_dat):/var/lib/i2pd:rw \
 		-t eyedeekay/sam-host; true
 
