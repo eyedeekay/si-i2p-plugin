@@ -12,7 +12,7 @@ CMD /opt/bin/si-i2p-plugin \
     -proxy-addr=0.0.0.0 \
     -proxy-port=44443 \
     -ah-addr=sam-jumphelper \
-    -ah-port=7054 \
+    -ah-port=7854 \
     -bridge-addr=sam-host \
     -bridge-port=7656 \
     -in-tunnels=15 \

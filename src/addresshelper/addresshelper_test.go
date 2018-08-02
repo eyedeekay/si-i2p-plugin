@@ -16,7 +16,7 @@ func CreateAddressHelperIB() {
 	dii2perrs.DEBUG = true
 	a, err := NewAddressHelperFromOptions(
 		SetAddressHelperHost("127.0.0.1"),
-		SetAddressHelperPort("7054"),
+		SetAddressHelperPort("7854"),
 	)
 	c, b := a.CheckAddressHelperString("i2p-projekt.i2p")
 	dii2perrs.Log("TestCreateAddressHelperIB Test Complete: true", c)
@@ -31,7 +31,7 @@ func CreateAddressHelperNIB() {
 	dii2perrs.DEBUG = true
 	a, err := NewAddressHelperFromOptions(
 		SetAddressHelperHost("127.0.0.1"),
-		SetAddressHelperPort("7054"),
+		SetAddressHelperPort("7854"),
 	)
 	c, b := a.CheckAddressHelperString("notarealaddress.i2p")
 	dii2perrs.Log("TestCreateAddressHelperNIB", c)
@@ -41,7 +41,7 @@ func CreateAddressHelperNIB() {
 }
 
 func TestCreateAddressHelper(t *testing.T) {
-	jumphelper.NewService("localhost", "7054", "../../misc/addresses.csv", "127.0.0.1", "7656", []string{}, false)
+	jumphelper.NewService("localhost", "7854", "../../misc/addresses.csv", "127.0.0.1", "7656", []string{}, false)
 	CreateAddressHelperIB()
 	CreateAddressHelperNIB()
 }

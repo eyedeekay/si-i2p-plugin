@@ -25,7 +25,7 @@ func TestAddressHelperSetPort(t *testing.T) {
 	dii2perrs.Verbose = true
 	dii2perrs.DEBUG = true
 	_, err := NewAddressHelperFromOptions(
-		SetAddressHelperPort("7054"),
+		SetAddressHelperPort("7854"),
 	)
 	if err != nil {
 		dii2perrs.Fatal(err, "set port error", "")
@@ -37,7 +37,7 @@ func TestAddressHelperSetPortInt(t *testing.T) {
 	dii2perrs.Verbose = true
 	dii2perrs.DEBUG = true
 	_, err := NewAddressHelperFromOptions(
-		SetAddressHelperPortInt(7054),
+		SetAddressHelperPortInt(7854),
 	)
 	if err != nil {
 		dii2perrs.Fatal(err, "set port int error", "")

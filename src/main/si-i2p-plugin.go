@@ -38,7 +38,7 @@ func main() {
 		":port of the SOCKS proxy")
 	addrHelperHostString := flag.String("ah-addr", "127.0.0.1",
 		"host: of the SAM bridge")
-	addrHelperPortString := flag.String("ah-port", "7054",
+	addrHelperPortString := flag.String("ah-port", "7854",
 		":port of the SAM bridge")
 	debugConnection := flag.Bool("conn-debug", false,
 		"Print connection debug info")

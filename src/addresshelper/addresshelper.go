@@ -98,7 +98,7 @@ func NewAddressHelper(AddressHelperURL, jumpHost, jumpPort string) (*AddressHelp
 func NewAddressHelperFromOptions(opts ...func(*AddressHelper) error) (*AddressHelper, error) {
 	var a AddressHelper
 	a.jumpHostString = "127.0.0.1"
-	a.jumpPortString = "7054"
+	a.jumpPortString = "7854"
 	for _, o := range opts {
 		if err := o(&a); err != nil {
 			return nil, err
