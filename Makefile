@@ -281,3 +281,5 @@ gofmt:
 
 gostuff: gofmt golint govet gotest
 
+thing:
+	http_proxy=http://127.0.0.1:44443 surf bn3x2dtvxov6jyfywc4oe2eoucktl7qhc45oomvr3vyvqtplce6a.b32.i2p.b32.i2p
