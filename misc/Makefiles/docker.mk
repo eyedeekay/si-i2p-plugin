@@ -73,6 +73,7 @@ docker-jumphelper:
 		--restart always \
 		--ip 172.80.80.3 \
 		-p 127.0.0.1:7854:7854 \
+		--volume sam-jumphelper:/opt/work \
 		-t eyedeekay/sam-jumphelper; true
 
 docker-run: docker-host
