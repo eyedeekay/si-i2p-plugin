@@ -89,25 +89,17 @@ soon.
 
 #### Current Concerns:
 
-The goddamn thing still has to wait for the goddamn standalone jumphelper to
-sync whatever jump service it asks for things from, which means it still takes
-too long to start(Still faster than a fresh i2p service, though). Jumphelper
-could cache it, I guess, so it would only happen once, but it kind of starts to
-risk defeating the purpose of jumphelper to do that. Truth be told, it looks to
-me from the jumphelper code like it should start the service and answer local
-addressbook queries immediately. Which was the goal. And still is.
+It mostly looks like Jumphelper is working immediately after it's started, but
+if you try to visit a base32 address before they sync, then si-i2p-plugin will
+ask jumphelper for it and fail, interpreting it as a hostname error. It lasts
+for like, 15 seconds and only affects base32 URLs and is fixable.
 
 [I wonder if I could make it talk to TorButton?](https://www.torproject.org/docs/torbutton/en/design/index.html.en)
 
 Littleboss seems like it could potentially be useful in lots of contexts, like
 in a portable browser bundle and stuff like that.
 
-It runs excellent on anything that can work with the named pipe implementation
-in regular Go. Windows does not. But I can probably just wrap up some operations
-on files and pretend they are named pipes. Windows needs testing. I don't own
-a Windows machine. I might be able to swing the temporary use of one at the
-local university. When I do disk-avoidance mode Windows bugs related to pipes
-will disappear. So I kind of want to get these taken care of first if I can.
+I really need to get a Windows machine, but it's just such an awful way to work.
 
 What the final version should do:
 ---------------------------------
