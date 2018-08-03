@@ -228,7 +228,6 @@ func (samConn *SamHTTP) hostCheck(request string) bool {
 	host, u := dii2phelper.CleanURL(request)
 	_, err := url.ParseRequestURI(u)
 	dii2perrs.Log("sam-http.go keeping client alive")
-	samConn.useTime = time.Now()
 	if err == nil {
 		if samConn.host == host {
 			dii2perrs.Log("sam-http.go Request host ", host, "is equal to client host", samConn.host)

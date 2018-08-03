@@ -27,6 +27,10 @@ func (wrapped *WrappedFile) OpenAsFile() {
 
 }
 
+func (wrapped *WrappedFile) OpenAsFiFo() {
+
+}
+
 func (wrapped *WrappedFile) OpenAsScanner() {
 
 }
