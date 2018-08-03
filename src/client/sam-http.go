@@ -259,9 +259,9 @@ func (samConn *SamHTTP) hostCheck(request string) bool {
 }
 
 func (samConn *SamHTTP) lifetimeCheck(request string) bool {
-	if samConn.lifeTime > time.Now().Sub(samConn.useTime) {
+	if samConn.lifeTime < time.Now().Sub(samConn.useTime) {
 		dii2perrs.Warn(nil, "sam-http.go Error Removing inactive client after ", "sam-http.go Removing inactive client", samConn.host, "after", samConn.lifeTime, "minutes.")
-		samConn.useTime = time.Now().Add(time.Duration(1) * time.Second)
+		samConn.useTime = time.Now()//.Add(time.Duration(1) * time.Second)
 		return true
 	}
 	samConn.useTime = time.Now()
