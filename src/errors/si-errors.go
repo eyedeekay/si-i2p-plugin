@@ -19,9 +19,7 @@ func Log(msg ...interface{}) {
 
 //LogAnyway wraps logging
 func LogAnyway(msg ...interface{}) {
-	//if Verbose {
-		log.Println("LOG: ", msg)
-	//}
+	log.Println("LOG: ", msg)
 }
 
 //LogA wraps logging arrays

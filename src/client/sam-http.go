@@ -245,7 +245,7 @@ func (samConn *SamHTTP) lifetimeCheck(request string) bool {
 		samConn.useTime = time.Now()
 		return true
 	}
-    dii2perrs.LogAnyway("sam-http.go Not inactive client", samConn.host, "after", time.Now().Sub(samConn.useTime), "minutes.")
+    dii2perrs.Log("sam-http.go Not inactive client", samConn.host, "after", time.Now().Sub(samConn.useTime), "minutes.")
 	samConn.useTime = time.Now()
 	return false
 }
