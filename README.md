@@ -116,8 +116,8 @@ Version Roadmap:
   * ~~0.19 - Expose an http proxy that hooks up to the existing infrastructure~~
    ~~for destination isolation~~
   * 0.20 - ~~Ready for more mainstream testing~~, ~~should successfully isolate~~
-   ~~requests for resources embedded in the retrieved web pages.~~ Addresshelper
-   still needs a little work, but it's way better than before.
+   ~~requests for resources embedded in the retrieved web pages. Addresshelper~~
+   ~~functions but it's it's own whole thing now.~~
   * 0.21 - Should be able to generate services on the fly by talking to the SAM
   bridge. Truth be told, except when I break something, it works nearly
   perfectly. I do break stuff alot though, development is quite active and I
