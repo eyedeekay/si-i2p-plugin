@@ -82,7 +82,7 @@ func (samStack *SamList) createClient(request string) {
 	dii2perrs.Log("sam-list.go Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients,
 		newSamHTTP(
-            samStack.samAddrString,
+			samStack.samAddrString,
 			samStack.samPortString,
 			request,
 			samStack.timeoutTime,
@@ -102,7 +102,7 @@ func (samStack *SamList) createClientHTTP(request *http.Request) {
 	dii2perrs.Log("sam-list.go Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients,
 		newSamHTTPHTTP(
-            samStack.samAddrString,
+			samStack.samAddrString,
 			samStack.samPortString,
 			request,
 			samStack.timeoutTime,
@@ -164,14 +164,14 @@ func (samStack *SamList) findClient(request string) *SamHTTP {
 	if !dii2phelper.CheckURLType(request) {
 		return nil
 	}
-    if found, c, index := samStack.hostCheck(request); found {
-        if ! c.lifetimeCheck(request) {
-            return c
-        }else{
-            dii2perrs.Log("sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.", index)
+	if found, c, index := samStack.hostCheck(request); found {
+		if !c.lifetimeCheck(request) {
+			return c
+		} else {
+			dii2perrs.Log("sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.", index)
 			samStack.listOfClients = samStack.deleteClient(index)
-        }
-    }
+		}
+	}
 	dii2perrs.Log("sam-list.go Client pipework for", request, "not found: Creating.")
 	samStack.createClient(request)
 	found, c, _ := samStack.hostCheck(request)

@@ -66,8 +66,8 @@ func SetSamHTTPTimeout(s int) func(*SamHTTP) error {
 				c.timeoutTime = time.Duration(s) * time.Minute
 				return nil
 			}
-            tmp := time.Duration(s) * time.Minute
-			return fmt.Errorf("A specified timeout must be less than a specified lifetime. %s %s %s", tmp.String(), ">" , c.lifeTime.String())
+			tmp := time.Duration(s) * time.Minute
+			return fmt.Errorf("A specified timeout must be less than a specified lifetime. %s %s %s", tmp.String(), ">", c.lifeTime.String())
 		}
 		return fmt.Errorf("Timeout must be greater than 5 minutes.")
 	}
@@ -89,8 +89,8 @@ func SetSamHTTPLifespan(s int) func(*SamHTTP) error {
 			c.useTime = time.Now()
 			return nil
 		}
-        tmp := time.Duration(s) * time.Minute
-        return fmt.Errorf("A specified lifetime must be greater than a specified timeout. %s %s %s", tmp.String(), "<", c.timeoutTime.String())
+		tmp := time.Duration(s) * time.Minute
+		return fmt.Errorf("A specified lifetime must be greater than a specified timeout. %s %s %s", tmp.String(), "<", c.timeoutTime.String())
 	}
 }
 

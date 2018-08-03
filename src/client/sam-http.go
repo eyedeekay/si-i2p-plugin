@@ -48,8 +48,8 @@ type SamHTTP struct {
 	transport *http.Transport
 	subClient *http.Client
 
-	timeoutTime      time.Duration
-	keepAlives       bool
+	timeoutTime time.Duration
+	keepAlives  bool
 
 	host      string
 	directory string
@@ -160,11 +160,11 @@ func (samConn *SamHTTP) checkRedirect(req *http.Request, via []*http.Request) er
 func (samConn *SamHTTP) setupTransport() {
 	dii2perrs.Log("sam-http.go Setting Transport")
 	dii2perrs.Log("sam-http.go Setting Dial function")
-    proxyURL, err := url.Parse("http://"+samConn.samAddrString)
-    dii2perrs.Fatal(err, "sam-http.go Error parsing proxy URL", "sam-http.go Parsing proxy URL")
+	proxyURL, err := url.Parse("http://" + samConn.samAddrString)
+	dii2perrs.Fatal(err, "sam-http.go Error parsing proxy URL", "sam-http.go Parsing proxy URL")
 	samConn.transport = &http.Transport{
-        Proxy:           http.ProxyURL(proxyURL),
-		Dial: samConn.Dial,
+		Proxy:                 http.ProxyURL(proxyURL),
+		Dial:                  samConn.Dial,
 		MaxIdleConns:          0,
 		MaxIdleConnsPerHost:   samConn.idleConns,
 		DisableKeepAlives:     samConn.keepAlives,
@@ -172,7 +172,7 @@ func (samConn *SamHTTP) setupTransport() {
 		ExpectContinueTimeout: samConn.timeoutTime,
 		IdleConnTimeout:       samConn.timeoutTime,
 		TLSNextProto:          make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
-        TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
+		TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
 	}
 	dii2perrs.Log("sam-http.go Initializing sub-client")
 	samConn.subClient = &http.Client{
@@ -184,7 +184,7 @@ func (samConn *SamHTTP) setupTransport() {
 }
 
 func (samConn *SamHTTP) newClient() (*goSam.Client, error) {
-    return goSam.NewClientFromOptions(
+	return goSam.NewClientFromOptions(
 		goSam.SetHost(samConn.samAddrString),
 		goSam.SetPort(samConn.samPortString),
 		goSam.SetDebug(dii2perrs.DEBUG),
@@ -249,7 +249,7 @@ func (samConn *SamHTTP) lifetimeCheck(request string) bool {
 		samConn.useTime = time.Now()
 		return true
 	}
-    dii2perrs.Log("sam-http.go Not inactive client", samConn.host, "after", time.Now().Sub(samConn.useTime), "minutes.")
+	dii2perrs.Log("sam-http.go Not inactive client", samConn.host, "after", time.Now().Sub(samConn.useTime), "minutes.")
 	samConn.useTime = time.Now()
 	return false
 }

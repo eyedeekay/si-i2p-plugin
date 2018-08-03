@@ -70,7 +70,7 @@ func TestCreateSamHTTPOptionsSetSamHTTPPortInt(t *testing.T) {
 		SetSamHTTPPortInt(7656),
 	)
 	if e != nil {
-        t.Fatal("sam-http-options_test.go Port setting error from Int")
+		t.Fatal("sam-http-options_test.go Port setting error from Int")
 	}
 	h.CleanupClient()
 }

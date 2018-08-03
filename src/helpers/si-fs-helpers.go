@@ -35,7 +35,7 @@ func (wrapped *WrappedFile) OpenAsScanner() {
 
 }
 
-func (wrapped *WrappedFile) WriteString(input... string) {
+func (wrapped *WrappedFile) WriteString(input ...string) {
 
 }
 
