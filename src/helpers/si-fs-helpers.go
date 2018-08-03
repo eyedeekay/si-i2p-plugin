@@ -185,7 +185,7 @@ func SetupFile(directory, path string) (string, *os.File, error) {
 func SetupFiFo(directory, path string) (string, *os.File, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
 	pathExists, pathErr := exists(mkPath)
-	if e, _ := dii2perrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
+	if e, _ := dii2perrs.Fatal(pathErr, "si-fs-helpers.go FiFo File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		if !pathExists {
 			mkErr := syscall.Mkfifo(mkPath, 0755)
 			dii2perrs.Log("si-fs-helpers.go Preparing to create Pipe:", mkPath)
@@ -208,7 +208,7 @@ func SetupFiFo(directory, path string) (string, *os.File, error) {
 func SetupScanner(directory, path string, pipe *os.File) (*bufio.Scanner, error) {
 	mkPath := truncatePaths(filepath.Join(ConnectionDirectory, directory, path))
 	_, pathErr := exists(mkPath)
-	if e, c := dii2perrs.Fatal(pathErr, "si-fs-helpers.go File Check Error", "si-fs-helpers.go File Check", mkPath); e {
+	if e, c := dii2perrs.Fatal(pathErr, "si-fs-helpers.go Scanner File Check Error", "si-fs-helpers.go File Check", mkPath); e {
 		dii2perrs.Log("si-fs-helpers.go Opening the Named Pipe as a Scanner...")
 		retScanner := bufio.NewScanner(pipe)
 		retScanner.Split(bufio.ScanLines)
