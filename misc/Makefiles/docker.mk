@@ -89,7 +89,7 @@ docker-run: docker-host
 		--link sam-browser \
 		--link sam-jumphelper \
 		--user sii2pplugin \
-		--ip 172.80.80.4 \
+		--ip "$(HOST)" \
 		-p 127.0.0.1:44443:44443 \
 		-p 127.0.0.1:44446:44446 \
 		--restart always \
