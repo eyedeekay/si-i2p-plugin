@@ -49,7 +49,6 @@ type SamHTTP struct {
 	subClient *http.Client
 
 	timeoutTime      time.Duration
-	otherTimeoutTime time.Duration
 	keepAlives       bool
 
 	host      string
@@ -111,16 +110,7 @@ func (e *errorString) Error() string {
 //Dial is a custom Dialer function that allows us to keep the same i2p destination
 //on a per-eepSite basis
 func (samConn *SamHTTP) Dial(network, addr string) (net.Conn, error) {
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
-		goSam.SetHost(samConn.samAddrString),
-		goSam.SetPort(samConn.samPortString),
-		goSam.SetDebug(dii2perrs.DEBUG),
-		goSam.SetUnpublished(true),
-		goSam.SetInLength(uint(samConn.tunnelLength)),
-		goSam.SetOutLength(uint(samConn.tunnelLength)),
-		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
-		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
-	)
+	samConn.samBridgeClient, samConn.err = samConn.newClient()
 	if samConn.c, samConn.err = dii2perrs.Warn(samConn.err, "sam-http.go SAM connection error", "sam-http.go Initializing SAM connection"); samConn.c {
 		return samConn.subDial(network, addr)
 	}
@@ -150,16 +140,7 @@ func (samConn *SamHTTP) connect() (net.Conn, error) {
 }
 
 func (samConn *SamHTTP) reConnect() (net.Conn, error) {
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
-		goSam.SetHost(samConn.samAddrString),
-		goSam.SetPort(samConn.samPortString),
-		goSam.SetDebug(dii2perrs.DEBUG),
-		goSam.SetUnpublished(true),
-		goSam.SetInLength(uint(samConn.tunnelLength)),
-		goSam.SetOutLength(uint(samConn.tunnelLength)),
-		goSam.SetInQuantity(uint(samConn.inboundQuantity)),
-		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
-	)
+	samConn.samBridgeClient, samConn.err = samConn.newClient()
 	if samConn.c, samConn.err = dii2perrs.Warn(samConn.err, "sam-http.go 133 SAM Client connection error", "sam-http.go SAM client connecting"); samConn.c {
 		dii2perrs.Log("sam-http.go SAM Connection established")
 		samConn.err = samConn.samBridgeClient.StreamConnect(samConn.id, samConn.name)
@@ -169,7 +150,6 @@ func (samConn *SamHTTP) reConnect() (net.Conn, error) {
 		}
 		return samConn.reConnect()
 	}
-	//samConn.samBridgeClient.Close()
 	return samConn.reConnect()
 }
 
@@ -182,12 +162,11 @@ func (samConn *SamHTTP) setupTransport() {
 	dii2perrs.Log("sam-http.go Setting Dial function")
 	samConn.transport = &http.Transport{
 		Dial: samConn.Dial,
-		//Dial:                  samConn.samBridgeClient.Dial,
 		MaxIdleConns:          0,
 		MaxIdleConnsPerHost:   samConn.idleConns,
 		DisableKeepAlives:     samConn.keepAlives,
-		ResponseHeaderTimeout: samConn.otherTimeoutTime,
-		ExpectContinueTimeout: samConn.otherTimeoutTime,
+		ResponseHeaderTimeout: samConn.timeoutTime,
+		ExpectContinueTimeout: samConn.timeoutTime,
 		IdleConnTimeout:       samConn.timeoutTime,
 		TLSNextProto:          make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
 	}
@@ -198,15 +177,10 @@ func (samConn *SamHTTP) setupTransport() {
 		Jar:           samConn.jar,
 		CheckRedirect: nil,
 	}
-	//
 }
 
-func (samConn *SamHTTP) createClient() {
-	samConn.jar, samConn.err = cookiejar.New(nil)
-	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samConn.samAddrString, samConn.samPortString); samConn.c {
-		dii2perrs.Log("sam-http.go Cookie Jar created")
-	}
-	samConn.samBridgeClient, samConn.err = goSam.NewClientFromOptions(
+func (samConn *SamHTTP) newClient() (*goSam.Client, error) {
+    return goSam.NewClientFromOptions(
 		goSam.SetHost(samConn.samAddrString),
 		goSam.SetPort(samConn.samPortString),
 		goSam.SetDebug(dii2perrs.DEBUG),
@@ -218,6 +192,14 @@ func (samConn *SamHTTP) createClient() {
 		goSam.SetInBackups(uint(samConn.inboundBackupQuantity)),
 		goSam.SetOutBackups(uint(samConn.outboundBackupQuantity)),
 	)
+}
+
+func (samConn *SamHTTP) createClient() {
+	samConn.jar, samConn.err = cookiejar.New(nil)
+	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go Cookie Jar creation error", "sam-http.go Cookie Jar creating", samConn.samAddrString, samConn.samPortString); samConn.c {
+		dii2perrs.Log("sam-http.go Cookie Jar created")
+	}
+	samConn.samBridgeClient, samConn.err = samConn.newClient()
 	if samConn.c, samConn.err = dii2perrs.Fatal(samConn.err, "sam-http.go SAM Client Connection Error", "sam-http.go SAM client connecting", samConn.samAddrString, samConn.samPortString); samConn.c {
 		dii2perrs.Log("sam-http.go Setting Transport")
 		dii2perrs.Log("sam-http.go Setting Dial function")
@@ -270,7 +252,6 @@ func (samConn *SamHTTP) lifetimeCheck(request string) bool {
 
 func (samConn *SamHTTP) getURL(request string) (string, string) {
 	r := request
-	//directory := strings.Replace(dii2phelper.SafeURLString(request), "http://", "", -1)
 	directory := dii2phelper.SafeURLString(request)
 	_, err := url.ParseRequestURI(r)
 	if err != nil {
@@ -500,7 +481,6 @@ func NewSamHTTPFromOptions(opts ...func(*SamHTTP) error) (SamHTTP, error) {
 	samConn.samPortString = "7656"
 	samConn.initRequestURL = ""
 	samConn.timeoutTime = time.Duration(6) * time.Minute
-	samConn.otherTimeoutTime = time.Duration(2) * time.Minute
 	samConn.keepAlives = true
 	samConn.lifeTime = time.Duration(12) * time.Minute
 	samConn.useTime = time.Now()

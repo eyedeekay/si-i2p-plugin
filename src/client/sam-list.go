@@ -81,7 +81,8 @@ func (samStack *SamList) initPipes() {
 func (samStack *SamList) createClient(request string) {
 	dii2perrs.Log("sam-list.go Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients,
-		newSamHTTP(samStack.samAddrString,
+		newSamHTTP(
+            samStack.samAddrString,
 			samStack.samPortString,
 			request,
 			samStack.timeoutTime,
@@ -100,7 +101,8 @@ func (samStack *SamList) createClient(request string) {
 func (samStack *SamList) createClientHTTP(request *http.Request) {
 	dii2perrs.Log("sam-list.go Appending client to SAM stack.")
 	samStack.listOfClients = append(samStack.listOfClients,
-		newSamHTTPHTTP(samStack.samAddrString,
+		newSamHTTPHTTP(
+            samStack.samAddrString,
 			samStack.samPortString,
 			request,
 			samStack.timeoutTime,

@@ -64,7 +64,6 @@ func SetSamHTTPTimeout(s int) func(*SamHTTP) error {
 		if s > 5 {
 			if time.Duration(s)*time.Minute <= c.lifeTime {
 				c.timeoutTime = time.Duration(s) * time.Minute
-				c.otherTimeoutTime = time.Duration(s/3) * time.Minute
 				return nil
 			}
             tmp := time.Duration(s) * time.Minute
