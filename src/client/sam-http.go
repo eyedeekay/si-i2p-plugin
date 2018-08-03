@@ -169,6 +169,7 @@ func (samConn *SamHTTP) setupTransport() {
 		ExpectContinueTimeout: samConn.timeoutTime,
 		IdleConnTimeout:       samConn.timeoutTime,
 		TLSNextProto:          make(map[string]func(authority string, c *tls.Conn) http.RoundTripper),
+        TLSClientConfig:       &tls.Config{InsecureSkipVerify: true},
 	}
 	dii2perrs.Log("sam-http.go Initializing sub-client")
 	samConn.subClient = &http.Client{
