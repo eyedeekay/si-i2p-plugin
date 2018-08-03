@@ -138,33 +138,19 @@ func (samStack *SamList) SendClientRequestHTTP(request *http.Request) (*http.Cli
 	return nil, "nil client"
 }
 
-func (samStack *SamList) hostCheck(request string) (bool, *SamHTTP) {
+func (samStack *SamList) hostCheck(request string) (bool, *SamHTTP, int) {
 	if !dii2phelper.CheckURLType(request) {
-		return false, nil
+		return false, nil, -1
 	}
 	for index, client := range samStack.listOfClients {
 		dii2perrs.Log("sam-list.go Checking client requests", strconv.Itoa(index+1), client.host)
 		dii2perrs.Log("sam-list.go of", strconv.Itoa(len(samStack.listOfClients)))
 		if client.hostCheck(request) {
 			dii2perrs.Log("sam-list.go Client pipework for", request, "found.", client.host, "at", strconv.Itoa(index+1))
-			return true, &client
+			return true, &client, index
 		}
 	}
-	return false, nil
-}
-
-func (samStack *SamList) lifetimeCheck(request string) bool {
-	if !dii2phelper.CheckURLType(request) {
-		return false
-	}
-	for index, client := range samStack.listOfClients {
-		if client.lifetimeCheck(request) {
-			dii2perrs.Log("sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.", index)
-			samStack.listOfClients = samStack.deleteClient(index)
-			return true
-		}
-	}
-	return false
+	return false, nil, -1
 }
 
 func (samStack *SamList) deleteClient(index int) []SamHTTP {
@@ -176,15 +162,17 @@ func (samStack *SamList) findClient(request string) *SamHTTP {
 	if !dii2phelper.CheckURLType(request) {
 		return nil
 	}
-	if !samStack.lifetimeCheck(request) {
-		found, c := samStack.hostCheck(request)
-		if found {
-			return c
-		}
-	}
+    if found, c, index := samStack.hostCheck(request); found {
+        if ! c.lifetimeCheck(request) {
+            return c
+        }else{
+            dii2perrs.Log("sam-list.go Removing inactive client after", samStack.lifeTime, "minutes.", index)
+			samStack.listOfClients = samStack.deleteClient(index)
+        }
+    }
 	dii2perrs.Log("sam-list.go Client pipework for", request, "not found: Creating.")
 	samStack.createClient(request)
-	found, c := samStack.hostCheck(request)
+	found, c, _ := samStack.hostCheck(request)
 	if found {
 		return c
 	}
