@@ -160,7 +160,10 @@ func (samConn *SamHTTP) checkRedirect(req *http.Request, via []*http.Request) er
 func (samConn *SamHTTP) setupTransport() {
 	dii2perrs.Log("sam-http.go Setting Transport")
 	dii2perrs.Log("sam-http.go Setting Dial function")
+    proxyURL, err := url.Parse("http://"+samConn.samAddrString)
+    dii2perrs.Fatal(err, "sam-http.go Error parsing proxy URL", "sam-http.go Parsing proxy URL")
 	samConn.transport = &http.Transport{
+        Proxy:           http.ProxyURL(proxyURL),
 		Dial: samConn.Dial,
 		MaxIdleConns:          0,
 		MaxIdleConnsPerHost:   samConn.idleConns,
