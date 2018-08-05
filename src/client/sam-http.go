@@ -184,6 +184,10 @@ func (samConn *SamHTTP) setupTransport() {
 }
 
 func (samConn *SamHTTP) newClient() (*goSam.Client, error) {
+    rit := uint((samConn.timeoutTime*60)*500)
+    if rit < 300000 {
+        rit = 300000
+    }
 	return goSam.NewClientFromOptions(
 		goSam.SetHost(samConn.samAddrString),
 		goSam.SetPort(samConn.samPortString),
@@ -196,6 +200,7 @@ func (samConn *SamHTTP) newClient() (*goSam.Client, error) {
 		goSam.SetInBackups(uint(samConn.inboundBackupQuantity)),
 		goSam.SetOutBackups(uint(samConn.outboundBackupQuantity)),
 		goSam.SetReduceIdle(true),
+        goSam.SetReduceIdleTime(rit),
 		goSam.SetCloseIdle(true),
 		goSam.SetCloseIdleTime((uint((samConn.timeoutTime*60)*1000))*2),
 	)
