@@ -60,10 +60,10 @@ func main() {
 		"Timeout duration in minutes(default six)")
 	tunnelLength := flag.Int("tunlength", 3,
 		"Tunnel Length(default 3)")
-	inboundTunnels := flag.Int("in-tunnels", 15,
-		"Inbound Tunnel Count(default 15)")
-	outboundTunnels := flag.Int("out-tunnels", 15,
-		"Inbound Tunnel Count(default 15)")
+	inboundTunnels := flag.Int("in-tunnels", 8,
+		"Inbound Tunnel Count(default 8)")
+	outboundTunnels := flag.Int("out-tunnels", 8,
+		"Inbound Tunnel Count(default 8)")
 	keepAlives := flag.Bool("disable-keepalives", false,
 		"Disable keepalives(default false)")
 	idleConns := flag.Int("idle-conns", 8,
