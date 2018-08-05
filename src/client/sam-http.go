@@ -195,6 +195,9 @@ func (samConn *SamHTTP) newClient() (*goSam.Client, error) {
 		goSam.SetOutQuantity(uint(samConn.outboundQuantity)),
 		goSam.SetInBackups(uint(samConn.inboundBackupQuantity)),
 		goSam.SetOutBackups(uint(samConn.outboundBackupQuantity)),
+		goSam.SetReduceIdle(true),
+		goSam.SetCloseIdle(true),
+		goSam.SetCloseIdleTime((uint((samConn.timeoutTime*60)*1000))*1.5),
 	)
 }
 
@@ -326,14 +329,14 @@ func (samConn *SamHTTP) copyRequest(response *http.Response, directory string) {
 }
 
 func (samConn *SamHTTP) copyRequestHTTP(request *http.Request, response *http.Response, directory string) *http.Response {
-    if samConn.jar != nil {
+	if samConn.jar != nil {
 		for _, cookie := range samConn.jar.Cookies(request.URL) {
-            request.AddCookie(cookie)
+			request.AddCookie(cookie)
 		}
 	}
-    if samConn.jar != nil {
+	if samConn.jar != nil {
 		if rc := response.Cookies(); len(rc) > 0 {
-            samConn.jar.SetCookies(request.URL, rc)
+			samConn.jar.SetCookies(request.URL, rc)
 		}
 	}
 	return samConn.findSubCache(response, directory).copyDirectoryHTTP(request, response, directory)
