@@ -197,7 +197,7 @@ func (samConn *SamHTTP) newClient() (*goSam.Client, error) {
 		goSam.SetOutBackups(uint(samConn.outboundBackupQuantity)),
 		goSam.SetReduceIdle(true),
 		goSam.SetCloseIdle(true),
-		goSam.SetCloseIdleTime((uint((samConn.timeoutTime*60)*1000))*1.5),
+		goSam.SetCloseIdleTime((uint((samConn.timeoutTime*60)*1000))*2),
 	)
 }
 
