@@ -11,8 +11,8 @@ RUN chown -R i2pd:i2pd /var/lib/i2pd/addressbook/addresses.csv /opt/work
 USER i2pd
 VOLUME /opt/work
 CMD jumphelper -host="0.0.0.0" \
-    -share=true \
-    -i2p=true \
+    -share=false \
+    -i2p=false \
     -tunname="sam-jumphelper" \
     -port="7854" \
     -samhost=sam-host \
