@@ -11,6 +11,9 @@ Screenshots:
 
 ### using the new proxy against the same site twice.
 
+Interestingly, i2p only sends the X-I2p-Dest* headers the first time a
+destination visits another destination.
+
 ![Proof-of-Concept using the new proxy against the same site twice.](screenshot-browser-samesite.png)
 
 ### using Firefox against test site 1.
