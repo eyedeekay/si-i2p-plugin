@@ -38,7 +38,6 @@ browse: docker-browser
 		--network-alias sam-browser \
 		--hostname sam-browser \
 		--link si-proxy \
-		--ip 172.80.80.5 \
 		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
 		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
 		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \

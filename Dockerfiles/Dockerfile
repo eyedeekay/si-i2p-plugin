@@ -15,12 +15,14 @@ CMD /opt/bin/si-i2p-plugin \
     -ah-port=7854 \
     -bridge-addr=sam-host \
     -bridge-port=7656 \
-    -in-tunnels=15 \
-    -out-tunnels=15 \
+    -in-tunnels=8 \
+    -out-tunnels=8 \
     -in-backups=5 \
     -out-backups=5 \
     -internal-ah=false \
     -lifespan=20 \
+    -verbose=true \
+    -conn-debug=true \
     -addressbook=/opt/etc/si-i2p-plugin/addresses.csv
     #-avoidance=true \
-    #-verbose=true
+    #
