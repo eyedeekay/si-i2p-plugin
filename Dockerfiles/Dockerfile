@@ -21,8 +21,8 @@ CMD /opt/bin/si-i2p-plugin \
     -out-backups=5 \
     -internal-ah=false \
     -lifespan=20 \
-    -verbose=true \
-    -conn-debug=true \
-    -addressbook=/opt/etc/si-i2p-plugin/addresses.csv
+    -addressbook=/opt/etc/si-i2p-plugin/addresses.csv \
+    #-verbose=true \
+    #-conn-debug=true \
     #-avoidance=true \
     #

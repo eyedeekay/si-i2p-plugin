@@ -1,0 +1,27 @@
+# Last Modified: Thu Oct 12 14:13:52 2017
+#include <tunables/global>
+
+/usr/local/bin/si-i2p-plugin {
+  #include <abstractions/base>
+  network inet dgram,
+  network inet stream,
+  network inet6 dgram,
+  network inet6 stream,
+  network netlink raw,
+
+  /lib/x86_64-linux-gnu/ld-*.so mr,
+  /usr/local/bin/si-i2p-plugin mr,
+
+  /etc/si-i2p-plugin/** r,
+  /run/si-i2p-plugin/si-i2p-plugin.pid rwk,
+  /var/run/si-i2p-plugin/si-i2p-plugin.pid rwk,
+  /run/si-i2p-plugin/** rw,
+  /var/run/si-i2p-plugin/** rw,
+  /var/lib/si-i2p-plugin/** r,
+  /var/log/si-i2p-plugin/si-i2p-plugin.log r,
+  /usr/local/bin/si-i2p-plugin r,
+  /usr/bin/si-i2p-plugin r,
+  /usr/share/si-i2p-plugin r,
+  /usr/local/share/si-i2p-plugin r,
+  /prox/sys/net/core/somaxconn r,
+}

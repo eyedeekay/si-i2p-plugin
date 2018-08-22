@@ -165,10 +165,9 @@ install:
 	install -d -g sii2pplugin -o sii2pplugin -m744 $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 	install -d -g sii2pplugin -o sii2pplugin -m700 $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/
 	install -D -m755 bin/si-i2p-plugin $(PREFIX)$(USR)$(LOCAL)/bin/
-	install -D -m755 -g sii2pplugin -o sii2pplugin -m744 bin/si-i2p-plugin.sh $(PREFIX)$(USR)$(LOCAL)/bin/
-	install -D -m755 -g sii2pplugin -o sii2pplugin -m744 bin/si-i2p-plugin-status.sh $(PREFIX)$(USR)$(LOCAL)/bin/
 	install -D -m755 $(ETC)init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
 	install -D -m755 $(ETC)systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
+	install -D -m755 $(ETC)apparmor.d/usr.bin.si-i2p-plugin $(PREFIX)$(ETC)apparmor.d/
 	install -D -g sii2pplugin -o sii2pplugin -m644 $(ETC)si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/
 	install -D -g sii2pplugin -o sii2pplugin -m600 $(ETC)si-i2p-plugin/addresses.csv $(PREFIX)$(ETC)si-i2p-plugin/
 
@@ -176,7 +175,9 @@ remove:
 	rm -f $(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin \
 		$(PREFIX)$(USR)$(LOCAL)/bin/si-i2p-plugin.sh \
 		$(PREFIX)$(ETC)init.d/si-i2p-plugin \
-		$(ETC)systemd/system/sii2pplugin.service \
+		$(PREFIX)$(ETC)apparmor.d/usr.bin.si-i2p-plugin \
+		$(PREFIX)$(ETC)apparmor.d/usr.local.bin.si-i2p-plugin \
+		$(PREFIX)$(ETC)systemd/system/sii2pplugin.service \
 		$(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
 	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 

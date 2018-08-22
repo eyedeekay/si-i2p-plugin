@@ -74,8 +74,8 @@ func main() {
 		"Inbound Backup Count(default 3)")
 	internalAddressHelper := flag.Bool("internal-ah", true,
 		"Use internal address helper")
-	addressBook := flag.String("addressbook", "./addresses.csv",
-		"path to local addressbook(default ./addresses.csv) (Unused without internal-ah)")
+	addressBook := flag.String("addressbook", "/etc/si-i2p-plugin/addresses.csv",
+		"path to local addressbook(default ./etc/si-i2p-plugin/addresses.csv) (Unused without internal-ah)")
 	internalSamRTCHost := flag.Bool("internal-rtc", false,
 		"Use internal SamRTC(Experimenatl)(default false)")
 	rtcHostString := flag.String("rtc-addr", "127.0.0.1",
