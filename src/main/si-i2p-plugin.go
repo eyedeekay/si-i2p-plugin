@@ -20,70 +20,43 @@ import (
 
 var exit = false
 
+var (
+	samAddrString         = flag.String("bridge-addr", "127.0.0.1", "host: of the SAM bridge")
+	samPortString         = flag.String("bridge-port", "7656", ":port of the SAM bridge")
+	proxAddrString        = flag.String("proxy-addr", "127.0.0.1", "host: of the HTTP proxy")
+	proxPortString        = flag.String("proxy-port", "4443", ":port of the HTTP proxy")
+	socksAddrString       = flag.String("socks-addr", "127.0.0.1", "host: of the SOCKS proxy")
+	socksPortString       = flag.String("socks-port", "4446", ":port of the SOCKS proxy")
+	addrHelperHostString  = flag.String("ah-addr", "127.0.0.1", "host: of the SAM bridge")
+	addrHelperPortString  = flag.String("ah-port", "7858", ":port of the SAM bridge")
+	debugConnection       = flag.Bool("conn-debug", false, "Print connection debug info")
+	useHTTPProxy          = flag.Bool("http-proxy", true, "run the HTTP proxy(default true)")
+	useSOCKSProxy         = flag.Bool("socks-proxy", false, "run the SOCKS proxy(default false)")
+	verboseLogging        = flag.Bool("verbose", false, "Print connection debug info")
+	address               = flag.String("url", "", "i2p URL you want to retrieve")
+	addressHelper         = flag.String("addresshelper", "http://joajgazyztfssty4w2on5oaqksz6tqoxbduy553y34mf4byv6gpq.b32.i2p/export/alive-hosts.txt", "Jump/Addresshelper service you want to use")
+	destLifespan          = flag.Int("lifespan", 12, "Lifespan of an idle i2p destination in minutes(default twelve)")
+	timeoutTime           = flag.Int("timeout", 6, "Timeout duration in minutes(default six)")
+	tunnelLength          = flag.Int("tunlength", 3, "Tunnel Length(default 3)")
+	inboundTunnels        = flag.Int("in-tunnels", 8, "Inbound Tunnel Count(default 8)")
+	outboundTunnels       = flag.Int("out-tunnels", 8, "Inbound Tunnel Count(default 8)")
+	keepAlives            = flag.Bool("disable-keepalives", false, "Disable keepalives(default false)")
+	idleConns             = flag.Int("idle-conns", 4, "Maximium idle connections per host(default 4)")
+	inboundBackups        = flag.Int("in-backups", 3, "Inbound Backup Count(default 3)")
+	outboundBackups       = flag.Int("out-backups", 3, "Inbound Backup Count(default 3)")
+	internalAddressHelper = flag.Bool("internal-ah", true, "Use internal address helper")
+	addressBook           = flag.String("addressbook", "/etc/si-i2p-plugin/addresses.csv", "path to local addressbook(default ./etc/si-i2p-plugin/addresses.csv) (Unused without internal-ah)")
+	internalSamRTCHost    = flag.Bool("internal-rtc", false, "Use internal SamRTC(Experimenatl)(default false)")
+	rtcHostString         = flag.String("rtc-addr", "127.0.0.1", "host: of the RTC over SAM bridge")
+	rtcPortString         = flag.String("rtc-port", "7682", ":port of the RTC over SAM bridge")
+	diskAvoidance         = flag.Bool("avoidance", true, "Disk Avoidance Mode(default true)")
+)
+
 func main() {
 	//lb := littleboss.New("si-i2p-plugin")
 	//lb.Run(func(ctx context.Context){
-	samAddrString := flag.String("bridge-addr", "127.0.0.1",
-		"host: of the SAM bridge")
-	samPortString := flag.String("bridge-port", "7656",
-		":port of the SAM bridge")
-	proxAddrString := flag.String("proxy-addr", "127.0.0.1",
-		"host: of the HTTP proxy")
-	proxPortString := flag.String("proxy-port", "4443",
-		":port of the HTTP proxy")
-	socksAddrString := flag.String("socks-addr", "127.0.0.1",
-		"host: of the SOCKS proxy")
-	socksPortString := flag.String("socks-port", "4446",
-		":port of the SOCKS proxy")
-	addrHelperHostString := flag.String("ah-addr", "127.0.0.1",
-		"host: of the SAM bridge")
-	addrHelperPortString := flag.String("ah-port", "7854",
-		":port of the SAM bridge")
-	debugConnection := flag.Bool("conn-debug", false,
-		"Print connection debug info")
-	useHTTPProxy := flag.Bool("http-proxy", true,
-		"run the HTTP proxy(default true)")
-	useSOCKSProxy := flag.Bool("socks-proxy", false,
-		"run the SOCKS proxy(default false)")
-	verboseLogging := flag.Bool("verbose", false,
-		"Print connection debug info")
 	Defwd, _ := os.Getwd()
-	workDirectory := flag.String("directory", Defwd,
-		"The working directory you want to use, defaults to current directory")
-	address := flag.String("url", "",
-		"i2p URL you want to retrieve")
-	addressHelper := flag.String("addresshelper", "http://joajgazyztfssty4w2on5oaqksz6tqoxbduy553y34mf4byv6gpq.b32.i2p/export/alive-hosts.txt",
-		"Jump/Addresshelper service you want to use")
-	destLifespan := flag.Int("lifespan", 12,
-		"Lifespan of an idle i2p destination in minutes(default twelve)")
-	timeoutTime := flag.Int("timeout", 6,
-		"Timeout duration in minutes(default six)")
-	tunnelLength := flag.Int("tunlength", 3,
-		"Tunnel Length(default 3)")
-	inboundTunnels := flag.Int("in-tunnels", 8,
-		"Inbound Tunnel Count(default 8)")
-	outboundTunnels := flag.Int("out-tunnels", 8,
-		"Inbound Tunnel Count(default 8)")
-	keepAlives := flag.Bool("disable-keepalives", false,
-		"Disable keepalives(default false)")
-	idleConns := flag.Int("idle-conns", 4,
-		"Maximium idle connections per host(default 4)")
-	inboundBackups := flag.Int("in-backups", 3,
-		"Inbound Backup Count(default 3)")
-	outboundBackups := flag.Int("out-backups", 3,
-		"Inbound Backup Count(default 3)")
-	internalAddressHelper := flag.Bool("internal-ah", true,
-		"Use internal address helper")
-	addressBook := flag.String("addressbook", "/etc/si-i2p-plugin/addresses.csv",
-		"path to local addressbook(default ./etc/si-i2p-plugin/addresses.csv) (Unused without internal-ah)")
-	internalSamRTCHost := flag.Bool("internal-rtc", false,
-		"Use internal SamRTC(Experimenatl)(default false)")
-	rtcHostString := flag.String("rtc-addr", "127.0.0.1",
-		"host: of the RTC over SAM bridge")
-	rtcPortString := flag.String("rtc-port", "7682",
-		":port of the RTC over SAM bridge")
-	//diskAvoidance := flag.Bool("avoidance", true,
-	//  "Disk Avoidance Mode(default true)")
+	workDirectory := flag.String("directory", Defwd, "The working directory you want to use, defaults to current directory")
 
 	flag.Parse()
 
@@ -106,6 +79,19 @@ func main() {
 	dii2perrs.Log("si-i2p-plugin.go Idle Tunnel Count:", *idleConns)
 	dii2perrs.Log("si-i2p-plugin.go Inbound Backup Quantity:", *inboundBackups)
 	dii2perrs.Log("si-i2p-plugin.go Outbound Backup Quantity", *outboundBackups)
+	if !*keepAlives {
+		dii2perrs.Log("si-i2p-plugin.go Keepalives Enabled")
+	} else {
+		dii2perrs.Log("si-i2p-plugin.go Keepalives Disabled")
+	}
+	if *debugConnection {
+		dii2perrs.DEBUG = *debugConnection
+		dii2perrs.Log("si-i2p-plugin.go Debug mode: true")
+	}
+	if *verboseLogging {
+		dii2perrs.Verbose = *verboseLogging
+		dii2perrs.Log("si-i2p-plugin.go Verbose mode: true")
+	}
 
 	if *internalAddressHelper {
 		dii2perrs.Log("si-i2p-plugin.go starting internal addresshelper with")
@@ -132,24 +118,6 @@ func main() {
 			dii2perrs.Fatal(err, "si-i2p-plugin.go failed to start internal RTC forwarder")
 		}
 	}
-
-	if !*keepAlives {
-		dii2perrs.Log("si-i2p-plugin.go Keepalives Enabled")
-	} else {
-		dii2perrs.Log("si-i2p-plugin.go Keepalives Disabled")
-	}
-	if *debugConnection {
-		dii2perrs.DEBUG = *debugConnection
-		dii2perrs.Log("si-i2p-plugin.go Debug mode: true")
-	}
-	if *verboseLogging {
-		dii2perrs.Verbose = *verboseLogging
-		dii2perrs.Log("si-i2p-plugin.go Verbose mode: true")
-	}
-	if *useHTTPProxy {
-		dii2perrs.Log("si-i2p-plugin.go Using HTTP proxy: true")
-	}
-	dii2perrs.Log("si-i2p-plugin.go Initial URL:", *address)
 
 	samProxies, err := dii2pmain.CreateSamList(
 		dii2pmain.SetInitAddress(*address),
@@ -194,7 +162,17 @@ func main() {
 
 	if *useHTTPProxy {
 		if !httpUp {
-			samProxy := dii2p.CreateHTTPProxy(*proxAddrString, *proxPortString, *address, *addrHelperHostString, *addrHelperPortString, *addressHelper, samProxies, *timeoutTime, *keepAlives)
+			samProxy := dii2p.CreateHTTPProxy(
+				*proxAddrString,
+				*proxPortString,
+				*address,
+				*addrHelperHostString,
+				*addrHelperPortString,
+				*addressHelper,
+				samProxies,
+				*timeoutTime,
+				*keepAlives,
+			)
 			dii2perrs.Log("si-i2p-plugin.go HTTP Proxy Started:" + samProxy.Addr)
 			httpUp = true
 		}
@@ -202,7 +180,17 @@ func main() {
 
 	if *useSOCKSProxy {
 		if !socksUp {
-			samProxy := dii2p.CreateSOCKSProxy(*proxAddrString, *proxPortString, *address, *addrHelperHostString, *addrHelperPortString, *addressHelper, samProxies, *timeoutTime, *keepAlives)
+			samProxy := dii2p.CreateSOCKSProxy(
+				*proxAddrString,
+				*proxPortString,
+				*address,
+				*addrHelperHostString,
+				*addrHelperPortString,
+				*addressHelper,
+				samProxies,
+				*timeoutTime,
+				*keepAlives,
+			)
 			dii2perrs.Log("si-i2p-plugin.go Socks Proxy Started:" + samProxy.Addr)
 			socksUp = true
 		}

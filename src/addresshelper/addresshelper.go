@@ -66,9 +66,9 @@ func (addressBook *AddressHelper) CheckAddressHelper(req *http.Request) (*http.R
 // CheckAddressHelperString determines how the addresshelper will be used for an address
 func (addressBook *AddressHelper) CheckAddressHelperString(req string) (string, bool) {
 	if req != "" {
-        if strings.HasSuffix(strings.Split(req,".b32.i2p")[0], ".b32.i2p") {
-            return req, false
-        }
+		if strings.HasSuffix(strings.Split(req, ".b32.i2p")[0], ".b32.i2p") {
+			return req, false
+		}
 		b, e := addressBook.jumpClient.Check(req)
 		if e != nil {
 			dii2perrs.Warn(e, "addresshelper.go Address Lookup Error", "addresshelper.go this should never be reached")
