@@ -22,9 +22,9 @@ start() {
   fi
   echo 'Starting destination-isolating proxy service…' >&2
   start-stop-daemon -S -b -q -d "$RUNFOLDER" -g "$RUNAS" -c "$RUNAS" -p "$PIDFILE" \
-    --startas /bin/bash -- -c "exec $SCRIPT > /var/log/si-i2p-plugin/si-i2p-plugin.log 2>&1"
+    --startas /bin/bash -- -c "exec $SCRIPT > $LOGFILE 2>&1"
   echo $! > "$PIDFILE"
-  echo "Service started: start-stop-daemon -S -b -g $RUNAS -c $RUNAS -p $PIDFILE --exec $SCRIPT" >&2
+  echo "Service started: $SCRIPT" >&2
   cat "$PIDFILE" >&2
 }
 
@@ -35,15 +35,15 @@ stop() {
   fi
   echo 'Stopping destination-isolating proxy service…' >&2
   start-stop-daemon -K -q -d "$RUNFOLDER" -g "$RUNAS" -c "$RUNAS" -p "$PIDFILE" \
-    --startas /bin/bash -- -c "exec $SCRIPT > /var/log/si-i2p-plugin/si-i2p-plugin.log 2>&1"
-  echo "Service stopped start-stop-daemon -K -g $RUNAS -c $RUNAS -p $PIDFILE --exec $SCRIPT" >&2
+    --startas /bin/bash -- -c "exec $SCRIPT > $LOGFILE 2>&1"
+  echo "Service stopped: $SCRIPT" >&2
   rm -f "$PIDFILE"
 }
 
 status() {
   if [ -f "$PIDFILE" ]; then
     start-stop-daemon -T -q -d "$RUNFOLDER" -g "$RUNAS" -c "$RUNAS" -p "$PIDFILE" \
-      --startas /bin/bash -- -c "exec $SCRIPT > /var/log/si-i2p-plugin/si-i2p-plugin.log 2>&1"
+      --startas /bin/bash -- -c "exec $SCRIPT > $LOGFILE 2>&1"
     echo 'Currently open pipes:' >&2
     ls /var/run/si-i2p-plugin/* >&2
     tail $LOGFILE >&2
