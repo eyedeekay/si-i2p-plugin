@@ -66,7 +66,12 @@ resources you *don't* request from their site. In other words, if a site
 administrator knowingly requests off-site resources, it can identify
 destinations created by this proxy by identifying destinations that *never*
 request those third party resources when connecting to their eepSite. This
-effect is probably worse if there are few visitors to that eepSite.
+effect is probably worse if there are few visitors to that eepSite. This issue
+becomes pretty useless if everybody uses this proxy, as it's not possible to
+tell the difference between users. So if you're testing this proxy, then that's
+how somebody can tell. I demonstrated this to myself by making all the test
+sites share a common CSS file from the test gateway site. Because I might be
+the only user, this is how you can tell it's me.
 
 ### Header Fingerprinting
 

@@ -8,9 +8,11 @@ browser=$(PWD)/browser
 UPDATE_URL=https://www.torproject.org/projects/torbrowser/RecommendedTBBVersions
 
 #COMMENT THE FOLLOWING LINE IF YOU WANT TO USE THE EXPERIMENTAL TBB
-BROWSER_VERSION = $(shell curl $(UPDATE_URL) 2> /dev/null | grep -vi macos | grep -vi windows | grep -vi linux | head -n 3 | tail -n 1 | tr -d '",')
+BROWSER_VERSION = $(shell curl $(UPDATE_URL) 2> /dev/null | grep -vi macos | grep -vi windows | grep -vi linux | head -n 2 | tail -n 1 | tr -d '",')
 
-#BROWSER_VERSION ?= $(shell curl https://www.torproject.org/projects/torbrowser.html.en 2>&1 | grep '<th>GNU/Linux<br>' | sed 's|<th>GNU/Linux<br><em>(||g' | sed 's|)</em></th>||g' | tr -d ' ')
+#UNCOMMENT THE FOLLOWING LINES IF YOU WANT TO USE THE EXPERIMENTAL TBB
+BROWSER_VERSION=8.0a10
+
 different_port=7073
 DISPLAY = :0
 BROWSER_PORT=44443

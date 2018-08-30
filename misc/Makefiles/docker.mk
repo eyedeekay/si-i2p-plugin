@@ -27,10 +27,15 @@ docker-browser:
 		--build-arg BROWSER_VERSION="$(BROWSER_VERSION)" \
 		--build-arg PORT="$(BROWSER_PORT)" \
 		--build-arg HOST="$(HOST)" \
+		-f Dockerfiles/Dockerfile.browser-base -t eyedeekay/browser-base .
+	docker build --force-rm \
+		--build-arg BROWSER_VERSION="$(BROWSER_VERSION)" \
+		--build-arg PORT="$(BROWSER_PORT)" \
+		--build-arg HOST="$(HOST)" \
 		-f Dockerfiles/Dockerfile.browser -t eyedeekay/sam-browser .
 
 browse: docker-browser
-	docker run --rm -i -t -d \
+	docker run -i -t -d \
 		-e DISPLAY=$(DISPLAY) \
 		-e VERSION="$(BROWSER_VERSION)" \
 		--name sam-browser \
@@ -39,9 +44,7 @@ browse: docker-browser
 		--hostname sam-browser \
 		--link si-proxy \
 		--volume /tmp/.X11-unix:/tmp/.X11-unix:ro \
-		--volume $(browser):/home/anon/tor-browser_en-US/Browser/Desktop \
-		eyedeekay/sam-browser sudo -u anon /home/anon/i2p-browser_en-US/Browser/start-i2p-browser \
-		$(browse_args)
+		eyedeekay/sam-browser
 
 docker-host: docker-network
 	docker run -d \
