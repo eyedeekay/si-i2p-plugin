@@ -180,6 +180,7 @@ install:
 	install -D -m644 $(ETC)systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
 	install -D -m644 $(ETC)apparmor.d/usr.bin.si-i2p-plugin $(PREFIX)$(ETC)apparmor.d/
 	cp -r $(VAR)$(LIB)/si-i2p-plugin/ $(PREFIX)$(VAR)$(LIB)/si-i2p-plugin/
+	chown -R sii2pplugin:sii2pplugin $(PREFIX)$(VAR)$(LIB)/si-i2p-plugin/
 	install -D -g sii2pplugin -o sii2pplugin -m644 $(ETC)si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/
 	install -D -g sii2pplugin -o sii2pplugin -m600 $(ETC)si-i2p-plugin/addresses.csv $(PREFIX)$(ETC)si-i2p-plugin/
 
