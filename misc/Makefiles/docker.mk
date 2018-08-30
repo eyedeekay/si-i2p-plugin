@@ -47,7 +47,7 @@ browse: docker-browser
 		eyedeekay/sam-browser
 
 docker-host: docker-network
-	docker run -d \
+	docker run -i -t -d \
 		--name sam-host \
 		--network si \
 		--network-alias sam-host \
@@ -63,8 +63,7 @@ docker-host: docker-network
 
 docker-jumphelper:
 	docker rm -f sam-jumphelper; true
-	docker run \
-		-d \
+	docker run -i -t -d \
 		--name sam-jumphelper \
 		--network si \
 		--network-alias sam-jumphelper \
@@ -79,8 +78,7 @@ docker-jumphelper:
 docker-run: docker-host
 	@sleep 1
 	docker rm -f si-proxy; true
-	docker run \
-		-d \
+	docker run -i -t -d \
 		--name si-proxy \
 		--network si \
 		--network-alias si-proxy \
@@ -119,3 +117,8 @@ start:
 
 monitor:
 	docker exec sam-host lynx 127.0.0.1:7073
+
+profile:
+	rm -rf var/lib/si-i2p-plugin/profile.si-i2p-plugin
+	mkdir -p var/lib/si-i2p-plugin/
+	docker cp sam-browser:/home/anon/i2p-browser_en-US/Browser/TorBrowser/Data/Browser/profile.i2p/ var/lib/si-i2p-plugin/profile.si-i2p-plugin

@@ -21,6 +21,7 @@ HOST=172.80.80.4
 PREFIX := /
 VAR := var/
 RUN := run/
+LIB := lib/
 LOG := log/
 ETC := etc/
 USR := usr/
@@ -172,12 +173,13 @@ all:
 
 install:
 	mkdir -p $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/
-	install -d -g sii2pplugin -o sii2pplugin -m744 $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
+	install -d -g sii2pplugin -o sii2pplugin -m744 $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(LIB)/si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
 	install -d -g sii2pplugin -o sii2pplugin -m700 $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/
 	install -D -m755 bin/si-i2p-plugin $(PREFIX)$(USR)$(LOCAL)/bin/
 	install -D -m755 $(ETC)init.d/si-i2p-plugin $(PREFIX)$(ETC)init.d/
-	install -D -m755 $(ETC)systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
-	install -D -m755 $(ETC)apparmor.d/usr.bin.si-i2p-plugin $(PREFIX)$(ETC)apparmor.d/
+	install -D -m644 $(ETC)systemd/sii2pplugin.service $(PREFIX)$(ETC)systemd/system/
+	install -D -m644 $(ETC)apparmor.d/usr.bin.si-i2p-plugin $(PREFIX)$(ETC)apparmor.d/
+	cp -r $(VAR)$(LIB)/si-i2p-plugin/ $(PREFIX)$(VAR)$(LIB)/si-i2p-plugin/
 	install -D -g sii2pplugin -o sii2pplugin -m644 $(ETC)si-i2p-plugin/settings.cfg $(PREFIX)$(ETC)si-i2p-plugin/
 	install -D -g sii2pplugin -o sii2pplugin -m600 $(ETC)si-i2p-plugin/addresses.csv $(PREFIX)$(ETC)si-i2p-plugin/
 
@@ -189,7 +191,7 @@ remove:
 		$(PREFIX)$(ETC)apparmor.d/usr.local.bin.si-i2p-plugin \
 		$(PREFIX)$(ETC)systemd/system/sii2pplugin.service \
 		$(PREFIX)$(ETC)si-i2p-plugin/settings.cfg
-	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/
+	rm -rf $(PREFIX)$(VAR)$(LOG)/si-i2p-plugin/ $(PREFIX)$(VAR)$(RUN)si-i2p-plugin/ $(PREFIX)$(ETC)si-i2p-plugin/ $(PREFIX)$(VAR)$(LIB)/si-i2p-plugin/
 
 run: nodeps
 	./bin/si-i2p-plugin -proxy-port="$(BROWSER_PORT)" -addresshelper='http://inr.i2p,http://stats.i2p' 2>&1 | tee run.log
@@ -207,7 +209,7 @@ clean:
 	rm -rf parent services ./.*.i2p*/ ./*.i2p*/ \
 		*.html *-pak *err *log \
 		static-include static-exclude \
-		bin/si-i2p-plugin* bin/si-i2p-plugin-arm lib/* \
+		bin/si-i2p-plugin* bin/si-i2p-plugin-arm var/lib/* \
 		src/client/base64 src/client/id src/client/name \
 		src/client/recv src/client/del src/client/send src/client/time \
 		test/ src/test/ src/*/test/
