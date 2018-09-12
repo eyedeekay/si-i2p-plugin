@@ -183,6 +183,8 @@ func main() {
 			samProxy := dii2p.CreateSOCKSProxy(
 				*proxAddrString,
 				*proxPortString,
+				*samAddrString,
+				*samPortString,
 				*address,
 				*addrHelperHostString,
 				*addrHelperPortString,
