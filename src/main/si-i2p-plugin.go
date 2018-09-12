@@ -189,7 +189,6 @@ func main() {
 				*addrHelperHostString,
 				*addrHelperPortString,
 				*addressHelper,
-				samProxies,
 				*timeoutTime,
 				*keepAlives,
 			)
