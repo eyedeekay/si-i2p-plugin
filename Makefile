@@ -68,8 +68,9 @@ deps:
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/client
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/resolver
 	go get -u github.com/eyedeekay/si-i2p-plugin/src/server
-	go get -u github.com/eyedeekay/si-i2p-plugin/src
+	go get -u github.com/eyedeekay/si-i2p-plugin/src/proxies
 	go get -u github.com/eyedeekay/sam3
+	go get -u github.com/eyedeekay/si-i2p-plugin/src
 	#go get -u crawshaw.io/littleboss
 
 bin/si-i2p-plugin:
