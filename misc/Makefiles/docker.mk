@@ -75,7 +75,7 @@ docker-jumphelper:
 		--volume sam-jumphelper:/opt/work \
 		-t eyedeekay/sam-jumphelper; true
 
-docker-run: docker-host
+docker-run: docker-host docker-jumphelper
 	@sleep 1
 	docker rm -f si-proxy; true
 	docker run -i -t -d \
