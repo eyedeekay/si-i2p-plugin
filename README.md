@@ -12,7 +12,11 @@ with a network of colluding sites. I doubt it's a substantial problem right now
 but it might be someday. Facebook has an onion site, and i2p should have
 destination isolation before there is a facebook.i2p.
 
-[**i2p link** A reference to this issue found on zzz.i2p, that I should have put in the readme sooner.](http://zzz.i2p/topics/217)
+[I2P Link - Stream Isolation](http://trac.i2p2.i2p/ticket/1149)
+[I2P Link - Shared Tunnels](http://zzz.i2p/topics/217)
+
+Development here has ceased. A replacement that will work much better is in
+development at [eyedeekay/eeProxy](https://github.com/eyedeekay/eeProxy).
 
 [![Build Status](https://travis-ci.org/eyedeekay/si-i2p-plugin.svg?branch=master)](https://travis-ci.org/eyedeekay/si-i2p-plugin)
 
@@ -163,3 +167,7 @@ Donate
 ### Monero Wallet Address
 
   XMR:43V6cTZrUfAb9JD6Dmn3vjdT9XxLbiE27D1kaoehb359ACaHs8191mR4RsJH7hGjRTiAoSwFQAVdsCBToXXPAqTMDdP2bZB
+
+### Bitcoin Wallet Address
+
+  BTC:159M8MEUwhTzE9RXmcZxtigKaEjgfwRbHt
